@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Zmenšuje základnú veľkosť písma pre celý web naraz — všetky rem-based
+   veľkosti (text-sm, text-base, ...) sa tak úmerne zmenšia, bez nutnosti
+   meniť veľkosť na každom mieste zvlášť. */
+html {
+  font-size: 14.5px;
+}
+
+/* Jednotné, viditeľné označenie fokusu pri prechádzaní klávesnicou (Tab) —
+   doteraz sa tlačidlá a odkazy spoliehali len na predvolený štýl prehliadača,
+   ktorý sa navyše často odrezával kvôli "overflow-hidden" na zaoblených
+   kartách. Používame :focus-visible (nie :focus), takže sa prstenec objaví
+   len pri ovládaní klávesnicou, nie pri bežnom kliknutí myšou. Vynechané sú
+   textové polia (.field-input, .field-input-sm) — tie už majú svoj vlastný,
+   rovnako farebný fokus.
+*/
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #E3141F;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:root {
+  --color-bg: #FFFFFF;
+  --color-surface: #F6F5F3;
+  --color-surface2: #EDEBE8;
+  --color-ink: #15171A;
+  --color-muted: #6B6F76;
+  --color-line: #E8E7E5;
+  --color-card: #FFFFFF;
+}
+
+.dark {
+  --color-bg: #121317;
+  --color-surface: #1B1D22;
+  --color-surface2: #24262C;
+  --color-ink: #F1F1F2;
+  --color-muted: #9AA0AA;
+  --color-line: #2E3138;
+  --color-card: #1A1C21;
+}
+
+body {
+  background-color: transparent;
+  background-image:
+    radial-gradient(ellipse 900px 500px at 15% -5%, rgba(227, 20, 31, 0.07), transparent 60%),
+    radial-gradient(ellipse 700px 400px at 100% 0%, rgba(37, 99, 235, 0.05), transparent 55%);
+  background-repeat: no-repeat;
+  color: var(--color-ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(ellipse 900px 500px at 15% -5%, rgba(227, 20, 31, 0.1), transparent 60%),
+    radial-gradient(ellipse 700px 400px at 100% 0%, rgba(37, 99, 235, 0.08), transparent 55%);
+}
+
+/* Vlastná farba pri označení textu myšou — jemný akcentový nádych namiesto
+   predvolenej modrej z prehliadača, nech sedí so zvyškom webu. */
+::selection {
+  background-color: rgba(227, 20, 31, 0.2);
+  color: var(--color-ink);
+}
+
+/* Tenší, farebne zladený posuvník namiesto predvoleného sivého (funguje v
+   Chrome/Edge/Safari cez webkit vlastnosti, vo Firefoxe cez scrollbar-color). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-line);
+  border-radius: 8px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+.article-body p { margin-bottom: 1.25rem; }
+.article-body strong { color: var(--color-ink); font-weight: 700; }
+.article-body em { color: var(--color-muted); }
+.article-body h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--color-ink); margin: 2rem 0 1rem; }
+.article-body h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--color-ink); margin: 1.5rem 0 0.75rem; }
+.article-body blockquote { border-left: 3px solid var(--color-accent); padding-left: 1rem; margin: 1.5rem 0; color: var(--color-muted); font-style: italic; }
+.article-body ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.article-body ul li { margin-bottom: 0.4rem; }
+.article-body img { display: block; max-width: 100%; height: auto; }
+.article-body a { text-decoration: underline; text-underline-offset: 2px; }
+
+.field-input {
+  width: 100%;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.field-input:focus {
+  outline: none;
+  border-color: #E3141F;
+  box-shadow: 0 0 0 3px rgba(227, 20, 31, 0.12);
+}
+.field-input::placeholder { color: #A0A4AA; }
+
+.field-input-sm {
+  width: 100%;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+.field-input-sm:focus {
+  outline: none;
+  border-color: #E3141F;
+  box-shadow: 0 0 0 3px rgba(227, 20, 31, 0.12);
+}
+.field-input-sm::placeholder { color: #A0A4AA; }
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 0;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Skryje natívne šípky (spinner) prehliadača na číselných poliach — v tmavom
+   režime obzvlášť pôsobili rušivo, keďže si ich prehliadač nevie sám ofarbiť. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}

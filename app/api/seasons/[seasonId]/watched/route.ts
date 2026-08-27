@@ -1,0 +1,27 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export async function POST(req: Request, { params }: { params: { seasonId: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
+  const userId = (session.user as any).id;
+
+  const episodes = await prisma.episode.findMany({ where: { seasonId: params.seasonId }, select: { id: true } });
+  await prisma.watchedEpisode.createMany({
+    data: episodes.map((e) => ({ userId, episodeId: e.id })),
+    skipDuplicates: true
+  });
+
+  return NextResponse.json({ ok: true, watched: true });
+}
+
+export async function DELETE(req: Request, { params }: { params: { seasonId: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
+  const userId = (session.user as any).id;
+
+  await prisma.watchedEpisode.deleteMany({ where: { userId, episode: { seasonId: params.seasonId } } });
+  return NextResponse.json({ ok: true, watched: false });
+}
