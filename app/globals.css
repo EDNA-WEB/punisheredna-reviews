@@ -9,6 +9,13 @@ html {
   font-size: 14.5px;
 }
 
+/* Poistka proti tomu, aby vnútorné vodorovne swipovateľné pásy (najsledovanejší
+   herci/tvorcovia, karty recenzií na mobile...) mohli "unikať" a posúvať do
+   strany CELÚ stránku namiesto len seba samých. */
+html, body {
+  overflow-x: hidden;
+}
+
 /* Jednotné, viditeľné označenie fokusu pri prechádzaní klávesnicou (Tab) —
    doteraz sa tlačidlá a odkazy spoliehali len na predvolený štýl prehliadača,
    ktorý sa navyše často odrezával kvôli "overflow-hidden" na zaoblených

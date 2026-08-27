@@ -66,7 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
       </head>
-      <body className={`${display.variable} ${body.variable} font-body text-ink`}>
+      <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
         <TranslationProvider dict={dict}>
           <Providers>
             <SiteWallpaper />

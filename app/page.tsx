@@ -360,7 +360,7 @@ export default async function HomePage() {
       )}
 
       {(topActors.length > 0 || topCreators.length > 0) && (
-        <div className="mt-8 grid gap-6">
+        <div className="mt-8 grid gap-6 min-w-0">
           <PersonMiniGrid title={t('home.najsledovanejsi_herci')} items={topActors} moreHref="/herci" />
           <PersonMiniGrid title={t('home.najsledovanejsi_tvorcovia')} items={topCreators} moreHref="/tvorcovia" />
         </div>

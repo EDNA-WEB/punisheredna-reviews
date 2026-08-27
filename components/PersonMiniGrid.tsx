@@ -6,7 +6,7 @@ export default function PersonMiniGrid({ title, items, moreHref }: { title: stri
   if (items.length === 0) return null;
 
   return (
-    <div className="border border-line rounded-xl p-4 bg-card">
+    <div className="border border-line rounded-xl p-4 bg-card min-w-0">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-display font-bold text-sm text-ink">{title}</h3>
         {moreHref && (
@@ -15,9 +15,13 @@ export default function PersonMiniGrid({ title, items, moreHref }: { title: stri
           </Link>
         )}
       </div>
-      <div className="flex gap-x-5 gap-y-4 overflow-x-auto snap-x snap-mandatory pb-1">
+      <div className="flex gap-x-5 gap-y-4 overflow-x-auto snap-x snap-mandatory pb-1 max-w-full">
         {items.map((p, i) => (
-          <Link key={p.id} href={`/osobnost/${p.slug}`} className="flex flex-none snap-start flex-col items-center text-center w-20 group">
+          <Link
+            key={p.id}
+            href={`/osobnost/${p.slug}`}
+            className={`flex-none snap-start flex-col items-center text-center w-20 group ${i < 5 ? 'flex' : 'hidden sm:flex'}`}
+          >
             <div className="relative mb-1.5">
               <div
                 className="w-16 h-16 rounded-lg bg-line bg-cover bg-center group-hover:ring-2 group-hover:ring-accent transition-all"
