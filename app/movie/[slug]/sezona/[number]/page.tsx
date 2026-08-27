@@ -156,7 +156,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
     replies: c.replies.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))
   }));
 
-  function renderReviewCard(review: (typeof season.reviews)[number], withComments: boolean) {
+  function renderReviewCard(review: NonNullable<typeof season>['reviews'][number], withComments: boolean) {
     return (
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">

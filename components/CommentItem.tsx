@@ -16,7 +16,7 @@ type CommentData = {
   body: string;
   createdAt: string;
   userId: string;
-  user: { name: string; role: string; avatar?: string | null; membershipUntil?: string | null };
+  user: { name: string; role: string; avatar?: string | null; membershipUntil?: string | Date | null };
   likes: { userId: string; value: number }[];
   replies?: CommentData[];
 };

@@ -16,7 +16,7 @@ export default function PostItem({
   likeCount,
   dislikeCount
 }: {
-  post: { id: string; body: string; createdAt: string; authorId: string; author: { name: string; avatar: string | null; role: string; membershipUntil?: string | null } };
+  post: { id: string; body: string; createdAt: string; authorId: string; author: { name: string; avatar: string | null; role: string; membershipUntil?: string | Date | null } };
   canDelete: boolean;
   viewerId?: string;
   myValue: number;

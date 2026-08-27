@@ -21,7 +21,7 @@ type CommentT = {
   news: { title: string; slug: string } | null;
   movie: { title: string; slug: string } | null;
 };
-type Fan = { id: string; name: string; avatar: string | null; role: string; membershipUntil?: string | null };
+type Fan = { id: string; name: string; avatar: string | null; role: string; membershipUntil?: string | Date | null };
 
 type BlogPostT = { id: string; title: string; coverImage: string | null; createdAt: string; published: boolean; isDraft?: boolean };
 

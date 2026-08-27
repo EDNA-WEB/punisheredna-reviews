@@ -306,7 +306,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     .sort((a, b) => b.likes.filter((l) => l.value === 1).length - a.likes.filter((l) => l.value === 1).length)
     .slice(0, 5);
 
-  function renderReviewCard(review: (typeof movie.reviews)[number], withComments: boolean) {
+  function renderReviewCard(review: (typeof top5Reviews)[number], withComments: boolean) {
     return (
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">

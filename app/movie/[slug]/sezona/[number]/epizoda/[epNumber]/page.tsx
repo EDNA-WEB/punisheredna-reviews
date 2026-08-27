@@ -175,7 +175,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
     .map((v) => ({ id: v.id, title: v.title, youtubeId: youtubeVideoId(v.url) }))
     .filter((v) => v.youtubeId) as { id: string; title: string | null; youtubeId: string }[];
 
-  function renderReviewCard(review: (typeof episode.reviews)[number], withComments: boolean) {
+  function renderReviewCard(review: NonNullable<typeof episode>['reviews'][number], withComments: boolean) {
     return (
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">
