@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { IconUser, IconHeart } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
-import GoldenTicketBadge from '@/components/GoldenTicketBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -90,7 +89,7 @@ export default async function UsersPage({ searchParams }: { searchParams: { sort
                 <div className="font-semibold text-ink flex items-center gap-1.5">
                   {u.name}
                   {u.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                  {u.membershipUntil && u.membershipUntil > new Date() && <GoldenTicketBadge size={14} />}
+                  
                 </div>
                 <div className="text-xs text-muted mt-0.5">
                   {u._count.reviews > 0 && `${u._count.reviews} recenzií · `}

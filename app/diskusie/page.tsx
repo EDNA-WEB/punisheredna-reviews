@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { IconUser } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
-import GoldenTicketBadge from '@/components/GoldenTicketBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +47,7 @@ export default async function DiskusiePage() {
                 <div className="flex items-center gap-2 text-xs text-muted mt-1 flex-wrap">
                   <span>{t.author.name}</span>
                   {t.author.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                  {t.author.membershipUntil && t.author.membershipUntil > new Date() && <GoldenTicketBadge size={14} />}
+                  
                   {t.movie && <span>· o filme {t.movie.title}</span>}
                   <span>· {new Date(t.createdAt).toLocaleDateString('sk-SK')}</span>
                 </div>

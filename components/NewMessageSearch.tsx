@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconUser } from './Icons';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import { useT } from './TranslationProvider';
 
 type UserResult = { id: string; name: string; avatar: string | null; role: string; membershipUntil?: string | null };
@@ -87,7 +86,6 @@ export default function NewMessageSearch() {
                 )}
                 <span className="text-sm font-semibold text-ink">{u.name}</span>
                 {u.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                {u.membershipUntil && new Date(u.membershipUntil) > new Date() && <GoldenTicketBadge size={14} />}
               </button>
             ))
           )}

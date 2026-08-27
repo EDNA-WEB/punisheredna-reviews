@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { IconUser } from './Icons';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export default async function TopVisitedUsersList() {
@@ -49,7 +48,6 @@ export default async function TopVisitedUsersList() {
               <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors truncate flex items-center gap-1.5">
                 {user!.name}
                 {user!.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                {user!.membershipUntil && user!.membershipUntil > new Date() && <GoldenTicketBadge size={14} />}
               </div>
               <div className="text-[11px] text-muted">{count} návštev profilu</div>
             </div>

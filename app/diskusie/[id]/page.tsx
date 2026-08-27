@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
-import GoldenTicketBadge from '@/components/GoldenTicketBadge';
 import PostItem from '@/components/PostItem';
 import PostForm from '@/components/PostForm';
 
@@ -49,7 +48,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
           {thread.author.name}
         </Link>
         {thread.author.role === 'ADMIN' && <CriticBadge size="w-4 h-4" label={false} />}
-        {thread.author.membershipUntil && thread.author.membershipUntil > new Date() && <GoldenTicketBadge size={16} />}
+        
         <span>· {new Date(thread.createdAt).toLocaleDateString('sk-SK')}</span>
       </div>
 

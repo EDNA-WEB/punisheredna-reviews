@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser, IconEdit } from './Icons';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import StarRating from './StarRating';
 import { useT } from './TranslationProvider';
 import { displayUserName } from '@/lib/deletedUser';
@@ -470,7 +469,7 @@ export default function ProfileTabs({
                 <span className="text-sm font-semibold text-ink flex items-center gap-1.5">
                   {displayUserName(f.name, t)}
                   {f.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                  {f.membershipUntil && new Date(f.membershipUntil) > new Date() && <GoldenTicketBadge size={14} />}
+                  
                 </span>
               </Link>
             ))

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import ReactionButtons from './ReactionButtons';
 import CommentForm from './CommentForm';
 import { IconUser, IconReply } from './Icons';
@@ -74,7 +73,6 @@ export default function CommentItem({
                 {displayUserName(comment.user.name, t)}
               </Link>
               {comment.user.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-              {comment.user.membershipUntil && new Date(comment.user.membershipUntil) > new Date() && <GoldenTicketBadge size={14} />}
               <span>{new Date(comment.createdAt).toLocaleDateString('sk-SK')}</span>
             </div>
             {canDelete && (

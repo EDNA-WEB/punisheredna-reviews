@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser } from './Icons';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import ReactionButtons from './ReactionButtons';
 
 export default function PostItem({
@@ -56,7 +55,6 @@ export default function PostItem({
           <div className="flex items-center gap-2 text-xs text-muted">
             <Link href={`/profile/${post.authorId}`} className="text-accent font-semibold hover:underline">{post.author.name}</Link>
             {post.author.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-            {post.author.membershipUntil && new Date(post.author.membershipUntil) > new Date() && <GoldenTicketBadge size={14} />}
             <span>{new Date(post.createdAt).toLocaleDateString('sk-SK')}</span>
           </div>
           {canDelete && (

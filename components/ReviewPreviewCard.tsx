@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { IconUser } from './Icons';
 import StarRating from './StarRating';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import { excerpt } from '@/lib/markdown';
 
 type Props = {
@@ -30,7 +29,6 @@ export default function ReviewPreviewCard({ slug, body, author, rating, movieTit
         )}
         <span className="text-xs font-semibold text-ink leading-tight">{author.name}</span>
         {showCriticBadge && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-        {isMember && <GoldenTicketBadge size={14} />}
       </Link>
 
       <div className="flex gap-3">

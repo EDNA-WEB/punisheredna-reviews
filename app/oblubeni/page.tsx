@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser, IconHeartOutline } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
-import GoldenTicketBadge from '@/components/GoldenTicketBadge';
 import StarRating from '@/components/StarRating';
 import EmptyState from '@/components/EmptyState';
 
@@ -72,7 +71,7 @@ export default async function FavoritesPage() {
                 <span className="font-display font-bold text-ink flex items-center gap-1.5">
                   {user.name}
                   {user.role === 'ADMIN' && <CriticBadge size="w-4 h-4" label={false} />}
-                  {user.membershipUntil && user.membershipUntil > new Date() && <GoldenTicketBadge size={16} />}
+                  
                 </span>
               </Link>
 

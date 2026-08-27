@@ -6,7 +6,6 @@ import ScoreBadge from './ScoreBadge';
 import FilterPanel from './FilterPanel';
 import { IconUser } from './Icons';
 import CriticBadge from './CriticBadge';
-import GoldenTicketBadge from './GoldenTicketBadge';
 import { useT } from './TranslationProvider';
 
 type MovieResult = { id: string; title: string; slug: string; year: string | null; poster: string | null; percent: number | null; ratingCount: number };
@@ -166,7 +165,6 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
                       <div className="min-w-0 flex-1 flex items-center gap-1.5">
                         <span className="text-sm font-semibold text-ink truncate">{u.name}</span>
                         {u.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-                        {u.membershipUntil && new Date(u.membershipUntil) > new Date() && <GoldenTicketBadge size={14} />}
                       </div>
                     </button>
                   ))}

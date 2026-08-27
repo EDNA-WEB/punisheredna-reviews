@@ -22,7 +22,6 @@ import CollapsibleReviewComments from '@/components/CollapsibleReviewComments';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import { IconUser, IconClock, IconChevronLeft, IconChevronRight } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
-import GoldenTicketBadge from '@/components/GoldenTicketBadge';
 import StarRating from '@/components/StarRating';
 
 export const dynamic = 'force-dynamic';
@@ -170,7 +169,6 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
             {displayUserName(review.author.name, t)}
           </Link>
           {review.author.role === 'ADMIN' && <CriticBadge size="w-4 h-4" label={false} />}
-          {review.author.membershipUntil && review.author.membershipUntil > new Date() && <GoldenTicketBadge size={16} />}
           {authorRatingByUserId.has(review.authorId) && <StarRating rating={authorRatingByUserId.get(review.authorId)!} size="w-4 h-4" />}
           <span className="text-xs text-muted flex items-center gap-1.5 ml-auto">
             <IconClock className="w-3.5 h-3.5" />
