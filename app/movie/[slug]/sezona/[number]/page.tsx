@@ -157,6 +157,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   }));
 
   function renderReviewCard(review: NonNullable<typeof season>['reviews'][number], withComments: boolean) {
+    if (!movie || !season) return null;
     return (
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">

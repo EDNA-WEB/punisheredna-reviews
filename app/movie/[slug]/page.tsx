@@ -307,6 +307,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     .slice(0, 5);
 
   function renderReviewCard(review: (typeof top5Reviews)[number], withComments: boolean) {
+    if (!movie) return null;
     return (
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">
