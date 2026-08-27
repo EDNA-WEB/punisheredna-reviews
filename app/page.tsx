@@ -282,12 +282,12 @@ export default async function HomePage() {
               viac
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
             {latestReviews.slice(0, 4).map((r) => {
               const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
               return (
+                <div key={r.id} className="flex-none w-[78%] sm:w-auto snap-start">
                 <ReviewPreviewCard
-                  key={r.id}
                   slug={r.movie.slug}
                   body={r.body}
                   author={r.author}
@@ -296,6 +296,7 @@ export default async function HomePage() {
                   movieYear={r.movie.year}
                   moviePoster={r.movie.poster}
                 />
+                </div>
               );
             })}
           </div>

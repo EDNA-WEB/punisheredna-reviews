@@ -108,13 +108,20 @@ async function migrateMoviePhotos() {
   console.log('\n--- Galéria filmov a epizód (MoviePhoto) ---');
   let migratedHere = 0;
   while (true) {
-    const rows = await prisma.moviePhoto.findMany({ take: BATCH_SIZE, select: { id: true, thumbnail: true, full: true } });
-    const toMigrate = rows.filter((r) => isBase64Image(r.full));
-    if (toMigrate.length === 0) break;
+    const rows = await prisma.moviePhoto.findMany({
+      where: { OR: [{ full: { startsWith: 'data:image' } }, { thumbnail: { startsWith: 'data:image' } }] },
+      take: BATCH_SIZE,
+      select: { id: true, thumbnail: true, full: true }
+    });
+    if (rows.length === 0) break;
 
-    for (const row of toMigrate) {
+    for (const row of rows) {
       try {
-        const fullUrl = await uploadOne(row.full, 'movies/gallery');
+        // Ak je "full" ešte base64, nahráme ho a miniatúru odvodíme z neho.
+        // Ak "full" už je na Cloudinary (napr. z predošlého čiastočného behu),
+        // len ho použijeme na odvodenie novej miniatúry namiesto nahrávania
+        // starej base64 miniatúry.
+        const fullUrl = isBase64Image(row.full) ? await uploadOne(row.full, 'movies/gallery') : row.full;
         const thumbnailUrl = cloudinaryThumbnailUrl(fullUrl, 300);
         await prisma.moviePhoto.update({ where: { id: row.id }, data: { full: fullUrl, thumbnail: thumbnailUrl } });
         migratedHere++;

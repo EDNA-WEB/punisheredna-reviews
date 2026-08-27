@@ -74,7 +74,7 @@ export default function NavbarClient({
             </button>
 
             <Link href="/" className="flex items-center flex-none">
-              <Logo className="h-20 w-auto -my-2" />
+              <Logo className="h-12 sm:h-20 w-auto -my-0.5 sm:-my-2" />
             </Link>
 
             <div className="hidden sm:block flex-1 max-w-xl">
