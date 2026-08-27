@@ -64,18 +64,20 @@ export default function NavbarClient({
       <div className="sticky top-0 z-30">
         <div className="max-w-6xl mx-auto bg-card border-b border-line">
           <div className="px-5 sm:px-6 py-3.5 flex items-center gap-3 sm:gap-4 justify-between">
-            <button
-              onClick={() => setOpen(true)}
-              aria-label="Otvoriť menu"
-              className="w-9 h-9 flex flex-col justify-center gap-[5px] sm:hidden flex-none"
-            >
-              <span className="block h-[2px] w-6 bg-ink" />
-              <span className="block h-[2px] w-6 bg-ink" />
-            </button>
+            <div className="flex items-center gap-1.5 sm:gap-4 flex-none">
+              <button
+                onClick={() => setOpen(true)}
+                aria-label="Otvoriť menu"
+                className="w-9 h-9 flex flex-col justify-center gap-[5px] sm:hidden flex-none"
+              >
+                <span className="block h-[2px] w-6 bg-ink" />
+                <span className="block h-[2px] w-6 bg-ink" />
+              </button>
 
-            <Link href="/" className="flex items-center flex-none">
-              <Logo className="h-12 sm:h-20 w-auto -my-0.5 sm:-my-2" />
-            </Link>
+              <Link href="/" className="flex items-center flex-none">
+                <Logo className="h-12 sm:h-20 w-auto -my-0.5 sm:-my-2" />
+              </Link>
+            </div>
 
             <div className="hidden sm:block flex-1 max-w-xl">
               <SearchBar />

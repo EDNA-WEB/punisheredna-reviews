@@ -282,7 +282,7 @@ export default async function HomePage() {
               viac
             </Link>
           </div>
-          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">
             {latestReviews.slice(0, 4).map((r) => {
               const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
               return (
@@ -337,7 +337,7 @@ export default async function HomePage() {
               viac
             </Link>
           </div>
-          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">
             {criticReviews.slice(0, 4).map((r) => {
               const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
               return (

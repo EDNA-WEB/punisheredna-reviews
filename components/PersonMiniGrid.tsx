@@ -15,7 +15,7 @@ export default function PersonMiniGrid({ title, items, moreHref }: { title: stri
           </Link>
         )}
       </div>
-      <div className="flex sm:flex-wrap gap-x-5 gap-y-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+      <div className="flex gap-x-5 gap-y-4 overflow-x-auto snap-x snap-mandatory pb-1">
         {items.map((p, i) => (
           <Link key={p.id} href={`/osobnost/${p.slug}`} className="flex flex-none snap-start flex-col items-center text-center w-20 group">
             <div className="relative mb-1.5">
