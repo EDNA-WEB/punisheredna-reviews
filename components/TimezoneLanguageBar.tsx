@@ -49,7 +49,7 @@ export default function TimezoneLanguageBar({ savedTimezone }: { savedTimezone: 
     }
   }
 
-  const timezoneOptions = Array.from(new Set([timezone, detected, savedTimezone, ...COMMON_TIMEZONES].filter(Boolean)));
+  const timezoneOptions = Array.from(new Set([timezone, detected, savedTimezone, ...COMMON_TIMEZONES].filter((x): x is string => Boolean(x))));
   const mismatch = detected && savedTimezone && detected !== savedTimezone;
 
   return (
