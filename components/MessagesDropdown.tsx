@@ -4,12 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { IconMessage, IconUser } from './Icons';
 import { useT } from './TranslationProvider';
+import { useNavDropdown } from './NavDropdownState';
 
 type Convo = { userId: string; name: string; avatar: string | null; lastText: string; lastAt: string; unread: number };
 
 export default function MessagesDropdown({ unreadTotal }: { unreadTotal: number }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { openKey, setOpenKey } = useNavDropdown();
+  const open = openKey === 'messages';
+  const setOpen = (v: boolean) => setOpenKey(v ? 'messages' : null);
   const [items, setItems] = useState<Convo[]>([]);
   const [loaded, setLoaded] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);

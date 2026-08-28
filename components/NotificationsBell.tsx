@@ -4,12 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { IconBell } from './Icons';
 import { useT } from './TranslationProvider';
+import { useNavDropdown } from './NavDropdownState';
 
 type Notif = { id: string; text: string; link: string; read: boolean; createdAt: string };
 
 export default function NotificationsBell() {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { openKey, setOpenKey } = useNavDropdown();
+  const open = openKey === 'notifications';
+  const setOpen = (v: boolean) => setOpenKey(v ? 'notifications' : null);
   const [items, setItems] = useState<Notif[]>([]);
   const [loaded, setLoaded] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);

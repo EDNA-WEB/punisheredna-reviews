@@ -37,8 +37,8 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
 
   return (
     <div className="pt-8 grid lg:grid-cols-[1fr_280px] gap-8 items-start">
-      <div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6 text-center">{t('kino.rocny_nadpis')}</h1>
+      <div className="min-w-0">
+      <h1 className="font-display font-extrabold text-xl sm:text-3xl text-ink mb-6 text-center">{t('kino.rocny_nadpis')}</h1>
 
       <KinoTabs />
 
@@ -69,8 +69,8 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
                     return dayMovies.map((m, i) => {
                       const percent = computePercent(m.ratings);
                       return (
-                      <div key={m.id} className="flex items-center gap-3 px-4 py-2.5 bg-card hover:bg-surface transition-colors">
-                        <span className="w-12 flex-none text-xs font-semibold text-muted">{i === 0 ? dayLabel : ''}</span>
+                      <div key={m.id} className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 bg-card hover:bg-surface transition-colors min-w-0">
+                        <span className="w-8 sm:w-12 flex-none text-xs font-semibold text-muted">{i === 0 ? dayLabel : ''}</span>
                         <span
                           className="w-2 h-2 rounded-[2px] flex-none"
                           style={{ backgroundColor: scoreColorStyle(percent).backgroundColor }}
@@ -80,13 +80,11 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
                           {m.title} <span className="text-muted font-normal">{m.year}</span>
                         </Link>
                         <span className="w-32 flex-none text-xs text-muted truncate hidden sm:block">{m.distributor || '—'}</span>
-                        <span className="flex-none w-28 text-right">
-                          {m.nowShowing && (
-                            <Badge tone="success" size="sm" className="whitespace-nowrap">
-                              {t('kino.hraju_v_kinach')}
-                            </Badge>
-                          )}
-                        </span>
+                        {m.nowShowing && (
+                          <Badge tone="success" size="sm" className="flex-none whitespace-nowrap text-[10px] sm:text-xs px-1.5 sm:px-2">
+                            {t('kino.hraju_v_kinach')}
+                          </Badge>
+                        )}
                       </div>
                       );
                     });

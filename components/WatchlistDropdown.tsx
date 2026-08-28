@@ -4,12 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { IconBookmark } from './Icons';
 import { useT } from './TranslationProvider';
+import { useNavDropdown } from './NavDropdownState';
 
 type MovieItem = { title: string; slug: string; poster: string | null; year: string | null };
 
 export default function WatchlistDropdown() {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { openKey, setOpenKey } = useNavDropdown();
+  const open = openKey === 'watchlist';
+  const setOpen = (v: boolean) => setOpenKey(v ? 'watchlist' : null);
   const [items, setItems] = useState<MovieItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,7 +48,7 @@ export default function WatchlistDropdown() {
     <div ref={boxRef} onMouseEnter={openNow} onMouseLeave={closeSoon}>
       <button
         onClick={() => {
-          setOpen((o) => !o);
+          setOpen(!open);
           ensureLoaded();
         }}
         className="relative w-10 h-10 flex items-center justify-center text-ink hover:text-accent rounded-full hover:bg-surface transition-colors"

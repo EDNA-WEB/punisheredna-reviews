@@ -6,10 +6,13 @@ import { signOut } from 'next-auth/react';
 import { IconUser, IconMessage, IconHeartOutline, IconEye, IconNote, IconActivity, IconPlus, IconSettings } from './Icons';
 import ThemeToggle from './ThemeToggle';
 import { useT } from './TranslationProvider';
+import { useNavDropdown } from './NavDropdownState';
 
 export default function AvatarMenu({ userId, userName, userAvatar }: { userId: string; userName: string | null; userAvatar: string | null }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { openKey, setOpenKey } = useNavDropdown();
+  const open = openKey === 'avatar';
+  const setOpen = (v: boolean) => setOpenKey(v ? 'avatar' : null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +34,7 @@ export default function AvatarMenu({ userId, userName, userAvatar }: { userId: s
 
   return (
     <div ref={boxRef} onMouseEnter={openNow} onMouseLeave={closeSoon}>
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center hover:opacity-90 transition-opacity" aria-label="Účet">
+      <button onClick={() => setOpen(!open)} className="flex items-center hover:opacity-90 transition-opacity" aria-label="Účet">
         {userAvatar ? (
           <img src={userAvatar} alt={userName || ''} className="w-9 h-9 rounded-full object-cover ring-2 ring-transparent hover:ring-accent transition-all" />
         ) : (
