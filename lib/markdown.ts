@@ -115,10 +115,11 @@ export function readingTime(input: string): number {
 export function youtubeEmbedUrl(url: string): string | null {
   if (!url) return null;
   const patterns = [
-    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
-    /(?:youtu\.be\/)([\w-]{11})/,
-    /(?:youtube\.com\/embed\/)([\w-]{11})/,
-    /(?:youtube\.com\/shorts\/)([\w-]{11})/
+    /[?&]v=([\w-]{11})/,
+    /youtu\.be\/([\w-]{11})/,
+    /youtube\.com\/embed\/([\w-]{11})/,
+    /youtube\.com\/shorts\/([\w-]{11})/,
+    /youtube\.com\/live\/([\w-]{11})/
   ];
   for (const p of patterns) {
     const m = url.match(p);
@@ -130,10 +131,11 @@ export function youtubeEmbedUrl(url: string): string | null {
 export function youtubeVideoId(url: string): string | null {
   if (!url) return null;
   const patterns = [
-    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
-    /(?:youtu\.be\/)([\w-]{11})/,
-    /(?:youtube\.com\/embed\/)([\w-]{11})/,
-    /(?:youtube\.com\/shorts\/)([\w-]{11})/
+    /[?&]v=([\w-]{11})/, // youtube.com/watch?...&v=ID — funguje bez ohľadu na poradie parametrov v URL
+    /youtu\.be\/([\w-]{11})/,
+    /youtube\.com\/embed\/([\w-]{11})/,
+    /youtube\.com\/shorts\/([\w-]{11})/,
+    /youtube\.com\/live\/([\w-]{11})/
   ];
   for (const p of patterns) {
     const m = url.match(p);
