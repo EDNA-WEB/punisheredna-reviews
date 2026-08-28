@@ -402,17 +402,17 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               </div>
             )}
 
-            <div className="relative flex gap-3 mb-3">
+            <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
               {viewerId && (
                 <div className="absolute top-2 left-2 z-10">
                   <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
                 </div>
               )}
-              <div className="w-32 flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
+              <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
                 {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
               </div>
               {primaryVideo && (
-                <div className="flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+                <div className="relative flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
                   <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
                 </div>
               )}
