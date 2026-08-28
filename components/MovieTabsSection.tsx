@@ -49,7 +49,7 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
   return (
     <GoToTabContext.Provider value={goToTab}>
       <div>
-        <div id="movie-tabs-top" className="flex items-center gap-1 mb-6 flex-wrap border-b border-line">
+        <div id="movie-tabs-top" className="flex items-center gap-1 mb-6 overflow-x-auto whitespace-nowrap border-b border-line">
           {primaryTabs.map((tab) => (
             <button
               key={tab.key}

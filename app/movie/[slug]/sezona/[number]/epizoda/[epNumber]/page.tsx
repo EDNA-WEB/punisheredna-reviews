@@ -417,6 +417,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                   <p className="text-sm text-muted">K tejto epizóde zatiaľ nie je nahraté žiadne video.</p>
                 )
             },
+          ]}
+          moreTabs={[
             {
               key: 'galeria',
               label: 'Galéria',
@@ -516,8 +518,6 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                   <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je doplnené obsadenie.</p>
                 )
             }
-          ]}
-          moreTabs={[
             {
               key: 'diskusia',
               label: 'Diskusia',

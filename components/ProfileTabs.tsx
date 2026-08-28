@@ -55,11 +55,11 @@ export default function ProfileTabs({
     { key: 'prehlad', label: 'Prehľad' },
     { key: 'o_mne', label: 'O mne' },
     { key: 'hodnotenie', label: 'Hodnotenie' },
-    { key: 'reviews', label: 'Recenzie' },
-    { key: 'blog', label: 'Blog' },
-    { key: 'seznamy', label: 'Zoznamy' }
+    { key: 'reviews', label: 'Recenzie' }
   ];
   const moreTabs = [
+    { key: 'blog', label: 'Blog' },
+    { key: 'seznamy', label: 'Zoznamy' },
     { key: 'comments', label: 'Komentáre' },
     { key: 'fans', label: 'Fanúšikovia' }
   ];
@@ -144,7 +144,7 @@ export default function ProfileTabs({
 
   return (
     <div className="pt-6">
-      <div className="flex items-center gap-1 mb-6 flex-wrap border-b border-line">
+      <div className="flex items-center gap-1 mb-6 overflow-x-auto whitespace-nowrap border-b border-line">
         {primaryTabs.map((tb) => (
           <button
             key={tb.key}
