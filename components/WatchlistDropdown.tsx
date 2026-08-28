@@ -42,7 +42,7 @@ export default function WatchlistDropdown() {
   }
 
   return (
-    <div ref={boxRef} className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
+    <div ref={boxRef} onMouseEnter={openNow} onMouseLeave={closeSoon}>
       <button
         onClick={() => {
           setOpen((o) => !o);

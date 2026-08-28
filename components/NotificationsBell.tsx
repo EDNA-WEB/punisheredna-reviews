@@ -48,7 +48,7 @@ export default function NotificationsBell() {
   }
 
   return (
-    <div ref={boxRef} className="relative">
+    <div ref={boxRef}>
       <button onClick={handleOpen} className="relative w-10 h-10 flex items-center justify-center text-ink hover:text-accent transition-colors" aria-label={t('notif.aria_label')}>
         <IconBell className="w-[22px] h-[22px]" />
         {unread > 0 && (

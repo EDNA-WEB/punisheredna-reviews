@@ -35,7 +35,7 @@ export default function MessagesDropdown({ unreadTotal }: { unreadTotal: number 
   }
 
   return (
-    <div ref={boxRef} className="relative">
+    <div ref={boxRef}>
       <button
         onClick={handleOpen}
         className="relative w-10 h-10 flex items-center justify-center text-ink hover:text-accent rounded-full hover:bg-surface transition-colors"

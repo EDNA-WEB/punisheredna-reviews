@@ -30,7 +30,7 @@ export default function AvatarMenu({ userId, userName, userAvatar }: { userId: s
   }
 
   return (
-    <div ref={boxRef} className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
+    <div ref={boxRef} onMouseEnter={openNow} onMouseLeave={closeSoon}>
       <button onClick={() => setOpen((o) => !o)} className="flex items-center hover:opacity-90 transition-opacity" aria-label="Účet">
         {userAvatar ? (
           <img src={userAvatar} alt={userName || ''} className="w-9 h-9 rounded-full object-cover ring-2 ring-transparent hover:ring-accent transition-all" />

@@ -83,7 +83,7 @@ export default function NavbarClient({
               <SearchBar />
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-none">
+            <div className="flex items-center gap-0.5 sm:gap-1 flex-none relative">
               {isLoggedIn ? (
                 <>
                   <MessagesDropdown unreadTotal={unreadMessages} />

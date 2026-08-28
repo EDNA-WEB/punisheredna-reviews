@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CONTENT_TYPES, GENRES, COUNTRIES, YEARS, RATING_STEPS } from '@/lib/filterConstants';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { useT } from './TranslationProvider';
+import { useFilterFormState } from './FilterFormState';
 
 export default function AdvancedFilterForm() {
   const router = useRouter();
   const t = useT();
+  const { setHasInput } = useFilterFormState();
 
   const [types, setTypes] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -27,6 +29,35 @@ export default function AdvancedFilterForm() {
   const [screenplay, setScreenplay] = useState('');
   const [cinematography, setCinematography] = useState('');
   const [music, setMusic] = useState('');
+
+  // Nahlási spoločnému stavu, či je formulár prázdny alebo vyplnený —
+  // tlačidlo filtra v navbare podľa toho vie, či sa má dať jedným kliknutím zavrieť.
+  useEffect(() => {
+    const filled =
+      types.length > 0 ||
+      selectedGenres.length > 0 ||
+      selectedCountries.length > 0 ||
+      yearFrom !== '' ||
+      yearTo !== '' ||
+      ratingFrom !== '' ||
+      ratingTo !== '' ||
+      nowShowing ||
+      hasReviews ||
+      hasGallery ||
+      hasVideos ||
+      hasTrivia ||
+      actor.trim() !== '' ||
+      director.trim() !== '' ||
+      screenplay.trim() !== '' ||
+      cinematography.trim() !== '' ||
+      music.trim() !== '';
+    setHasInput(filled);
+    return () => setHasInput(false);
+  }, [
+    types, selectedGenres, selectedCountries, yearFrom, yearTo, ratingFrom, ratingTo,
+    nowShowing, hasReviews, hasGallery, hasVideos, hasTrivia,
+    actor, director, screenplay, cinematography, music, setHasInput
+  ]);
 
   function toggleType(t: string) {
     setTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
