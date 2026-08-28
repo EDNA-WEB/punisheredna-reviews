@@ -19,6 +19,7 @@ import ReviewSortSelect from '@/components/ReviewSortSelect';
 import MovieVideoTabs from '@/components/MovieVideoTabs';
 import OnlineEpisodeBrowser from '@/components/OnlineEpisodeBrowser';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
+import FlagCZ from '@/components/FlagCZ';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -389,50 +390,54 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       <div className="grid md:grid-cols-[1fr_260px] gap-8 mb-8">
         <div>
           {/* Mobilná hlavička — poradie podľa referenčného návrhu: originálny názov, lokálny názov s vlajkou, plagát + trailer, žánre, krajina/rok/dĺžka */}
-          <div className="sm:hidden mb-5">
-            {movie.originalTitle && movie.originalTitle !== movie.title ? (
-              <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mb-1">{movie.originalTitle}</h1>
-            ) : (
-              <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mb-1">{movie.title}</h1>
-            )}
-            {movie.originalTitle && movie.originalTitle !== movie.title && (
-              <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-base leading-none">🇸🇰</span>
-                <span className="text-base font-semibold text-ink">{movie.title}</span>
-              </div>
-            )}
-
-            <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
-              {viewerId && (
-                <div className="absolute top-2 left-2 z-10">
-                  <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
-                </div>
+          <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
+            <div className="bg-surface px-4 py-3">
+              {movie.originalTitle && movie.originalTitle !== movie.title ? (
+                <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mb-1">{movie.originalTitle}</h1>
+              ) : (
+                <h1 className="font-display font-extrabold text-2xl text-ink leading-tight">{movie.title}</h1>
               )}
-              <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
-                {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
-              </div>
-              {primaryVideo && (
-                <div className="relative flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
-                  <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
+              {movie.originalTitle && movie.originalTitle !== movie.title && (
+                <div className="flex items-center gap-1.5">
+                  <FlagCZ />
+                  <span className="text-base font-semibold text-ink">{movie.title}</span>
                 </div>
               )}
             </div>
 
-            {genres.length > 0 && (
-              <div className="text-sm mb-1.5 leading-relaxed">
-                {genres.map((g, i) => (
-                  <span key={g}>
-                    {i > 0 && <span className="text-muted"> · </span>}
-                    <Link href={`/recenzie?genre=${encodeURIComponent(g)}`} className="text-accent font-semibold hover:underline">
-                      {g}
-                    </Link>
-                  </span>
-                ))}
+            <div className="p-4">
+              <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
+                {viewerId && (
+                  <div className="absolute top-2 left-2 z-10">
+                    <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
+                  </div>
+                )}
+                <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
+                  {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
+                </div>
+                {primaryVideo && (
+                  <div className="relative flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+                    <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
+                  </div>
+                )}
               </div>
-            )}
 
-            <div className="text-sm text-muted">
-              {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+              {genres.length > 0 && (
+                <div className="text-sm mb-1.5 leading-relaxed">
+                  {genres.map((g, i) => (
+                    <span key={g}>
+                      {i > 0 && <span className="text-muted"> · </span>}
+                      <Link href={`/recenzie?genre=${encodeURIComponent(g)}`} className="text-accent font-semibold hover:underline">
+                        {g}
+                      </Link>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="text-sm text-muted">
+                {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+              </div>
             </div>
           </div>
 
