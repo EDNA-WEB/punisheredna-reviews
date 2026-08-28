@@ -440,27 +440,30 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
                 </div>
                 {movie.budget && (
-                  <div className="flex-none text-right">
-                    <BoxOfficeStatus
-                      budget={movie.budget}
-                      marketingBudget={movie.marketingBudget}
-                      boxOffice={movie.boxOffice}
-                      domesticBoxOffice={movie.domesticBoxOffice}
-                      internationalBoxOffice={movie.internationalBoxOffice}
-                      compact
-                      labels={{
-                        ciel: t('boxoffice.ciel'),
-                        ziskovy: t('boxoffice.ziskovy'),
-                        nedosiahnute: t('boxoffice.nedosiahnute'),
-                        nad_cielom: t('boxoffice.nad_cielom'),
-                        do_ciela: t('boxoffice.do_ciela'),
-                        domace: t('boxoffice.domace'),
-                        medzinarodne: t('boxoffice.medzinarodne'),
-                        celosvetovo: t('boxoffice.celosvetovo'),
-                        vsetky_uvedenia: t('boxoffice.vsetky_uvedenia')
-                      }}
-                    />
-                  </div>
+                  <details className="flex-none text-right">
+                    <summary className="cursor-pointer select-none text-xs font-semibold text-accent list-none">{t('boxoffice.nadpis')}</summary>
+                    <div className="mt-2 text-right">
+                      <BoxOfficeStatus
+                        budget={movie.budget}
+                        marketingBudget={movie.marketingBudget}
+                        boxOffice={movie.boxOffice}
+                        domesticBoxOffice={movie.domesticBoxOffice}
+                        internationalBoxOffice={movie.internationalBoxOffice}
+                        compact
+                        labels={{
+                          ciel: t('boxoffice.ciel'),
+                          ziskovy: t('boxoffice.ziskovy'),
+                          nedosiahnute: t('boxoffice.nedosiahnute'),
+                          nad_cielom: t('boxoffice.nad_cielom'),
+                          do_ciela: t('boxoffice.do_ciela'),
+                          domace: t('boxoffice.domace'),
+                          medzinarodne: t('boxoffice.medzinarodne'),
+                          celosvetovo: t('boxoffice.celosvetovo'),
+                          vsetky_uvedenia: t('boxoffice.vsetky_uvedenia')
+                        }}
+                      />
+                    </div>
+                  </details>
                 )}
               </div>
             </div>
@@ -500,25 +503,28 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 </Link>
               )}
             </div>
+            <div className="p-4 bg-card border-t border-line">
+              <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
+            </div>
           </div>
 
           {/* Mobil — réžia, scenár, kamera, hudba, hrajú */}
           {(movie.director || movie.screenplay || movie.cinematography || movie.music || cast.length > 0) && (
             <div className="sm:hidden mb-5 border border-line rounded-xl p-4 space-y-1.5 text-sm">
               {movie.director && (
-                <div><span className="text-muted">{t('movie.rezia')} </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                <div><span className="text-muted font-semibold">{t('movie.rezia')} </span><span className="text-ink"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
               {movie.screenplay && (
-                <div><span className="text-muted">{t('movie.scenar')} </span><span className="text-ink font-medium"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                <div><span className="text-muted font-semibold">{t('movie.scenar')} </span><span className="text-ink"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
               {movie.cinematography && (
-                <div><span className="text-muted">{t('movie.kamera')} </span><span className="text-ink font-medium"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                <div><span className="text-muted font-semibold">{t('movie.kamera')} </span><span className="text-ink"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
               {movie.music && (
-                <div><span className="text-muted">{t('movie.hudba')} </span><span className="text-ink font-medium"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                <div><span className="text-muted font-semibold">{t('movie.hudba')} </span><span className="text-ink"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
               {cast.length > 0 && (
-                <div><span className="text-muted">{t('movie.hraju_dvojbodka')} </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
+                <div><span className="text-muted font-semibold">{t('movie.hraju_dvojbodka')} </span><span className="text-ink"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
               )}
             </div>
           )}
@@ -612,7 +618,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           )}
 
           {movie.budget && (
-            <details className="mt-4 text-xs text-muted group">
+            <details className="hidden sm:block mt-4 text-xs text-muted group">
               <summary className="cursor-pointer select-none hover:text-ink w-fit">{t('boxoffice.nadpis')}</summary>
               <div className="mt-2 max-w-xs">
                 <BoxOfficeStatus
@@ -1154,7 +1160,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               )}
             </div>
 
-            <div className="p-4 bg-card">
+            <div className="hidden sm:block p-4 bg-card">
               <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
             </div>
           </div>
