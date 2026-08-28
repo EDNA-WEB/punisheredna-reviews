@@ -49,21 +49,23 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
   return (
     <GoToTabContext.Provider value={goToTab}>
       <div>
-        <div id="movie-tabs-top" className="flex items-center gap-1 mb-6 overflow-x-auto whitespace-nowrap border-b border-line">
-          {primaryTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActive(tab.key)}
-              className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
-                active === tab.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div id="movie-tabs-top" className="flex items-stretch gap-1 mb-6 border-b border-line">
+          <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap min-w-0">
+            {primaryTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActive(tab.key)}
+                className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+                  active === tab.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
           {moreTabs.length > 0 && (
-            <div className="relative" ref={moreRef}>
+            <div className="relative flex-none" ref={moreRef}>
               <button
                 onClick={() => setMoreOpen((o) => !o)}
                 className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors flex items-center gap-1 ${

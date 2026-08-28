@@ -144,20 +144,22 @@ export default function ProfileTabs({
 
   return (
     <div className="pt-6">
-      <div className="flex items-center gap-1 mb-6 overflow-x-auto whitespace-nowrap border-b border-line">
-        {primaryTabs.map((tb) => (
-          <button
-            key={tb.key}
-            onClick={() => setActive(tb.key)}
-            className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
-              active === tb.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
-            }`}
-          >
-            {tb.label}
-          </button>
-        ))}
+      <div className="flex items-stretch gap-1 mb-6 border-b border-line">
+        <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap min-w-0">
+          {primaryTabs.map((tb) => (
+            <button
+              key={tb.key}
+              onClick={() => setActive(tb.key)}
+              className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+                active === tb.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
+              }`}
+            >
+              {tb.label}
+            </button>
+          ))}
+        </div>
 
-        <div className="relative" ref={moreRef}>
+        <div className="relative flex-none" ref={moreRef}>
           <button
             onClick={() => setMoreOpen((o) => !o)}
             className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors flex items-center gap-1 ${
@@ -167,7 +169,7 @@ export default function ProfileTabs({
             {activeIsInMore ? activeMoreTab?.label : 'Ďalší'} <span className="text-[10px]">▾</span>
           </button>
           {moreOpen && (
-            <div className="absolute left-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">
+            <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">
               {moreTabs.map((tb) => (
                 <button
                   key={tb.key}
