@@ -435,11 +435,93 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 </div>
               )}
 
-              <div className="text-sm text-muted">
-                {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+              <div className="flex items-start justify-between gap-3">
+                <div className="text-sm text-muted">
+                  {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+                </div>
+                {movie.budget && (
+                  <div className="flex-none text-right">
+                    <BoxOfficeStatus
+                      budget={movie.budget}
+                      marketingBudget={movie.marketingBudget}
+                      boxOffice={movie.boxOffice}
+                      domesticBoxOffice={movie.domesticBoxOffice}
+                      internationalBoxOffice={movie.internationalBoxOffice}
+                      compact
+                      labels={{
+                        ciel: t('boxoffice.ciel'),
+                        ziskovy: t('boxoffice.ziskovy'),
+                        nedosiahnute: t('boxoffice.nedosiahnute'),
+                        nad_cielom: t('boxoffice.nad_cielom'),
+                        do_ciela: t('boxoffice.do_ciela'),
+                        domace: t('boxoffice.domace'),
+                        medzinarodne: t('boxoffice.medzinarodne'),
+                        celosvetovo: t('boxoffice.celosvetovo'),
+                        vsetky_uvedenia: t('boxoffice.vsetky_uvedenia')
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Mobil — hodnotenie + graf, hneď pod hlavičkou */}
+          <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
+            <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
+              <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
+              <div className="text-xs opacity-90 mt-1">{movie.ratings.length} {t('movie.hlasov')}</div>
+            </div>
+            {movie.ratings.length > 0 && (
+              <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
+                <RatingDistributionChart values={movie.ratings.map((r) => r.value)} label={t('movie.rozlozenie_hodnoteni')} />
+              </div>
+            )}
+            <div className="p-4 bg-card">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">{t('movie.moje_hodnotenie')}</div>
+              {isUpcoming ? (
+                <p className="text-xs text-muted">
+                  {t('movie.este_nemal_premieru')}{' '}
+                  {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                </p>
+              ) : viewerId ? (
+                <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
+              ) : (
+                <p className="text-xs text-muted">
+                  <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link> {t('movie.a_ohodnot_film')}
+                </p>
+              )}
+              {!isUpcoming && viewerId && !movie.reviews.some((r) => r.authorId === viewerId) && (
+                <Link
+                  href={`/movie/${movie.slug}/napisat`}
+                  className="mt-3 inline-block bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark"
+                >
+                  {t('movie.napisat_recenziu')}
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Mobil — réžia, scenár, kamera, hudba, hrajú */}
+          {(movie.director || movie.screenplay || movie.cinematography || movie.music || cast.length > 0) && (
+            <div className="sm:hidden mb-5 border border-line rounded-xl p-4 space-y-1.5 text-sm">
+              {movie.director && (
+                <div><span className="text-muted">{t('movie.rezia')} </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.screenplay && (
+                <div><span className="text-muted">{t('movie.scenar')} </span><span className="text-ink font-medium"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.cinematography && (
+                <div><span className="text-muted">{t('movie.kamera')} </span><span className="text-ink font-medium"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.music && (
+                <div><span className="text-muted">{t('movie.hudba')} </span><span className="text-ink font-medium"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {cast.length > 0 && (
+                <div><span className="text-muted">{t('movie.hraju_dvojbodka')} </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
+              )}
+            </div>
+          )}
 
           <div className="relative hidden sm:flex gap-5 mb-4 border border-line rounded-xl p-4 items-start">
             {viewerId && (
@@ -1037,18 +1119,18 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
         <div>
           <div className="border border-line rounded-xl overflow-hidden">
-            <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
+            <div className="hidden sm:block text-center py-6 px-4" style={scoreColorStyle(percent)}>
               <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
               <div className="text-xs opacity-90 mt-1">{movie.ratings.length} {t('movie.hlasov')}</div>
             </div>
 
             {movie.ratings.length > 0 && (
-              <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
+              <div className="hidden sm:block px-4 pt-4 pb-2 border-b border-line bg-card">
                 <RatingDistributionChart values={movie.ratings.map((r) => r.value)} label={t('movie.rozlozenie_hodnoteni')} />
               </div>
             )}
 
-            <div className="p-4 bg-card border-b border-line">
+            <div className="hidden sm:block p-4 bg-card border-b border-line">
               <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">{t('movie.moje_hodnotenie')}</div>
               {isUpcoming ? (
                 <p className="text-xs text-muted">
