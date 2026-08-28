@@ -18,12 +18,13 @@ export default function MessagesDropdown({ unreadTotal }: { unreadTotal: number 
   const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!open) return;
     function onClickOutside(e: MouseEvent) {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
+  }, [open]);
 
   async function handleOpen() {
     const next = !open;

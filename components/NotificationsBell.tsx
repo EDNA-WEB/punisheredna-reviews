@@ -20,12 +20,13 @@ export default function NotificationsBell() {
   const unread = items.filter((i) => !i.read).length;
 
   useEffect(() => {
+    if (!open) return;
     function onClickOutside(e: MouseEvent) {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
+  }, [open]);
 
   async function load() {
     try {
