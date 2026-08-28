@@ -537,7 +537,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                 ) : (
                   <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je doplnené obsadenie.</p>
                 )
-            }
+            },
             {
               key: 'diskusia',
               label: 'Diskusia',

@@ -517,7 +517,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                 ) : (
                   <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je doplnené obsadenie.</p>
                 )
-            }
+            },
             {
               key: 'diskusia',
               label: 'Diskusia',

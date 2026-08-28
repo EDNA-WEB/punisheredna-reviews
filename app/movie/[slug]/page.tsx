@@ -818,10 +818,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 )}
               </div>
             )
-          },
-          {
+          }
         ]}
         moreTabs={[
+          {
             key: 'galeria',
             label: t('movie.galeria'),
             content:
@@ -937,7 +937,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               ) : (
                 <p className="text-sm text-muted">{t('movie.ziadne_obsadenie')}</p>
               )
-          }
+          },
           {
             key: 'diskusia',
             label: t('movie.diskusia'),
