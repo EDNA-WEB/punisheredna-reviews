@@ -127,17 +127,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const oneMonthAgoForCinemas = new Date();
   oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
   const isInCinemas = !!(movie.nowShowing && (!movie.releaseDate || movie.releaseDate >= oneMonthAgoForCinemas));
-
-  const relatedNews = await prisma.newsPost.findMany({
-    where: {
-      movieId: movie.id,
-      isDraft: false,
-      OR: [{ publishAt: null }, { publishAt: { lte: new Date() } }]
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 4,
-    select: { id: true, slug: true, title: true, summary: true, coverImage: true, createdAt: true }
-  });
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
   const isInWatchlist = viewerId
@@ -774,31 +763,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                     )}
                   </div>
                 </div>
-
-                {relatedNews.length > 0 && (
-                  <div>
-                    <h3 className="font-display font-bold text-lg text-ink mb-3">{t('movie.suvisiace_novinky')}</h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {relatedNews.map((n) => (
-                        <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group">
-                          <div
-                            className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
-                            style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
-                          />
-                          <div className="min-w-0">
-                            <div className="text-[11px] text-muted mb-0.5">
-                              {new Date(n.createdAt).toLocaleDateString('sk-SK')}
-                            </div>
-                            <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                              {n.title}
-                            </h4>
-                            <p className="text-xs text-muted line-clamp-2 mt-0.5">{n.summary}</p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )
           },
@@ -833,31 +797,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                     </div>
                   ))
                 )}
-
-                {relatedNews.length > 0 && (
-                  <div className="mt-10 pt-8 border-t border-line">
-                    <h3 className="font-display font-bold text-lg text-ink mb-3">{t('movie.suvisiace_novinky')}</h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {relatedNews.map((n) => (
-                        <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group">
-                          <div
-                            className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
-                            style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
-                          />
-                          <div className="min-w-0">
-                            <div className="text-[11px] text-muted mb-0.5">
-                              {new Date(n.createdAt).toLocaleDateString('sk-SK')}
-                            </div>
-                            <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                              {n.title}
-                            </h4>
-                            <p className="text-xs text-muted line-clamp-2 mt-0.5">{n.summary}</p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )
           },
@@ -881,31 +820,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                       </li>
                     ))}
                   </ul>
-                )}
-
-                {relatedNews.length > 0 && (
-                  <div className="mt-10 pt-8 border-t border-line">
-                    <h3 className="font-display font-bold text-lg text-ink mb-3">{t('movie.suvisiace_novinky')}</h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {relatedNews.map((n) => (
-                        <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group">
-                          <div
-                            className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
-                            style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
-                          />
-                          <div className="min-w-0">
-                            <div className="text-[11px] text-muted mb-0.5">
-                              {new Date(n.createdAt).toLocaleDateString('sk-SK')}
-                            </div>
-                            <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                              {n.title}
-                            </h4>
-                            <p className="text-xs text-muted line-clamp-2 mt-0.5">{n.summary}</p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
                 )}
               </div>
             )
@@ -1127,31 +1041,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   isAdmin={isAdmin}
                   isFollowing={isFollowingDiscussion}
                 />
-
-                {relatedNews.length > 0 && (
-                  <div className="mt-10 pt-8 border-t border-line">
-                    <h3 className="font-display font-bold text-lg text-ink mb-3">{t('movie.suvisiace_novinky')}</h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {relatedNews.map((n) => (
-                        <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group">
-                          <div
-                            className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
-                            style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
-                          />
-                          <div className="min-w-0">
-                            <div className="text-[11px] text-muted mb-0.5">
-                              {new Date(n.createdAt).toLocaleDateString('sk-SK')}
-                            </div>
-                            <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                              {n.title}
-                            </h4>
-                            <p className="text-xs text-muted line-clamp-2 mt-0.5">{n.summary}</p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )
           }
