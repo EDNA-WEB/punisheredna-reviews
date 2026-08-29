@@ -21,6 +21,7 @@ import OnlineEpisodeBrowser from '@/components/OnlineEpisodeBrowser';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import FlagCZ from '@/components/FlagCZ';
 import WhereToWatchBox from '@/components/WhereToWatchBox';
+import RelatedNewsBox from '@/components/RelatedNewsBox';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -126,6 +127,17 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const oneMonthAgoForCinemas = new Date();
   oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
   const isInCinemas = !!(movie.nowShowing && (!movie.releaseDate || movie.releaseDate >= oneMonthAgoForCinemas));
+
+  const relatedNews = await prisma.newsPost.findMany({
+    where: {
+      movieId: movie.id,
+      isDraft: false,
+      OR: [{ publishAt: null }, { publishAt: { lte: new Date() } }]
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+    select: { id: true, slug: true, title: true, summary: true, coverImage: true, createdAt: true }
+  });
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
   const isInWatchlist = viewerId
@@ -477,66 +489,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
           </div>
 
-          {/* Mobil — hodnotenie + graf, hneď pod hlavičkou */}
-          <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
-            <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
-              <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
-              <div className="text-xs opacity-90 mt-1">{movie.ratings.length} {t('movie.hlasov')}</div>
-            </div>
-            {movie.ratings.length > 0 && (
-              <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
-                <RatingDistributionChart values={movie.ratings.map((r) => r.value)} label={t('movie.rozlozenie_hodnoteni')} />
-              </div>
-            )}
-            <div className="p-4 bg-card">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">{t('movie.moje_hodnotenie')}</div>
-              {isUpcoming ? (
-                <p className="text-xs text-muted">
-                  {t('movie.este_nemal_premieru')}{' '}
-                  {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
-                </p>
-              ) : viewerId ? (
-                <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
-              ) : (
-                <p className="text-xs text-muted">
-                  <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link> {t('movie.a_ohodnot_film')}
-                </p>
-              )}
-              {!isUpcoming && viewerId && !movie.reviews.some((r) => r.authorId === viewerId) && (
-                <Link
-                  href={`/movie/${movie.slug}/napisat`}
-                  className="mt-3 inline-block bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark"
-                >
-                  {t('movie.napisat_recenziu')}
-                </Link>
-              )}
-            </div>
-            <div className="p-4 bg-card border-t border-line">
-              <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
-            </div>
-          </div>
-
-          {/* Mobil — réžia, scenár, kamera, hudba, hrajú */}
-          {(movie.director || movie.screenplay || movie.cinematography || movie.music || cast.length > 0) && (
-            <div className="sm:hidden mb-5 border border-line rounded-xl p-4 space-y-1.5 text-sm">
-              {movie.director && (
-                <div><span className="text-muted font-semibold">{t('movie.rezia')} </span><span className="text-ink"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.screenplay && (
-                <div><span className="text-muted font-semibold">{t('movie.scenar')} </span><span className="text-ink"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.cinematography && (
-                <div><span className="text-muted font-semibold">{t('movie.kamera')} </span><span className="text-ink"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.music && (
-                <div><span className="text-muted font-semibold">{t('movie.hudba')} </span><span className="text-ink"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {cast.length > 0 && (
-                <div><span className="text-muted font-semibold">{t('movie.hraju_dvojbodka')} </span><span className="text-ink"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
-              )}
-            </div>
-          )}
-
           <div className="relative hidden sm:flex gap-5 mb-4 border border-line rounded-xl p-4 items-start">
             {viewerId && (
               <div className="absolute top-3 right-3">
@@ -597,6 +549,67 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
           </div>
 
+          {/* Mobil — hodnotenie + graf, hneď pod hlavičkou */}
+          <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
+            <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
+              <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
+              <div className="text-xs opacity-90 mt-1">{movie.ratings.length} {t('movie.hlasov')}</div>
+            </div>
+            {movie.ratings.length > 0 && (
+              <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
+                <RatingDistributionChart values={movie.ratings.map((r) => r.value)} label={t('movie.rozlozenie_hodnoteni')} />
+              </div>
+            )}
+            <div className="p-4 bg-card">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">{t('movie.moje_hodnotenie')}</div>
+              {isUpcoming ? (
+                <p className="text-xs text-muted">
+                  {t('movie.este_nemal_premieru')}{' '}
+                  {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                </p>
+              ) : viewerId ? (
+                <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
+              ) : (
+                <p className="text-xs text-muted">
+                  <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link> {t('movie.a_ohodnot_film')}
+                </p>
+              )}
+              {!isUpcoming && viewerId && !movie.reviews.some((r) => r.authorId === viewerId) && (
+                <Link
+                  href={`/movie/${movie.slug}/napisat`}
+                  className="mt-3 inline-block bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark"
+                >
+                  {t('movie.napisat_recenziu')}
+                </Link>
+              )}
+            </div>
+            <div className="p-4 bg-card border-t border-line">
+              <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
+            </div>
+          </div>
+
+          {/* Mobil — réžia, scenár, kamera, hudba, hrajú */}
+          {(movie.director || movie.screenplay || movie.cinematography || movie.music || cast.length > 0) && (
+            <div className="sm:hidden mb-5 border border-line rounded-xl p-4 space-y-1.5 text-sm">
+              {movie.director && (
+                <div><span className="text-muted font-semibold">{t('movie.rezia')} </span><span className="text-ink"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.screenplay && (
+                <div><span className="text-muted font-semibold">{t('movie.scenar')} </span><span className="text-ink"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.cinematography && (
+                <div><span className="text-muted font-semibold">{t('movie.kamera')} </span><span className="text-ink"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.music && (
+                <div><span className="text-muted font-semibold">{t('movie.hudba')} </span><span className="text-ink"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {cast.length > 0 && (
+                <div><span className="text-muted font-semibold">{t('movie.hraju_dvojbodka')} </span><span className="text-ink"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
+              )}
+            </div>
+          )}
+
+
           {movie.contentType === 'Seriál' && seasons.length > 0 && (
             <div className="border border-line rounded-xl overflow-hidden mb-5">
               <div className="bg-surface px-4 py-2.5 border-b border-line">
@@ -652,13 +665,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </details>
           )}
 
-          {movie.synopsis && (
-            <div className="mb-8 mt-6">
-              <h3 className="font-display font-bold text-lg text-ink mb-2">{t('movie.obsah')}</h3>
-              <ExpandableSynopsis text={movie.synopsis} />
-            </div>
-          )}
-
           <WhereToWatchBox
             isInCinemas={isInCinemas}
             cinemaHref="/kino"
@@ -670,6 +676,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               url: s.url
             }))}
           />
+
+          {movie.synopsis && (
+            <div className="mb-8 mt-6">
+              <h3 className="font-display font-bold text-lg text-ink mb-2">{t('movie.obsah')}</h3>
+              <ExpandableSynopsis text={movie.synopsis} />
+            </div>
+          )}
+
 
           <MovieTabsSection
         primaryTabs={[
@@ -1143,6 +1157,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           }
         ]}
       />
+
+      <RelatedNewsBox items={relatedNews} />
         </div>
 
         <div>
