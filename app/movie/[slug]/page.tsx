@@ -20,6 +20,7 @@ import MovieVideoTabs from '@/components/MovieVideoTabs';
 import OnlineEpisodeBrowser from '@/components/OnlineEpisodeBrowser';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import FlagCZ from '@/components/FlagCZ';
+import WhereToWatchBox from '@/components/WhereToWatchBox';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -82,6 +83,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     where: { slug: params.slug },
     include: {
       ratings: { where: { seasonId: null, episodeId: null } },
+      streamingServices: {
+        include: { streamingService: true },
+        orderBy: { streamingService: { order: 'asc' } }
+      },
       photos: {
         where: { episodeId: null },
         orderBy: { order: 'asc' },
@@ -118,6 +123,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
   const percent = computePercent(movie.ratings);
   const isUpcoming = !!(movie.releaseDate && movie.releaseDate > new Date());
+  const oneMonthAgoForCinemas = new Date();
+  oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
+  const isInCinemas = !!(movie.nowShowing && (!movie.releaseDate || movie.releaseDate >= oneMonthAgoForCinemas));
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
   const isInWatchlist = viewerId
@@ -650,6 +658,18 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               <ExpandableSynopsis text={movie.synopsis} />
             </div>
           )}
+
+          <WhereToWatchBox
+            isInCinemas={isInCinemas}
+            cinemaHref="/kino"
+            services={movie.streamingServices.map((s) => ({
+              id: s.streamingServiceId,
+              name: s.streamingService.name,
+              icon: s.streamingService.icon,
+              color: s.streamingService.color,
+              url: s.url
+            }))}
+          />
 
           <MovieTabsSection
         primaryTabs={[

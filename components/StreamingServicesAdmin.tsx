@@ -165,7 +165,9 @@ export default function StreamingServicesAdmin({
             {services.map((s) => (
               <div key={s.id} className="flex items-center gap-2 border border-line rounded-full pl-1.5 pr-3 py-1.5">
                 {s.icon ? (
-                  <img src={s.icon} alt="" className="w-6 h-6 rounded-full object-cover flex-none" />
+                  <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: s.color || '#f3f3f3' }}>
+                          <img src={s.icon} alt="" className="w-full h-full object-contain p-0.5" />
+                        </span>
                 ) : (
                   <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: s.color || '#ccc' }} />
                 )}
@@ -237,7 +239,9 @@ export default function StreamingServicesAdmin({
                           className="w-4 h-4 flex-none"
                         />
                         {s.icon ? (
-                          <img src={s.icon} alt="" className="w-6 h-6 rounded-full object-cover flex-none" />
+                          <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: s.color || '#f3f3f3' }}>
+                          <img src={s.icon} alt="" className="w-full h-full object-contain p-0.5" />
+                        </span>
                         ) : (
                           <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: s.color || '#ccc' }} />
                         )}
