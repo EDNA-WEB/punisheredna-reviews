@@ -979,7 +979,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 )}
               </div>
             )
-          }
+          },
           {
             key: 'galeria',
             desktopOnly: true,
