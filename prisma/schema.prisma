@@ -247,6 +247,7 @@ model Movie {
   discussionFollows MovieDiscussionFollow[]
   listItems      MovieListItem[]
   seasons        Season[]
+  streamingServices MovieStreamingService[]
 
   @@index([approved])
   @@index([submittedById])
@@ -389,6 +390,28 @@ model MoviePhoto {
 
   @@index([movieId])
   @@index([episodeId])
+}
+
+model StreamingService {
+  id     String   @id @default(cuid())
+  name   String   @unique
+  icon   String?  @db.Text
+  color  String?
+  order  Int      @default(0)
+  movies MovieStreamingService[]
+}
+
+model MovieStreamingService {
+  id                 String            @id @default(cuid())
+  movieId            String
+  movie              Movie             @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  streamingServiceId String
+  streamingService   StreamingService  @relation(fields: [streamingServiceId], references: [id], onDelete: Cascade)
+  url                String
+  createdAt          DateTime          @default(now())
+
+  @@unique([movieId, streamingServiceId])
+  @@index([movieId])
 }
 
 model Rating {
