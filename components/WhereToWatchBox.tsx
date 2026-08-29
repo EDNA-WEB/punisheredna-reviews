@@ -36,9 +36,9 @@ export default function WhereToWatchBox({
         )}
 
         {services.length > 0 && (
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 min-w-0">
             <span className="text-sm font-bold text-ink w-14 flex-none pt-1">VOD ({services.length})</span>
-            <div className="flex items-center gap-3 flex-wrap flex-1">
+            <div className="flex items-center gap-3 flex-1 min-w-0 overflow-x-auto pb-0.5">
               {services.map((s, i) => (
                 <a
                   key={s.id}

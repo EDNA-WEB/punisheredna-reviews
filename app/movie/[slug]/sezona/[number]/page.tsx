@@ -437,10 +437,9 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                   <p className="text-sm text-muted">K tejto sérii zatiaľ nie je nahraté žiadne video.</p>
                 )
             },
-          ]}
-          moreTabs={[
             {
               key: 'galeria',
+              desktopOnly: true,
               label: 'Galéria',
               content:
                 movie.photos.length > 0 ? (
@@ -451,6 +450,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
             },
             {
               key: 'online',
+              desktopOnly: true,
               label: 'Online',
               content: !viewerId ? (
                 <p className="text-sm text-muted">
@@ -488,6 +488,8 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                 />
               )
             },
+          ]}
+          moreTabs={[
             {
               key: 'hraju',
               label: 'Hrajú',

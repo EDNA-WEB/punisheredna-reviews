@@ -55,11 +55,11 @@ export default function ProfileTabs({
     { key: 'prehlad', label: 'Prehľad' },
     { key: 'o_mne', label: 'O mne' },
     { key: 'hodnotenie', label: 'Hodnotenie' },
-    { key: 'reviews', label: 'Recenzie' }
+    { key: 'reviews', label: 'Recenzie' },
+    { key: 'blog', label: 'Blog', desktopOnly: true },
+    { key: 'seznamy', label: 'Zoznamy', desktopOnly: true }
   ];
   const moreTabs = [
-    { key: 'blog', label: 'Blog' },
-    { key: 'seznamy', label: 'Zoznamy' },
     { key: 'comments', label: 'Komentáre' },
     { key: 'fans', label: 'Fanúšikovia' }
   ];
@@ -146,11 +146,11 @@ export default function ProfileTabs({
     <div className="pt-6">
       <div className="flex items-stretch gap-1 mb-6 border-b border-line">
         <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap min-w-0">
-          {primaryTabs.map((tb) => (
+          {primaryTabs.map((tb: any) => (
             <button
               key={tb.key}
               onClick={() => setActive(tb.key)}
-              className={`text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+              className={`${tb.desktopOnly ? 'hidden sm:inline-flex' : ''} text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
                 active === tb.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
               }`}
             >

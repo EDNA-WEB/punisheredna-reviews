@@ -417,10 +417,9 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                   <p className="text-sm text-muted">K tejto epizóde zatiaľ nie je nahraté žiadne video.</p>
                 )
             },
-          ]}
-          moreTabs={[
             {
               key: 'galeria',
+              desktopOnly: true,
               label: 'Galéria',
               content:
                 episode.photos.length > 0 ? (
@@ -431,6 +430,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             },
             {
               key: 'online',
+              desktopOnly: true,
               label: 'Online',
               content: !viewerId ? (
                 <p className="text-sm text-muted">
@@ -468,6 +468,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                 <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je nastavená možnosť sledovania online.</p>
               )
             },
+          ]}
+          moreTabs={[
             {
               key: 'hraju',
               label: 'Hrajú',

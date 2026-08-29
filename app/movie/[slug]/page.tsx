@@ -980,10 +980,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               </div>
             )
           }
-        ]}
-        moreTabs={[
           {
             key: 'galeria',
+            desktopOnly: true,
             label: t('movie.galeria'),
             content:
               movie.photos.length > 0 ? (
@@ -994,6 +993,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           },
           {
             key: 'online',
+            desktopOnly: true,
             label: t('movie.online'),
             content: !viewerId ? (
               <p className="text-sm text-muted">
@@ -1047,6 +1047,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               <p className="text-sm text-muted">{t('movie.ziadny_online')}</p>
             )
           },
+        ]}
+        moreTabs={[
           {
             key: 'hraju',
             label: t('movie.hraju'),
