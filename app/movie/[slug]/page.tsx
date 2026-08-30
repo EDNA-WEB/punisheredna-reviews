@@ -22,6 +22,7 @@ import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import FlagCZ from '@/components/FlagCZ';
 import WhereToWatchBox from '@/components/WhereToWatchBox';
 import RelatedNewsBox from '@/components/RelatedNewsBox';
+import TagsBox from '@/components/TagsBox';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -165,6 +166,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
         take: 4,
         select: { id: true, title: true, slug: true, summary: true, coverImage: true, createdAt: true }
       })
+    : [];
+
+  const movieTags = movie.tags
+    ? movie.tags.split(',').map((tg) => tg.trim()).filter(Boolean)
     : [];
 
   const trivia = await prisma.movieTrivia.findMany({
@@ -1048,6 +1053,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       />
 
       <RelatedNewsBox items={relatedNews} />
+
+      <div className="sm:hidden mt-5">
+        <TagsBox tags={movieTags} />
+      </div>
         </div>
 
         <div>
@@ -1090,6 +1099,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             <div className="hidden sm:block p-4 bg-card">
               <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
             </div>
+          </div>
+
+          <div className="hidden sm:block mt-4">
+            <TagsBox tags={movieTags} />
           </div>
 
           {viewerId && (
