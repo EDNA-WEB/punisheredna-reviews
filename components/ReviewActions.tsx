@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { IconEdit, IconTrash } from './Icons';
 
-export default function ReviewActions({ id, movieSlug }: { id: string; movieSlug: string }) {
+export default function ReviewActions({ id, movieSlug, showEdit = true }: { id: string; movieSlug: string; showEdit?: boolean }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -25,14 +25,16 @@ export default function ReviewActions({ id, movieSlug }: { id: string; movieSlug
 
   return (
     <div className="flex items-center gap-2 mb-6">
-      <Link
-        href={`/movie/${movieSlug}/upravit/${id}`}
-        title="Upraviť recenziu"
-        aria-label="Upraviť recenziu"
-        className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent transition-colors"
-      >
-        <IconEdit className="w-4 h-4" />
-      </Link>
+      {showEdit && (
+        <Link
+          href={`/movie/${movieSlug}/upravit/${id}`}
+          title="Upraviť recenziu"
+          aria-label="Upraviť recenziu"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent transition-colors"
+        >
+          <IconEdit className="w-4 h-4" />
+        </Link>
+      )}
       <button
         onClick={handleDelete}
         disabled={loading}

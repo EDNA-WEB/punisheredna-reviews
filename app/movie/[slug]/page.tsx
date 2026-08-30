@@ -143,6 +143,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const isInWatchlist = viewerId
     ? !!(await prisma.watchlistItem.findUnique({ where: { userId_movieId: { userId: viewerId, movieId: movie.id } } }))
     : false;
+  const myReview = viewerId ? movie.reviews.find((r) => r.authorId === viewerId) : null;
+  const isInFavorites = viewerId
+    ? !!(await prisma.movieListItem.findFirst({
+        where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } }
+      }))
+    : false;
 
   const [ratersUsers, wantToWatchUsers] = await Promise.all([
     prisma.rating.findMany({
@@ -368,7 +374,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           </div>
         )}
 
-        {(isAdmin || review.authorId === viewerId) && <ReviewActions id={review.id} movieSlug={movie.slug} />}
+        {(isAdmin || review.authorId === viewerId) && (
+          <ReviewActions id={review.id} movieSlug={movie.slug} showEdit={review.authorId !== viewerId} />
+        )}
 
         {withComments && (
           <CollapsibleReviewComments
@@ -431,11 +439,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
             <div className="p-4">
               <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
-                {viewerId && (
-                  <div className="absolute top-2 left-2 z-10">
-                    <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
-                  </div>
-                )}
                 <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
                   {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
                 </div>
@@ -492,16 +495,18 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               </div>
             </div>
 
-            <MovieQuickActionsBar />
+            <MovieQuickActionsBar
+              movieId={movie.id}
+              movieSlug={movie.slug}
+              myReviewId={myReview?.id || null}
+              initialInWatchlist={isInWatchlist}
+              initialInFavorites={isInFavorites}
+              isLoggedIn={!!viewerId}
+            />
           </div>
 
           <div className="hidden sm:block relative mb-4 border border-line rounded-xl p-4">
             <div className="flex gap-5 items-start">
-            {viewerId && (
-              <div className="absolute top-3 right-3">
-                <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
-              </div>
-            )}
             <div className="w-32 sm:w-40 flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
               {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
             </div>
@@ -556,7 +561,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
             </div>
 
-            <MovieQuickActionsBar />
+            <MovieQuickActionsBar
+              movieId={movie.id}
+              movieSlug={movie.slug}
+              myReviewId={myReview?.id || null}
+              initialInWatchlist={isInWatchlist}
+              initialInFavorites={isInFavorites}
+              isLoggedIn={!!viewerId}
+            />
           </div>
 
           {/* Mobil — hodnotenie + graf, hneď pod hlavičkou */}
