@@ -20,7 +20,7 @@ export default function MovieLinksBox({ links }: { links: LinkItem[] }) {
                 className="w-5 h-5 rounded-full flex-none flex items-center justify-center overflow-hidden"
                 style={{ backgroundColor: l.color || '#f3f3f3' }}
               >
-                <img src={l.icon} alt="" className="w-full h-full object-contain p-0.5" />
+                <img src={l.icon} alt="" className="w-full h-full object-cover" />
               </span>
             ) : (
               <span className="w-5 h-5 rounded-full flex-none" style={{ backgroundColor: l.color || '#ccc' }} />

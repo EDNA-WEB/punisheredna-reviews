@@ -166,7 +166,7 @@ export default function MovieLinksAdmin({
               <div key={lt.id} className="flex items-center gap-2 border border-line rounded-full pl-1.5 pr-3 py-1.5">
                 {lt.icon ? (
                   <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: lt.color || '#f3f3f3' }}>
-                    <img src={lt.icon} alt="" className="w-full h-full object-contain p-0.5" />
+                    <img src={lt.icon} alt="" className="w-full h-full object-cover" />
                   </span>
                 ) : (
                   <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: lt.color || '#ccc' }} />
@@ -240,7 +240,7 @@ export default function MovieLinksAdmin({
                         />
                         {lt.icon ? (
                           <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: lt.color || '#f3f3f3' }}>
-                            <img src={lt.icon} alt="" className="w-full h-full object-contain p-0.5" />
+                            <img src={lt.icon} alt="" className="w-full h-full object-cover" />
                           </span>
                         ) : (
                           <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: lt.color || '#ccc' }} />

@@ -54,7 +54,7 @@ export default function WhereToWatchBox({
                       className="w-7 h-7 rounded-full flex-none flex items-center justify-center overflow-hidden"
                       style={{ backgroundColor: s.color || '#f3f3f3' }}
                     >
-                      <img src={s.icon} alt={s.name} className="w-full h-full object-contain p-0.5" />
+                      <img src={s.icon} alt={s.name} className="w-full h-full object-cover" />
                     </span>
                   ) : (
                     <span className="w-7 h-7 rounded-full flex-none" style={{ backgroundColor: s.color || '#ccc' }} />
