@@ -498,6 +498,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             <MovieQuickActionsBar
               movieId={movie.id}
               movieSlug={movie.slug}
+              movieTitle={movie.title}
+              movieYear={movie.year}
               myReviewId={myReview?.id || null}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
@@ -564,6 +566,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             <MovieQuickActionsBar
               movieId={movie.id}
               movieSlug={movie.slug}
+              movieTitle={movie.title}
+              movieYear={movie.year}
               myReviewId={myReview?.id || null}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
@@ -606,7 +610,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               )}
             </div>
             <div className="p-4 bg-card border-t border-line">
-              <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
+              <MovieRatersLists raters={raters} t={t} />
             </div>
           </div>
 
@@ -1141,7 +1145,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
 
             <div className="hidden sm:block p-4 bg-card">
-              <MovieRatersLists raters={raters} wantToWatch={wantToWatch} t={t} />
+              <MovieRatersLists raters={raters} t={t} />
             </div>
           </div>
 

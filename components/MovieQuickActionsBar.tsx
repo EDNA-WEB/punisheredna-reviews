@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { IconEdit, IconBookmark, IconHeartOutline, IconList, IconLayers } from './Icons';
+import AddContentModal from './AddContentModal';
 
 const MORE_ITEMS = [
   'Přidat obsah',
@@ -19,6 +20,8 @@ const MORE_ITEMS = [
 export default function MovieQuickActionsBar({
   movieId,
   movieSlug,
+  movieTitle,
+  movieYear,
   myReviewId,
   initialInWatchlist,
   initialInFavorites,
@@ -26,6 +29,8 @@ export default function MovieQuickActionsBar({
 }: {
   movieId: string;
   movieSlug: string;
+  movieTitle: string;
+  movieYear: string | null;
   myReviewId: string | null;
   initialInWatchlist: boolean;
   initialInFavorites: boolean;
@@ -33,6 +38,7 @@ export default function MovieQuickActionsBar({
 }) {
   const router = useRouter();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [addContentOpen, setAddContentOpen] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(initialInWatchlist);
   const [inFavorites, setInFavorites] = useState(initialInFavorites);
   const [savingWatchlist, setSavingWatchlist] = useState(false);
@@ -96,15 +102,15 @@ export default function MovieQuickActionsBar({
     'flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full border transition-colors flex-none whitespace-nowrap disabled:opacity-50';
 
   const watchlistButton = (
-    <button onClick={toggleWatchlist} disabled={savingWatchlist} className={`${secondaryButtonClass} ${inWatchlist ? 'bg-night text-white border-night' : 'border-line text-ink hover:bg-surface'}`}>
-      <IconBookmark className={inWatchlist ? 'w-3.5 h-3.5' : 'w-3.5 h-3.5 text-blue-500'} filled={inWatchlist} />
+    <button onClick={toggleWatchlist} disabled={savingWatchlist} className={`${secondaryButtonClass} ${inWatchlist ? 'bg-blue-600 text-white border-blue-600' : 'border-line text-ink hover:bg-surface'}`}>
+      <IconBookmark className={'w-3.5 h-3.5'} filled={inWatchlist} />
       {inWatchlist ? 'Vo videných' : 'Chci vidět'}
     </button>
   );
 
   const favoritesButton = (
-    <button onClick={toggleFavorites} disabled={savingFavorites} className={`${secondaryButtonClass} ${inFavorites ? 'bg-rose-500 text-white border-rose-500' : 'border-line text-ink hover:bg-surface'}`}>
-      <IconHeartOutline className={inFavorites ? 'w-3.5 h-3.5' : 'w-3.5 h-3.5 text-rose-500'} />
+    <button onClick={toggleFavorites} disabled={savingFavorites} className={`${secondaryButtonClass} ${inFavorites ? 'bg-blue-600 text-white border-blue-600' : 'border-line text-ink hover:bg-surface'}`}>
+      <IconHeartOutline className={'w-3.5 h-3.5'} />
       {inFavorites ? 'V oblíbených' : 'Oblíbené'}
     </button>
   );
@@ -122,11 +128,11 @@ export default function MovieQuickActionsBar({
           {favoritesButton}
         </span>
         <button className={`${secondaryButtonClass} hidden sm:flex border-line text-ink hover:bg-surface`}>
-          <IconList className="w-3.5 h-3.5 text-amber-500" />
+          <IconList className="w-3.5 h-3.5" />
           Seznamy
         </button>
         <button className={`${secondaryButtonClass} hidden sm:flex border-line text-ink hover:bg-surface`}>
-          <IconLayers className="w-3.5 h-3.5 text-emerald-500" />
+          <IconLayers className="w-3.5 h-3.5" />
           Filmotéka
         </button>
 
@@ -155,7 +161,10 @@ export default function MovieQuickActionsBar({
             {MORE_ITEMS.map((label) => (
               <button
                 key={label}
-                onClick={() => setMoreOpen(false)}
+                onClick={() => {
+                  setMoreOpen(false);
+                  if (label === 'Přidat obsah') setAddContentOpen(true);
+                }}
                 className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface"
               >
                 {label}
@@ -164,6 +173,10 @@ export default function MovieQuickActionsBar({
           </div>
         )}
       </div>
+
+      {addContentOpen && (
+        <AddContentModal movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(false)} />
+      )}
     </div>
   );
 }
