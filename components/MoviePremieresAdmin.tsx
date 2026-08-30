@@ -148,7 +148,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-ink">Premiéry v jednotlivých krajinách</label>
                     {rows.map((r, i) => (
-                      <div key={i} className="flex items-center gap-2">
+                      <div key={i} className="flex flex-wrap items-center gap-2">
                         <select
                           className="field-input-sm w-32 flex-none"
                           value={r.country}
@@ -166,7 +166,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                         />
                         <input
                           type="text"
-                          className="field-input-sm flex-1"
+                          className="field-input-sm flex-1 min-w-[160px]"
                           value={r.distributor}
                           onChange={(e) => updateRow(m.id, i, 'distributor', e.target.value)}
                           placeholder="Distribútor (voliteľné)"
