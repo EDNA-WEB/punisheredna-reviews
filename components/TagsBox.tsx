@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function TagsBox({ tags }: { tags: string[] }) {
   if (tags.length === 0) return null;
 
@@ -6,12 +8,13 @@ export default function TagsBox({ tags }: { tags: string[] }) {
       <div className="bg-surface px-4 py-2.5 font-display font-bold text-sm text-ink">Tagy</div>
       <div className="p-4 flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <span
+          <Link
             key={tag}
-            className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1.5 rounded-full"
+            href={`/recenzie/filter?tag=${encodeURIComponent(tag)}`}
+            className="text-xs font-semibold text-accent bg-accent/10 hover:bg-accent/20 px-3 py-1.5 rounded-full transition-colors"
           >
             {tag}
-          </span>
+          </Link>
         ))}
       </div>
     </div>

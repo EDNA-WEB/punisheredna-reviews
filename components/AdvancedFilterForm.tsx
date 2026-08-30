@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CONTENT_TYPES, GENRES, COUNTRIES, YEARS, RATING_STEPS } from '@/lib/filterConstants';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { useT } from './TranslationProvider';
@@ -9,6 +9,7 @@ import { useFilterFormState } from './FilterFormState';
 
 export default function AdvancedFilterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useT();
   const { setHasInput } = useFilterFormState();
 
@@ -29,6 +30,7 @@ export default function AdvancedFilterForm() {
   const [screenplay, setScreenplay] = useState('');
   const [cinematography, setCinematography] = useState('');
   const [music, setMusic] = useState('');
+  const [tag, setTag] = useState(() => searchParams?.get('tag') || '');
 
   // Nahlási spoločnému stavu, či je formulár prázdny alebo vyplnený —
   // tlačidlo filtra v navbare podľa toho vie, či sa má dať jedným kliknutím zavrieť.
@@ -50,13 +52,14 @@ export default function AdvancedFilterForm() {
       director.trim() !== '' ||
       screenplay.trim() !== '' ||
       cinematography.trim() !== '' ||
-      music.trim() !== '';
+      music.trim() !== '' ||
+      tag.trim() !== '';
     setHasInput(filled);
     return () => setHasInput(false);
   }, [
     types, selectedGenres, selectedCountries, yearFrom, yearTo, ratingFrom, ratingTo,
     nowShowing, hasReviews, hasGallery, hasVideos, hasTrivia,
-    actor, director, screenplay, cinematography, music, setHasInput
+    actor, director, screenplay, cinematography, music, tag, setHasInput
   ]);
 
   function toggleType(t: string) {
@@ -81,6 +84,7 @@ export default function AdvancedFilterForm() {
     setScreenplay('');
     setCinematography('');
     setMusic('');
+    setTag('');
   }
 
   function submit(e: React.FormEvent) {
@@ -103,6 +107,7 @@ export default function AdvancedFilterForm() {
     if (screenplay.trim()) params.set('screenplay', screenplay.trim());
     if (cinematography.trim()) params.set('cinematography', cinematography.trim());
     if (music.trim()) params.set('music', music.trim());
+    if (tag.trim()) params.set('tag', tag.trim());
     router.push(`/recenzie?${params.toString()}`);
   }
 
@@ -223,6 +228,10 @@ export default function AdvancedFilterForm() {
             <div>
               <label className="block text-[11px] text-muted mb-0.5">{t('filter.skladatelia')}</label>
               <input className="field-input-sm" value={music} onChange={(e) => setMusic(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-[11px] text-muted mb-0.5">Tagy</label>
+              <input className="field-input-sm" value={tag} onChange={(e) => setTag(e.target.value)} />
             </div>
           </div>
         </div>

@@ -248,6 +248,7 @@ model Movie {
   listItems      MovieListItem[]
   seasons        Season[]
   streamingServices MovieStreamingService[]
+  links MovieLink[]
 
   @@index([approved])
   @@index([submittedById])
@@ -411,6 +412,28 @@ model MovieStreamingService {
   createdAt          DateTime          @default(now())
 
   @@unique([movieId, streamingServiceId])
+  @@index([movieId])
+}
+
+model MovieLinkType {
+  id     String   @id @default(cuid())
+  name   String   @unique
+  icon   String?  @db.Text
+  color  String?
+  order  Int      @default(0)
+  links  MovieLink[]
+}
+
+model MovieLink {
+  id          String        @id @default(cuid())
+  movieId     String
+  movie       Movie         @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  linkTypeId  String
+  linkType    MovieLinkType @relation(fields: [linkTypeId], references: [id], onDelete: Cascade)
+  url         String
+  createdAt   DateTime      @default(now())
+
+  @@unique([movieId, linkTypeId])
   @@index([movieId])
 }
 

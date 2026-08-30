@@ -59,12 +59,13 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
   const screenplayFilter = searchParams?.screenplay || null;
   const cinematographyFilter = searchParams?.cinematography || null;
   const musicFilter = searchParams?.music || null;
+  const tagFilter = searchParams?.tag || null;
   const minLength = searchParams?.minLength ? Number(searchParams.minLength) : null;
   const maxLength = searchParams?.maxLength ? Number(searchParams.maxLength) : null;
 
   const hasAdvancedFilter =
     genresFilter.length > 0 || countryFilter || countriesFilter.length > 0 || typesFilter.length > 0 || yearFrom || yearTo || ratingFrom || ratingTo ||
-    actorFilter || directorFilter || screenplayFilter || cinematographyFilter || musicFilter || minLength || maxLength || nowShowingFilter || hasReviewsFilter ||
+    actorFilter || directorFilter || screenplayFilter || cinematographyFilter || musicFilter || tagFilter || minLength || maxLength || nowShowingFilter || hasReviewsFilter ||
     hasGalleryFilter || hasVideosFilter || hasTriviaFilter;
 
   const movies = await prisma.movie.findMany({
@@ -76,6 +77,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
       ...(screenplayFilter ? { screenplay: { contains: screenplayFilter, mode: 'insensitive' } } : {}),
       ...(cinematographyFilter ? { cinematography: { contains: cinematographyFilter, mode: 'insensitive' } } : {}),
       ...(musicFilter ? { music: { contains: musicFilter, mode: 'insensitive' } } : {}),
+      ...(tagFilter ? { tags: { contains: tagFilter, mode: 'insensitive' } } : {}),
       ...(countryFilter ? { countries: { contains: countryFilter, mode: 'insensitive' } } : {}),
       ...(typesFilter.length > 0 ? { contentType: { in: typesFilter } } : {}),
       ...(nowShowingFilter ? { nowShowing: true } : {}),

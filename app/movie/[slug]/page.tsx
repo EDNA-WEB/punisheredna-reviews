@@ -23,6 +23,7 @@ import FlagCZ from '@/components/FlagCZ';
 import WhereToWatchBox from '@/components/WhereToWatchBox';
 import RelatedNewsBox from '@/components/RelatedNewsBox';
 import TagsBox from '@/components/TagsBox';
+import MovieLinksBox from '@/components/MovieLinksBox';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -88,6 +89,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       streamingServices: {
         include: { streamingService: true },
         orderBy: { streamingService: { order: 'asc' } }
+      },
+      links: {
+        include: { linkType: true },
+        orderBy: { linkType: { order: 'asc' } }
       },
       photos: {
         where: { episodeId: null },
@@ -668,6 +673,16 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               icon: s.streamingService.icon,
               color: s.streamingService.color,
               url: s.url
+            }))}
+          />
+
+          <MovieLinksBox
+            links={movie.links.map((l) => ({
+              id: l.linkTypeId,
+              name: l.linkType.name,
+              icon: l.linkType.icon,
+              color: l.linkType.color,
+              url: l.url
             }))}
           />
 
