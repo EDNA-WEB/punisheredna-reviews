@@ -25,6 +25,7 @@ import RelatedNewsBox from '@/components/RelatedNewsBox';
 import TagsBox from '@/components/TagsBox';
 import MovieLinksBox from '@/components/MovieLinksBox';
 import MoviePremieresBox from '@/components/MoviePremieresBox';
+import MovieQuickActionsBar from '@/components/MovieQuickActionsBar';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -490,9 +491,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 )}
               </div>
             </div>
+
+            <MovieQuickActionsBar />
           </div>
 
-          <div className="relative hidden sm:flex gap-5 mb-4 border border-line rounded-xl p-4 items-start">
+          <div className="hidden sm:block relative mb-4 border border-line rounded-xl p-4">
+            <div className="flex gap-5 items-start">
             {viewerId && (
               <div className="absolute top-3 right-3">
                 <WatchlistButton movieId={movie.id} initialInWatchlist={isInWatchlist} />
@@ -526,9 +530,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   {t('movie.premiera')} {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
-              {!isUpcoming && movie.releaseDate && (
+              {!isUpcoming && movie.releaseDate && movie.contentType === 'Seriál' && (
                 <div className="text-xs text-muted mb-3">
-                  {movie.contentType === 'Seriál' ? t('movie.na_vod_od') : t('movie.v_kinach_od')} {movie.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('movie.na_vod_od')} {movie.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
 
@@ -550,6 +554,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 )}
               </div>
             </div>
+            </div>
+
+            <MovieQuickActionsBar />
           </div>
 
           {/* Mobil — hodnotenie + graf, hneď pod hlavičkou */}

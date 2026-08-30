@@ -36,7 +36,7 @@ export default async function SiteFooter() {
 
       <div className="mt-5 pt-4 border-t border-line text-center">
         <p className="text-[11px] text-muted">
-          PunisherEDNA reviews © {FOUNDING_YEAR === CURRENT_YEAR ? FOUNDING_YEAR : `${FOUNDING_YEAR}-${CURRENT_YEAR}`} PunisherEDNA s.r.o.{' '}
+          PunisherEDNA reviews © {FOUNDING_YEAR === CURRENT_YEAR ? FOUNDING_YEAR : `${FOUNDING_YEAR}-${CURRENT_YEAR}`} PunisherEDNA{' '}
           <span className="text-line">·</span> {dict['footer.vsetky_prava']}
         </p>
       </div>
