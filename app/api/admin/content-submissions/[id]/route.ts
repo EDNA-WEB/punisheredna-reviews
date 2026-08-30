@@ -18,7 +18,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (submission.type === 'TAGS') {
       const movie = await prisma.movie.findUnique({ where: { id: submission.movieId }, select: { tags: true } });
       const existing = movie?.tags ? movie.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
-      const proposed = finalBody.split(',').map((t) => t.trim()).filter(Boolean);
+      const proposed = finalBody.split(',').map((t: string) => t.trim()).filter(Boolean);
       const merged = Array.from(new Set([...existing, ...proposed]));
       await prisma.$transaction([
         prisma.movie.update({ where: { id: submission.movieId }, data: { tags: merged.join(', ') } }),
