@@ -10,7 +10,7 @@ type MovieItem = {
   poster: string | null;
   year: string | null;
   ageRating: string | null;
-  premiereDates: { id: string; country: string; releaseDate: string; distributor: string | null }[];
+  premiereDates: { id: string; country: string; releaseDate: string | Date; distributor: string | null }[];
 };
 
 const COUNTRIES = [
