@@ -185,20 +185,20 @@ export default function MovieForm({ initial, redirectTo }: { initial?: Initial; 
         <p className="text-xs text-muted mt-1.5">Kým tento dátum nenastane, používatelia nemôžu film hodnotiť ani naň písať recenziu.</p>
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-ink mb-2">{contentType === 'Seriál' ? 'Služba' : 'Distribútor'}</label>
-        <input
-          className="field-input"
-          value={distributor}
-          onChange={(e) => setDistributor(e.target.value)}
-          placeholder={contentType === 'Seriál' ? 'napr. Netflix, HBO Max, Disney+…' : 'napr. Falcon, CinemArt, Bontonfilm…'}
-        />
-        <p className="text-xs text-muted mt-1.5">
-          {contentType === 'Seriál'
-            ? 'Streamovacia služba, káblovka alebo kde seriál vychádza.'
-            : 'Zobrazí sa v rubrike Kino → Ročný prehľad premiér.'}
-        </p>
-      </div>
+      {contentType === 'Seriál' && (
+        <div>
+          <label className="block text-sm font-semibold text-ink mb-2">Služba</label>
+          <input
+            className="field-input"
+            value={distributor}
+            onChange={(e) => setDistributor(e.target.value)}
+            placeholder="napr. Netflix, HBO Max, Disney+…"
+          />
+          <p className="text-xs text-muted mt-1.5">
+            Streamovacia služba, káblovka alebo kde seriál vychádza.
+          </p>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Tagy</label>

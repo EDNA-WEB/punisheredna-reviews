@@ -249,6 +249,8 @@ model Movie {
   seasons        Season[]
   streamingServices MovieStreamingService[]
   links MovieLink[]
+  premiereDates MoviePremiereDate[]
+  ageRating String?
 
   @@index([approved])
   @@index([submittedById])
@@ -495,16 +497,16 @@ model Settings {
   registrationsEnabled Boolean @default(true)
 }
 
-model Premiere {
+model MoviePremiereDate {
   id          String   @id @default(cuid())
-  title       String
+  movieId     String
+  movie       Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  country     String
   releaseDate DateTime
-  year        String?
-  country     String?
-  genres      String?
-  director    String?
-  poster      String?  @db.Text
+  distributor String?
   createdAt   DateTime @default(now())
+
+  @@index([movieId])
 }
 
 model TrailerView {

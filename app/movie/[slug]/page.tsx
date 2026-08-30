@@ -24,6 +24,7 @@ import WhereToWatchBox from '@/components/WhereToWatchBox';
 import RelatedNewsBox from '@/components/RelatedNewsBox';
 import TagsBox from '@/components/TagsBox';
 import MovieLinksBox from '@/components/MovieLinksBox';
+import MoviePremieresBox from '@/components/MoviePremieresBox';
 import MovieDiscussionSection from '@/components/MovieDiscussionSection';
 import ExpandableSynopsis from '@/components/ExpandableSynopsis';
 import ExpandableReviewBody from '@/components/ExpandableReviewBody';
@@ -93,6 +94,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       links: {
         include: { linkType: true },
         orderBy: { linkType: { order: 'asc' } }
+      },
+      premiereDates: {
+        orderBy: { releaseDate: 'asc' }
       },
       photos: {
         where: { episodeId: null },
@@ -1074,6 +1078,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           }))}
         />
       </div>
+
+      <div className="sm:hidden mt-5">
+        <MoviePremieresBox ageRating={movie.ageRating} premieres={movie.premiereDates} />
+      </div>
         </div>
 
         <div>
@@ -1132,6 +1140,10 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 url: l.url
               }))}
             />
+          </div>
+
+          <div className="hidden sm:block mt-4">
+            <MoviePremieresBox ageRating={movie.ageRating} premieres={movie.premiereDates} />
           </div>
 
           {viewerId && (
