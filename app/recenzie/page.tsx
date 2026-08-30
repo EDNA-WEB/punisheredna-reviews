@@ -25,6 +25,7 @@ type SearchParams = {
   screenplay?: string;
   cinematography?: string;
   music?: string;
+  tag?: string;
   minLength?: string;
   maxLength?: string;
   nowShowing?: string;
