@@ -15,10 +15,21 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
   if (action === 'approve') {
     const finalBody = (editedBody ?? submission.body).trim();
-    await prisma.$transaction([
-      prisma.movie.update({ where: { id: submission.movieId }, data: { synopsis: finalBody } }),
-      prisma.contentSubmission.update({ where: { id: params.id }, data: { status: 'APPROVED', body: finalBody } })
-    ]);
+    if (submission.type === 'TAGS') {
+      const movie = await prisma.movie.findUnique({ where: { id: submission.movieId }, select: { tags: true } });
+      const existing = movie?.tags ? movie.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
+      const proposed = finalBody.split(',').map((t) => t.trim()).filter(Boolean);
+      const merged = Array.from(new Set([...existing, ...proposed]));
+      await prisma.$transaction([
+        prisma.movie.update({ where: { id: submission.movieId }, data: { tags: merged.join(', ') } }),
+        prisma.contentSubmission.update({ where: { id: params.id }, data: { status: 'APPROVED', body: finalBody } })
+      ]);
+    } else {
+      await prisma.$transaction([
+        prisma.movie.update({ where: { id: submission.movieId }, data: { synopsis: finalBody } }),
+        prisma.contentSubmission.update({ where: { id: params.id }, data: { status: 'APPROVED', body: finalBody } })
+      ]);
+    }
   } else if (action === 'reject') {
     await prisma.contentSubmission.update({ where: { id: params.id }, data: { status: 'REJECTED' } });
   } else {

@@ -447,6 +447,7 @@ model ContentSubmission {
   movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   authorId   String
   author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  type       String   @default("CONTENT")
   body       String   @db.Text
   status     String   @default("PENDING")
   createdAt  DateTime @default(now())

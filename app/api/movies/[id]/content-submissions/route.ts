@@ -8,13 +8,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!session?.user) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;
 
-  const { body } = await req.json();
+  const { body, type } = await req.json();
   if (!body || !String(body).trim()) {
-    return NextResponse.json({ error: 'Návrh obsahu nemôže byť prázdny.' }, { status: 400 });
+    return NextResponse.json({ error: 'Návrh nemôže byť prázdny.' }, { status: 400 });
   }
+  const allowedTypes = ['CONTENT', 'TAGS'];
+  const submissionType = allowedTypes.includes(type) ? type : 'CONTENT';
 
   const submission = await prisma.contentSubmission.create({
-    data: { movieId: params.id, authorId: userId, body: String(body).trim(), status: 'PENDING' }
+    data: { movieId: params.id, authorId: userId, body: String(body).trim(), type: submissionType, status: 'PENDING' }
   });
 
   return NextResponse.json(submission, { status: 201 });

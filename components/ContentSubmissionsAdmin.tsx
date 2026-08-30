@@ -6,7 +6,7 @@ import Link from 'next/link';
 type Submission = {
   id: string;
   body: string;
-  createdAt: string;
+  createdAt: string | Date;
   movie: { title: string; slug: string; poster: string | null; year: string | null };
   author: { name: string | null; id: string };
 };
