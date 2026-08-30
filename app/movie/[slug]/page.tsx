@@ -501,6 +501,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               movieTitle={movie.title}
               movieYear={movie.year}
               myReviewId={myReview?.id || null}
+              myReviewBody={myReview?.body || ''}
+              myReviewRating={myRating?.value || 0}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}
@@ -569,6 +571,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               movieTitle={movie.title}
               movieYear={movie.year}
               myReviewId={myReview?.id || null}
+              myReviewBody={myReview?.body || ''}
+              myReviewRating={myRating?.value || 0}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}

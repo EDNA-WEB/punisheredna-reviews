@@ -56,6 +56,7 @@ model User {
   redeemedTrial   Boolean  @default(false)
   membershipCodesUsed MembershipCode[]
   articleRevisions ArticleRevision[]
+  contentSubmissions ContentSubmission[]
   comments     Comment[]
   threads          Thread[]
   posts            Post[]
@@ -250,6 +251,7 @@ model Movie {
   streamingServices MovieStreamingService[]
   links MovieLink[]
   premiereDates MoviePremiereDate[]
+  contentSubmissions ContentSubmission[]
   ageRating String?
 
   @@index([approved])
@@ -437,6 +439,20 @@ model MovieLink {
 
   @@unique([movieId, linkTypeId])
   @@index([movieId])
+}
+
+model ContentSubmission {
+  id         String   @id @default(cuid())
+  movieId    String
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body       String   @db.Text
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+
+  @@index([movieId])
+  @@index([status])
 }
 
 model Rating {

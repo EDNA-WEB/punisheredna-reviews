@@ -18,7 +18,10 @@ function insertAtCursor(ref: React.RefObject<HTMLTextAreaElement>, value: string
   });
 }
 
-export default function AddContentModal({ movieTitle, movieYear, onClose }: { movieTitle: string; movieYear: string | null; onClose: () => void }) {
+export default function AddContentModal({ movieId, movieTitle, movieYear, onClose }: { movieId: string; movieTitle: string; movieYear: string | null; onClose: () => void }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [done, setDone] = useState(false);
   const [blocks, setBlocks] = useState<string[]>(['']);
   const [history, setHistory] = useState<string[][]>([['']]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -135,14 +138,45 @@ export default function AddContentModal({ movieTitle, movieYear, onClose }: { mo
             + další obsah
           </button>
 
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="bg-danger text-white text-sm font-bold uppercase tracking-wide px-5 py-3 rounded-full hover:opacity-90 transition-opacity"
-            >
-              Poslat obsah ke schválení a korektuře
-            </button>
-          </div>
+          {done ? (
+            <p className="text-sm text-accent font-semibold">Ďakujeme! Návrh bol odoslaný na schválenie.</p>
+          ) : (
+            <>
+              {error && <p className="text-danger text-xs mb-3">{error}</p>}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={async () => {
+                    setError('');
+                    const combined = blocks.map((b) => b.trim()).filter(Boolean).join('\n\n');
+                    if (!combined) {
+                      setError('Napíš prosím aspoň jeden odstavec obsahu.');
+                      return;
+                    }
+                    setSubmitting(true);
+                    try {
+                      const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ body: combined })
+                      });
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data.error || 'Odoslanie zlyhalo.');
+                      setDone(true);
+                    } catch (err: any) {
+                      setError(err.message);
+                    } finally {
+                      setSubmitting(false);
+                    }
+                  }}
+                  className="bg-danger text-white text-sm font-bold uppercase tracking-wide px-5 py-3 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {submitting ? 'Odosielam…' : 'Poslat obsah ke schválení a korektuře'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

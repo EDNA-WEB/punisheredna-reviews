@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { IconEdit, IconBookmark, IconHeartOutline, IconList, IconLayers } from './Icons';
 import AddContentModal from './AddContentModal';
+import EditReviewModal from './EditReviewModal';
 
 const MORE_ITEMS = [
   'Přidat obsah',
@@ -23,6 +24,8 @@ export default function MovieQuickActionsBar({
   movieTitle,
   movieYear,
   myReviewId,
+  myReviewBody,
+  myReviewRating,
   initialInWatchlist,
   initialInFavorites,
   isLoggedIn
@@ -32,6 +35,8 @@ export default function MovieQuickActionsBar({
   movieTitle: string;
   movieYear: string | null;
   myReviewId: string | null;
+  myReviewBody: string;
+  myReviewRating: number;
   initialInWatchlist: boolean;
   initialInFavorites: boolean;
   isLoggedIn: boolean;
@@ -39,6 +44,7 @@ export default function MovieQuickActionsBar({
   const router = useRouter();
   const [moreOpen, setMoreOpen] = useState(false);
   const [addContentOpen, setAddContentOpen] = useState(false);
+  const [editReviewOpen, setEditReviewOpen] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(initialInWatchlist);
   const [inFavorites, setInFavorites] = useState(initialInFavorites);
   const [savingWatchlist, setSavingWatchlist] = useState(false);
@@ -94,7 +100,6 @@ export default function MovieQuickActionsBar({
     }
   }
 
-  const editReviewHref = myReviewId ? `/movie/${movieSlug}/upravit/${myReviewId}` : `/movie/${movieSlug}/napisat`;
 
   const primaryButtonClass =
     'flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full bg-accent text-white hover:bg-accent-dark transition-colors flex-none whitespace-nowrap';
@@ -118,10 +123,10 @@ export default function MovieQuickActionsBar({
   return (
     <div className="flex items-stretch gap-2 pt-4 mt-4 border-t border-line">
       <div className="flex items-center gap-2 overflow-x-auto min-w-0">
-        <Link href={editReviewHref} className={primaryButtonClass}>
+        <button onClick={() => (isLoggedIn ? setEditReviewOpen(true) : router.push('/login'))} className={primaryButtonClass}>
           <IconEdit className="w-3.5 h-3.5" />
           {myReviewId ? 'Upravit recenzi' : 'Napsat recenzi'}
-        </Link>
+        </button>
 
         <span className="hidden sm:contents">
           {watchlistButton}
@@ -175,7 +180,17 @@ export default function MovieQuickActionsBar({
       </div>
 
       {addContentOpen && (
-        <AddContentModal movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(false)} />
+        <AddContentModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(false)} />
+      )}
+      {editReviewOpen && (
+        <EditReviewModal
+          movieId={movieId}
+          movieTitle={movieTitle}
+          reviewId={myReviewId}
+          initialBody={myReviewBody}
+          initialRating={myReviewRating}
+          onClose={() => setEditReviewOpen(false)}
+        />
       )}
     </div>
   );

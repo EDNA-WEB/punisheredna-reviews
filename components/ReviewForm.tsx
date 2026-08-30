@@ -9,7 +9,7 @@ import { useT } from './TranslationProvider';
 type MovieOption = { id: string; title: string; year: string | null };
 type Initial = { id?: string; movieId?: string; body?: string; rating?: number };
 
-export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase }: { initial?: Initial; movieLocked?: boolean; redirectTo?: string; apiBase?: string }) {
+export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, onSuccess }: { initial?: Initial; movieLocked?: boolean; redirectTo?: string; apiBase?: string; onSuccess?: () => void }) {
   const t = useT();
   const router = useRouter();
   const isEdit = !!initial?.id;
@@ -96,8 +96,13 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase }
         throw new Error(data.error || 'Uloženie zlyhalo.');
       }
       try { localStorage.removeItem(draftKey); } catch {}
-      router.push(redirectTo || '/admin');
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+        router.refresh();
+      } else {
+        router.push(redirectTo || '/admin');
+        router.refresh();
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
