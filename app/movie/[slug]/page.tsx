@@ -676,16 +676,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             }))}
           />
 
-          <MovieLinksBox
-            links={movie.links.map((l) => ({
-              id: l.linkTypeId,
-              name: l.linkType.name,
-              icon: l.linkType.icon,
-              color: l.linkType.color,
-              url: l.url
-            }))}
-          />
-
           {movie.synopsis && (
             <div className="mb-8 mt-6">
               <h3 className="font-display font-bold text-lg text-ink mb-2">{t('movie.obsah')}</h3>
@@ -1072,6 +1062,18 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       <div className="sm:hidden mt-5">
         <TagsBox tags={movieTags} />
       </div>
+
+      <div className="sm:hidden mt-5">
+        <MovieLinksBox
+          links={movie.links.map((l) => ({
+            id: l.linkTypeId,
+            name: l.linkType.name,
+            icon: l.linkType.icon,
+            color: l.linkType.color,
+            url: l.url
+          }))}
+        />
+      </div>
         </div>
 
         <div>
@@ -1118,6 +1120,18 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
           <div className="hidden sm:block mt-4">
             <TagsBox tags={movieTags} />
+          </div>
+
+          <div className="hidden sm:block mt-4">
+            <MovieLinksBox
+              links={movie.links.map((l) => ({
+                id: l.linkTypeId,
+                name: l.linkType.name,
+                icon: l.linkType.icon,
+                color: l.linkType.color,
+                url: l.url
+              }))}
+            />
           </div>
 
           {viewerId && (
