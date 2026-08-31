@@ -17,7 +17,11 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const activeTab = allTabs.find((t) => t.key === active);
-  const activeIsInMore = moreTabs.some((t) => t.key === active);
+  // Záložky viditeľné len na desktope (primaryTabs s desktopOnly) musia byť na mobile
+  // dosiahnuteľné aspoň cez "Ďalšie" — na desktope sa v tomto menu skryjú, keďže sú už vidieť v hlavnom riadku.
+  const desktopOnlyPrimaryTabs = primaryTabs.filter((tab) => tab.desktopOnly);
+  const dropdownTabs = [...desktopOnlyPrimaryTabs, ...moreTabs];
+  const activeIsInMore = dropdownTabs.some((t) => t.key === active);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -64,7 +68,7 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
             ))}
           </div>
 
-          {moreTabs.length > 0 && (
+          {dropdownTabs.length > 0 && (
             <div className="relative flex-none" ref={moreRef}>
               <button
                 onClick={() => setMoreOpen((o) => !o)}
@@ -76,14 +80,14 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
               </button>
               {moreOpen && (
                 <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">
-                  {moreTabs.map((tab) => (
+                  {dropdownTabs.map((tab) => (
                     <button
                       key={tab.key}
                       onClick={() => {
                         setActive(tab.key);
                         setMoreOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface"
+                      className={`${tab.desktopOnly ? 'sm:hidden' : ''} w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface`}
                     >
                       {tab.label}
                     </button>

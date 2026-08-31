@@ -131,8 +131,10 @@ export default function ProfileTabs({
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const t = useT();
-  const activeIsInMore = moreTabs.some((tb) => tb.key === active);
-  const activeMoreTab = moreTabs.find((tb) => tb.key === active);
+  const desktopOnlyPrimaryTabs = primaryTabs.filter((tb: any) => tb.desktopOnly);
+  const dropdownTabs = [...desktopOnlyPrimaryTabs, ...moreTabs];
+  const activeIsInMore = dropdownTabs.some((tb) => tb.key === active);
+  const activeMoreTab = dropdownTabs.find((tb) => tb.key === active);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -170,14 +172,14 @@ export default function ProfileTabs({
           </button>
           {moreOpen && (
             <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">
-              {moreTabs.map((tb) => (
+              {dropdownTabs.map((tb: any) => (
                 <button
                   key={tb.key}
                   onClick={() => {
                     setActive(tb.key);
                     setMoreOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface"
+                  className={`${tb.desktopOnly ? 'sm:hidden' : ''} w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface`}
                 >
                   {tb.label}
                 </button>

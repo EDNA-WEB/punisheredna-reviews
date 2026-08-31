@@ -422,8 +422,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       <div className="grid md:grid-cols-[1fr_260px] gap-8 mb-8">
         <div>
           {/* Mobilná hlavička — poradie podľa referenčného návrhu: originálny názov, lokálny názov s vlajkou, plagát + trailer, žánre, krajina/rok/dĺžka */}
-          <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
-            <div className="bg-surface px-4 py-3">
+          <div className="sm:hidden mb-5 border border-line rounded-xl">
+            <div className="bg-surface px-4 py-3 rounded-t-xl">
               {movie.originalTitle && movie.originalTitle !== movie.title ? (
                 <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mb-1">{movie.originalTitle}</h1>
               ) : (
