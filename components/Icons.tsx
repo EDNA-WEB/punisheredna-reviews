@@ -30,17 +30,17 @@ export function IconStar({ className = 'w-4 h-4', filled = false }: { className?
   );
 }
 
-export function IconBell({ className = 'w-5 h-5' }: { className?: string }) {
+export function IconBell({ className = 'w-5 h-5', filled = false }: { className?: string; filled?: boolean }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={`${className} transition-all duration-200`} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18.5 9.5a6.5 6.5 0 0 0-13 0c0 4.2-1.5 6-1.5 6h16s-1.5-1.8-1.5-6Z" />
-      <path d="M10.3 19a1.7 1.7 0 0 0 3.4 0" />
+      <path d="M10.3 19a1.7 1.7 0 0 0 3.4 0" fill="none" />
     </svg>
   );
 }
-export function IconMessage({ className = 'w-5 h-5' }: { className?: string }) {
+export function IconMessage({ className = 'w-5 h-5', filled = false }: { className?: string; filled?: boolean }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={`${className} transition-all duration-200`} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 11.5a7.5 7.5 0 0 1-9.3 7.28c-.5-.13-1.02-.15-1.5.03L7 20l.7-2.9c.1-.42.03-.86-.2-1.23A7.5 7.5 0 1 1 21 11.5Z" />
     </svg>
   );
@@ -173,7 +173,7 @@ export function IconActivity({ className = 'w-4 h-4' }: { className?: string }) 
 
 export function IconBookmark({ className = 'w-4 h-4', filled = false }: { className?: string; filled?: boolean }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={`${className} transition-all duration-200`} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 4a1 1 0 0 0-1 1v15l7-4.5 7 4.5V5a1 1 0 0 0-1-1H6Z" />
     </svg>
   );

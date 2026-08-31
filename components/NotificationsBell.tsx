@@ -53,8 +53,14 @@ export default function NotificationsBell() {
 
   return (
     <div ref={boxRef}>
-      <button onClick={handleOpen} className="relative w-10 h-10 flex items-center justify-center text-ink hover:text-accent transition-colors" aria-label={t('notif.aria_label')}>
-        <IconBell className="w-[22px] h-[22px]" />
+      <button
+        onClick={handleOpen}
+        className={`relative w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 ${
+          open ? 'text-accent bg-accent/10' : 'text-ink hover:text-accent hover:bg-surface'
+        }`}
+        aria-label={t('notif.aria_label')}
+      >
+        <IconBell className="w-[22px] h-[22px]" filled={open} />
         {unread > 0 && (
           <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">
             {unread > 9 ? '9+' : unread}

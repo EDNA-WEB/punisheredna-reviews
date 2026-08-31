@@ -52,10 +52,12 @@ export default function WatchlistDropdown() {
           setOpen(!open);
           ensureLoaded();
         }}
-        className="relative w-10 h-10 flex items-center justify-center text-ink hover:text-accent rounded-full hover:bg-surface transition-colors"
+        className={`relative w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 ${
+          open ? 'text-accent bg-accent/10' : 'text-ink hover:text-accent hover:bg-surface'
+        }`}
         aria-label={t('movie.chcem_vidiet')}
       >
-        <IconBookmark className="w-[22px] h-[22px]" />
+        <IconBookmark className="w-[22px] h-[22px]" filled={open} />
       </button>
 
       {open && (
