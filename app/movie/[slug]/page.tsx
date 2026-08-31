@@ -495,18 +495,20 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               </div>
             </div>
 
-            <MovieQuickActionsBar
-              movieId={movie.id}
-              movieSlug={movie.slug}
-              movieTitle={movie.title}
-              movieYear={movie.year}
-              myReviewId={myReview?.id || null}
-              myReviewBody={myReview?.body || ''}
-              myReviewRating={myRating?.value || 0}
-              initialInWatchlist={isInWatchlist}
-              initialInFavorites={isInFavorites}
-              isLoggedIn={!!viewerId}
-            />
+            <div className="px-4 pb-4">
+              <MovieQuickActionsBar
+                movieId={movie.id}
+                movieSlug={movie.slug}
+                movieTitle={movie.title}
+                movieYear={movie.year}
+                myReviewId={myReview?.id || null}
+                myReviewBody={myReview?.body || ''}
+                myReviewRating={myRating?.value || 0}
+                initialInWatchlist={isInWatchlist}
+                initialInFavorites={isInFavorites}
+                isLoggedIn={!!viewerId}
+              />
+            </div>
           </div>
 
           <div className="hidden sm:block relative mb-4 border border-line rounded-xl p-4">

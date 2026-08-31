@@ -28,7 +28,7 @@ export default function MoviePremieresBox({ ageRating, premieres }: { ageRating:
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-ink">V kinách od</div>
                 <div className="text-xs text-muted">
-                  {p.releaseDate.toLocaleDateString('sk-SK')}
+                  {String(p.releaseDate.getDate()).padStart(2, '0')}.{String(p.releaseDate.getMonth() + 1).padStart(2, '0')}.{p.releaseDate.getFullYear()}
                   {p.distributor && <> {p.distributor}</>}
                 </div>
               </div>

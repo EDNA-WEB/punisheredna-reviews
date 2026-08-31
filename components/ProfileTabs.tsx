@@ -133,8 +133,8 @@ export default function ProfileTabs({
   const t = useT();
   const desktopOnlyPrimaryTabs = primaryTabs.filter((tb: any) => tb.desktopOnly);
   const dropdownTabs = [...desktopOnlyPrimaryTabs, ...moreTabs];
-  const activeIsInMore = dropdownTabs.some((tb) => tb.key === active);
-  const activeMoreTab = dropdownTabs.find((tb) => tb.key === active);
+  const activeIsInMore = moreTabs.some((tb) => tb.key === active);
+  const activeMoreTab = moreTabs.find((tb) => tb.key === active);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {

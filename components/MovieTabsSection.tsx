@@ -21,7 +21,7 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
   // dosiahnuteľné aspoň cez "Ďalšie" — na desktope sa v tomto menu skryjú, keďže sú už vidieť v hlavnom riadku.
   const desktopOnlyPrimaryTabs = primaryTabs.filter((tab) => tab.desktopOnly);
   const dropdownTabs = [...desktopOnlyPrimaryTabs, ...moreTabs];
-  const activeIsInMore = dropdownTabs.some((t) => t.key === active);
+  const activeIsInMore = moreTabs.some((t) => t.key === active);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
