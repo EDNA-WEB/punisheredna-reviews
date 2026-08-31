@@ -5,17 +5,24 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { IconEdit, IconBookmark, IconHeartOutline, IconList, IconLayers } from './Icons';
 import AddContentModal from './AddContentModal';
+import AddTriviaModal from './AddTriviaModal';
+import AddImagesModal from './AddImagesModal';
+import AddPodobneFilmyModal from './AddPodobneFilmyModal';
+import AddSuvisiaceFilmyModal from './AddSuvisiaceFilmyModal';
+import AddExternalReviewModal from './AddExternalReviewModal';
+import AddTagsModal from './AddTagsModal';
+import AddWebModal from './AddWebModal';
 import EditReviewModal from './EditReviewModal';
 
-const MORE_ITEMS = [
-  'Přidat obsah',
-  'Přidat zajímavost',
-  'Přidat obrázky',
-  'Přidat podobné filmy',
-  'Přidat související filmy',
-  'Přidat externí recenzi',
-  'Přidat tagy',
-  'Přidat web'
+const MORE_ITEMS: { key: string; label: string }[] = [
+  { key: 'content', label: 'Přidat obsah' },
+  { key: 'trivia', label: 'Přidat zajímavost' },
+  { key: 'images', label: 'Přidat obrázky' },
+  { key: 'similar', label: 'Přidat podobné filmy' },
+  { key: 'related', label: 'Přidat související filmy' },
+  { key: 'external', label: 'Přidat externí recenzi' },
+  { key: 'tags', label: 'Přidat tagy' },
+  { key: 'web', label: 'Přidat web' }
 ];
 
 export default function MovieQuickActionsBar({
@@ -43,7 +50,7 @@ export default function MovieQuickActionsBar({
 }) {
   const router = useRouter();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [addContentOpen, setAddContentOpen] = useState(false);
+  const [addContentOpen, setAddContentOpen] = useState<string | null>(null);
   const [editReviewOpen, setEditReviewOpen] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(initialInWatchlist);
   const [inFavorites, setInFavorites] = useState(initialInFavorites);
@@ -163,24 +170,45 @@ export default function MovieQuickActionsBar({
             <button onClick={() => setMoreOpen(false)} className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface sm:hidden">
               Filmotéka
             </button>
-            {MORE_ITEMS.map((label) => (
+            {MORE_ITEMS.map((item) => (
               <button
-                key={label}
+                key={item.key}
                 onClick={() => {
                   setMoreOpen(false);
-                  if (label === 'Přidat obsah') setAddContentOpen(true);
+                  setAddContentOpen(item.key);
                 }}
                 className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface"
               >
-                {label}
+                {item.label}
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {addContentOpen && (
-        <AddContentModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(false)} />
+      {addContentOpen === 'content' && (
+        <AddContentModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'trivia' && (
+        <AddTriviaModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'images' && (
+        <AddImagesModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'similar' && (
+        <AddPodobneFilmyModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'related' && (
+        <AddSuvisiaceFilmyModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'external' && (
+        <AddExternalReviewModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'tags' && (
+        <AddTagsModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
+      )}
+      {addContentOpen === 'web' && (
+        <AddWebModal movieId={movieId} movieTitle={movieTitle} movieYear={movieYear} onClose={() => setAddContentOpen(null)} />
       )}
       {editReviewOpen && (
         <EditReviewModal

@@ -2,17 +2,16 @@
 
 import { useState } from 'react';
 import SubmissionModalShell from './SubmissionModalShell';
-import RichTextBlocks from './RichTextBlocks';
 
-export default function AddContentModal({ movieId, movieTitle, movieYear, onClose }: { movieId: string; movieTitle: string; movieYear: string | null; onClose: () => void }) {
-  const [combined, setCombined] = useState('');
+export default function AddTagsModal({ movieId, movieTitle, movieYear, onClose }: { movieId: string; movieTitle: string; movieYear: string | null; onClose: () => void }) {
+  const [value, setValue] = useState('');
 
   async function handleSubmit() {
-    if (!combined) return { ok: false, error: 'Napíš prosím aspoň jeden odstavec obsahu.' };
+    if (!value.trim()) return { ok: false, error: 'Napíš prosím aspoň jeden tag.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: combined, type: 'CONTENT' })
+      body: JSON.stringify({ body: value.trim(), type: 'TAGS' })
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, error: data.error };
@@ -30,14 +29,19 @@ export default function AddContentModal({ movieId, movieTitle, movieYear, onClos
           ✕
         </button>
         <SubmissionModalShell
-          title="Přidat obsah"
-          explanation={`Obsah k filmu/seriálu nemusí byť dlhý (stačí 5-8 viet), ale musí zrozumiteľne popísať, o čom daný film/seriál je. Žiadne ďalšie informácie do obsahu nepatria, tie umiestnime do Zaujímavostí. Obsah nesmie film/seriál ani nijako hodnotiť, musí byť nestranný. Ďakujeme!`}
+          title="Přidat tagy"
+          explanation="Navrhni tagy, ktoré k filmu/seriálu sedia — oddeľ ich čiarkou (napr. Marvel, superhrdinovia, vesmír). Pomáhajú ostatným film ľahšie nájsť."
           movieTitle={movieTitle}
           movieYear={movieYear}
-          submitLabel="Poslat obsah ke schválení a korektuře"
+          submitLabel="Poslat tagy ke schválení"
           onSubmit={handleSubmit}
         >
-          <RichTextBlocks addMoreLabel="další obsah" onChange={setCombined} />
+          <input
+            className="field-input"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="napr. Marvel, superhrdinovia, vesmír"
+          />
         </SubmissionModalShell>
       </div>
     </div>

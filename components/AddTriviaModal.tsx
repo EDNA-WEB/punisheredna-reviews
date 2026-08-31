@@ -4,15 +4,15 @@ import { useState } from 'react';
 import SubmissionModalShell from './SubmissionModalShell';
 import RichTextBlocks from './RichTextBlocks';
 
-export default function AddContentModal({ movieId, movieTitle, movieYear, onClose }: { movieId: string; movieTitle: string; movieYear: string | null; onClose: () => void }) {
+export default function AddTriviaModal({ movieId, movieTitle, movieYear, onClose }: { movieId: string; movieTitle: string; movieYear: string | null; onClose: () => void }) {
   const [combined, setCombined] = useState('');
 
   async function handleSubmit() {
-    if (!combined) return { ok: false, error: 'Napíš prosím aspoň jeden odstavec obsahu.' };
+    if (!combined) return { ok: false, error: 'Napíš prosím aspoň jednu zaujímavosť.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: combined, type: 'CONTENT' })
+      body: JSON.stringify({ body: combined, type: 'TRIVIA' })
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, error: data.error };
@@ -30,14 +30,14 @@ export default function AddContentModal({ movieId, movieTitle, movieYear, onClos
           ✕
         </button>
         <SubmissionModalShell
-          title="Přidat obsah"
-          explanation={`Obsah k filmu/seriálu nemusí byť dlhý (stačí 5-8 viet), ale musí zrozumiteľne popísať, o čom daný film/seriál je. Žiadne ďalšie informácie do obsahu nepatria, tie umiestnime do Zaujímavostí. Obsah nesmie film/seriál ani nijako hodnotiť, musí byť nestranný. Ďakujeme!`}
+          title="Přidat zajímavost"
+          explanation={`Věrohodnost zajímavostí k filmům/seriálům, které nám pošleš přes tento formulář, si před jejich zveřejněním ověříme, nicméně stejně tě prosíme, abys nám posílal pouze informace ověřené a ne ty "z hospody od piva". Pokud k zajímavosti připíšeš i zdroj, urychlíš proces jejího ověření a schválení. Jednotlivé zajímavosti piš spíše krátce a jednoduše formulované. Více krátkých zajímavostí se čte lépe, než méně dlouhých. Děkujeme!`}
           movieTitle={movieTitle}
           movieYear={movieYear}
-          submitLabel="Poslat obsah ke schválení a korektuře"
+          submitLabel="Poslat zajímavosti ke schválení a korektuře"
           onSubmit={handleSubmit}
         >
-          <RichTextBlocks addMoreLabel="další obsah" onChange={setCombined} />
+          <RichTextBlocks addMoreLabel="další zajímavost" onChange={setCombined} />
         </SubmissionModalShell>
       </div>
     </div>

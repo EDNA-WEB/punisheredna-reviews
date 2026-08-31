@@ -12,7 +12,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!body || !String(body).trim()) {
     return NextResponse.json({ error: 'Návrh nemôže byť prázdny.' }, { status: 400 });
   }
-  const allowedTypes = ['CONTENT', 'TAGS'];
+  const allowedTypes = ['CONTENT', 'TAGS', 'TRIVIA', 'IMAGES', 'SIMILAR_MOVIES', 'RELATED_MOVIES', 'EXTERNAL_REVIEW', 'WEB'];
   const submissionType = allowedTypes.includes(type) ? type : 'CONTENT';
 
   const submission = await prisma.contentSubmission.create({
