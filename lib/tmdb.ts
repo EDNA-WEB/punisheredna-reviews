@@ -163,11 +163,23 @@ export async function tmdbGetPersonDetails(id: number) {
   if (!res.ok) throw new Error('Načítanie detailu z TMDb zlyhalo.');
   const d = await res.json();
 
+  // Ak TMDb nemá pre túto osobu český životopis preložený, vráti prázdny text —
+  // v takom prípade skúsime ešte raz bez jazykového obmedzenia (spravidla anglicky),
+  // nech políčko nezostane prázdne.
+  let bio = d.biography || '';
+  if (!bio) {
+    const fallbackRes = await fetch(`${TMDB_BASE}/person/${id}`, { headers: tmdbHeaders() });
+    if (fallbackRes.ok) {
+      const fallbackData = await fallbackRes.json();
+      bio = fallbackData.biography || '';
+    }
+  }
+
   return {
     name: d.name || '',
     role: d.known_for_department === 'Acting' ? 'ACTOR' : 'CREATOR',
     photo: d.profile_path ? `https://image.tmdb.org/t/p/w780${d.profile_path}` : null,
-    bio: d.biography || '',
+    bio,
     birthDate: d.birthday || null,
     deathDate: d.deathday || null,
     birthPlace: d.place_of_birth || '',
@@ -192,8 +204,9 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
 
   const asActor = dedupe(d.cast || [])
     .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
-    .slice(0, 30)
+    .slice(0, 60)
     .map((c: any) => ({
+      tmdbId: c.id,
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       character: c.character || null,
@@ -202,8 +215,9 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
 
   const asCrew = dedupe(d.crew || [])
     .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
-    .slice(0, 30)
+    .slice(0, 60)
     .map((c: any) => ({
+      tmdbId: c.id,
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       job: c.job || null,
