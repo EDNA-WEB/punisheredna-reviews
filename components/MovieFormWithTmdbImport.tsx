@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import MovieForm from './MovieForm';
 
 type SearchResult = { id: number; mediaType: string; title: string; originalTitle: string; year: string; poster: string | null };
 
 export default function MovieFormWithTmdbImport({ contentType }: { contentType: string }) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -13,6 +15,7 @@ export default function MovieFormWithTmdbImport({ contentType }: { contentType: 
   const [error, setError] = useState('');
   const [importedData, setImportedData] = useState<any>(null);
   const [formKey, setFormKey] = useState(0);
+  const [finishing, setFinishing] = useState(false);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -46,6 +49,33 @@ export default function MovieFormWithTmdbImport({ contentType }: { contentType: 
       setError(err.message);
     } finally {
       setImporting(null);
+    }
+  }
+
+  async function handleMovieSaved(movieId: string) {
+    setFinishing(true);
+    try {
+      if (importedData?.trailerUrl) {
+        await fetch(`/api/movies/${movieId}/videos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: importedData.trailerUrl, category: 'trailer', title: importedData.trailerTitle || null })
+        });
+      }
+      if (importedData?.photoUrls?.length) {
+        for (const photoUrl of importedData.photoUrls) {
+          await fetch(`/api/movies/${movieId}/photos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full: photoUrl })
+          });
+        }
+      }
+    } catch {
+      // Film je aj tak uložený — trailer/fotky sa dajú doplniť aj ručne cez Upraviť film.
+    } finally {
+      router.push(`/admin/movies/${movieId}/edit`);
+      router.refresh();
     }
   }
 
@@ -94,7 +124,12 @@ export default function MovieFormWithTmdbImport({ contentType }: { contentType: 
         )}
       </div>
 
-      <MovieForm key={formKey} initial={importedData || { contentType }} />
+      <MovieForm key={formKey} initial={importedData || { contentType }} onSuccess={handleMovieSaved} />
+      {finishing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-night/70">
+          <div className="bg-card rounded-xl px-6 py-4 text-sm text-ink">Dopĺňam trailer a fotky…</div>
+        </div>
+      )}
     </div>
   );
 }

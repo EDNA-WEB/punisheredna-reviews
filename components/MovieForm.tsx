@@ -35,7 +35,7 @@ type Initial = {
   internationalBoxOffice?: number | null;
 };
 
-export default function MovieForm({ initial, redirectTo }: { initial?: Initial; redirectTo?: string }) {
+export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?: Initial; redirectTo?: string; onSuccess?: (movieId: string) => void }) {
   const router = useRouter();
   const isEdit = !!initial?.id;
 
@@ -125,8 +125,12 @@ export default function MovieForm({ initial, redirectTo }: { initial?: Initial; 
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Uloženie zlyhalo.');
-      router.push(redirectTo || '/admin/movies');
-      router.refresh();
+      if (onSuccess) {
+        onSuccess(data.id);
+      } else {
+        router.push(redirectTo || '/admin/movies');
+        router.refresh();
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
