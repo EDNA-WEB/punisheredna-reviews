@@ -209,8 +209,8 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   return (
     <div className="grid md:grid-cols-[1fr_260px] gap-8 mb-8">
       <div>
-        <div className="flex gap-5 mb-4 border border-line rounded-xl p-4 items-start">
-          <div className="relative w-32 sm:w-40 flex-none">
+        <div className="flex flex-col sm:flex-row gap-5 mb-4 border border-line rounded-xl p-4 sm:items-start">
+          <div className="relative w-32 sm:w-40 flex-none mx-auto sm:mx-0">
             <div
               className="rounded-xl bg-surface bg-cover bg-center aspect-[2/3]"
               style={movie.poster ? { backgroundImage: `url('${movie.poster}')` } : undefined}
