@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PersonFollowButton from '@/components/PersonFollowButton';
 import PersonProfileTabs from '@/components/PersonProfileTabs';
+import PersonTmdbFilmography from '@/components/PersonTmdbFilmography';
 import { calculateAge } from '@/lib/personUtils';
 
 export const dynamic = 'force-dynamic';
@@ -120,6 +121,8 @@ export default async function PersonPage({ params }: { params: { slug: string } 
           )}
         </div>
       </div>
+
+      {person.tmdbId && <PersonTmdbFilmography tmdbId={person.tmdbId} role={person.role} />}
 
       <PersonProfileTabs
         bio={person.bio}

@@ -12,6 +12,7 @@ import { logActivity } from '@/lib/logActivity';
 import MovieNoteBox from '@/components/MovieNoteBox';
 import WatchlistButton from '@/components/WatchlistButton';
 import BoxOfficeStatus from '@/components/BoxOfficeStatus';
+import { tmdbGetLiveBoxOffice } from '@/lib/tmdb';
 import MovieGallery from '@/components/MovieGallery';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
@@ -138,6 +139,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const oneMonthAgoForCinemas = new Date();
   oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
   const isInCinemas = !!(movie.nowShowing && (!movie.releaseDate || movie.releaseDate >= oneMonthAgoForCinemas));
+  // Ak je film prepojený s TMDb, rozpočet a tržby naťahujeme VŽDY naživo — sú to
+  // hodnoty, čo sa v čase menia (film ešte v kinách zarába), takže sa nikdy neukladajú
+  // do našej databázy, len sa zobrazí aktuálny stav priamo z TMDb.
+  const liveBoxOffice = movie.tmdbId ? await tmdbGetLiveBoxOffice(movie.tmdbId) : null;
+  const effectiveBudget = liveBoxOffice?.budget ?? movie.budget;
+  const effectiveBoxOffice = liveBoxOffice?.boxOffice ?? movie.boxOffice;
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
   const isInWatchlist = viewerId
@@ -466,14 +473,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 <div className="text-sm text-muted">
                   {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
                 </div>
-                {movie.budget && (
+                {effectiveBudget && (
                   <details className="flex-none text-right">
                     <summary className="cursor-pointer select-none text-xs font-semibold text-accent list-none">{t('boxoffice.nadpis')}</summary>
                     <div className="mt-2 text-right">
                       <BoxOfficeStatus
-                        budget={movie.budget}
+                        budget={effectiveBudget}
                         marketingBudget={movie.marketingBudget}
-                        boxOffice={movie.boxOffice}
+                        boxOffice={effectiveBoxOffice}
                         domesticBoxOffice={movie.domesticBoxOffice}
                         internationalBoxOffice={movie.internationalBoxOffice}
                         compact
@@ -670,14 +677,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
           )}
 
-          {movie.budget && (
+          {effectiveBudget && (
             <details className="hidden sm:block mt-4 text-xs text-muted group">
               <summary className="cursor-pointer select-none hover:text-ink w-fit">{t('boxoffice.nadpis')}</summary>
               <div className="mt-2 max-w-xs">
                 <BoxOfficeStatus
-                  budget={movie.budget}
+                  budget={effectiveBudget}
                   marketingBudget={movie.marketingBudget}
-                  boxOffice={movie.boxOffice}
+                  boxOffice={effectiveBoxOffice}
                   domesticBoxOffice={movie.domesticBoxOffice}
                   internationalBoxOffice={movie.internationalBoxOffice}
                   compact

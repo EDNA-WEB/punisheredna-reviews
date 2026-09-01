@@ -33,6 +33,7 @@ type Initial = {
   boxOffice?: number | null;
   domesticBoxOffice?: number | null;
   internationalBoxOffice?: number | null;
+  tmdbId?: number | null;
 };
 
 export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?: Initial; redirectTo?: string; onSuccess?: (movieId: string) => void }) {
@@ -71,6 +72,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
   const [boxOffice, setBoxOffice] = useState(initial?.boxOffice?.toString() || '');
   const [domesticBoxOffice, setDomesticBoxOffice] = useState(initial?.domesticBoxOffice?.toString() || '');
   const [internationalBoxOffice, setInternationalBoxOffice] = useState(initial?.internationalBoxOffice?.toString() || '');
+  const [tmdbId] = useState(initial?.tmdbId || null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -116,7 +118,8 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
         marketingBudget: marketingBudget ? Number(marketingBudget) : null,
         boxOffice: boxOffice ? Number(boxOffice) : null,
         domesticBoxOffice: domesticBoxOffice ? Number(domesticBoxOffice) : null,
-        internationalBoxOffice: internationalBoxOffice ? Number(internationalBoxOffice) : null
+        internationalBoxOffice: internationalBoxOffice ? Number(internationalBoxOffice) : null,
+        tmdbId
       };
       const res = await fetch(isEdit ? `/api/movies/${initial!.id}` : '/api/movies', {
         method: isEdit ? 'PUT' : 'POST',

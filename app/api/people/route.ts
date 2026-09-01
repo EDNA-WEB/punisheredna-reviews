@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
   }
 
-  const { name, role, subRole, photo, bio, birthDate, deathDate, birthPlace, deathPlace } = await req.json();
+  const { name, role, subRole, photo, bio, birthDate, deathDate, birthPlace, deathPlace, tmdbId } = await req.json();
   if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadaj meno.' }, { status: 400 });
 
   const duplicate = await prisma.person.findFirst({
@@ -74,6 +74,7 @@ export async function POST(req: Request) {
       deathDate: deathDate ? new Date(deathDate) : null,
       birthPlace: birthPlace || null,
       deathPlace: deathPlace || null,
+      tmdbId: tmdbId ? Number(tmdbId) : null,
       approved: isAdmin,
       submittedById: isAdmin ? null : userId
     }

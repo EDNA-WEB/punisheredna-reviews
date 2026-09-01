@@ -126,7 +126,20 @@ export async function tmdbGetDetails(id: number, mediaType: 'movie' | 'tv') {
     boxOffice: mediaType === 'movie' && d.revenue ? d.revenue : null,
     trailerUrl: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : '',
     trailerTitle: originalTitleValue && yearValue ? `${originalTitleValue} (${yearValue})` : undefined,
-    photoUrls
+    photoUrls,
+    tmdbId: d.id,
+    tmdbMediaType: mediaType
+  };
+}
+
+export async function tmdbGetLiveBoxOffice(tmdbId: number): Promise<{ budget: number | null; boxOffice: number | null } | null> {
+  const url = `${TMDB_BASE}/movie/${tmdbId}`;
+  const res = await fetch(url, { headers: tmdbHeaders(), next: { revalidate: 0 } });
+  if (!res.ok) return null;
+  const d = await res.json();
+  return {
+    budget: d.budget || null,
+    boxOffice: d.revenue || null
   };
 }
 
@@ -157,6 +170,45 @@ export async function tmdbGetPersonDetails(id: number) {
     bio: d.biography || '',
     birthDate: d.birthday || null,
     deathDate: d.deathday || null,
-    birthPlace: d.place_of_birth || ''
+    birthPlace: d.place_of_birth || '',
+    tmdbId: d.id
   };
+}
+
+export async function tmdbGetPersonFilmography(tmdbId: number) {
+  const url = `${TMDB_BASE}/person/${tmdbId}/combined_credits?language=cs-CZ`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return { asActor: [], asCrew: [] };
+  const d = await res.json();
+
+  const dedupe = (items: any[]) => {
+    const seen = new Set<number>();
+    return items.filter((it) => {
+      if (seen.has(it.id)) return false;
+      seen.add(it.id);
+      return true;
+    });
+  };
+
+  const asActor = dedupe(d.cast || [])
+    .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
+    .slice(0, 30)
+    .map((c: any) => ({
+      title: c.title || c.name,
+      year: (c.release_date || c.first_air_date || '').slice(0, 4),
+      character: c.character || null,
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null
+    }));
+
+  const asCrew = dedupe(d.crew || [])
+    .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
+    .slice(0, 30)
+    .map((c: any) => ({
+      title: c.title || c.name,
+      year: (c.release_date || c.first_air_date || '').slice(0, 4),
+      job: c.job || null,
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null
+    }));
+
+  return { asActor, asCrew };
 }

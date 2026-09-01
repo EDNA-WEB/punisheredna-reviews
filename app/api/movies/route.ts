@@ -103,6 +103,7 @@ export async function POST(req: Request) {
       boxOffice: isAdmin && data.boxOffice ? Number(data.boxOffice) : null,
       domesticBoxOffice: isAdmin && data.domesticBoxOffice ? Number(data.domesticBoxOffice) : null,
       internationalBoxOffice: isAdmin && data.internationalBoxOffice ? Number(data.internationalBoxOffice) : null,
+      tmdbId: data.tmdbId ? Number(data.tmdbId) : null,
       approved: isAdmin,
       submittedById: isAdmin ? null : userId
     }

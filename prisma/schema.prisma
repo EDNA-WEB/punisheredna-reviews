@@ -97,6 +97,7 @@ model Person {
   deathDate  DateTime?
   birthPlace String?
   deathPlace String?
+  tmdbId     Int?
   approved   Boolean        @default(true)
   submittedById String?
   submittedBy   User?        @relation("submittedPeople", fields: [submittedById], references: [id])
@@ -251,6 +252,7 @@ model Movie {
   streamingServices MovieStreamingService[]
   links MovieLink[]
   premiereDates MoviePremiereDate[]
+  tmdbId Int?
   contentSubmissions ContentSubmission[]
   ageRating String?
 

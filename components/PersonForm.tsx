@@ -15,6 +15,7 @@ type Initial = {
   birthPlace?: string | null;
   deathPlace?: string | null;
   subRole?: string | null;
+  tmdbId?: number | null;
 };
 
 export default function PersonForm({ initial, redirectTo }: { initial?: Initial; redirectTo?: string }) {
@@ -30,6 +31,7 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
   const [birthPlace, setBirthPlace] = useState(initial?.birthPlace || '');
   const [deathPlace, setDeathPlace] = useState(initial?.deathPlace || '');
   const [subRole, setSubRole] = useState(initial?.subRole || '');
+  const [tmdbId] = useState(initial?.tmdbId || null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +68,7 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
       const res = await fetch(isEdit ? `/api/people/${initial!.id}` : '/api/people', {
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, role, subRole: subRole || null, photo, bio, birthDate: birthDate || null, deathDate: deathDate || null, birthPlace: birthPlace || null, deathPlace: deathPlace || null })
+        body: JSON.stringify({ name, role, subRole: subRole || null, photo, bio, birthDate: birthDate || null, deathDate: deathDate || null, birthPlace: birthPlace || null, deathPlace: deathPlace || null, tmdbId })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Uloženie zlyhalo.');
