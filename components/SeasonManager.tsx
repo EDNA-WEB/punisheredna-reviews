@@ -10,9 +10,26 @@ type EpisodeT = { id: string; number: number; title: string | null; synopsis: st
 type SeasonT = { id: string; number: number; year: string | null; episodeCount: number; released: boolean; episodes: EpisodeT[]; videos: VideoT[] };
 type DraftSeason = { number: number; year: string; episodeCount: string };
 
-export default function SeasonManager({ movieId, initialSeasons }: { movieId: string; initialSeasons: SeasonT[] }) {
+export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { movieId: string; tmdbId?: number | null; initialSeasons: SeasonT[] }) {
   const router = useRouter();
   const [seasons, setSeasons] = useState<SeasonT[]>(initialSeasons.sort((a, b) => a.number - b.number));
+  const [importingTmdb, setImportingTmdb] = useState(false);
+  const [importError, setImportError] = useState('');
+
+  async function importSeasonsFromTmdb() {
+    setImportingTmdb(true);
+    setImportError('');
+    try {
+      const res = await fetch(`/api/movies/${movieId}/seasons/import-tmdb`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+      router.refresh();
+    } catch (err: any) {
+      setImportError(err.message);
+    } finally {
+      setImportingTmdb(false);
+    }
+  }
   const [videoUrlFor, setVideoUrlFor] = useState<Record<string, string>>({});
   const [addingVideoFor, setAddingVideoFor] = useState<string | null>(null);
 
@@ -229,6 +246,23 @@ export default function SeasonManager({ movieId, initialSeasons }: { movieId: st
             </li>
           ))}
         </ul>
+      )}
+
+      {tmdbId && !drafts && (
+        <div className="border border-line rounded-lg p-3 mb-3 bg-surface">
+          <button
+            type="button"
+            onClick={importSeasonsFromTmdb}
+            disabled={importingTmdb}
+            className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
+          >
+            {importingTmdb ? 'Importujem série a epizódy…' : 'Importovať všetky série a epizódy z TMDb'}
+          </button>
+          <p className="text-[11px] text-muted mt-1.5">
+            Doplní chýbajúce série s ich epizódami (názov, obsah). Série, čo už máš pridané, sa nepreprepíšu.
+          </p>
+          {importError && <p className="text-danger text-xs mt-1.5">{importError}</p>}
+        </div>
       )}
 
       {!drafts ? (

@@ -74,6 +74,7 @@ export default async function EditMoviePage({ params }: { params: { id: string }
           {movie.contentType === 'Seriál' && (
             <SeasonManager
               movieId={movie.id}
+              tmdbId={movie.tmdbId}
               initialSeasons={seasons.map((s) => ({ ...s, releaseDate: s.releaseDate ? s.releaseDate.toISOString() : null }))}
             />
           )}

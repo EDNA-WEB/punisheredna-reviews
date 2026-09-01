@@ -226,3 +226,29 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
 
   return { asActor, asCrew };
 }
+
+export async function tmdbGetTvSeasonsList(tvId: number): Promise<{ number: number; episodeCount: number; year: string }[]> {
+  const url = `${TMDB_BASE}/tv/${tvId}?language=cs-CZ`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  return (d.seasons || [])
+    .filter((s: any) => s.season_number > 0) // vynechá "Speciály" (séria 0)
+    .map((s: any) => ({
+      number: s.season_number,
+      episodeCount: s.episode_count || 0,
+      year: (s.air_date || '').slice(0, 4)
+    }));
+}
+
+export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number): Promise<{ number: number; title: string; synopsis: string }[]> {
+  const url = `${TMDB_BASE}/tv/${tvId}/season/${seasonNumber}?language=cs-CZ`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  return (d.episodes || []).map((e: any) => ({
+    number: e.episode_number,
+    title: e.name || '',
+    synopsis: e.overview || ''
+  }));
+}
