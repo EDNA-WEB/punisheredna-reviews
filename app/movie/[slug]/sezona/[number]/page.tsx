@@ -393,6 +393,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               )}
             </div>
           </div>
+          </div>
 
           <div className="w-full">
             <SeasonEpisodeQuickActionsBar
