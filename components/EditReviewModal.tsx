@@ -4,14 +4,16 @@ import ReviewForm from './ReviewForm';
 
 export default function EditReviewModal({
   movieId,
-  movieTitle,
+  apiBase,
+  title,
   reviewId,
   initialBody,
   initialRating,
   onClose
 }: {
-  movieId: string;
-  movieTitle: string;
+  movieId?: string;
+  apiBase?: string;
+  title: string;
   reviewId: string | null;
   initialBody: string;
   initialRating: number;
@@ -28,10 +30,11 @@ export default function EditReviewModal({
           ✕
         </button>
         <h2 className="font-display font-extrabold text-2xl text-ink mb-1">{reviewId ? 'Upraviť recenziu' : 'Napísať recenziu'}</h2>
-        <p className="text-muted mb-6">{movieTitle}</p>
+        <p className="text-muted mb-6">{title}</p>
         <ReviewForm
           initial={{ id: reviewId || undefined, movieId, body: initialBody, rating: initialRating }}
           movieLocked
+          apiBase={apiBase}
           onSuccess={onClose}
         />
       </div>

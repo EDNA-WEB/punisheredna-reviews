@@ -213,7 +213,7 @@ export default function MovieQuickActionsBar({
       {editReviewOpen && (
         <EditReviewModal
           movieId={movieId}
-          movieTitle={movieTitle}
+          title={movieTitle}
           reviewId={myReviewId}
           initialBody={myReviewBody}
           initialRating={myReviewRating}

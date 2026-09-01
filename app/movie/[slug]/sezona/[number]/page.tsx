@@ -10,6 +10,9 @@ import { mdToHtml, youtubeVideoId } from '@/lib/markdown';
 import { displayUserName } from '@/lib/deletedUser';
 import EntityRatingWidget from '@/components/EntityRatingWidget';
 import WatchedEyeToggle from '@/components/WatchedEyeToggle';
+import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
+import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
+import FlagCZ from '@/components/FlagCZ';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
 import MovieGallery from '@/components/MovieGallery';
@@ -121,6 +124,13 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
       ? Math.round((myEpisodeRatings.reduce((sum, v) => sum + v, 0) / myEpisodeRatings.length) * 2) / 2
       : undefined;
   const myReview = viewerId ? season.reviews.find((r) => r.authorId === viewerId) : null;
+  const myRatingForActions = viewerId ? season.ratings.find((r) => r.userId === viewerId)?.value || 0 : 0;
+  const isInWatchlist = viewerId
+    ? !!(await prisma.watchlistItem.findUnique({ where: { userId_movieId: { userId: viewerId, movieId: movie.id } } }))
+    : false;
+  const isInFavorites = viewerId
+    ? !!(await prisma.movieListItem.findFirst({ where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } } }))
+    : false;
 
   const videoGroups = [
     { key: 'trailer', label: 'Trailery' },
@@ -134,6 +144,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
       .filter((v) => v.youtubeId) as { id: string; title: string | null; youtubeId: string; subtitles: any[] }[]
   }));
   const totalVideosCount = videoGroups.reduce((n, g) => n + g.videos.length, 0);
+  const primaryVideo = videoGroups.find((g) => g.key === 'trailer')?.videos[0] || videoGroups.flatMap((g) => g.videos)[0] || null;
 
   const [discussionComments, isFollowingDiscussion] = await Promise.all([
     prisma.comment.findMany({
@@ -209,15 +220,101 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   return (
     <div className="grid md:grid-cols-[1fr_260px] gap-8 mb-8">
       <div>
-        <div className="flex flex-col sm:flex-row gap-5 mb-4 border border-line rounded-xl p-4 sm:items-start">
-          <div className="relative w-32 sm:w-40 flex-none mx-auto sm:mx-0">
-            <div
-              className="rounded-xl bg-surface bg-cover bg-center aspect-[2/3]"
-              style={movie.poster ? { backgroundImage: `url('${movie.poster}')` } : undefined}
+        <div className="sm:hidden mb-5 border border-line rounded-xl">
+          <div className="bg-surface px-4 py-3 rounded-t-xl">
+            <Link
+              href={`/movie/${movie.slug}`}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent transition-colors mb-2"
+            >
+              <IconChevronLeft className="w-3.5 h-3.5" />
+              {movie.title}
+            </Link>
+            <h1 className="font-display font-extrabold text-2xl text-ink leading-tight">Séria {season.number}</h1>
+            {movie.originalTitle && movie.originalTitle !== movie.title && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <FlagCZ />
+                <span className="text-base font-semibold text-ink">{movie.title}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4">
+            <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
+              <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
+                {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
+                {viewerId && season.episodes.length > 0 && (
+                  <div className="absolute top-2 right-2">
+                    <WatchedEyeToggle apiBase={`/api/seasons/${season.id}`} initialWatched={allEpisodesWatched} />
+                  </div>
+                )}
+              </div>
+              {primaryVideo && (
+                <div className="relative flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+                  <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
+                </div>
+              )}
+            </div>
+
+            {genres.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {genres.map((g) => (
+                  <span key={g} className="text-xs font-semibold text-ink bg-surface border border-line px-2.5 py-1 rounded-full">
+                    {g}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="text-sm text-muted mb-3">{[movie.countries, season.year].filter(Boolean).join(' · ')}</div>
+
+            {!season.released && (
+              <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
+                {season.releaseDate ? `Vyjde ${season.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Ešte nevyšla'}
+              </div>
+            )}
+
+            <div className="space-y-1 text-sm">
+              {movie.director && (
+                <div><span className="text-muted">Réžia: </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {cast.length > 0 && (
+                <div><span className="text-muted">Hrajú: </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
+              )}
+            </div>
+          </div>
+
+          <div className="px-4 pb-4">
+            <SeasonEpisodeQuickActionsBar
+              reviewApiBase={`/api/seasons/${season.id}`}
+              reviewTitle={`${movie.title} — Séria ${season.number}`}
+              myReviewId={myReview?.id || null}
+              myReviewBody={myReview?.body || ''}
+              myReviewRating={myRatingForActions}
+              movieId={movie.id}
+              initialInWatchlist={isInWatchlist}
+              initialInFavorites={isInFavorites}
+              isLoggedIn={!!viewerId}
             />
-            {viewerId && season.episodes.length > 0 && (
-              <div className="absolute top-2 right-2">
-                <WatchedEyeToggle apiBase={`/api/seasons/${season.id}`} initialWatched={allEpisodesWatched} />
+          </div>
+        </div>
+
+        <div className="hidden sm:block mb-4 border border-line rounded-xl p-4">
+          <div className="flex gap-5 items-start">
+          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''} w-full sm:w-auto`}>
+            <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32 sm:w-40' : 'w-40 sm:w-40'}`}>
+              <div
+                className="w-full h-full bg-surface bg-cover bg-center"
+                style={movie.poster ? { backgroundImage: `url('${movie.poster}')` } : undefined}
+              />
+              {viewerId && season.episodes.length > 0 && (
+                <div className="absolute top-2 right-2">
+                  <WatchedEyeToggle apiBase={`/api/seasons/${season.id}`} initialWatched={allEpisodesWatched} />
+                </div>
+              )}
+            </div>
+            {primaryVideo && (
+              <div className="flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+                <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
               </div>
             )}
           </div>
@@ -295,6 +392,20 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                 <div><span className="text-muted">Hrajú: </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
               )}
             </div>
+          </div>
+
+          <div className="w-full">
+            <SeasonEpisodeQuickActionsBar
+              reviewApiBase={`/api/seasons/${season.id}`}
+              reviewTitle={`${movie.title} — Séria ${season.number}`}
+              myReviewId={myReview?.id || null}
+              myReviewBody={myReview?.body || ''}
+              myReviewRating={myRatingForActions}
+              movieId={movie.id}
+              initialInWatchlist={isInWatchlist}
+              initialInFavorites={isInFavorites}
+              isLoggedIn={!!viewerId}
+            />
           </div>
         </div>
 
