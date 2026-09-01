@@ -129,3 +129,34 @@ export async function tmdbGetDetails(id: number, mediaType: 'movie' | 'tv') {
     photoUrls
   };
 }
+
+export async function tmdbSearchPerson(query: string) {
+  const url = `${TMDB_BASE}/search/person?query=${encodeURIComponent(query)}&language=cs-CZ&include_adult=false`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) throw new Error('Vyhľadávanie na TMDb zlyhalo.');
+  const data = await res.json();
+  return (data.results || []).slice(0, 10).map((r: any) => ({
+    id: r.id,
+    name: r.name,
+    knownForDepartment: r.known_for_department,
+    photo: r.profile_path ? `https://image.tmdb.org/t/p/w200${r.profile_path}` : null,
+    knownFor: (r.known_for || []).map((k: any) => k.title || k.name).filter(Boolean).slice(0, 3).join(', ')
+  }));
+}
+
+export async function tmdbGetPersonDetails(id: number) {
+  const url = `${TMDB_BASE}/person/${id}?language=cs-CZ`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) throw new Error('Načítanie detailu z TMDb zlyhalo.');
+  const d = await res.json();
+
+  return {
+    name: d.name || '',
+    role: d.known_for_department === 'Acting' ? 'ACTOR' : 'CREATOR',
+    photo: d.profile_path ? `https://image.tmdb.org/t/p/w780${d.profile_path}` : null,
+    bio: d.biography || '',
+    birthDate: d.birthday || null,
+    deathDate: d.deathday || null,
+    birthPlace: d.place_of_birth || ''
+  };
+}
