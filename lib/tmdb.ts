@@ -4,6 +4,49 @@
 
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 
+// TMDb vracia názvy krajín (production_countries) VŽDY po anglicky, bez ohľadu na
+// nastavený jazyk požiadavky — ide o obmedzenie ich API. Prekladáme si ich preto
+// sami podľa ISO kódu, aspoň pre bežne sa vyskytujúce krajiny.
+const COUNTRY_NAMES_CS: Record<string, string> = {
+  US: 'USA',
+  GB: 'Velká Británie',
+  CZ: 'Česko',
+  SK: 'Slovensko',
+  DE: 'Německo',
+  FR: 'Francie',
+  IT: 'Itálie',
+  ES: 'Španělsko',
+  CA: 'Kanada',
+  AU: 'Austrálie',
+  JP: 'Japonsko',
+  KR: 'Jižní Korea',
+  CN: 'Čína',
+  RU: 'Rusko',
+  IN: 'Indie',
+  NL: 'Nizozemsko',
+  BE: 'Belgie',
+  AT: 'Rakousko',
+  CH: 'Švýcarsko',
+  SE: 'Švédsko',
+  NO: 'Norsko',
+  DK: 'Dánsko',
+  FI: 'Finsko',
+  PL: 'Polsko',
+  HU: 'Maďarsko',
+  IE: 'Irsko',
+  PT: 'Portugalsko',
+  GR: 'Řecko',
+  MX: 'Mexiko',
+  BR: 'Brazílie',
+  NZ: 'Nový Zéland',
+  HK: 'Hongkong',
+  TW: 'Tchaj-wan'
+};
+
+function translateCountryName(isoCode: string, fallbackName: string): string {
+  return COUNTRY_NAMES_CS[isoCode] || fallbackName;
+}
+
 function tmdbHeaders() {
   return {
     Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
@@ -30,15 +73,25 @@ export async function tmdbSearchMovie(query: string) {
 }
 
 export async function tmdbGetDetails(id: number, mediaType: 'movie' | 'tv') {
-  const url = `${TMDB_BASE}/${mediaType}/${id}?language=cs-CZ&append_to_response=credits,videos,keywords,images&include_image_language=null`;
+  const url = `${TMDB_BASE}/${mediaType}/${id}?language=cs-CZ&append_to_response=credits,keywords,images&include_image_language=null`;
   const res = await fetch(url, { headers: tmdbHeaders() });
   if (!res.ok) throw new Error('Načítanie detailu z TMDb zlyhalo.');
   const d = await res.json();
 
+  // Videá naťahujeme SAMOSTATNE, bez jazykového obmedzenia — pri filtrovaní podľa
+  // cs-CZ by bol zoznam takmer vždy prázdny, keďže väčšina trailerov na TMDb je
+  // vedená bez konkrétneho jazyka alebo v angličtine, nie po česky.
+  const videosRes = await fetch(`${TMDB_BASE}/${mediaType}/${id}/videos`, { headers: tmdbHeaders() });
+  const videosData = videosRes.ok ? await videosRes.json() : { results: [] };
+
   const crew = d.credits?.crew || [];
   const findCrew = (job: string) => crew.filter((c: any) => c.job === job).map((c: any) => c.name).join(', ');
   const cast = (d.credits?.cast || []).slice(0, 12).map((c: any) => c.name).join(', ');
-  const trailer = (d.videos?.results || []).find((v: any) => v.site === 'YouTube' && v.type === 'Trailer');
+  const videoResults = videosData.results || [];
+  const trailer =
+    videoResults.find((v: any) => v.site === 'YouTube' && v.type === 'Trailer' && v.official) ||
+    videoResults.find((v: any) => v.site === 'YouTube' && v.type === 'Trailer') ||
+    videoResults.find((v: any) => v.site === 'YouTube' && v.type === 'Teaser');
 
   // Kľúčové slová — TMDb ich (na rozdiel od ostatných polí) vracia len v angličtine,
   // nemajú český preklad k dispozícii cez API.
@@ -58,7 +111,7 @@ export async function tmdbGetDetails(id: number, mediaType: 'movie' | 'tv') {
     originalTitle: originalTitleValue,
     poster: d.poster_path ? `https://image.tmdb.org/t/p/w780${d.poster_path}` : null,
     genres: (d.genres || []).map((g: any) => g.name).join(', '),
-    countries: (d.production_countries || []).map((c: any) => c.name).join(', '),
+    countries: (d.production_countries || []).map((c: any) => translateCountryName(c.iso_3166_1, c.name)).join(', '),
     year: yearValue,
     releaseDate: d.release_date || d.first_air_date || null,
     runtimeMinutes: d.runtime || (d.episode_run_time && d.episode_run_time[0]) || null,
