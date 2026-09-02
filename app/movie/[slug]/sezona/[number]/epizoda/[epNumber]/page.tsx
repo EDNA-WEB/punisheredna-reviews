@@ -59,7 +59,10 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
   });
   if (!movie) return notFound();
 
-  const season = await prisma.season.findUnique({ where: { movieId_number: { movieId: movie.id, number: Number(params.number) } } });
+  const season = await prisma.season.findUnique({
+    where: { movieId_number: { movieId: movie.id, number: Number(params.number) } },
+    include: { videos: { where: { episodeId: null }, orderBy: { order: 'asc' } } }
+  });
   if (!season) return notFound();
 
   const episode = await prisma.episode.findUnique({
@@ -182,7 +185,10 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
   const episodeVideos = episode.videos
     .map((v) => ({ id: v.id, title: v.title, youtubeId: youtubeVideoId(v.url) }))
     .filter((v) => v.youtubeId) as { id: string; title: string | null; youtubeId: string }[];
-  const primaryVideo = episodeVideos[0] || null;
+  const seasonTrailerFallback = season.videos
+    .map((v) => ({ id: v.id, title: v.title, youtubeId: youtubeVideoId(v.url), category: v.category }))
+    .filter((v) => v.youtubeId && v.category === 'trailer')[0] || null;
+  const primaryVideo = episodeVideos[0] || seasonTrailerFallback;
 
   function renderReviewCard(review: NonNullable<typeof episode>['reviews'][number], withComments: boolean) {
     if (!movie || !episode) return null;
@@ -313,7 +319,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
         <div className="hidden sm:block mb-4 border border-line rounded-xl p-4">
           <div className="flex gap-5 items-start">
-          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''} w-full sm:w-auto`}>
+          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''}`}>
             <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32 sm:w-40' : 'w-40 sm:w-40'}`}>
               <div
                 className="w-full h-full bg-surface bg-cover bg-center"
@@ -326,7 +332,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               )}
             </div>
             {primaryVideo && (
-              <div className="flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+              <div className="w-64 flex-none min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
                 <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={[]} fill />
               </div>
             )}

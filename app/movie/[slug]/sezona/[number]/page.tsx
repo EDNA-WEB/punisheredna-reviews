@@ -300,7 +300,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
 
         <div className="hidden sm:block mb-4 border border-line rounded-xl p-4">
           <div className="flex gap-5 items-start">
-          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''} w-full sm:w-auto`}>
+          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''}`}>
             <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32 sm:w-40' : 'w-40 sm:w-40'}`}>
               <div
                 className="w-full h-full bg-surface bg-cover bg-center"
@@ -313,7 +313,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               )}
             </div>
             {primaryVideo && (
-              <div className="flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
+              <div className="w-64 flex-none min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
                 <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} fill />
               </div>
             )}
