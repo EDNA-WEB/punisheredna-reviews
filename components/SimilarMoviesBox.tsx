@@ -6,7 +6,7 @@ export default async function SimilarMoviesBox({ tmdbId, mediaType }: { tmdbId: 
   const items = (await tmdbGetSimilarMovies(tmdbId, mediaType)).slice(0, 6);
   if (items.length === 0) return null;
 
-  const tmdbIds = items.map((item) => item.tmdbId);
+  const tmdbIds = items.map((item: { tmdbId: number }) => item.tmdbId);
   const ourMovies = await prisma.movie.findMany({
     where: { tmdbId: { in: tmdbIds }, approved: true },
     select: { tmdbId: true, slug: true }
@@ -20,7 +20,7 @@ export default async function SimilarMoviesBox({ tmdbId, mediaType }: { tmdbId: 
       </div>
       <div className="p-4">
         <div className="grid grid-cols-2 gap-3">
-          {items.map((item) => {
+          {items.map((item: { tmdbId: number; title: string; year: string; poster: string | null }) => {
             const ourSlug = slugByTmdbId.get(item.tmdbId);
             const content = (
               <>
