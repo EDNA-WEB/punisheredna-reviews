@@ -286,6 +286,15 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               {movie.director && (
                 <div><span className="text-muted">Réžia: </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
+              {movie.screenplay && (
+                <div><span className="text-muted">Scenár: </span><span className="text-ink font-medium"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.cinematography && (
+                <div><span className="text-muted">Kamera: </span><span className="text-ink font-medium"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
+              {movie.music && (
+                <div><span className="text-muted">Hudba: </span><span className="text-ink font-medium"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+              )}
               {cast.length > 0 && (
                 <div><span className="text-muted">Hrajú: </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
               )}
@@ -307,10 +316,6 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               isLoggedIn={!!viewerId}
             />
           </div>
-        </div>
-
-        <div className="sm:hidden mb-5">
-          <TagsBox tags={movieTags} />
         </div>
 
         {/* Mobil — hodnotenie + graf, hneď pod hlavičkou (rovnaký vzor ako pri profile filmu) */}
@@ -702,6 +707,10 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
             }
           ]}
         />
+
+        <div className="sm:hidden mt-5">
+          <TagsBox tags={movieTags} />
+        </div>
       </div>
 
       <div>
