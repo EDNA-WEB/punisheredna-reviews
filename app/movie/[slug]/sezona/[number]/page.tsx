@@ -446,14 +446,14 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                           <Link
                             key={e.id}
                             href={`/movie/${movie.slug}/sezona/${season.number}/epizoda/${e.number}`}
-                            className="flex items-center gap-2.5 px-4 py-3 hover:bg-surface transition-colors"
+                            className="flex items-center gap-2.5 px-4 py-3 hover:bg-surface transition-colors min-w-0"
                           >
                             <span
                               className="w-2.5 h-2.5 rounded-[3px] flex-none"
                               style={{ backgroundColor: !season.released ? '#D9D9D9' : epPercent !== null ? scoreColorStyle(epPercent).backgroundColor : '#E8E7E5' }}
                             />
-                            <span className="text-sm font-semibold text-ink">{e.title || `Epizóda ${e.number}`}</span>
-                            <span className="text-xs text-muted">({code})</span>
+                            <span className="text-sm font-semibold text-ink truncate min-w-0">{e.title || `Epizóda ${e.number}`}</span>
+                            <span className="text-xs text-muted flex-none">({code})</span>
                           </Link>
                         );
                       })}
@@ -524,15 +524,15 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                       <Link
                         key={e.id}
                         href={`/movie/${movie.slug}/sezona/${season.number}/epizoda/${e.number}`}
-                        className="flex items-center gap-2.5 px-4 py-3 bg-card hover:bg-surface transition-colors"
+                        className="flex items-center gap-2.5 px-4 py-3 bg-card hover:bg-surface transition-colors min-w-0"
                       >
                         <span
                           className="w-2.5 h-2.5 rounded-[3px] flex-none"
                           style={{ backgroundColor: !season.released ? '#D9D9D9' : epPercent !== null ? scoreColorStyle(epPercent).backgroundColor : '#E8E7E5' }}
                         />
-                        <span className="text-sm font-semibold text-ink">{e.title || `Epizóda ${e.number}`}</span>
-                        <span className="text-xs text-muted">({code})</span>
-                        {season.released && epPercent !== null && <span className="text-xs text-muted ml-auto">{epPercent}%</span>}
+                        <span className="text-sm font-semibold text-ink truncate min-w-0">{e.title || `Epizóda ${e.number}`}</span>
+                        <span className="text-xs text-muted flex-none">({code})</span>
+                        {season.released && epPercent !== null && <span className="text-xs text-muted ml-auto flex-none">{epPercent}%</span>}
                       </Link>
                     );
                   })}
