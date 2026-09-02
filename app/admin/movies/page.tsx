@@ -45,12 +45,20 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
           <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
           <h1 className="font-display font-extrabold text-3xl text-ink">Filmy a seriály</h1>
         </div>
-        <Link
-          href={typeFilter === 'Seriál' ? '/admin/movies/new?type=Seriál' : typeFilter === 'TV film' ? '/admin/movies/new?type=TV film' : '/admin/movies/new'}
-          className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark"
-        >
-          {typeFilter === 'Seriál' ? '+ Pridať seriál' : typeFilter === 'TV film' ? '+ Pridať TV film' : '+ Pridať film'}
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/movies/hromadny-import"
+            className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent"
+          >
+            Hromadný import z TMDb
+          </Link>
+          <Link
+            href={typeFilter === 'Seriál' ? '/admin/movies/new?type=Seriál' : typeFilter === 'TV film' ? '/admin/movies/new?type=TV film' : '/admin/movies/new'}
+            className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark"
+          >
+            {typeFilter === 'Seriál' ? '+ Pridať seriál' : typeFilter === 'TV film' ? '+ Pridať TV film' : '+ Pridať film'}
+          </Link>
+        </div>
       </div>
 
       {pending.length > 0 && (
