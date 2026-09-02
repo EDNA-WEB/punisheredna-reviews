@@ -427,7 +427,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
         </div>
       )}
       <div className="grid md:grid-cols-[1fr_260px] gap-8 mb-8">
-        <div>
+        <div className="min-w-0">
           {/* Mobilná hlavička — poradie podľa referenčného návrhu: originálny názov, lokálny názov s vlajkou, plagát + trailer, žánre, krajina/rok/dĺžka */}
           <div className="sm:hidden mb-5 border border-line rounded-xl">
             <div className="bg-surface px-4 py-3 rounded-t-xl">
@@ -445,7 +445,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
 
             <div className="p-4">
-              <div className={`relative flex gap-3 mb-3 ${!primaryVideo ? 'justify-center' : ''}`}>
+              <div className={`relative flex gap-3 mb-3 w-full min-w-0 overflow-hidden ${!primaryVideo ? 'justify-center' : ''}`}>
                 <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
                   {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
                 </div>
