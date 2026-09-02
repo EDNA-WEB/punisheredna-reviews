@@ -109,9 +109,9 @@ export default function MovieQuickActionsBar({
 
 
   const primaryButtonClass =
-    'flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full bg-accent text-white hover:bg-accent-dark transition-colors flex-none whitespace-nowrap';
+    'flex items-center gap-1 text-xs font-semibold px-2.5 py-2 rounded-full bg-accent text-white hover:bg-accent-dark transition-colors flex-none whitespace-nowrap';
   const secondaryButtonClass =
-    'flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full border transition-colors flex-none whitespace-nowrap disabled:opacity-50';
+    'flex items-center gap-1 text-xs font-semibold px-2.5 py-2 rounded-full border transition-colors flex-none whitespace-nowrap disabled:opacity-50';
 
   const watchlistButton = (
     <button onClick={toggleWatchlist} disabled={savingWatchlist} className={`${secondaryButtonClass} ${inWatchlist ? 'bg-blue-600 text-white border-blue-600' : 'border-line text-ink hover:bg-surface'}`}>
@@ -129,7 +129,7 @@ export default function MovieQuickActionsBar({
 
   return (
     <div className="flex items-stretch gap-2 pt-4 mt-4 border-t border-line">
-      <div className="flex items-center gap-2 overflow-x-auto min-w-0">
+      <div className="flex items-center gap-1.5 overflow-x-auto min-w-0">
         <button onClick={() => (isLoggedIn ? setEditReviewOpen(true) : router.push('/login'))} className={primaryButtonClass}>
           <IconEdit className="w-3.5 h-3.5" />
           {myReviewId ? 'Upravit recenzi' : 'Napsat recenzi'}

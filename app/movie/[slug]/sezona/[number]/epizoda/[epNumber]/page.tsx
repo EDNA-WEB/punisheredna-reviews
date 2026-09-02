@@ -310,6 +310,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               myReviewBody={myReview?.body || ''}
               myReviewRating={myRating}
               movieId={movie.id}
+              movieTitle={movie.title}
+              movieYear={movie.year}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}
@@ -411,6 +413,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               myReviewBody={myReview?.body || ''}
               myReviewRating={myRating}
               movieId={movie.id}
+              movieTitle={movie.title}
+              movieYear={movie.year}
               initialInWatchlist={isInWatchlist}
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}
