@@ -15,6 +15,7 @@ import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActions
 import FlagCZ from '@/components/FlagCZ';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import SeasonNoteBox from '@/components/SeasonNoteBox';
+import TagsBox from '@/components/TagsBox';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
 import MovieGallery from '@/components/MovieGallery';
@@ -136,6 +137,9 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   const mySeasonNote = viewerId
     ? await prisma.seasonNote.findUnique({ where: { seasonId_userId: { seasonId: season.id, userId: viewerId } } })
     : null;
+  const movieTags = movie.tags
+    ? movie.tags.split(',').map((tg) => tg.trim()).filter(Boolean)
+    : [];
 
   const videoGroups = [
     { key: 'trailer', label: 'Trailery' },
@@ -278,7 +282,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               </div>
             )}
 
-            <div className="space-y-1 text-sm">
+            <div className="space-y-1 text-sm border border-line rounded-xl p-3 bg-surface">
               {movie.director && (
                 <div><span className="text-muted">Réžia: </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
@@ -303,6 +307,10 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               isLoggedIn={!!viewerId}
             />
           </div>
+        </div>
+
+        <div className="sm:hidden mb-5">
+          <TagsBox tags={movieTags} />
         </div>
 
         {/* Mobil — hodnotenie + graf, hneď pod hlavičkou (rovnaký vzor ako pri profile filmu) */}
@@ -697,7 +705,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
       </div>
 
       <div>
-        <div className="border border-line rounded-xl overflow-hidden">
+        <div className="hidden sm:block border border-line rounded-xl overflow-hidden">
           <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
             <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
             <div className="text-xs opacity-90 mt-1">{season.ratings.length} hlasov</div>
@@ -714,6 +722,10 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               </p>
             )}
           </div>
+        </div>
+
+        <div className="hidden sm:block mt-4">
+          <TagsBox tags={movieTags} />
         </div>
 
         {viewerId && (

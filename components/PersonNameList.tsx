@@ -24,15 +24,15 @@ export default function PersonNameList({ names, slugByName }: { names: string[];
           {i < shown.length - 1 && ', '}
         </span>
       ))}
-      {!expanded && hiddenCount > 0 && (
+      {hiddenCount > 0 && (
         <>
-          {', '}
+          {' '}
           <button
             type="button"
-            onClick={() => setExpanded(true)}
-            className="text-accent font-semibold hover:underline"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-muted text-xs hover:text-accent hover:underline"
           >
-            VIAC (+{hiddenCount})
+            {expanded ? 'méně' : 'více'}
           </button>
         </>
       )}

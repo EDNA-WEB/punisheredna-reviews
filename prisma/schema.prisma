@@ -58,6 +58,7 @@ model User {
   articleRevisions ArticleRevision[]
   contentSubmissions ContentSubmission[]
   seasonNotes        SeasonNote[]
+  episodeNotes       EpisodeNote[]
   comments     Comment[]
   threads          Thread[]
   posts            Post[]
@@ -156,6 +157,20 @@ model SeasonNote {
   updatedAt DateTime @updatedAt
 
   @@unique([seasonId, userId])
+  @@index([userId])
+}
+
+model EpisodeNote {
+  id        String   @id @default(cuid())
+  episodeId String
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([episodeId, userId])
   @@index([userId])
 }
 
@@ -345,6 +360,7 @@ model Episode {
   photos   MoviePhoto[]
   videos   MovieVideo[] @relation("EpisodeVideos")
   watchedBy WatchedEpisode[]
+  notes    EpisodeNote[]
 
   @@index([seasonId])
   @@unique([seasonId, number])

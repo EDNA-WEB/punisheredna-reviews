@@ -554,7 +554,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 </div>
               )}
 
-              <div className="space-y-1 text-sm">
+              <div className="space-y-1 text-sm border border-line rounded-xl p-3 bg-surface">
                 {movie.director && (
                   <div><span className="text-muted">{t('movie.rezia')} </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
                 )}
@@ -626,27 +626,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               <MovieRatersLists raters={raters} t={t} />
             </div>
           </div>
-
-          {/* Mobil — réžia, scenár, kamera, hudba, hrajú */}
-          {(movie.director || movie.screenplay || movie.cinematography || movie.music || cast.length > 0) && (
-            <div className="sm:hidden mb-5 border border-line rounded-xl p-4 space-y-1.5 text-sm">
-              {movie.director && (
-                <div><span className="text-muted font-semibold">{t('movie.rezia')} </span><span className="text-ink"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.screenplay && (
-                <div><span className="text-muted font-semibold">{t('movie.scenar')} </span><span className="text-ink"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.cinematography && (
-                <div><span className="text-muted font-semibold">{t('movie.kamera')} </span><span className="text-ink"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {movie.music && (
-                <div><span className="text-muted font-semibold">{t('movie.hudba')} </span><span className="text-ink"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
-              )}
-              {cast.length > 0 && (
-                <div><span className="text-muted font-semibold">{t('movie.hraju_dvojbodka')} </span><span className="text-ink"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
-              )}
-            </div>
-          )}
 
 
           {movie.contentType === 'Seriál' && seasons.length > 0 && (

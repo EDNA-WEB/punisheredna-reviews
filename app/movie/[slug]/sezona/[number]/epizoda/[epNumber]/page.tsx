@@ -12,6 +12,8 @@ import EntityRatingWidget from '@/components/EntityRatingWidget';
 import WatchedEyeToggle from '@/components/WatchedEyeToggle';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
+import TagsBox from '@/components/TagsBox';
+import EpisodeNoteBox from '@/components/EpisodeNoteBox';
 import FlagCZ from '@/components/FlagCZ';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import MovieTabsSection from '@/components/MovieTabsSection';
@@ -180,6 +182,12 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
   const isInFavorites = viewerId
     ? !!(await prisma.movieListItem.findFirst({ where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } } }))
     : false;
+  const myEpisodeNote = viewerId
+    ? await prisma.episodeNote.findUnique({ where: { episodeId_userId: { episodeId: episode.id, userId: viewerId } } })
+    : null;
+  const movieTags = movie.tags
+    ? movie.tags.split(',').map((tg) => tg.trim()).filter(Boolean)
+    : [];
   const code = `S${String(season.number).padStart(2, '0')}E${String(episode.number).padStart(2, '0')}`;
   const title = episode.title || `Epizóda ${episode.number}`;
 
@@ -293,7 +301,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               </div>
             )}
 
-            <div className="space-y-1 text-sm">
+            <div className="space-y-1 text-sm border border-line rounded-xl p-3 bg-surface">
               {movie.director && (
                 <div><span className="text-muted">Réžia: </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
               )}
@@ -318,6 +326,10 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               isLoggedIn={!!viewerId}
             />
           </div>
+        </div>
+
+        <div className="sm:hidden mb-5">
+          <TagsBox tags={movieTags} />
         </div>
 
         {/* Mobil — hodnotenie + graf, hneď pod hlavičkou (rovnaký vzor ako pri profile filmu) */}
@@ -673,7 +685,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
       </div>
 
       <div>
-        <div className="border border-line rounded-xl overflow-hidden">
+        <div className="hidden sm:block border border-line rounded-xl overflow-hidden">
           <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
             <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
             <div className="text-xs opacity-90 mt-1">{episode.ratings.length} hlasov</div>
@@ -691,6 +703,16 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             )}
           </div>
         </div>
+
+        <div className="hidden sm:block mt-4">
+          <TagsBox tags={movieTags} />
+        </div>
+
+        {viewerId && (
+          <div className="mt-4">
+            <EpisodeNoteBox episodeId={episode.id} initialBody={myEpisodeNote?.body || ''} />
+          </div>
+        )}
       </div>
     </div>
   );
