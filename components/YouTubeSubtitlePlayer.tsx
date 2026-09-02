@@ -41,6 +41,8 @@ export default function YouTubeSubtitlePlayer({ videoId, subtitles, title, fill 
       if (cancelled || !mountRef.current) return;
       playerRef.current = new window.YT.Player(mountRef.current, {
         videoId,
+        width: '100%',
+        height: '100%',
         playerVars: { rel: 0 },
         events: {
           onStateChange: (e: any) => {
@@ -70,6 +72,13 @@ export default function YouTubeSubtitlePlayer({ videoId, subtitles, title, fill 
 
   return (
     <div className={fill ? 'absolute inset-0' : 'relative rounded-xl overflow-hidden bg-night aspect-video'}>
+      <style jsx>{`
+        div :global(iframe) {
+          width: 100% !important;
+          height: 100% !important;
+          max-width: 100% !important;
+        }
+      `}</style>
       <div ref={mountRef} className="absolute inset-0 w-full h-full" title={title} />
       {currentText && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-[92%] pointer-events-none">
