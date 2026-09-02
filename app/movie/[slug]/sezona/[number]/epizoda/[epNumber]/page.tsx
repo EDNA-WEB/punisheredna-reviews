@@ -319,21 +319,14 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
         <div className="hidden sm:block mb-4 border border-line rounded-xl p-4">
           <div className="flex gap-5 items-start">
-          <div className={`relative flex gap-3 ${!primaryVideo ? 'justify-center' : ''}`}>
-            <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32 sm:w-40' : 'w-40 sm:w-40'}`}>
-              <div
-                className="w-full h-full bg-surface bg-cover bg-center"
-                style={movie.poster ? { backgroundImage: `url('${movie.poster}')` } : undefined}
-              />
-              {viewerId && (
-                <div className="absolute top-2 right-2">
-                  <WatchedEyeToggle apiBase={`/api/episodes/${episode.id}`} initialWatched={isWatched} />
-                </div>
-              )}
-            </div>
-            {primaryVideo && (
-              <div className="w-64 flex-none min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
-                <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={[]} fill />
+          <div className="relative w-32 sm:w-40 flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
+            <div
+              className="w-full h-full bg-surface bg-cover bg-center"
+              style={movie.poster ? { backgroundImage: `url('${movie.poster}')` } : undefined}
+            />
+            {viewerId && (
+              <div className="absolute top-2 right-2">
+                <WatchedEyeToggle apiBase={`/api/episodes/${episode.id}`} initialWatched={isWatched} />
               </div>
             )}
           </div>
