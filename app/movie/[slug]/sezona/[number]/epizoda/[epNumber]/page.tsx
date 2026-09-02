@@ -13,6 +13,7 @@ import WatchedEyeToggle from '@/components/WatchedEyeToggle';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
 import FlagCZ from '@/components/FlagCZ';
+import RatingDistributionChart from '@/components/RatingDistributionChart';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGallery from '@/components/MovieGallery';
 import PersonNameList from '@/components/PersonNameList';
@@ -316,6 +317,31 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}
             />
+          </div>
+        </div>
+
+        {/* Mobil — hodnotenie + graf, hneď pod hlavičkou (rovnaký vzor ako pri profile filmu) */}
+        <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
+          <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
+            <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
+            <div className="text-xs opacity-90 mt-1">{episode.ratings.length} hlasov</div>
+          </div>
+          {episode.ratings.length > 0 && (
+            <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
+              <RatingDistributionChart values={episode.ratings.map((r) => r.value)} label="Rozloženie hodnotení" />
+            </div>
+          )}
+          <div className="p-4 bg-card">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
+            {!season.released ? (
+              <p className="text-sm text-muted">Séria ešte nemala premiéru — hodnotiť a písať recenzie sa dá až po jej vydaní.</p>
+            ) : viewerId ? (
+              <EntityRatingWidget apiBase={`/api/episodes/${episode.id}`} initialValue={myRating} />
+            ) : (
+              <p className="text-sm text-muted">
+                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a ohodnoť epizódu.
+              </p>
+            )}
           </div>
         </div>
 

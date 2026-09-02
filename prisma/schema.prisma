@@ -57,6 +57,7 @@ model User {
   membershipCodesUsed MembershipCode[]
   articleRevisions ArticleRevision[]
   contentSubmissions ContentSubmission[]
+  seasonNotes        SeasonNote[]
   comments     Comment[]
   threads          Thread[]
   posts            Post[]
@@ -141,6 +142,20 @@ model MovieNote {
   updatedAt DateTime @updatedAt
 
   @@unique([movieId, userId])
+  @@index([userId])
+}
+
+model SeasonNote {
+  id        String   @id @default(cuid())
+  seasonId  String
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([seasonId, userId])
   @@index([userId])
 }
 
@@ -309,6 +324,7 @@ model Season {
   ratings      Rating[]
   reviews      Review[]
   videos       MovieVideo[] @relation("SeasonVideos")
+  notes        SeasonNote[]
 
   @@index([movieId])
   @@unique([movieId, number])

@@ -13,6 +13,8 @@ import WatchedEyeToggle from '@/components/WatchedEyeToggle';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
 import FlagCZ from '@/components/FlagCZ';
+import RatingDistributionChart from '@/components/RatingDistributionChart';
+import SeasonNoteBox from '@/components/SeasonNoteBox';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
 import MovieGallery from '@/components/MovieGallery';
@@ -131,6 +133,9 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   const isInFavorites = viewerId
     ? !!(await prisma.movieListItem.findFirst({ where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } } }))
     : false;
+  const mySeasonNote = viewerId
+    ? await prisma.seasonNote.findUnique({ where: { seasonId_userId: { seasonId: season.id, userId: viewerId } } })
+    : null;
 
   const videoGroups = [
     { key: 'trailer', label: 'Trailery' },
@@ -297,6 +302,31 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               initialInFavorites={isInFavorites}
               isLoggedIn={!!viewerId}
             />
+          </div>
+        </div>
+
+        {/* Mobil — hodnotenie + graf, hneď pod hlavičkou (rovnaký vzor ako pri profile filmu) */}
+        <div className="sm:hidden mb-5 border border-line rounded-xl overflow-hidden">
+          <div className="text-center py-6 px-4" style={scoreColorStyle(percent)}>
+            <div className="font-display font-extrabold text-4xl leading-none">{percent === null ? '—' : `${percent}%`}</div>
+            <div className="text-xs opacity-90 mt-1">{season.ratings.length} hlasov</div>
+          </div>
+          {season.ratings.length > 0 && (
+            <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
+              <RatingDistributionChart values={season.ratings.map((r) => r.value)} label="Rozloženie hodnotení" />
+            </div>
+          )}
+          <div className="p-4 bg-card">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
+            {!season.released ? (
+              <p className="text-sm text-muted">Séria ešte nemala premiéru — hodnotiť a písať recenzie sa dá až po jej vydaní.</p>
+            ) : viewerId ? (
+              <EntityRatingWidget apiBase={`/api/seasons/${season.id}`} initialValue={myRating} suggestedValue={suggestedRating} />
+            ) : (
+              <p className="text-sm text-muted">
+                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a ohodnoť sériu.
+              </p>
+            )}
           </div>
         </div>
 
@@ -685,6 +715,12 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
             )}
           </div>
         </div>
+
+        {viewerId && (
+          <div className="mt-4">
+            <SeasonNoteBox seasonId={season.id} initialBody={mySeasonNote?.body || ''} />
+          </div>
+        )}
       </div>
     </div>
   );

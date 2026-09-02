@@ -129,11 +129,11 @@ export default function SeasonEpisodeQuickActionsBar({
           <IconHeartOutline className="w-3.5 h-3.5" />
           {inFavorites ? 'V oblíbených' : 'Oblíbené'}
         </button>
-        <button className={`${secondaryButtonClass} border-line text-ink hover:bg-surface`}>
+        <button className={`${secondaryButtonClass} hidden sm:flex border-line text-ink hover:bg-surface`}>
           <IconList className="w-3.5 h-3.5" />
           Seznamy
         </button>
-        <button className={`${secondaryButtonClass} border-line text-ink hover:bg-surface`}>
+        <button className={`${secondaryButtonClass} hidden sm:flex border-line text-ink hover:bg-surface`}>
           <IconLayers className="w-3.5 h-3.5" />
           Filmotéka
         </button>
@@ -149,6 +149,12 @@ export default function SeasonEpisodeQuickActionsBar({
         </button>
         {moreOpen && (
           <div className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20 max-h-80 overflow-y-auto">
+            <button onClick={() => setMoreOpen(false)} className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface sm:hidden">
+              Seznamy
+            </button>
+            <button onClick={() => setMoreOpen(false)} className="w-full text-left px-4 py-2.5 text-sm text-ink hover:bg-surface sm:hidden">
+              Filmotéka
+            </button>
             {MORE_ITEMS.map((item) => (
               <button
                 key={item.key}
