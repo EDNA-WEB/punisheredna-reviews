@@ -252,3 +252,29 @@ export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number):
     synopsis: e.overview || ''
   }));
 }
+
+export async function tmdbGetSimilarMovies(tmdbId: number, mediaType: 'movie' | 'tv') {
+  const url = `${TMDB_BASE}/${mediaType}/${tmdbId}/recommendations?language=cs-CZ`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  let results = d.results || [];
+
+  // Ak TMDb nemá dosť odporúčaní, doplníme z "similar" (menej presné, ale lepšie ako nič).
+  if (results.length < 6) {
+    const url2 = `${TMDB_BASE}/${mediaType}/${tmdbId}/similar?language=cs-CZ`;
+    const res2 = await fetch(url2, { headers: tmdbHeaders() });
+    if (res2.ok) {
+      const d2 = await res2.json();
+      const existingIds = new Set(results.map((r: any) => r.id));
+      results = [...results, ...(d2.results || []).filter((r: any) => !existingIds.has(r.id))];
+    }
+  }
+
+  return results.slice(0, 12).map((r: any) => ({
+    tmdbId: r.id,
+    title: r.title || r.name,
+    year: (r.release_date || r.first_air_date || '').slice(0, 4),
+    poster: r.poster_path ? `https://image.tmdb.org/t/p/w300${r.poster_path}` : null
+  }));
+}

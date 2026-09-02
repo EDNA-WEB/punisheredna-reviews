@@ -10,6 +10,7 @@ import { mdToHtml, youtubeEmbedUrl, youtubeVideoId } from '@/lib/markdown';
 import { displayUserName } from '@/lib/deletedUser';
 import { logActivity } from '@/lib/logActivity';
 import MovieNoteBox from '@/components/MovieNoteBox';
+import SimilarMoviesBox from '@/components/SimilarMoviesBox';
 import WatchlistButton from '@/components/WatchlistButton';
 import BoxOfficeStatus from '@/components/BoxOfficeStatus';
 import { tmdbGetLiveBoxOffice } from '@/lib/tmdb';
@@ -1169,6 +1170,15 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           {viewerId && (
             <div className="mt-4">
               <MovieNoteBox movieId={movie.id} initialBody={myNote?.body || ''} />
+            </div>
+          )}
+
+          {movie.tmdbId && (
+            <div className="mt-4">
+              <SimilarMoviesBox
+                tmdbId={movie.tmdbId}
+                mediaType={movie.contentType === 'Seriál' ? 'tv' : 'movie'}
+              />
             </div>
           )}
         </div>
