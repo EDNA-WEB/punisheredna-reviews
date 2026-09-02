@@ -889,13 +889,13 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                           <div key={s.id}>
                             <Link
                               href={`/movie/${movie.slug}/sezona/${s.number}`}
-                              className={`flex items-center gap-2 px-4 py-2.5 hover:opacity-80 transition-opacity ${s.released ? 'bg-accent/5' : 'bg-surface'}`}
+                              className={`flex items-center gap-2 px-4 py-2.5 hover:opacity-80 transition-opacity min-w-0 ${s.released ? 'bg-accent/5' : 'bg-surface'}`}
                             >
                               <span className="w-2.5 h-2.5 rounded-[3px] flex-none" style={{ backgroundColor: s.released ? '#E3141F' : '#D9D9D9' }} />
-                              <span className={`text-sm font-bold ${s.released ? 'text-accent' : 'text-muted'}`}>{t('movie.season')} {s.number}</span>
-                              {s.year && <span className="text-xs text-muted">· {s.year}</span>}
+                              <span className={`text-sm font-bold flex-none ${s.released ? 'text-accent' : 'text-muted'}`}>{t('movie.season')} {s.number}</span>
+                              {s.year && <span className="text-xs text-muted flex-none">· {s.year}</span>}
                               {!s.released && (
-                                <span className="text-xs text-muted ml-auto">
+                                <span className="text-xs text-muted ml-auto truncate min-w-0">
                                   {s.releaseDate
                                     ? `${t('movie.vyjde')} ${s.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}`
                                     : t('movie.este_nevysla')}
@@ -911,14 +911,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                                   <Link
                                     key={e.id}
                                     href={`/movie/${movie.slug}/sezona/${s.number}/epizoda/${e.number}`}
-                                    className="flex items-center gap-2.5 px-4 py-2.5 bg-card hover:bg-surface transition-colors"
+                                    className="flex items-center gap-2.5 px-4 py-2.5 bg-card hover:bg-surface transition-colors min-w-0"
                                   >
                                     <span className="w-2 h-2 rounded-[2px] flex-none" style={{ backgroundColor: dotColor }} />
-                                    <span className={`text-sm ${s.released ? 'text-ink font-semibold' : 'text-muted'}`}>
+                                    <span className={`text-sm truncate min-w-0 ${s.released ? 'text-ink font-semibold' : 'text-muted'}`}>
                                       {e.title || `${t('movie.epizoda')} ${e.number}`}
                                     </span>
-                                    <span className="text-xs text-muted">({code})</span>
-                                    {s.released && epPercent !== null && <span className="text-xs text-muted ml-auto">{epPercent}%</span>}
+                                    <span className="text-xs text-muted flex-none">({code})</span>
+                                    {s.released && epPercent !== null && <span className="text-xs text-muted ml-auto flex-none">{epPercent}%</span>}
                                   </Link>
                                 );
                               })}

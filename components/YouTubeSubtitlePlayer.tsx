@@ -45,6 +45,22 @@ export default function YouTubeSubtitlePlayer({ videoId, subtitles, title, fill 
         height: '100%',
         playerVars: { rel: 0 },
         events: {
+          onReady: (e: any) => {
+            // Absolútna poistka: YouTube niekedy iframe vytvorí s pevnou predvolenou
+            // veľkosťou (640×360) bez ohľadu na width/height v nastaveniach vyššie —
+            // tu jeho štýl prepíšeme priamo, nech sa to už nemôže stať.
+            try {
+              const iframe = e.target.getIframe();
+              if (iframe) {
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.position = 'absolute';
+                iframe.style.inset = '0';
+                iframe.removeAttribute('width');
+                iframe.removeAttribute('height');
+              }
+            } catch {}
+          },
           onStateChange: (e: any) => {
             if (intervalRef.current) clearInterval(intervalRef.current);
             if (e.data === window.YT.PlayerState.PLAYING) {
