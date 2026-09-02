@@ -198,6 +198,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
     .map((v) => ({ id: v.id, title: v.title, youtubeId: youtubeVideoId(v.url), category: v.category }))
     .filter((v) => v.youtubeId && v.category === 'trailer')[0] || null;
   const primaryVideo = episodeVideos[0] || seasonTrailerFallback;
+  const tabVideos = episodeVideos.length > 0 ? episodeVideos : (seasonTrailerFallback ? [{ ...seasonTrailerFallback, title: seasonTrailerFallback.title || `Trailer série ${season.number}` }] : []);
 
   function renderReviewCard(review: NonNullable<typeof episode>['reviews'][number], withComments: boolean) {
     if (!movie || !episode) return null;
@@ -548,9 +549,9 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               key: 'videa',
               label: 'Videá',
               content:
-                episodeVideos.length > 0 ? (
+                tabVideos.length > 0 ? (
                   <div className="space-y-5 max-w-2xl">
-                    {episodeVideos.map((v) => (
+                    {tabVideos.map((v) => (
                       <div key={v.id}>
                         {v.title && <div className="text-sm font-semibold text-ink mb-2">{v.title}</div>}
                         <div className="relative rounded-xl overflow-hidden bg-night aspect-video">

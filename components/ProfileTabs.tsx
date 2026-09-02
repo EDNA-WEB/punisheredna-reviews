@@ -147,7 +147,7 @@ export default function ProfileTabs({
   return (
     <div className="pt-6">
       <div className="flex items-stretch gap-1 mb-6 border-b border-line">
-        <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap min-w-0">
+        <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap min-w-0 select-none">
           {primaryTabs.map((tb: any) => (
             <button
               key={tb.key}

@@ -502,6 +502,26 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               </div>
             </div>
 
+            <div className="px-4 pb-3">
+              <div className="space-y-1 text-sm border border-line rounded-xl p-3 bg-surface">
+                {movie.director && (
+                  <div><span className="text-muted">{t('movie.rezia')} </span><span className="text-ink font-medium"><PersonNameList names={movie.director.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                )}
+                {movie.screenplay && (
+                  <div><span className="text-muted">{t('movie.scenar')} </span><span className="text-ink font-medium"><PersonNameList names={movie.screenplay.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                )}
+                {movie.cinematography && (
+                  <div><span className="text-muted">{t('movie.kamera')} </span><span className="text-ink font-medium"><PersonNameList names={movie.cinematography.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                )}
+                {movie.music && (
+                  <div><span className="text-muted">{t('movie.hudba')} </span><span className="text-ink font-medium"><PersonNameList names={movie.music.split(',').map((x) => x.trim())} slugByName={slugByName} /></span></div>
+                )}
+                {cast.length > 0 && (
+                  <div><span className="text-muted">{t('movie.hraju_dvojbodka')} </span><span className="text-ink font-medium"><PersonNameList names={cast} slugByName={slugByName} /></span></div>
+                )}
+              </div>
+            </div>
+
             <div className="px-4 pb-4">
               <MovieQuickActionsBar
                 movieId={movie.id}
