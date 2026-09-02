@@ -7,7 +7,7 @@ import EpisodeContentManager from './EpisodeContentManager';
 type PhotoT = { id: string; thumbnail: string };
 type VideoT = { id: string; url: string; title: string | null };
 type EpisodeT = { id: string; number: number; title: string | null; synopsis: string | null; onlineImage: string | null; photos: PhotoT[]; videos: VideoT[] };
-type SeasonT = { id: string; number: number; year: string | null; episodeCount: number; released: boolean; episodes: EpisodeT[]; videos: VideoT[] };
+type SeasonT = { id: string; number: number; year: string | null; synopsis?: string | null; episodeCount: number; released: boolean; episodes: EpisodeT[]; videos: VideoT[] };
 type DraftSeason = { number: number; year: string; episodeCount: string };
 
 export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { movieId: string; tmdbId?: number | null; initialSeasons: SeasonT[] }) {
@@ -62,6 +62,27 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [openFor, setOpenFor] = useState<string | null>(null);
+  const [synopsisFor, setSynopsisFor] = useState<string | null>(null);
+  const [synopsisDrafts, setSynopsisDrafts] = useState<Record<string, string>>({});
+  const [savingSynopsis, setSavingSynopsis] = useState<string | null>(null);
+
+  async function saveSynopsis(seasonId: string) {
+    setSavingSynopsis(seasonId);
+    try {
+      const res = await fetch(`/api/seasons/${seasonId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ synopsis: synopsisDrafts[seasonId] ?? '' })
+      });
+      if (!res.ok) throw new Error();
+      setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, synopsis: synopsisDrafts[seasonId] ?? '' } : s)));
+      setSynopsisFor(null);
+    } catch {
+      alert('Uloženie obsahu zlyhalo. Skús to prosím znova.');
+    } finally {
+      setSavingSynopsis(null);
+    }
+  }
   const [openEpisodeFor, setOpenEpisodeFor] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
@@ -171,6 +192,16 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                 </span>
                 <button
                   type="button"
+                  onClick={() => {
+                    setSynopsisFor((cur) => (cur === s.id ? null : s.id));
+                    setSynopsisDrafts((prev) => (prev[s.id] !== undefined ? prev : { ...prev, [s.id]: s.synopsis || '' }));
+                  }}
+                  className="text-accent hover:underline flex-none"
+                >
+                  {synopsisFor === s.id ? 'Skryť obsah' : 'Upraviť obsah'}
+                </button>
+                <button
+                  type="button"
                   onClick={() => setOpenFor((cur) => (cur === s.id ? null : s.id))}
                   className="text-accent hover:underline flex-none"
                 >
@@ -178,6 +209,25 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                 </button>
                 <button type="button" onClick={() => removeSeason(s.id)} className="text-muted hover:text-danger flex-none">✕</button>
               </div>
+
+              {synopsisFor === s.id && (
+                <div className="mt-2 mb-1">
+                  <textarea
+                    className="field-input-sm min-h-[80px] resize-y"
+                    value={synopsisDrafts[s.id] ?? ''}
+                    onChange={(e) => setSynopsisDrafts((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                    placeholder="Krátky obsah/synopsis tejto série…"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => saveSynopsis(s.id)}
+                    disabled={savingSynopsis === s.id}
+                    className="mt-1.5 bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+                  >
+                    {savingSynopsis === s.id ? 'Ukladám…' : 'Uložiť obsah'}
+                  </button>
+                </div>
+              )}
 
               <div className="mt-2 ml-1">
                 {s.videos.length > 0 && (

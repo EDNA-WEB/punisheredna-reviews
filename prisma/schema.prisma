@@ -331,6 +331,7 @@ model Season {
   movie        Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
   number       Int
   year         String?
+  synopsis     String?   @db.Text
   episodeCount Int       @default(0)
   released     Boolean   @default(true)
   releaseDate  DateTime?

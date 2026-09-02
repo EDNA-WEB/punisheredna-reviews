@@ -450,6 +450,13 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
           </div>
         </div>
 
+        {season.synopsis && (
+          <div className="mb-5">
+            <h3 className="font-display font-bold text-lg text-ink mb-2">Obsah</h3>
+            <p className="text-[15px] text-ink leading-relaxed whitespace-pre-wrap">{season.synopsis}</p>
+          </div>
+        )}
+
         <MovieTabsSection
           primaryTabs={[
             {
@@ -582,6 +589,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
             {
               key: 'videa',
               label: 'Videá',
+              desktopOnly: true,
               content:
                 totalVideosCount > 0 ? (
                   <MovieVideoTabs groups={videoGroups} />

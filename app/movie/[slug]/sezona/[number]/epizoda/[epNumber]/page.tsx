@@ -467,7 +467,10 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
         </div>
 
         {episode.synopsis && (
-          <p className="text-[15px] text-ink leading-relaxed whitespace-pre-wrap mb-5">{episode.synopsis}</p>
+          <div className="mb-5">
+            <h3 className="font-display font-bold text-lg text-ink mb-2">Obsah</h3>
+            <p className="text-[15px] text-ink leading-relaxed whitespace-pre-wrap">{episode.synopsis}</p>
+          </div>
         )}
 
         <MovieTabsSection

@@ -38,6 +38,7 @@ export default async function EditMoviePage({ params }: { params: { id: string }
         id: true,
         number: true,
         year: true,
+        synopsis: true,
         episodeCount: true,
         released: true,
         releaseDate: true,

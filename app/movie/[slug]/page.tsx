@@ -933,6 +933,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           {
             key: 'videa',
             label: t('movie.videa'),
+            desktopOnly: true,
             content: (
               <div>
                 <h3 className="font-display font-bold text-xl text-ink mb-5">
