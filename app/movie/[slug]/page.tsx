@@ -633,14 +633,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link> {t('movie.a_ohodnot_film')}
                 </p>
               )}
-              {!isUpcoming && viewerId && !movie.reviews.some((r) => r.authorId === viewerId) && (
-                <Link
-                  href={`/movie/${movie.slug}/napisat`}
-                  className="mt-3 inline-block bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark"
-                >
-                  {t('movie.napisat_recenziu')}
-                </Link>
-              )}
             </div>
             <div className="p-4 bg-card border-t border-line">
               <MovieRatersLists raters={raters} t={t} />
@@ -1146,14 +1138,6 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 <p className="text-xs text-muted">
                   <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link> {t('movie.a_ohodnot_film')}
                 </p>
-              )}
-              {!isUpcoming && viewerId && !movie.reviews.some((r) => r.authorId === viewerId) && (
-                <Link
-                  href={`/movie/${movie.slug}/napisat`}
-                  className="mt-3 inline-block bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark"
-                >
-                  {t('movie.napisat_recenziu')}
-                </Link>
               )}
             </div>
 

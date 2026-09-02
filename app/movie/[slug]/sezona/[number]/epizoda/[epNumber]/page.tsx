@@ -256,14 +256,44 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
       <div className="min-w-0">
         <div className="sm:hidden mb-5 border border-line rounded-xl">
           <div className="bg-surface px-4 py-3 rounded-t-xl">
-            <Link
-              href={`/movie/${movie.slug}/sezona/${season.number}`}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent transition-colors mb-2"
-            >
-              <IconChevronLeft className="w-3.5 h-3.5" />
-              {movie.title} — Séria {season.number}
-            </Link>
-            <h1 className="font-display font-extrabold text-2xl text-ink leading-tight">{title}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link
+                href={`/movie/${movie.slug}/sezona/${season.number}`}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent transition-colors"
+              >
+                <IconChevronLeft className="w-3.5 h-3.5" />
+                {movie.title} — Séria {season.number}
+              </Link>
+              <div className="flex items-center gap-1.5 ml-auto">
+                {prevEpisode ? (
+                  <Link
+                    href={`/movie/${movie.slug}/sezona/${prevEpisode.seasonNumber}/epizoda/${prevEpisode.number}`}
+                    aria-label="Predchádzajúca epizóda"
+                    className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
+                  >
+                    <IconChevronLeft className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-line">
+                    <IconChevronLeft className="w-4 h-4" />
+                  </span>
+                )}
+                {nextEpisode ? (
+                  <Link
+                    href={`/movie/${movie.slug}/sezona/${nextEpisode.seasonNumber}/epizoda/${nextEpisode.number}`}
+                    aria-label="Nasledujúca epizóda"
+                    className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
+                  >
+                    <IconChevronRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-line">
+                    <IconChevronRight className="w-4 h-4" />
+                  </span>
+                )}
+              </div>
+            </div>
+            <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mt-2">{title}</h1>
             <div className="text-sm text-muted mt-1">{code}</div>
           </div>
 

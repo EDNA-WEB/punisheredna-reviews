@@ -59,7 +59,7 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
               <button
                 key={tab.key}
                 onClick={() => setActive(tab.key)}
-                className={`${tab.desktopOnly ? 'hidden sm:inline-flex' : ''} text-sm font-semibold px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+                className={`${tab.desktopOnly ? 'hidden sm:inline-flex' : ''} text-sm font-semibold px-2.5 sm:px-3.5 py-2.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
                   active === tab.key ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
                 }`}
               >

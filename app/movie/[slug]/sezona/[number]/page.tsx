@@ -231,14 +231,44 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
       <div className="min-w-0">
         <div className="sm:hidden mb-5 border border-line rounded-xl">
           <div className="bg-surface px-4 py-3 rounded-t-xl">
-            <Link
-              href={`/movie/${movie.slug}`}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent transition-colors mb-2"
-            >
-              <IconChevronLeft className="w-3.5 h-3.5" />
-              {movie.title}
-            </Link>
-            <h1 className="font-display font-extrabold text-2xl text-ink leading-tight">Séria {season.number}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link
+                href={`/movie/${movie.slug}`}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent transition-colors"
+              >
+                <IconChevronLeft className="w-3.5 h-3.5" />
+                {movie.title}
+              </Link>
+              <div className="flex items-center gap-1.5 ml-auto">
+                {prevSeason ? (
+                  <Link
+                    href={`/movie/${movie.slug}/sezona/${prevSeason.number}`}
+                    aria-label="Predchádzajúca séria"
+                    className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
+                  >
+                    <IconChevronLeft className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-line">
+                    <IconChevronLeft className="w-4 h-4" />
+                  </span>
+                )}
+                {nextSeason ? (
+                  <Link
+                    href={`/movie/${movie.slug}/sezona/${nextSeason.number}`}
+                    aria-label="Nasledujúca séria"
+                    className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
+                  >
+                    <IconChevronRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-line">
+                    <IconChevronRight className="w-4 h-4" />
+                  </span>
+                )}
+              </div>
+            </div>
+            <h1 className="font-display font-extrabold text-2xl text-ink leading-tight mt-2">Séria {season.number}</h1>
             {movie.originalTitle && movie.originalTitle !== movie.title && (
               <div className="flex items-center gap-1.5 mt-1">
                 <FlagCZ />
