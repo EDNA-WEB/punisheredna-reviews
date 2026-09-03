@@ -40,7 +40,7 @@ export default async function BoxOfficePage() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
           {movies.map((m) => {
-            const stats = computeBoxOffice(m.budget, m.marketingBudget, m.boxOffice);
+            const stats = computeBoxOffice(m.budget !== null ? Number(m.budget) : null, m.marketingBudget !== null ? Number(m.marketingBudget) : null, m.boxOffice !== null ? Number(m.boxOffice) : null);
             return (
               <Link
                 key={m.id}
@@ -56,8 +56,8 @@ export default async function BoxOfficePage() {
                     {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                   </div>
                   <div className="text-[11px] text-muted mt-0.5 mb-1.5 truncate">
-                    {t('boxoffice.rozpocet')} {formatMoney(m.budget!)}
-                    {m.marketingBudget ? ` · ${t('boxoffice.marketing')} ${formatMoney(m.marketingBudget)}` : ''}
+                    {t('boxoffice.rozpocet')} {formatMoney(Number(m.budget!))}
+                    {m.marketingBudget ? ` · ${t('boxoffice.marketing')} ${formatMoney(Number(m.marketingBudget))}` : ''}
                   </div>
                   {stats && (
                     <BoxOfficeStatus

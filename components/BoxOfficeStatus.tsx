@@ -11,11 +11,11 @@ export default function BoxOfficeStatus({
   compact,
   labels
 }: {
-  budget: number | null;
-  marketingBudget: number | null;
-  boxOffice: number | null;
-  domesticBoxOffice?: number | null;
-  internationalBoxOffice?: number | null;
+  budget: number | bigint | null;
+  marketingBudget: number | bigint | null;
+  boxOffice: number | bigint | null;
+  domesticBoxOffice?: number | bigint | null;
+  internationalBoxOffice?: number | bigint | null;
   compact?: boolean;
   labels?: {
     ciel: string;
@@ -29,12 +29,18 @@ export default function BoxOfficeStatus({
     vsetky_uvedenia?: string;
   };
 }) {
-  const stats = computeBoxOffice(budget, marketingBudget, boxOffice);
+  const budgetN = budget !== null ? Number(budget) : null;
+  const marketingBudgetN = marketingBudget !== null ? Number(marketingBudget) : null;
+  const boxOfficeN = boxOffice !== null ? Number(boxOffice) : null;
+  const domesticBoxOfficeN = domesticBoxOffice != null ? Number(domesticBoxOffice) : domesticBoxOffice;
+  const internationalBoxOfficeN = internationalBoxOffice != null ? Number(internationalBoxOffice) : internationalBoxOffice;
+
+  const stats = computeBoxOffice(budgetN, marketingBudgetN, boxOfficeN);
   if (!stats) return null;
 
   const l = labels || { ciel: 'cieľ', ziskovy: 'Ziskový', nedosiahnute: 'Nedosiahnuté' };
   const pct = Math.min(100, Math.round((stats.ratio || 0) * 100));
-  const hasBreakdown = !!(domesticBoxOffice || internationalBoxOffice);
+  const hasBreakdown = !!(domesticBoxOfficeN || internationalBoxOfficeN);
 
   const diff = stats.earned - stats.target;
   const diffText = stats.success
@@ -62,8 +68,8 @@ export default function BoxOfficeStatus({
         </span>
         {hasBreakdown ? (
           <BoxOfficeBreakdown
-            domestic={domesticBoxOffice || 0}
-            international={internationalBoxOffice || 0}
+            domestic={domesticBoxOfficeN || 0}
+            international={internationalBoxOfficeN || 0}
             success={stats.success}
             labels={{
               domace: l.domace || 'Domáce',
