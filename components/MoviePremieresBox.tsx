@@ -2,12 +2,14 @@ import FlagCZ from './FlagCZ';
 import FlagUS from './FlagUS';
 import FlagGB from './FlagGB';
 import FlagSK from './FlagSK';
+import FlagWorld from './FlagWorld';
 
 const FLAGS: Record<string, React.ComponentType<{ className?: string }>> = {
   CZ: FlagCZ,
   US: FlagUS,
   GB: FlagGB,
-  SK: FlagSK
+  SK: FlagSK,
+  WORLD: FlagWorld
 };
 
 type PremiereItem = { id: string; country: string; type?: string; releaseDate: Date; distributor: string | null };

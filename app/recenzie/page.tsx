@@ -193,7 +193,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-9">
             {paged.map((m) => (
-              <MovieCard key={m.id} movie={{ title: m.title, slug: m.slug, poster: m.poster, year: m.year, percent: m.percent, ratingCount: m.ratings.length, genre: m.genreList[0] || null, hasSubtitles: m.hasSubtitles, hasDubbing: m.hasDubbing }} />
+              <MovieCard key={m.id} movie={{ title: m.title, slug: m.slug, poster: m.poster, year: m.year, percent: m.percent, ratingCount: m.ratings.length, genre: m.genreList[0] || null, hasSubtitles: m.hasSubtitles, hasDubbing: m.hasDubbing, releaseDate: m.releaseDate }} />
             ))}
           </div>
           {totalPages > 1 && (

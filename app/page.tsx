@@ -176,7 +176,8 @@ export default async function HomePage() {
                   ratingCount: m.ratings.length,
                   genre: (m.genres || '').split(',')[0]?.trim() || null,
                   hasSubtitles: m.hasSubtitles,
-                  hasDubbing: m.hasDubbing
+                  hasDubbing: m.hasDubbing,
+                  releaseDate: m.releaseDate
                 }}
               />
             ))}
