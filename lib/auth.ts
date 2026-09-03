@@ -20,9 +20,15 @@ export const authOptions: NextAuthOptions = {
 
         console.log('[AUTH DEBUG] hľadám prezývku:', JSON.stringify(credentials.nickname.trim()));
 
-        const user = await prisma.user.findFirst({
-          where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
-        });
+        let user;
+        try {
+          user = await prisma.user.findFirst({
+            where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
+          });
+        } catch (dbErr: any) {
+          console.error('[AUTH DEBUG] CHYBA pri hľadaní používateľa:', dbErr?.message || dbErr);
+          throw dbErr;
+        }
         console.log('[AUTH DEBUG] nájdený používateľ:', user ? user.name : 'ŽIADNY');
         if (!user) return null;
 
