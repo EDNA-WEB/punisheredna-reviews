@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import type { Prisma } from '@prisma/client';
 
 // Po zmene alebo zmazaní série vždy prepočíta dátum premiéry filmu v tej istej
 // transakcii — nesmie sa stať, že sa séria zmení, ale dátum premiéry ostane starý.
-async function recomputeMovieReleaseDate(tx: Prisma.TransactionClient, movieId: string) {
+async function recomputeMovieReleaseDate(tx: any, movieId: string) {
   const seasons = await tx.season.findMany({ where: { movieId }, orderBy: { number: 'desc' }, take: 1 });
   const latest = seasons[0];
   if (!latest) return;
