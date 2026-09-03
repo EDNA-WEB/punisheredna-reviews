@@ -18,9 +18,12 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.nickname || !credentials?.password) return null;
 
+        console.log('[AUTH DEBUG] hľadám prezývku:', JSON.stringify(credentials.nickname.trim()));
+
         const user = await prisma.user.findFirst({
           where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
         });
+        console.log('[AUTH DEBUG] nájdený používateľ:', user ? user.name : 'ŽIADNY');
         if (!user) return null;
 
         if (user.lockedUntil && user.lockedUntil > new Date()) {
@@ -28,6 +31,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
+        console.log('[AUTH DEBUG] heslo správne:', valid);
 
         if (!valid) {
           const attempts = user.failedLoginAttempts + 1;
