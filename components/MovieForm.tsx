@@ -28,11 +28,11 @@ type Initial = {
   releaseDate?: string | Date | null;
   distributor?: string | null;
   tags?: string | null;
-  budget?: number | null;
-  marketingBudget?: number | null;
-  boxOffice?: number | null;
-  domesticBoxOffice?: number | null;
-  internationalBoxOffice?: number | null;
+  budget?: number | bigint | null;
+  marketingBudget?: number | bigint | null;
+  boxOffice?: number | bigint | null;
+  domesticBoxOffice?: number | bigint | null;
+  internationalBoxOffice?: number | bigint | null;
   tmdbId?: number | null;
 };
 
