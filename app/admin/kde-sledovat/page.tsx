@@ -22,6 +22,7 @@ export default async function AdminKdeSledovatPage() {
         slug: true,
         poster: true,
         year: true,
+        tmdbId: true,
         streamingServices: {
           select: { streamingServiceId: true, url: true }
         }

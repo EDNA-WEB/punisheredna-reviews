@@ -373,3 +373,24 @@ export async function tmdbGetPremieresAndRating(tmdbId: number, mediaType: 'movi
 
   return { premieres, ageRating };
 }
+
+export async function tmdbGetWatchProviders(tmdbId: number, mediaType: 'movie' | 'tv') {
+  const url = `${TMDB_BASE}/${mediaType}/${tmdbId}/watch/providers`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return { providerNames: [], link: null as string | null };
+
+  const data = await res.json();
+  // Skúsime najprv Česko, ak tam nič nie je, USA — u nás sa väčšina návštevníkov
+  // zaujíma o českú dostupnosť.
+  const region = data.results?.CZ || data.results?.US;
+  if (!region) return { providerNames: [], link: null };
+
+  const allProviders = [
+    ...(region.flatrate || []),
+    ...(region.ads || []),
+    ...(region.free || [])
+  ];
+  const providerNames = Array.from(new Set(allProviders.map((p: any) => p.provider_name as string)));
+
+  return { providerNames, link: region.link || null };
+}
