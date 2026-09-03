@@ -2,16 +2,31 @@
 
 import { useState } from 'react';
 
-type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; tags: string | null };
+type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; tags: string | null; tmdbId: number | null };
 
 export default function TagsAdminList({ initialMovies }: { initialMovies: MovieItem[] }) {
   const [movies, setMovies] = useState(initialMovies);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<string | null>(null);
+  const [suggesting, setSuggesting] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
   function tagsFor(m: MovieItem) {
     return drafts[m.id] ?? m.tags ?? '';
+  }
+
+  async function suggestFromTmdb(movieId: string) {
+    setSuggesting(movieId);
+    try {
+      const res = await fetch(`/api/movies/${movieId}/tags/tmdb-suggest`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setDrafts((prev) => ({ ...prev, [movieId]: data.tags }));
+    } catch (err: any) {
+      alert(err.message || 'Návrh tagov z TMDb zlyhal.');
+    } finally {
+      setSuggesting(null);
+    }
   }
 
   async function save(movieId: string) {
@@ -65,6 +80,16 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                   onChange={(e) => setDrafts((prev) => ({ ...prev, [m.id]: e.target.value }))}
                   placeholder="napr. Marvel, superhrdinovia, vesmír"
                 />
+                {m.tmdbId && (
+                  <button
+                    onClick={() => suggestFromTmdb(m.id)}
+                    disabled={suggesting === m.id}
+                    title="Navrhne preložené tagy z TMDb kľúčových slov"
+                    className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none"
+                  >
+                    {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                  </button>
+                )}
                 <button
                   onClick={() => save(m.id)}
                   disabled={saving === m.id || !isDirty}

@@ -14,7 +14,7 @@ export default async function AdminTagsPage() {
   const movies = await prisma.movie.findMany({
     where: { approved: true },
     orderBy: { title: 'asc' },
-    select: { id: true, title: true, slug: true, poster: true, year: true, tags: true }
+    select: { id: true, title: true, slug: true, poster: true, year: true, tags: true, tmdbId: true }
   });
 
   return (
