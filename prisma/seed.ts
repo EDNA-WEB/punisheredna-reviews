@@ -21,7 +21,7 @@ async function seedAdmin() {
 
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.create({
-    data: { email, name, passwordHash, role: 'ADMIN' }
+    data: { email, name, passwordHash, role: 'ADMIN', emailVerified: true }
   });
   console.log(`Administrátorský účet vytvorený: ${email}`);
 }

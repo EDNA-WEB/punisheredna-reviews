@@ -152,6 +152,15 @@ export function IconEye({ className = 'w-4 h-4' }: { className?: string }) {
     </svg>
   );
 }
+export function IconEyeOff({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3l18 18" />
+      <path d="M10.6 5.6C11 5.5 11.5 5.5 12 5.5c6 0 9.5 6.5 9.5 6.5a15.7 15.7 0 0 1-3.6 4.4M6.3 7.5A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5c1.3 0 2.5-.2 3.6-.6" />
+      <path d="M9.9 10.1a3 3 0 0 0 4 4" />
+    </svg>
+  );
+}
 
 export function IconNote({ className = 'w-4 h-4' }: { className?: string }) {
   return (

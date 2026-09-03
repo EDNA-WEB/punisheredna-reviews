@@ -18,8 +18,8 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.nickname || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { name: credentials.nickname.trim() }
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
         });
         if (!user) return null;
 
@@ -52,6 +52,10 @@ export const authOptions: NextAuthOptions = {
 
         if (user.banned) {
           throw new Error('BANNED');
+        }
+
+        if (!user.emailVerified) {
+          throw new Error('UNVERIFIED');
         }
 
         return {

@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
 import { issueTrialCode } from '@/lib/membership';
+import { sendEmail } from '@/lib/resend';
 
 export async function POST(req: Request) {
   try {
@@ -63,15 +65,28 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     // Verejná registrácia vytvára vždy len čitateľský účet — administrátorov
     // možno vytvoriť len cez "npx prisma db seed" alebo priamo v databáze.
     const user = await prisma.user.create({
-      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER' }
+      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, verificationToken }
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
     await issueTrialCode(user.id).catch((err) => console.error('issueTrialCode', err));
+
+    const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
+    await sendEmail({
+      to: normalizedEmail,
+      subject: 'Potvrď svoj e-mail — PunisherEDNA reviews',
+      html: `
+        <p>Ahoj ${trimmedNickname},</p>
+        <p>ďakujeme za registráciu na PunisherEDNA reviews. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
+        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+        <p>Ak si sa na našom webe neregistroval, tento e-mail jednoducho ignoruj.</p>
+      `
+    }).catch((err) => console.error('sendEmail (overenie)', err));
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {
