@@ -296,3 +296,52 @@ export async function tmdbGetEpisodeStillUrl(tmdbId: number, seasonNumber: numbe
   const still = (d.stills || [])[0];
   return still ? `https://image.tmdb.org/t/p/w780${still.file_path}` : null;
 }
+
+export async function tmdbGetPremieresAndRating(tmdbId: number, mediaType: 'movie' | 'tv') {
+  const premieres: { country: string; type: string; releaseDate: string }[] = [];
+  let ageRating: string | null = null;
+
+  // Krajiny, čo nás na webe zaujímajú.
+  const WANTED_COUNTRIES = ['CZ', 'SK', 'US', 'GB'];
+
+  if (mediaType === 'movie') {
+    const res = await fetch(`${TMDB_BASE}/movie/${tmdbId}/release_dates`, { headers: tmdbHeaders() });
+    if (res.ok) {
+      const data = await res.json();
+      for (const entry of data.results || []) {
+        if (!WANTED_COUNTRIES.includes(entry.iso_3166_1)) continue;
+        for (const rd of entry.release_dates || []) {
+          // typ 3 = kino (bežné uvedenie), typ 2 = kino (obmedzené), typ 4 = digitálne/VOD
+          if (![2, 3, 4].includes(rd.type)) continue;
+          premieres.push({
+            country: entry.iso_3166_1,
+            type: rd.type === 4 ? 'VOD' : 'KINO',
+            releaseDate: rd.release_date.slice(0, 10)
+          });
+          if (!ageRating && rd.certification) ageRating = rd.certification;
+        }
+      }
+    }
+  } else {
+    // Seriály — TMDb nemá premiéry podľa krajiny rovnakým spôsobom, len dátum prvého odvysielania
+    // a vekové hodnotenie podľa krajiny (content_ratings).
+    const detailsRes = await fetch(`${TMDB_BASE}/tv/${tmdbId}`, { headers: tmdbHeaders() });
+    if (detailsRes.ok) {
+      const details = await detailsRes.json();
+      if (details.first_air_date) {
+        premieres.push({ country: 'WORLD', type: 'KINO', releaseDate: details.first_air_date });
+      }
+    }
+    const ratingsRes = await fetch(`${TMDB_BASE}/tv/${tmdbId}/content_ratings`, { headers: tmdbHeaders() });
+    if (ratingsRes.ok) {
+      const ratingsData = await ratingsRes.json();
+      const czRating = (ratingsData.results || []).find((r: any) => r.iso_3166_1 === 'CZ' || r.iso_3166_1 === 'US');
+      if (czRating?.rating) ageRating = czRating.rating;
+    }
+  }
+
+  // Zoradíme, nech CZ/SK vždy vidno prvé.
+  premieres.sort((a, b) => WANTED_COUNTRIES.indexOf(a.country) - WANTED_COUNTRIES.indexOf(b.country));
+
+  return { premieres, ageRating };
+}

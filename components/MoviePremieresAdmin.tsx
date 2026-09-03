@@ -10,6 +10,7 @@ type MovieItem = {
   poster: string | null;
   year: string | null;
   ageRating: string | null;
+  tmdbId: number | null;
   premiereDates: { id: string; country: string; type?: string; releaseDate: string | Date; distributor: string | null }[];
 };
 
@@ -39,6 +40,27 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   const [rowDrafts, setRowDrafts] = useState<Record<string, PremiereRow[]>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState('');
+  const [suggesting, setSuggesting] = useState<string | null>(null);
+
+  async function suggestFromTmdb(movieId: string) {
+    setSuggesting(movieId);
+    setSaveError('');
+    try {
+      const res = await fetch(`/api/movies/${movieId}/premieres/tmdb-suggest`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setRowDrafts((prev) => ({
+        ...prev,
+        [movieId]: data.premieres.map((p: any) => ({ country: p.country, type: p.type, releaseDate: p.releaseDate, distributor: '' }))
+      }));
+      if (data.ageRating) setAgeRatingDrafts((prev) => ({ ...prev, [movieId]: data.ageRating }));
+      setOpenFor(movieId);
+    } catch (err: any) {
+      setSaveError(err.message || 'Návrh z TMDb zlyhal.');
+    } finally {
+      setSuggesting(null);
+    }
+  }
 
   const filteredMovies = movies.filter((m) => m.title.toLowerCase().includes(search.toLowerCase()));
 
@@ -131,14 +153,25 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
           const rows = rowDrafts[m.id];
           return (
             <div key={m.id}>
-              <button onClick={() => openMovie(m)} className="w-full flex items-center gap-3 p-3 hover:bg-surface text-left">
-                <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-ink truncate">{m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}</div>
-                  <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastavených` : 'Zatiaľ žiadne premiéry'}</div>
-                </div>
-                <span className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</span>
-              </button>
+              <div className="w-full flex items-center gap-3 p-3 hover:bg-surface">
+                <button onClick={() => openMovie(m)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
+                  <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-ink truncate">{m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}</div>
+                    <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastavených` : 'Zatiaľ žiadne premiéry'}</div>
+                  </div>
+                </button>
+                {m.tmdbId && (
+                  <button
+                    onClick={() => suggestFromTmdb(m.id)}
+                    disabled={suggesting === m.id}
+                    className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none whitespace-nowrap"
+                  >
+                    {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                  </button>
+                )}
+                <button onClick={() => openMovie(m)} className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</button>
+              </div>
 
               {openFor === m.id && rows && (
                 <div className="p-4 bg-surface border-t border-line space-y-4">

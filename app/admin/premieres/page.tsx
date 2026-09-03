@@ -21,6 +21,7 @@ export default async function AdminPremieresPage() {
       poster: true,
       year: true,
       ageRating: true,
+      tmdbId: true,
       premiereDates: {
         orderBy: { releaseDate: 'asc' },
         select: { id: true, country: true, type: true, releaseDate: true, distributor: true }
