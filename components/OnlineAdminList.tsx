@@ -218,7 +218,10 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
         <div key={m.id} className="border border-line rounded-xl overflow-hidden bg-card">
           <div className="flex items-center gap-3 p-3.5">
             <div className="w-10 h-14 rounded-md bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
-            <Link href={`/movie/${m.slug}`} target="_blank" className="text-sm font-semibold text-ink hover:text-accent flex-1 truncate">
+            <Link href={`/movie/${m.slug}`} target="_blank" className="text-sm font-semibold text-ink hover:text-accent flex-1 truncate flex items-center gap-1.5">
+              {(m.contentType === 'Seriál' ? !m.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !m.watchUrl) && (
+                <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýba online odkaz" />
+              )}
               {m.title}
             </Link>
             {m.watchUrl && (

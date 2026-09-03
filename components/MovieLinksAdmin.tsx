@@ -221,7 +221,10 @@ export default function MovieLinksAdmin({
                 <button onClick={() => openMovie(m)} className="w-full flex items-center gap-3 p-3 hover:bg-surface text-left">
                   <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-ink truncate">{m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}</div>
+                    <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
+                      {m.links.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú odkazy" />}
+                      {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
+                    </div>
                     <div className="text-xs text-muted">{m.links.length > 0 ? `${m.links.length} odkazov priradených` : 'Zatiaľ žiadne odkazy'}</div>
                   </div>
                   <span className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</span>

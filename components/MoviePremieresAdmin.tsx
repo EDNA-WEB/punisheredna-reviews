@@ -155,7 +155,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                 <button onClick={() => openMovie(m)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
                   <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-ink truncate">{m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}</div>
+                    <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
+                      {m.premiereDates.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú premiéry" />}
+                      {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
+                    </div>
                     <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastavených` : 'Zatiaľ žiadne premiéry'}</div>
                   </div>
                 </button>
