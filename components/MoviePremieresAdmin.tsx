@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-type PremiereRow = { country: string; releaseDate: string; distributor: string };
+type PremiereRow = { country: string; type: string; releaseDate: string; distributor: string };
 type MovieItem = {
   id: string;
   title: string;
@@ -10,7 +10,7 @@ type MovieItem = {
   poster: string | null;
   year: string | null;
   ageRating: string | null;
-  premiereDates: { id: string; country: string; releaseDate: string | Date; distributor: string | null }[];
+  premiereDates: { id: string; country: string; type?: string; releaseDate: string | Date; distributor: string | null }[];
 };
 
 const COUNTRIES = [
@@ -18,6 +18,11 @@ const COUNTRIES = [
   { code: 'US', label: 'USA' },
   { code: 'GB', label: 'Veľká Británia' },
   { code: 'SK', label: 'Slovensko' }
+];
+
+const TYPES = [
+  { code: 'KINO', label: 'Kino' },
+  { code: 'VOD', label: 'VOD / streaming' }
 ];
 
 function toDateInputValue(d: string | Date) {
@@ -48,6 +53,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         ...prev,
         [m.id]: m.premiereDates.map((p) => ({
           country: p.country,
+          type: p.type || 'KINO',
           releaseDate: toDateInputValue(p.releaseDate),
           distributor: p.distributor || ''
         }))
@@ -58,7 +64,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   function addRow(movieId: string) {
     setRowDrafts((prev) => ({
       ...prev,
-      [movieId]: [...(prev[movieId] || []), { country: 'CZ', releaseDate: '', distributor: '' }]
+      [movieId]: [...(prev[movieId] || []), { country: 'CZ', type: 'KINO', releaseDate: '', distributor: '' }]
     }));
   }
 
@@ -95,7 +101,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
             ? {
                 ...m,
                 ageRating: ageRatingDrafts[movieId] || null,
-                premiereDates: rows.map((r, i) => ({ id: `tmp-${i}`, country: r.country, releaseDate: r.releaseDate, distributor: r.distributor || null }))
+                premiereDates: rows.map((r, i) => ({ id: `tmp-${i}`, country: r.country, type: r.type, releaseDate: r.releaseDate, distributor: r.distributor || null }))
               }
             : m
         )
@@ -156,6 +162,15 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                         >
                           {COUNTRIES.map((c) => (
                             <option key={c.code} value={c.code}>{c.label}</option>
+                          ))}
+                        </select>
+                        <select
+                          className="field-input-sm w-36 flex-none"
+                          value={r.type}
+                          onChange={(e) => updateRow(m.id, i, 'type', e.target.value)}
+                        >
+                          {TYPES.map((t) => (
+                            <option key={t.code} value={t.code}>{t.label}</option>
                           ))}
                         </select>
                         <input

@@ -30,6 +30,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             data: premieres.map((p: any) => ({
               movieId: params.id,
               country: p.country,
+              type: p.type === 'VOD' ? 'VOD' : 'KINO',
               releaseDate: new Date(p.releaseDate),
               distributor: p.distributor?.trim() || null
             }))

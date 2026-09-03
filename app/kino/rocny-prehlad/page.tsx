@@ -19,7 +19,7 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
   const movies = await prisma.movie.findMany({
     where: { approved: true, contentType: 'Film', releaseDate: { gte: rangeStart, lt: rangeEnd } },
     orderBy: { releaseDate: 'asc' },
-    select: { id: true, title: true, slug: true, year: true, nowShowing: true, releaseDate: true, ratings: { select: { value: true } }, premiereDates: { select: { country: true, distributor: true } } }
+    select: { id: true, title: true, slug: true, year: true, nowShowing: true, releaseDate: true, ratings: { select: { value: true } }, premiereDates: { select: { country: true, type: true, distributor: true } } }
   });
 
   // Zoskupenie podľa mesiaca, a v rámci mesiaca podľa presného dňa (kvôli zlúčeným riadkom dátumu)
@@ -80,7 +80,7 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
                           {m.title} <span className="text-muted font-normal">{m.year}</span>
                         </Link>
                         <span className="w-32 flex-none text-xs text-muted truncate hidden sm:block">
-                          {(m.premiereDates.find((p) => p.country === 'CZ') || m.premiereDates[0])?.distributor || '—'}
+                          {(m.premiereDates.find((p) => p.country === 'CZ' && p.type !== 'VOD') || m.premiereDates.find((p) => p.country === 'CZ') || m.premiereDates[0])?.distributor || '—'}
                         </span>
                         {m.nowShowing && (
                           <Badge tone="success" size="sm" className="flex-none whitespace-nowrap text-[10px] sm:text-xs px-1.5 sm:px-2">

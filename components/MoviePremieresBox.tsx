@@ -10,7 +10,7 @@ const FLAGS: Record<string, React.ComponentType<{ className?: string }>> = {
   SK: FlagSK
 };
 
-type PremiereItem = { id: string; country: string; releaseDate: Date; distributor: string | null };
+type PremiereItem = { id: string; country: string; type?: string; releaseDate: Date; distributor: string | null };
 
 export default function MoviePremieresBox({ ageRating, premieres }: { ageRating: string | null; premieres: PremiereItem[] }) {
   if (premieres.length === 0 && !ageRating) return null;
@@ -26,7 +26,7 @@ export default function MoviePremieresBox({ ageRating, premieres }: { ageRating:
             <div key={p.id} className="flex items-start gap-2">
               {Flag ? <Flag className="w-5 h-3.5 mt-0.5" /> : <span className="w-5 h-3.5 mt-0.5 rounded-[2px] bg-line flex-none" />}
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-ink">V kinách od</div>
+                <div className="text-sm font-semibold text-ink">{p.type === 'VOD' ? 'Na VOD od' : 'V kinách od'}</div>
                 <div className="text-xs text-muted">
                   {String(p.releaseDate.getDate()).padStart(2, '0')}.{String(p.releaseDate.getMonth() + 1).padStart(2, '0')}.{p.releaseDate.getFullYear()}
                   {p.distributor && <> {p.distributor}</>}

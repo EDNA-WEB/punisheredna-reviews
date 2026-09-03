@@ -554,6 +554,7 @@ model MoviePremiereDate {
   movieId     String
   movie       Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   country     String
+  type        String   @default("KINO")
   releaseDate DateTime
   distributor String?
   createdAt   DateTime @default(now())
