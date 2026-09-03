@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import MovieCard from '@/components/MovieCard';
+import SortDropdown from '@/components/SortDropdown';
 import { computePercent } from '@/lib/rating';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
@@ -34,6 +35,7 @@ type SearchParams = {
   hasVideos?: string;
   hasTrivia?: string;
   page?: string;
+  sort?: string;
 };
 
 export default async function MoviesPage({ searchParams }: { searchParams: SearchParams }) {
@@ -120,6 +122,15 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
   if (hasVideosFilter) filtered = filtered.filter((m) => m._count.videos > 0);
   if (hasTriviaFilter) filtered = filtered.filter((m) => m._count.trivia > 0);
 
+  const sort = searchParams?.sort || 'najnovsie';
+  filtered = [...filtered].sort((a, b) => {
+    if (sort === 'najstarsie') return (a.yearNum ?? 0) - (b.yearNum ?? 0);
+    if (sort === 'najlepsie') return (b.percent ?? -1) - (a.percent ?? -1);
+    if (sort === 'najhorsie') return (a.percent ?? 101) - (b.percent ?? 101);
+    // predvolené: najnovšie (podľa roku, nie podľa dátumu pridania na web)
+    return (b.yearNum ?? 0) - (a.yearNum ?? 0);
+  });
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -155,6 +166,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
               </Link>
             ))}
           </div>
+
+          <SortDropdown />
 
           <Link
             href="/recenzie/filter"

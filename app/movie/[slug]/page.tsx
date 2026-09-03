@@ -1111,6 +1111,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       <div className="sm:hidden mt-5">
         <MoviePremieresBox ageRating={movie.ageRating} premieres={movie.premiereDates} />
       </div>
+
         </div>
 
         <div>
