@@ -260,11 +260,11 @@ model Movie {
   approved       Boolean  @default(true)
   submittedById  String?
   submittedBy    User?    @relation("submittedMovies", fields: [submittedById], references: [id])
-  budget         Int?
-  marketingBudget Int?
-  boxOffice      Int?
-  domesticBoxOffice Int?
-  internationalBoxOffice Int?
+  budget         BigInt?
+  marketingBudget BigInt?
+  boxOffice      BigInt?
+  domesticBoxOffice BigInt?
+  internationalBoxOffice BigInt?
   createdAt      DateTime @default(now())
   reviews        Review[]
   ratings        Rating[]

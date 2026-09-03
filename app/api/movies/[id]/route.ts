@@ -78,12 +78,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       hasDubbing: !!data.hasDubbing,
       releaseDate: data.releaseDate ? new Date(data.releaseDate) : null,
       distributor: data.distributor || null,
-      tags: data.tags || null,
-      budget: data.budget ? Number(data.budget) : null,
-      marketingBudget: data.marketingBudget ? Number(data.marketingBudget) : null,
-      boxOffice: data.boxOffice ? Number(data.boxOffice) : null,
-      domesticBoxOffice: data.domesticBoxOffice ? Number(data.domesticBoxOffice) : null,
-      internationalBoxOffice: data.internationalBoxOffice ? Number(data.internationalBoxOffice) : null
+      budget: data.budget ? BigInt(Math.round(Number(data.budget))) : null,
+      marketingBudget: data.marketingBudget ? BigInt(Math.round(Number(data.marketingBudget))) : null,
+      boxOffice: data.boxOffice ? BigInt(Math.round(Number(data.boxOffice))) : null,
+      domesticBoxOffice: data.domesticBoxOffice ? BigInt(Math.round(Number(data.domesticBoxOffice))) : null,
+      internationalBoxOffice: data.internationalBoxOffice ? BigInt(Math.round(Number(data.internationalBoxOffice))) : null
     }
   });
 

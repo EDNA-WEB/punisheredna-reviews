@@ -11,6 +11,7 @@ const TABS = [
   { href: '/admin/news', label: 'Novinky' },
   { href: '/admin/trailers', label: 'Trailery' },
   { href: '/admin/online', label: 'Online' },
+  { href: '/admin/tagy', label: 'Tagy' },
   { href: '/admin/kde-sledovat', label: 'Kde sledovať' },
   { href: '/admin/odkazy', label: 'Odkazy' },
   { href: '/admin/navrhy-obsahu', label: 'Návrhy obsahu' },

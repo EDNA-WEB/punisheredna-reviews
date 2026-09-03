@@ -66,7 +66,6 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
   const [hasDubbing, setHasDubbing] = useState(initial?.hasDubbing || false);
   const [releaseDate, setReleaseDate] = useState(initial?.releaseDate ? new Date(initial.releaseDate).toISOString().slice(0, 10) : '');
   const [distributor, setDistributor] = useState(initial?.distributor || '');
-  const [tags, setTags] = useState(initial?.tags || '');
   const [budget, setBudget] = useState(initial?.budget?.toString() || '');
   const [marketingBudget, setMarketingBudget] = useState(initial?.marketingBudget?.toString() || '');
   const [boxOffice, setBoxOffice] = useState(initial?.boxOffice?.toString() || '');
@@ -113,7 +112,6 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
         hasSubtitles, hasDubbing,
         releaseDate: releaseDate || null,
         distributor: distributor || null,
-        tags: tags || null,
         budget: budget ? Number(budget) : null,
         marketingBudget: marketingBudget ? Number(marketingBudget) : null,
         boxOffice: boxOffice ? Number(boxOffice) : null,
@@ -209,9 +207,8 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
 
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Tagy</label>
-        <input className="field-input" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="napr. Stargate, Hviezdna brána, SG-1" />
-        <p className="text-xs text-muted mt-1.5">
-          Oddeľ čiarkou. Ak sa niektorý tag objaví v názve novinky, priradí sa automaticky ako "Súvisiaca novinka" na profile filmu — aj keď sa oficiálny názov filmu nezhoduje.
+        <p className="text-xs text-muted">
+          Tagy sa nastavujú výhradne v <a href="/admin/tagy" className="text-accent hover:underline">Administrácia → Tagy</a>, nie tu.
         </p>
       </div>
 
