@@ -17,8 +17,6 @@ type MovieItem = {
 const COUNTRIES = [
   { code: 'CZ', label: 'Česko' },
   { code: 'US', label: 'USA' },
-  { code: 'GB', label: 'Veľká Británia' },
-  { code: 'SK', label: 'Slovensko' },
   { code: 'WORLD', label: 'Svet (celosvetová premiéra)' }
 ];
 

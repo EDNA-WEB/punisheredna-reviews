@@ -297,12 +297,40 @@ export async function tmdbGetEpisodeStillUrl(tmdbId: number, seasonNumber: numbe
   return still ? `https://image.tmdb.org/t/p/w780${still.file_path}` : null;
 }
 
+// Prevedie skratku vekového obmedzenia (napr. "12", "PG-13") na plnú, zrozumiteľnú vetu.
+// Rieši ako české číselné kódy, tak americké MPAA skratky.
+function formatAgeRating(code: string): string {
+  const trimmed = code.trim().toUpperCase();
+
+  const CZ_MAP: Record<string, string> = {
+    'U': 'Přístupný bez omezení',
+    '0': 'Přístupný bez omezení',
+    '7': 'Nevhodný mládeži do 7 let',
+    '12': 'Nevhodný mládeži do 12 let',
+    '15': 'Nevhodný mládeži do 15 let',
+    '18': 'Nevhodný mládeži do 18 let'
+  };
+  if (CZ_MAP[trimmed]) return CZ_MAP[trimmed];
+
+  const US_MAP: Record<string, string> = {
+    'G': 'Přístupný bez omezení',
+    'PG': 'Nevhodný pro malé děti',
+    'PG-13': 'Nevhodný mládeži do 13 let',
+    'R': 'Nevhodný mládeži do 17 let',
+    'NC-17': 'Nevhodný mládeži do 18 let'
+  };
+  if (US_MAP[trimmed]) return US_MAP[trimmed];
+
+  // Neznámy formát — vrátime pôvodný kód, nech aspoň niečo vidno.
+  return code;
+}
+
 export async function tmdbGetPremieresAndRating(tmdbId: number, mediaType: 'movie' | 'tv') {
   const premieres: { country: string; type: string; releaseDate: string }[] = [];
   let ageRating: string | null = null;
 
-  // Krajiny, čo nás na webe zaujímajú.
-  const WANTED_COUNTRIES = ['CZ', 'SK', 'US', 'GB'];
+  // Zaujímajú nás len české a americké premiéry.
+  const WANTED_COUNTRIES = ['CZ', 'US'];
 
   if (mediaType === 'movie') {
     const res = await fetch(`${TMDB_BASE}/movie/${tmdbId}/release_dates`, { headers: tmdbHeaders() });
@@ -318,7 +346,7 @@ export async function tmdbGetPremieresAndRating(tmdbId: number, mediaType: 'movi
             type: rd.type === 4 ? 'VOD' : 'KINO',
             releaseDate: rd.release_date.slice(0, 10)
           });
-          if (!ageRating && rd.certification) ageRating = rd.certification;
+          if (!ageRating && rd.certification) ageRating = formatAgeRating(rd.certification);
         }
       }
     }
@@ -336,7 +364,7 @@ export async function tmdbGetPremieresAndRating(tmdbId: number, mediaType: 'movi
     if (ratingsRes.ok) {
       const ratingsData = await ratingsRes.json();
       const czRating = (ratingsData.results || []).find((r: any) => r.iso_3166_1 === 'CZ' || r.iso_3166_1 === 'US');
-      if (czRating?.rating) ageRating = czRating.rating;
+      if (czRating?.rating) ageRating = formatAgeRating(czRating.rating);
     }
   }
 
