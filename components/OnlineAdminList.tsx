@@ -13,6 +13,7 @@ type MovieItem = {
   watchUrl: string | null;
   onlineImage: string | null;
   contentType: string;
+  tmdbId: number | null;
   seasons: SeasonItem[];
 };
 
@@ -56,6 +57,27 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
       setError(err.message);
     } finally {
       setSaving(null);
+    }
+  }
+
+  async function handleAutoFromTmdb(movieId: string) {
+    setUploading(movieId);
+    setError('');
+    try {
+      const res = await fetch(`/api/movies/${movieId}/online/tmdb-image`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const saveRes = await fetch(`/api/movies/${movieId}/online`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onlineImage: data.imageUrl })
+      });
+      if (!saveRes.ok) throw new Error();
+      setMovies((prev) => prev.map((x) => (x.id === movieId ? { ...x, onlineImage: data.imageUrl } : x)));
+    } catch (err: any) {
+      setError(err.message || 'Automatické natiahnutie obrázka zlyhalo.');
+    } finally {
+      setUploading(null);
     }
   }
 
@@ -119,6 +141,34 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
       setError(err.message);
     } finally {
       setSaving(null);
+    }
+  }
+
+  async function handleEpisodeAutoFromTmdb(seasonId: string, episodeId: string) {
+    setUploading(episodeId);
+    setError('');
+    try {
+      const res = await fetch(`/api/seasons/${seasonId}/episodes/${episodeId}/tmdb-image`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const saveRes = await fetch(`/api/seasons/${seasonId}/episodes/${episodeId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onlineImage: data.imageUrl })
+      });
+      if (!saveRes.ok) throw new Error();
+      setMovies((prev) =>
+        prev.map((m) => ({
+          ...m,
+          seasons: m.seasons.map((s) =>
+            s.id === seasonId ? { ...s, episodes: s.episodes.map((ep) => (ep.id === episodeId ? { ...ep, onlineImage: data.imageUrl } : ep)) } : s
+          )
+        }))
+      );
+    } catch (err: any) {
+      setError(err.message || 'Automatické natiahnutie obrázka zlyhalo.');
+    } finally {
+      setUploading(null);
     }
   }
 
@@ -221,6 +271,16 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                   )}
                 </label>
                 <input id={`online-img-${m.id}`} type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(m.id, e)} />
+                {m.tmdbId && (
+                  <button
+                    type="button"
+                    onClick={() => handleAutoFromTmdb(m.id)}
+                    disabled={uploading === m.id}
+                    className="mt-1.5 text-xs font-semibold text-accent hover:underline disabled:opacity-50"
+                  >
+                    {uploading === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                  </button>
+                )}
               </div>
 
               {m.contentType === 'Seriál' && m.seasons.length > 0 && (
@@ -257,6 +317,17 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                                   className="hidden"
                                   onChange={(e) => handleEpisodeUpload(s.id, ep.id, e)}
                                 />
+                                {m.tmdbId && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEpisodeAutoFromTmdb(s.id, ep.id)}
+                                    disabled={uploading === ep.id}
+                                    title="Automaticky z TMDb"
+                                    className="flex-none text-[10px] font-semibold text-accent hover:underline disabled:opacity-50"
+                                  >
+                                    Auto TMDb
+                                  </button>
+                                )}
                                 <span className="text-[11px] text-ink font-semibold w-8 flex-none">E{String(ep.number).padStart(2, '0')}</span>
                                 <span className="text-xs text-muted flex-1 truncate">{ep.title || `Epizóda ${ep.number}`}</span>
                                 <input

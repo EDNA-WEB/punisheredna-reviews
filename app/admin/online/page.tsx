@@ -22,6 +22,7 @@ export default async function AdminOnlinePage() {
       watchUrl: true,
       onlineImage: true,
       contentType: true,
+      tmdbId: true,
       seasons: {
         orderBy: { number: 'asc' },
         select: {

@@ -278,3 +278,21 @@ export async function tmdbGetSimilarMovies(tmdbId: number, mediaType: 'movie' | 
     poster: r.poster_path ? `https://image.tmdb.org/t/p/w300${r.poster_path}` : null
   }));
 }
+
+export async function tmdbGetBackdropUrl(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<string | null> {
+  const url = `${TMDB_BASE}/${mediaType}/${tmdbId}/images?include_image_language=null`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return null;
+  const d = await res.json();
+  const backdrop = (d.backdrops || [])[0];
+  return backdrop ? `https://image.tmdb.org/t/p/w1280${backdrop.file_path}` : null;
+}
+
+export async function tmdbGetEpisodeStillUrl(tmdbId: number, seasonNumber: number, episodeNumber: number): Promise<string | null> {
+  const url = `${TMDB_BASE}/tv/${tmdbId}/season/${seasonNumber}/episode/${episodeNumber}/images`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return null;
+  const d = await res.json();
+  const still = (d.stills || [])[0];
+  return still ? `https://image.tmdb.org/t/p/w780${still.file_path}` : null;
+}
