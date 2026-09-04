@@ -11,6 +11,7 @@ import { displayUserName } from '@/lib/deletedUser';
 import { logActivity } from '@/lib/logActivity';
 import MovieNoteBox from '@/components/MovieNoteBox';
 import SimilarMoviesBox from '@/components/SimilarMoviesBox';
+import AdminQuickEditButton from '@/components/AdminQuickEditButton';
 import WatchlistButton from '@/components/WatchlistButton';
 import BoxOfficeStatus from '@/components/BoxOfficeStatus';
 import { tmdbGetLiveBoxOffice } from '@/lib/tmdb';
@@ -1184,6 +1185,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           )}
         </div>
       </div>
+
+      {isAdmin && <AdminQuickEditButton movieId={movie.id} />}
     </div>
   );
 }

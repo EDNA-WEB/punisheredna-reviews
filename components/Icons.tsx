@@ -161,6 +161,16 @@ export function IconEyeOff({ className = 'w-4 h-4' }: { className?: string }) {
     </svg>
   );
 }
+export function IconKey({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7.5" cy="15.5" r="4.5" />
+      <path d="M11 12 20.5 2.5" />
+      <path d="M16 7l2.5 2.5" />
+      <path d="M19 4l2.5 2.5" />
+    </svg>
+  );
+}
 
 export function IconNote({ className = 'w-4 h-4' }: { className?: string }) {
   return (
