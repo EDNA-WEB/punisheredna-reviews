@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { IconHeartOutline } from '@/components/Icons';
+import ShopSortSelect from '@/components/ShopSortSelect';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,19 +77,7 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
 
         <div>
           <div className="flex justify-end mb-4">
-            <form>
-              {activeCategory && <input type="hidden" name="kategoria" value={activeCategory.slug} />}
-              <select
-                name="sort"
-                defaultValue={searchParams.sort || 'najnovsie'}
-                onChange={(e) => e.currentTarget.form?.submit()}
-                className="field-input-sm"
-              >
-                <option value="najnovsie">Najnovšie</option>
-                <option value="najlacnejsie">Najlacnejšie</option>
-                <option value="najdrahsie">Najdrahšie</option>
-              </select>
-            </form>
+            <ShopSortSelect currentSort={searchParams.sort || 'najnovsie'} categorySlug={activeCategory?.slug} />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">

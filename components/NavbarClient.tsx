@@ -45,7 +45,7 @@ export default function NavbarClient({
     { href: '/box-office', label: t('nav.box_office') },
     { href: '/pouzivatelia', label: t('nav.pouzivatelia') },
     { href: '/diskusie', label: t('nav.diskusie') },
-    { href: '/obchod', label: t('nav.obchod') || 'Obchod' }
+    { href: '/obchod', label: t('nav.obchod', 'Obchod') }
   ];
 
   function isActive(href: string) {
