@@ -18,18 +18,9 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.nickname || !credentials?.password) return null;
 
-        console.log('[AUTH DEBUG] hľadám prezývku:', JSON.stringify(credentials.nickname.trim()));
-
-        let user;
-        try {
-          user = await prisma.user.findFirst({
-            where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
-          });
-        } catch (dbErr: any) {
-          console.error('[AUTH DEBUG] CHYBA pri hľadaní používateľa:', dbErr?.message || dbErr);
-          throw dbErr;
-        }
-        console.log('[AUTH DEBUG] nájdený používateľ:', user ? user.name : 'ŽIADNY');
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
+        });
         if (!user) return null;
 
         if (user.lockedUntil && user.lockedUntil > new Date()) {
@@ -37,7 +28,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
-        console.log('[AUTH DEBUG] heslo správne:', valid);
 
         if (!valid) {
           const attempts = user.failedLoginAttempts + 1;
@@ -64,9 +54,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error('BANNED');
         }
 
-        if (!user.emailVerified) {
-          throw new Error('UNVERIFIED');
-        }
+        // DOČASNE VYPNUTÉ — overovacie e-maily zatiaľ nemôžu chodiť na ľubovoľné adresy,
+        // kým nie je v Resend overená vlastná doména. Znova zapnúť odkomentovaním nižšie,
+        // hneď ako bude doména hotová.
+        // if (!user.emailVerified) {
+        //   throw new Error('UNVERIFIED');
+        // }
 
         return {
           id: user.id,
