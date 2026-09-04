@@ -475,7 +475,7 @@ model ShopProductVariant {
   label         String
   price         Float
   originalPrice Float?
-  currency      String      @default("USD")
+  currency      String      @default("EUR")
   isBestDeal    Boolean     @default(false)
   isGreatPrice  Boolean     @default(false)
   order         Int         @default(0)

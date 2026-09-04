@@ -47,7 +47,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
                 label: v.label,
                 price: Number(v.price),
                 originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
-                currency: v.currency || 'USD',
+                currency: v.currency || 'EUR',
                 isBestDeal: !!v.isBestDeal,
                 isGreatPrice: !!v.isGreatPrice,
                 order: i

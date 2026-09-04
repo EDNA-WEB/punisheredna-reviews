@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       image: imageUrl,
       platform: data.platform || null,
       type: data.type || 'Key',
-      region: data.region || 'UNITED STATES',
+      region: data.region || 'SLOVENSKO',
       description: data.description || null,
       activationInfo: data.activationInfo || null,
       regionRestriction: data.regionRestriction || null,
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
           label: v.label,
           price: Number(v.price),
           originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
-          currency: v.currency || 'USD',
+          currency: v.currency || 'EUR',
           isBestDeal: !!v.isBestDeal,
           isGreatPrice: !!v.isGreatPrice,
           order: i

@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
-import { IconHeartOutline } from '@/components/Icons';
+import { IconHeartOutline, IconChevronRight } from '@/components/Icons';
 import ShopVariantSelector from '@/components/ShopVariantSelector';
 
 export const dynamic = 'force-dynamic';
@@ -15,6 +16,14 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
 
   return (
     <div className="pt-8 pb-16 max-w-5xl">
+      <div className="flex items-center gap-1.5 text-xs text-muted mb-5">
+        <Link href="/obchod" className="hover:text-accent">Obchod</Link>
+        <IconChevronRight className="w-3 h-3" />
+        <Link href={`/obchod?kategoria=${product.category.slug}`} className="hover:text-accent">{product.category.name}</Link>
+        <IconChevronRight className="w-3 h-3" />
+        <span className="text-ink">{product.title}</span>
+      </div>
+
       <div className="flex items-start justify-between gap-4 mb-2">
         <h1 className="font-display font-extrabold text-2xl text-ink">{product.title}</h1>
         <button

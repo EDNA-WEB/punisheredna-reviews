@@ -34,7 +34,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
   const [image, setImage] = useState(initial?.image || '');
   const [platform, setPlatform] = useState(initial?.platform || '');
   const [type, setType] = useState(initial?.type || 'Key');
-  const [region, setRegion] = useState(initial?.region || 'UNITED STATES');
+  const [region, setRegion] = useState(initial?.region || 'SLOVENSKO');
   const [description, setDescription] = useState(initial?.description || '');
   const [activationInfo, setActivationInfo] = useState(initial?.activationInfo || '');
   const [regionRestriction, setRegionRestriction] = useState(initial?.regionRestriction || '');
@@ -52,7 +52,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
           isBestDeal: v.isBestDeal,
           isGreatPrice: v.isGreatPrice
         }))
-      : [{ label: '15 USD', price: '', originalPrice: '', isBestDeal: false, isGreatPrice: false }]
+      : [{ label: '10 €', price: '', originalPrice: '', isBestDeal: false, isGreatPrice: false }]
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -211,12 +211,15 @@ export default function ShopProductForm({ categories, initial }: { categories: C
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-semibold text-ink">Varianty (napr. 15 USD, 20 USD…)</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-semibold text-ink">Hodnoty karty (varianty)</label>
           <button type="button" onClick={addVariant} className="text-xs font-semibold text-accent hover:underline">
-            + Pridať variant
+            + Pridať hodnotu
           </button>
         </div>
+        <p className="text-xs text-muted mb-2">
+          Každá hodnota je jedna možnosť, čo si zákazník vyberie (napr. karta v hodnote 10 €, 20 €, 30 €…) — ku každej patrí vlastná cena.
+        </p>
         <div className="space-y-2">
           {variants.map((v, i) => (
             <div key={i} className="border border-line rounded-lg p-3 space-y-2">
@@ -225,7 +228,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
                   className="field-input-sm flex-1"
                   value={v.label}
                   onChange={(e) => updateVariant(i, 'label', e.target.value)}
-                  placeholder="Popis (napr. 15 USD)"
+                  placeholder="napr. 10 €"
                 />
                 <input
                   className="field-input-sm w-28"
