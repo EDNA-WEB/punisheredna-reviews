@@ -31,7 +31,7 @@ export default function PremieresCarousel({ premieres }: { premieres: PremiereIt
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-night/90 via-night/10 to-transparent" />
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <div className="absolute top-2 left-2">
                 <CountdownBadge date={p.releaseDate} />
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-2">

@@ -23,12 +23,14 @@ export default function CountdownBadge({ date, size = 'md' }: { date: Date | str
 
   return (
     <div
-      className={`w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-md border-2 border-white/20 ${
-        isSoon ? 'bg-gradient-to-br from-amber-500 to-accent text-white' : 'bg-night/90 text-white backdrop-blur-sm'
+      className={`w-12 h-12 rounded-md flex flex-col items-center justify-center shadow-md border ${
+        isSoon
+          ? 'bg-gradient-to-b from-amber-500 to-accent text-white border-white/20'
+          : 'bg-night text-white border-white/10'
       }`}
     >
-      <span className="font-display font-extrabold text-xl">{label}</span>
-      {sub && <span className="text-[9px] uppercase tracking-wide opacity-80 -mt-0.5">{sub}</span>}
+      <span className="font-display font-extrabold text-[11px] leading-none">{label}</span>
+      {sub && <span className="text-[7px] uppercase tracking-wider opacity-75 mt-0.5">{sub}</span>}
     </div>
   );
 }
