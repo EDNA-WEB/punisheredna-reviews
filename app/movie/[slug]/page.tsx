@@ -81,7 +81,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const viewer = viewerId ? await prisma.user.findUnique({ where: { id: viewerId }, select: { membershipUntil: true } }) : null;
-  const isMember = !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
+  const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
@@ -967,7 +968,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             key: 'online',
             desktopOnly: true,
             label: t('movie.online'),
-            content: !viewerId ? (
+            content: !viewerId && !settings?.onlineFreeForAll ? (
               <p className="text-sm text-muted">
                 {t('movie.online_prihlasenie')}{' '}
                 <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link>.

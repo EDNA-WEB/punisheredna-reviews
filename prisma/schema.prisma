@@ -610,6 +610,7 @@ model Settings {
   rulesText String? @db.Text
   privacyPolicyText String? @db.Text
   registrationsEnabled Boolean @default(true)
+  onlineFreeForAll Boolean @default(false)
 }
 
 model MoviePremiereDate {

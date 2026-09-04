@@ -53,7 +53,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const viewer = viewerId ? await prisma.user.findUnique({ where: { id: viewerId }, select: { membershipUntil: true } }) : null;
-  const isMember = !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
+  const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
   const movie = await prisma.movie.findUnique({
@@ -618,7 +619,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               key: 'online',
               desktopOnly: true,
               label: 'Online',
-              content: !viewerId ? (
+              content: !viewerId && !settings?.onlineFreeForAll ? (
                 <p className="text-sm text-muted">
                   Pre sledovanie filmov sa musíš <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>.
                 </p>

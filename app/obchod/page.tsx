@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { IconHeartOutline } from '@/components/Icons';
 import ShopSortSelect from '@/components/ShopSortSelect';
 import { formatPrice } from '@/lib/formatCurrency';
 
@@ -110,14 +109,13 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
                     <div className="text-xs text-muted mb-1">
                       Región: <span className="text-ink font-medium">{p.region}</span>
                     </div>
-                    <div className="mt-auto flex items-center justify-between pt-1">
+                    <div className="mt-auto pt-1">
                       {cheapest && (
                         <div>
                           <span className="text-[10px] text-muted">od </span>
                           <span className="text-base font-bold text-ink">{formatPrice(cheapest.price, cheapest.currency)}</span>
                         </div>
                       )}
-                      <IconHeartOutline className="w-4 h-4 text-muted hover:text-accent transition-colors" />
                     </div>
                   </div>
                 </Link>

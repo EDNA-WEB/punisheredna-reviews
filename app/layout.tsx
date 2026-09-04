@@ -10,6 +10,7 @@ import TopBar from '@/components/TopBar';
 import Navbar from '@/components/Navbar';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
+import TvNavigation from '@/components/TvNavigation';
 
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
@@ -69,6 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
         <TranslationProvider dict={dict}>
           <Providers>
+            <TvNavigation />
             <SiteWallpaper />
             <TopBar />
             <Navbar />

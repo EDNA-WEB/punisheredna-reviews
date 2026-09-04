@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
-import { IconHeartOutline, IconChevronRight } from '@/components/Icons';
+import { IconChevronRight } from '@/components/Icons';
 import ShopVariantSelector from '@/components/ShopVariantSelector';
 import ShopReviewsSection from '@/components/ShopReviewsSection';
 
@@ -36,16 +36,7 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
         <span className="text-ink">{product.title}</span>
       </div>
 
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <h1 className="font-display font-extrabold text-2xl text-ink">{product.title}</h1>
-        <button
-          type="button"
-          aria-label="Pridať do obľúbených"
-          className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-muted hover:border-accent hover:text-accent transition-colors flex-none"
-        >
-          <IconHeartOutline className="w-4 h-4" />
-        </button>
-      </div>
+      <h1 className="font-display font-extrabold text-2xl text-ink mb-2">{product.title}</h1>
       {product.reviews.length > 0 && (
         <div className="flex items-center gap-2 mb-6 text-sm">
           {(() => {

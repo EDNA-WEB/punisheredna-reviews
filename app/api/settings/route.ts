@@ -19,7 +19,8 @@ export async function GET() {
     privacyModalText: settings?.privacyModalText || null,
     privacyCategories: settings?.privacyCategories || null,
     cookiesPolicyText: settings?.cookiesPolicyText || null,
-    registrationsEnabled: settings?.registrationsEnabled ?? true
+    registrationsEnabled: settings?.registrationsEnabled ?? true,
+    onlineFreeForAll: settings?.onlineFreeForAll ?? false
   });
 }
 
@@ -30,7 +31,7 @@ export async function PATCH(req: Request) {
   }
 
   const body = await req.json();
-  const { wallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled } = body;
+  const { wallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled, onlineFreeForAll } = body;
 
   for (const url of [appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl]) {
     const urlError = validateSafeUrl(url);
@@ -75,6 +76,7 @@ export async function PATCH(req: Request) {
   if ('privacyCategories' in body) data.privacyCategories = privacyCategories || null;
   if ('cookiesPolicyText' in body) data.cookiesPolicyText = cookiesPolicyText || null;
   if ('registrationsEnabled' in body) data.registrationsEnabled = !!registrationsEnabled;
+  if ('onlineFreeForAll' in body) data.onlineFreeForAll = !!onlineFreeForAll;
 
   const settings = await prisma.settings.upsert({
     where: { id: 'singleton' },
