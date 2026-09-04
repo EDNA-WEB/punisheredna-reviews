@@ -44,7 +44,8 @@ export default function NavbarClient({
     { href: '/zanre', label: t('nav.zanre') },
     { href: '/box-office', label: t('nav.box_office') },
     { href: '/pouzivatelia', label: t('nav.pouzivatelia') },
-    { href: '/diskusie', label: t('nav.diskusie') }
+    { href: '/diskusie', label: t('nav.diskusie') },
+    { href: '/obchod', label: t('nav.obchod') || 'Obchod' }
   ];
 
   function isActive(href: string) {

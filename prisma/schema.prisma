@@ -434,6 +434,55 @@ model MoviePhoto {
   @@index([episodeId])
 }
 
+model ShopCategory {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  slug      String        @unique
+  icon      String?       @db.Text
+  order     Int           @default(0)
+  products  ShopProduct[]
+}
+
+model ShopProduct {
+  id            String              @id @default(cuid())
+  categoryId    String
+  category      ShopCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  title         String
+  slug          String              @unique
+  image         String?             @db.Text
+  platform      String?
+  type          String              @default("Key")
+  region        String              @default("UNITED STATES")
+  description   String?             @db.Text
+  activationInfo String?            @db.Text
+  regionRestriction String?
+  rating        Float?
+  reviewCount   Int                 @default(0)
+  sponsored     Boolean             @default(false)
+  sellerName    String?
+  approved      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  variants      ShopProductVariant[]
+
+  @@index([categoryId])
+  @@index([approved])
+}
+
+model ShopProductVariant {
+  id            String      @id @default(cuid())
+  productId     String
+  product       ShopProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label         String
+  price         Float
+  originalPrice Float?
+  currency      String      @default("USD")
+  isBestDeal    Boolean     @default(false)
+  isGreatPrice  Boolean     @default(false)
+  order         Int         @default(0)
+
+  @@index([productId])
+}
+
 model StreamingService {
   id     String   @id @default(cuid())
   name   String   @unique
