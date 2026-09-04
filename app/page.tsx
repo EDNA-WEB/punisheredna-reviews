@@ -144,7 +144,7 @@ export default async function HomePage() {
 
   return (
     <div className="pt-6">
-      <div className="lg:flex lg:gap-6 lg:items-stretch mb-12">
+      <div className="lg:flex lg:gap-6 lg:items-start mb-12">
         <div className="w-full lg:w-[576px] lg:flex-none">
           <TrailerCarousel trailers={trailers} />
         </div>
