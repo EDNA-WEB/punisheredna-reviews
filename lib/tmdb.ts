@@ -394,3 +394,14 @@ export async function tmdbGetWatchProviders(tmdbId: number, mediaType: 'movie' |
 
   return { providerNames, link: region.link || null };
 }
+
+export async function tmdbGetPopular(mediaType: 'movie' | 'tv', page: number = 1) {
+  const url = `${TMDB_BASE}/${mediaType}/popular?language=cs-CZ&page=${page}`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.results || []).map((r: any) => ({
+    tmdbId: r.id,
+    releaseDate: r.release_date || r.first_air_date || null
+  }));
+}
