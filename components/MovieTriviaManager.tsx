@@ -10,12 +10,30 @@ function stripMarkdownLinks(text: string): string {
   return text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 }
 
-// Rozdelí veľký blok textu na jednotlivé zaujímavosti — nová položka začína buď na
-// úplnom začiatku textu, alebo na riadku začínajúcom hviezdičkou ("* ").
+// Rozdelí veľký blok textu na jednotlivé zaujímavosti — koniec každej položky pozná
+// podľa mena prispievateľa v zátvorke na konci (napr. "(vojtaruzek)"). Meno
+// prispievateľa je vždy JEDNO slovo bez medzery — na rozdiel od mien hercov/tvorcov
+// spomenutých v texte (napr. "(Matt Damon)"), čo majú medzeru, tie sa teda nesplitnú.
 function splitBulkText(raw: string): string[] {
-  const withMarker = '\n* ' + raw.trim();
-  const parts = withMarker.split(/\n\*\s+/).map((p) => p.trim()).filter(Boolean);
-  return parts.map((p) => stripMarkdownLinks(p.replace(/\s+/g, ' ').trim()));
+  const cleaned = stripMarkdownLinks(raw).replace(/\s+/g, ' ').trim();
+  const authorPattern = /\(([A-Za-zÀ-ž0-9._-]+)\)(\s|$)/g;
+  const items: string[] = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = authorPattern.exec(cleaned)) !== null) {
+    const end = match.index + match[1].length + 2;
+    // Skutočný koniec položky: za zátvorkou nasleduje koniec textu, alebo veľké
+    // písmeno (začiatok novej vety/položky) — meno postavy uprostred vety (napr.
+    // "(Odysseus)") pokračuje malým písmenom, tam sa teda nesplitne.
+    const isRealBoundary = end >= cleaned.length || /^[A-ZÀ-Ž*]/.test(cleaned.slice(end).trim());
+    if (isRealBoundary) {
+      items.push(cleaned.slice(lastIndex, end).trim());
+      lastIndex = end;
+    }
+  }
+  const rest = cleaned.slice(lastIndex).trim();
+  if (rest) items.push(rest);
+  return items.map((i) => i.replace(/^\*\s*/, '').trim()).filter(Boolean);
 }
 
 export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId: string; initialTrivia: Trivia[] }) {
@@ -130,7 +148,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
                 className="field-input-sm w-full min-h-[160px] font-mono text-xs"
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
-                placeholder={'Vlož celý blok textu naraz (napr. skopírovaný z ČSFD) — nové položky rozpoznám podľa "* " na začiatku riadku.'}
+                placeholder={'Vlož celý blok textu naraz (napr. skopírovaný z ČSFD) — koniec každej položky rozpoznám podľa mena prispievateľa v zátvorke na konci (napr. "(vojtaruzek)").'}
               />
               <button
                 type="button"
