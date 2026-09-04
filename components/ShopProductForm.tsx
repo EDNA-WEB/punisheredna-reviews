@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-type VariantDraft = { label: string; price: string; originalPrice: string; isBestDeal: boolean; isGreatPrice: boolean };
+type VariantDraft = { label: string; price: string; originalPrice: string };
 type CategoryItem = { id: string; name: string };
 
 type Initial = {
@@ -16,13 +16,9 @@ type Initial = {
   region?: string;
   description?: string | null;
   activationInfo?: string | null;
-  regionRestriction?: string | null;
-  rating?: number | null;
-  reviewCount?: number;
-  sponsored?: boolean;
   sellerName?: string | null;
   approved?: boolean;
-  variants?: { label: string; price: number; originalPrice: number | null; isBestDeal: boolean; isGreatPrice: boolean }[];
+  variants?: { label: string; price: number; originalPrice: number | null }[];
 };
 
 export default function ShopProductForm({ categories, initial }: { categories: CategoryItem[]; initial?: Initial }) {
@@ -33,14 +29,9 @@ export default function ShopProductForm({ categories, initial }: { categories: C
   const [title, setTitle] = useState(initial?.title || '');
   const [image, setImage] = useState(initial?.image || '');
   const [platform, setPlatform] = useState(initial?.platform || '');
-  const [type, setType] = useState(initial?.type || 'Key');
   const [region, setRegion] = useState(initial?.region || 'SLOVENSKO');
   const [description, setDescription] = useState(initial?.description || '');
   const [activationInfo, setActivationInfo] = useState(initial?.activationInfo || '');
-  const [regionRestriction, setRegionRestriction] = useState(initial?.regionRestriction || '');
-  const [rating, setRating] = useState(initial?.rating?.toString() || '');
-  const [reviewCount, setReviewCount] = useState(initial?.reviewCount?.toString() || '');
-  const [sponsored, setSponsored] = useState(initial?.sponsored || false);
   const [sellerName, setSellerName] = useState(initial?.sellerName || '');
   const [approved, setApproved] = useState(initial?.approved ?? true);
   const [variants, setVariants] = useState<VariantDraft[]>(
@@ -48,11 +39,9 @@ export default function ShopProductForm({ categories, initial }: { categories: C
       ? initial.variants.map((v) => ({
           label: v.label,
           price: v.price.toString(),
-          originalPrice: v.originalPrice?.toString() || '',
-          isBestDeal: v.isBestDeal,
-          isGreatPrice: v.isGreatPrice
+          originalPrice: v.originalPrice?.toString() || ''
         }))
-      : [{ label: '10 €', price: '', originalPrice: '', isBestDeal: false, isGreatPrice: false }]
+      : [{ label: '1 mesiac', price: '', originalPrice: '' }]
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -66,9 +55,9 @@ export default function ShopProductForm({ categories, initial }: { categories: C
   }
 
   function addVariant() {
-    setVariants((prev) => [...prev, { label: '', price: '', originalPrice: '', isBestDeal: false, isGreatPrice: false }]);
+    setVariants((prev) => [...prev, { label: '', price: '', originalPrice: '' }]);
   }
-  function updateVariant(i: number, field: keyof VariantDraft, value: string | boolean) {
+  function updateVariant(i: number, field: keyof VariantDraft, value: string) {
     setVariants((prev) => prev.map((v, idx) => (idx === i ? { ...v, [field]: value } : v)));
   }
   function removeVariant(i: number) {
@@ -83,7 +72,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
     }
     const validVariants = variants.filter((v) => v.label.trim() && v.price);
     if (validVariants.length === 0) {
-      setError('Pridaj aspoň jeden variant s cenou.');
+      setError('Pridaj aspoň jeden balík s cenou.');
       return;
     }
 
@@ -95,22 +84,15 @@ export default function ShopProductForm({ categories, initial }: { categories: C
         title: title.trim(),
         image,
         platform: platform || null,
-        type,
         region,
         description: description || null,
         activationInfo: activationInfo || null,
-        regionRestriction: regionRestriction || null,
-        rating: rating || null,
-        reviewCount: reviewCount || 0,
-        sponsored,
         sellerName: sellerName || null,
         approved,
         variants: validVariants.map((v) => ({
           label: v.label.trim(),
           price: v.price,
-          originalPrice: v.originalPrice || null,
-          isBestDeal: v.isBestDeal,
-          isGreatPrice: v.isGreatPrice
+          originalPrice: v.originalPrice || null
         }))
       };
 
@@ -142,7 +124,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
 
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Názov produktu</label>
-        <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="napr. Netflix Gift Card 15 USD" required />
+        <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="napr. Netflix Predplatné" required />
       </div>
 
       <div>
@@ -157,19 +139,8 @@ export default function ShopProductForm({ categories, initial }: { categories: C
           <input className="field-input" value={platform} onChange={(e) => setPlatform(e.target.value)} placeholder="napr. Netflix" />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Typ</label>
-          <input className="field-input" value={type} onChange={(e) => setType(e.target.value)} placeholder="napr. Key" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
           <label className="block text-sm font-semibold text-ink mb-2">Región</label>
-          <input className="field-input" value={region} onChange={(e) => setRegion(e.target.value)} placeholder="napr. UNITED STATES" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Obmedzenie regiónu (voliteľné)</label>
-          <input className="field-input" value={regionRestriction} onChange={(e) => setRegionRestriction(e.target.value)} placeholder="napr. Can't activate in Slovakia" />
+          <input className="field-input" value={region} onChange={(e) => setRegion(e.target.value)} placeholder="napr. SLOVENSKO" />
         </div>
       </div>
 
@@ -183,81 +154,52 @@ export default function ShopProductForm({ categories, initial }: { categories: C
         <textarea className="field-input min-h-[60px]" value={activationInfo} onChange={(e) => setActivationInfo(e.target.value)} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Hodnotenie (0-5, voliteľné)</label>
-          <input className="field-input" value={rating} onChange={(e) => setRating(e.target.value)} placeholder="napr. 5.0" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Počet recenzií</label>
-          <input className="field-input" value={reviewCount} onChange={(e) => setReviewCount(e.target.value)} placeholder="napr. 14" />
-        </div>
-      </div>
-
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Meno predajcu (voliteľné)</label>
-        <input className="field-input" value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="napr. Instant_game" />
+        <input className="field-input" value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="napr. PunisherEDNA" />
       </div>
 
-      <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" checked={sponsored} onChange={(e) => setSponsored(e.target.checked)} />
-          Sponzorované
-        </label>
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" checked={approved} onChange={(e) => setApproved(e.target.checked)} />
-          Viditeľné na webe
-        </label>
-      </div>
+      <label className="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" checked={approved} onChange={(e) => setApproved(e.target.checked)} />
+        Viditeľné na webe
+      </label>
 
       <div>
         <div className="flex items-center justify-between mb-1">
-          <label className="block text-sm font-semibold text-ink">Hodnoty karty (varianty)</label>
+          <label className="block text-sm font-semibold text-ink">Balíky predplatného</label>
           <button type="button" onClick={addVariant} className="text-xs font-semibold text-accent hover:underline">
-            + Pridať hodnotu
+            + Pridať balík
           </button>
         </div>
         <p className="text-xs text-muted mb-2">
-          Každá hodnota je jedna možnosť, čo si zákazník vyberie (napr. karta v hodnote 10 €, 20 €, 30 €…) — ku každej patrí vlastná cena.
+          Každý balík je jedna možnosť dĺžky predplatného (napr. 1 mesiac, 3 mesiace, 12 mesiacov…), ku každému patrí vlastná cena.
         </p>
         <div className="space-y-2">
           {variants.map((v, i) => (
-            <div key={i} className="border border-line rounded-lg p-3 space-y-2">
-              <div className="flex gap-2 items-center">
-                <input
-                  className="field-input-sm flex-1"
-                  value={v.label}
-                  onChange={(e) => updateVariant(i, 'label', e.target.value)}
-                  placeholder="napr. 10 €"
-                />
-                <input
-                  className="field-input-sm w-28"
-                  value={v.price}
-                  onChange={(e) => updateVariant(i, 'price', e.target.value)}
-                  placeholder="Cena"
-                  type="number"
-                  step="0.01"
-                />
-                <input
-                  className="field-input-sm w-28"
-                  value={v.originalPrice}
-                  onChange={(e) => updateVariant(i, 'originalPrice', e.target.value)}
-                  placeholder="Pôvodná cena"
-                  type="number"
-                  step="0.01"
-                />
-                <button type="button" onClick={() => removeVariant(i)} className="text-muted hover:text-danger flex-none">✕</button>
-              </div>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-1.5 text-xs text-ink">
-                  <input type="checkbox" checked={v.isBestDeal} onChange={(e) => updateVariant(i, 'isBestDeal', e.target.checked)} />
-                  Best deal
-                </label>
-                <label className="flex items-center gap-1.5 text-xs text-ink">
-                  <input type="checkbox" checked={v.isGreatPrice} onChange={(e) => updateVariant(i, 'isGreatPrice', e.target.checked)} />
-                  Great price
-                </label>
-              </div>
+            <div key={i} className="border border-line rounded-lg p-3 flex gap-2 items-center">
+              <input
+                className="field-input-sm flex-1"
+                value={v.label}
+                onChange={(e) => updateVariant(i, 'label', e.target.value)}
+                placeholder="napr. 1 mesiac"
+              />
+              <input
+                className="field-input-sm w-28"
+                value={v.price}
+                onChange={(e) => updateVariant(i, 'price', e.target.value)}
+                placeholder="Cena €"
+                type="number"
+                step="0.01"
+              />
+              <input
+                className="field-input-sm w-28"
+                value={v.originalPrice}
+                onChange={(e) => updateVariant(i, 'originalPrice', e.target.value)}
+                placeholder="Pôvodná cena"
+                type="number"
+                step="0.01"
+              />
+              <button type="button" onClick={() => removeVariant(i)} className="text-muted hover:text-danger flex-none">✕</button>
             </div>
           ))}
         </div>

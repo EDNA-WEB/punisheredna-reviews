@@ -1,18 +1,30 @@
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { IconHeartOutline, IconChevronRight } from '@/components/Icons';
 import ShopVariantSelector from '@/components/ShopVariantSelector';
+import ShopReviewsSection from '@/components/ShopReviewsSection';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopProductPage({ params }: { params: { slug: string } }) {
+  const session = await getServerSession(authOptions);
+  const viewerId = session ? (session.user as any).id : null;
+
   const product = await prisma.shopProduct.findUnique({
     where: { slug: params.slug, approved: true },
-    include: { variants: { orderBy: { order: 'asc' } }, category: { select: { name: true, slug: true } } }
+    include: {
+      variants: { orderBy: { order: 'asc' } },
+      category: { select: { name: true, slug: true } },
+      reviews: { orderBy: { createdAt: 'desc' }, include: { user: { select: { name: true, avatar: true } } } }
+    }
   });
 
   if (!product) notFound();
+
+  const myExistingReview = viewerId ? product.reviews.find((r) => r.userId === viewerId) || null : null;
 
   return (
     <div className="pt-8 pb-16 max-w-5xl">
@@ -34,11 +46,18 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
           <IconHeartOutline className="w-4 h-4" />
         </button>
       </div>
-      {product.rating && (
+      {product.reviews.length > 0 && (
         <div className="flex items-center gap-2 mb-6 text-sm">
-          <span className="text-amber-500">{'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}</span>
-          <span className="font-semibold text-ink">{product.rating.toFixed(1)}</span>
-          <span className="text-muted">{product.reviewCount} recenzií</span>
+          {(() => {
+            const avg = product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length;
+            return (
+              <>
+                <span className="text-amber-500">{'★'.repeat(Math.round(avg))}{'☆'.repeat(5 - Math.round(avg))}</span>
+                <span className="font-semibold text-ink">{avg.toFixed(1)}</span>
+              </>
+            );
+          })()}
+          <span className="text-muted">{product.reviews.length} recenzií</span>
         </div>
       )}
 
@@ -61,21 +80,13 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
                 </div>
               )}
               <div>
-                <div className="text-xs text-muted mb-0.5">Typ</div>
-                <div className="font-semibold text-ink">{product.type}</div>
+                <div className="text-xs text-muted mb-0.5">Región</div>
+                <div className="font-semibold text-ink">{product.region}</div>
               </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-muted mb-1">Región</div>
-              <div className="border border-line rounded-lg px-3 py-2 text-sm font-semibold text-ink">{product.region}</div>
             </div>
 
             <ShopVariantSelector variants={product.variants} />
 
-            {product.regionRestriction && (
-              <p className="text-xs text-amber-600">⚠ {product.regionRestriction}</p>
-            )}
             {product.activationInfo && (
               <p className="text-xs text-muted">ℹ {product.activationInfo}</p>
             )}
@@ -89,6 +100,13 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
           <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">{product.description}</p>
         </div>
       )}
+
+      <ShopReviewsSection
+        productId={product.id}
+        initialReviews={product.reviews}
+        isLoggedIn={!!viewerId}
+        myExistingReview={myExistingReview}
+      />
     </div>
   );
 }

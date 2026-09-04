@@ -61,6 +61,7 @@ model User {
   contentSubmissions ContentSubmission[]
   seasonNotes        SeasonNote[]
   episodeNotes       EpisodeNote[]
+  shopReviews        ShopReview[]
   comments     Comment[]
   threads          Thread[]
   posts            Post[]
@@ -451,21 +452,32 @@ model ShopProduct {
   slug          String              @unique
   image         String?             @db.Text
   platform      String?
-  type          String              @default("Key")
-  region        String              @default("UNITED STATES")
+  type          String              @default("Predplatné")
+  region        String              @default("SLOVENSKO")
   description   String?             @db.Text
   activationInfo String?            @db.Text
-  regionRestriction String?
-  rating        Float?
-  reviewCount   Int                 @default(0)
-  sponsored     Boolean             @default(false)
   sellerName    String?
   approved      Boolean             @default(true)
   createdAt     DateTime            @default(now())
   variants      ShopProductVariant[]
+  reviews       ShopReview[]
 
   @@index([categoryId])
   @@index([approved])
+}
+
+model ShopReview {
+  id        String      @id @default(cuid())
+  productId String
+  product   ShopProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  body      String?     @db.Text
+  createdAt DateTime    @default(now())
+
+  @@unique([productId, userId])
+  @@index([productId])
 }
 
 model ShopProductVariant {

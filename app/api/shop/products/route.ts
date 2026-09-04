@@ -36,23 +36,18 @@ export async function POST(req: Request) {
       slug: uniqueSlug,
       image: imageUrl,
       platform: data.platform || null,
-      type: data.type || 'Key',
+      type: data.type || 'Predplatné',
       region: data.region || 'SLOVENSKO',
       description: data.description || null,
       activationInfo: data.activationInfo || null,
-      regionRestriction: data.regionRestriction || null,
-      rating: data.rating ? Number(data.rating) : null,
-      reviewCount: data.reviewCount ? Number(data.reviewCount) : 0,
-      sponsored: !!data.sponsored,
       sellerName: data.sellerName || null,
+      approved: data.approved !== undefined ? !!data.approved : true,
       variants: {
         create: (data.variants || []).map((v: any, i: number) => ({
           label: v.label,
           price: Number(v.price),
           originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
           currency: v.currency || 'EUR',
-          isBestDeal: !!v.isBestDeal,
-          isGreatPrice: !!v.isGreatPrice,
           order: i
         }))
       }

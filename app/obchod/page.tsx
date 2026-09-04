@@ -110,7 +110,6 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
                     <div className="text-xs text-muted mb-1">
                       Región: <span className="text-ink font-medium">{p.region}</span>
                     </div>
-                    {p.regionRestriction && <div className="text-[11px] text-amber-600 mb-1">⚠ {p.regionRestriction}</div>}
                     <div className="mt-auto flex items-center justify-between pt-1">
                       {cheapest && (
                         <div>

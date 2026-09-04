@@ -34,10 +34,6 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       ...(data.region !== undefined ? { region: data.region } : {}),
       ...(data.description !== undefined ? { description: data.description || null } : {}),
       ...(data.activationInfo !== undefined ? { activationInfo: data.activationInfo || null } : {}),
-      ...(data.regionRestriction !== undefined ? { regionRestriction: data.regionRestriction || null } : {}),
-      ...(data.rating !== undefined ? { rating: data.rating ? Number(data.rating) : null } : {}),
-      ...(data.reviewCount !== undefined ? { reviewCount: Number(data.reviewCount) || 0 } : {}),
-      ...(data.sponsored !== undefined ? { sponsored: !!data.sponsored } : {}),
       ...(data.sellerName !== undefined ? { sellerName: data.sellerName || null } : {}),
       ...(data.approved !== undefined ? { approved: !!data.approved } : {}),
       ...(data.variants
@@ -48,8 +44,6 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
                 price: Number(v.price),
                 originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
                 currency: v.currency || 'EUR',
-                isBestDeal: !!v.isBestDeal,
-                isGreatPrice: !!v.isGreatPrice,
                 order: i
               }))
             }
