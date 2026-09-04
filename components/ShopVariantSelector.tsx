@@ -20,7 +20,7 @@ export default function ShopVariantSelector({ variants }: { variants: Variant[] 
 
   return (
     <div>
-      <div className="text-sm font-semibold text-ink mb-2">Vyber hodnotu karty</div>
+      <div className="text-sm font-semibold text-ink mb-2">Vyber balík predplatného</div>
       <div className="grid grid-cols-3 gap-2 mb-5">
         {variants.map((v) => (
           <button
