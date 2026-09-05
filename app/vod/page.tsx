@@ -2,13 +2,11 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import KinoFilter from '@/components/KinoFilter';
-import KinoTabs from '@/components/KinoTabs';
 import PersonNameList from '@/components/PersonNameList';
-import Badge from '@/components/Badge';
 
 export const dynamic = 'force-dynamic';
 
-export default async function KinoPage({ searchParams }: { searchParams: { month?: string; year?: string } }) {
+export default async function VodPage({ searchParams }: { searchParams: { month?: string; year?: string } }) {
   const now = new Date();
   const month = Math.min(12, Math.max(1, Number(searchParams.month) || now.getMonth() + 1));
   const year = Number(searchParams.year) || now.getFullYear();
@@ -21,16 +19,16 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
 
   const movieRows = await prisma.moviePremiereDate.findMany({
     where: {
-      type: { not: 'VOD' },
+      type: 'VOD',
       releaseDate: { gte: rangeStart, lt: rangeEnd },
-      movie: { approved: true, contentType: 'Film' }
+      movie: { approved: true }
     },
     orderBy: { releaseDate: 'asc' },
     include: { movie: true }
   });
 
-  // Jeden film môže mať viac kinových premiér (rôzne krajiny) — v tomto prehľade
-  // ho zobrazíme len raz, pri jeho najskoršej kinovej premiére v danom mesiaci.
+  // Jeden film/seriál môže mať viac VOD premiér (rôzne krajiny) — v tomto prehľade
+  // ho zobrazíme len raz, pri jeho najskoršej VOD premiére v danom mesiaci.
   const seenMovieIds = new Set<string>();
   const movies: (typeof movieRows[number]['movie'] & { releaseDate: Date })[] = [];
   for (const row of movieRows) {
@@ -64,17 +62,15 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
     <div className="pt-8 grid lg:grid-cols-[1fr_280px] gap-8 items-start">
       <div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6 text-center">
-        {t('kino.nadpis')} {t(`month.${month}`)}/{year}
+        VOD premiéry {t(`month.${month}`)}/{year}
       </h1>
 
-      <KinoTabs />
-
       <div className="border border-line rounded-xl bg-card p-4 mb-6">
-        <KinoFilter month={month} year={year} />
+        <KinoFilter month={month} year={year} basePath="/vod" />
       </div>
 
       {sortedGroupKeys.length === 0 ? (
-        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">{t('kino.prazdny')}</div>
+        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">V tomto mesiaci zatiaľ nie sú žiadne VOD premiéry.</div>
       ) : (
         <div className="space-y-6">
           {sortedGroupKeys.map((dateKey) => {
@@ -85,9 +81,7 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
             return (
               <div key={dateKey}>
                 <div className="bg-surface border border-line rounded-t-xl px-4 py-2.5">
-                  <span className="text-sm font-bold text-ink">
-                    {t('kino.v_kinach_od')} {dateLabel}
-                  </span>
+                  <span className="text-sm font-bold text-ink">Na VOD od {dateLabel}</span>
                 </div>
                 <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line overflow-hidden">
                   {dayMovies.map((m) => {
@@ -112,25 +106,17 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
                           </div>
                           {director.length > 0 && (
                             <div className="text-xs text-muted mt-1">
-                              <span className="text-ink font-semibold">{t('kino.rezia')} </span>
+                              <span className="text-ink font-semibold">Réžia: </span>
                               <PersonNameList names={director} slugByName={slugByName} />
                             </div>
                           )}
                           {actors.length > 0 && (
                             <div className="text-xs text-muted mt-0.5">
-                              <span className="text-ink font-semibold">{t('kino.hraju')} </span>
+                              <span className="text-ink font-semibold">Hrajú: </span>
                               <PersonNameList names={actors} slugByName={slugByName} />
                             </div>
                           )}
                         </div>
-
-                        {m.nowShowing && (
-                          <div className="flex-none">
-                            <Badge tone="success" size="sm" className="whitespace-nowrap">
-                              {t('kino.hraju_v_kinach')}
-                            </Badge>
-                          </div>
-                        )}
                       </div>
                     );
                   })}

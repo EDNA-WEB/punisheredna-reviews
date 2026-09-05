@@ -38,6 +38,7 @@ export default function NavbarClient({
   const secondaryLinks = [
     { href: '/novinky', label: t('nav.novinky') },
     { href: '/kino', label: t('nav.kino') },
+    { href: '/vod', label: t('nav.vod', 'VOD') },
     { href: '/recenzie?types=Film', label: t('nav.filmy') },
     { href: '/recenzie?types=Seriál', label: t('nav.serialy') },
     { href: '/rebricky', label: t('nav.rebricky') },

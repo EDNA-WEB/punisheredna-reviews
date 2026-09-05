@@ -16,11 +16,29 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
   const rangeStart = new Date(year, 0, 1);
   const rangeEnd = new Date(year + 1, 0, 1);
 
-  const movies = await prisma.movie.findMany({
-    where: { approved: true, contentType: 'Film', releaseDate: { gte: rangeStart, lt: rangeEnd } },
+  const movieRows = await prisma.moviePremiereDate.findMany({
+    where: {
+      type: { not: 'VOD' },
+      releaseDate: { gte: rangeStart, lt: rangeEnd },
+      movie: { approved: true, contentType: 'Film' }
+    },
     orderBy: { releaseDate: 'asc' },
-    select: { id: true, title: true, slug: true, year: true, nowShowing: true, releaseDate: true, ratings: { select: { value: true } }, premiereDates: { select: { country: true, type: true, distributor: true } } }
+    include: {
+      movie: {
+        select: { id: true, title: true, slug: true, year: true, nowShowing: true, ratings: { select: { value: true } }, premiereDates: { select: { country: true, type: true, distributor: true } } }
+      }
+    }
   });
+
+  // Jeden film môže mať viac kinových premiér (rôzne krajiny) — v tomto prehľade
+  // ho zobrazíme len raz, pri jeho najskoršej kinovej premiére v danom roku.
+  const seenMovieIds = new Set<string>();
+  const movies: (typeof movieRows[number]['movie'] & { releaseDate: Date })[] = [];
+  for (const row of movieRows) {
+    if (seenMovieIds.has(row.movieId)) continue;
+    seenMovieIds.add(row.movieId);
+    movies.push({ ...row.movie, releaseDate: row.releaseDate });
+  }
 
   // Zoskupenie podľa mesiaca, a v rámci mesiaca podľa presného dňa (kvôli zlúčeným riadkom dátumu)
   const monthGroups = new Map<number, Map<string, typeof movies>>();

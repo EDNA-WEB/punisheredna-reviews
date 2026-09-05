@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useT } from './TranslationProvider';
 
-export default function KinoFilter({ month, year }: { month: number; year: number }) {
+export default function KinoFilter({ month, year, basePath = '/kino' }: { month: number; year: number; basePath?: string }) {
   const router = useRouter();
   const t = useT();
   const currentYear = new Date().getFullYear();
@@ -11,7 +11,7 @@ export default function KinoFilter({ month, year }: { month: number; year: numbe
   const months = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: t(`month.${i + 1}`) }));
 
   function go(m: number, y: number) {
-    router.push(`/kino?month=${m}&year=${y}`);
+    router.push(`${basePath}?month=${m}&year=${y}`);
   }
 
   return (
