@@ -43,6 +43,7 @@ export default async function EditMoviePage({ params }: { params: { id: string }
         released: true,
         releaseDate: true,
         videos: { where: { episodeId: null }, select: { id: true, url: true, title: true } },
+        photos: { where: { episodeId: null }, select: { id: true, thumbnail: true } },
         episodes: {
           orderBy: { number: 'asc' },
           select: {

@@ -7,7 +7,7 @@ import EpisodeContentManager from './EpisodeContentManager';
 type PhotoT = { id: string; thumbnail: string };
 type VideoT = { id: string; url: string; title: string | null };
 type EpisodeT = { id: string; number: number; title: string | null; synopsis: string | null; onlineImage: string | null; photos: PhotoT[]; videos: VideoT[] };
-type SeasonT = { id: string; number: number; year: string | null; synopsis?: string | null; episodeCount: number; released: boolean; episodes: EpisodeT[]; videos: VideoT[] };
+type SeasonT = { id: string; number: number; year: string | null; synopsis?: string | null; episodeCount: number; released: boolean; episodes: EpisodeT[]; videos: VideoT[]; photos?: PhotoT[] };
 type DraftSeason = { number: number; year: string; episodeCount: string };
 
 export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { movieId: string; tmdbId?: number | null; initialSeasons: SeasonT[] }) {
@@ -56,6 +56,27 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
   async function removeSeasonVideo(seasonId: string, videoId: string) {
     setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, videos: s.videos.filter((v) => v.id !== videoId) } : s)));
     await fetch(`/api/seasons/${seasonId}/videos/${videoId}`, { method: 'DELETE' }).catch(() => {});
+  }
+
+  const [fetchingPhotosFor, setFetchingPhotosFor] = useState<string | null>(null);
+
+  async function fetchSeasonPhotosFromTmdb(seasonId: string) {
+    setFetchingPhotosFor(seasonId);
+    try {
+      const res = await fetch(`/api/seasons/${seasonId}/tmdb-photos`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, photos: [...(s.photos || []), ...data] } : s)));
+    } catch (err: any) {
+      alert(err.message || 'Natiahnutie fotiek z TMDb zlyhalo.');
+    } finally {
+      setFetchingPhotosFor(null);
+    }
+  }
+
+  async function removeSeasonPhoto(seasonId: string, photoId: string) {
+    setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, photos: (s.photos || []).filter((p) => p.id !== photoId) } : s)));
+    await fetch(`/api/movies/${movieId}/photos/${photoId}`, { method: 'DELETE' }).catch(() => {});
   }
   const [howMany, setHowMany] = useState('1');
   const [drafts, setDrafts] = useState<DraftSeason[] | null>(null);
@@ -259,6 +280,36 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                 </div>
               </div>
 
+              <div className="mt-2 ml-1">
+                <div className="text-[11px] font-semibold text-ink mb-1">Galéria série {s.number} ({(s.photos || []).length})</div>
+                {(s.photos || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-1.5">
+                    {(s.photos || []).map((p) => (
+                      <div key={p.id} className="relative">
+                        <img src={p.thumbnail} alt="" className="w-12 h-16 object-cover rounded" />
+                        <button
+                          type="button"
+                          onClick={() => removeSeasonPhoto(s.id, p.id)}
+                          className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-night text-white text-[9px] flex items-center justify-center"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {tmdbId && (
+                  <button
+                    type="button"
+                    onClick={() => fetchSeasonPhotosFromTmdb(s.id)}
+                    disabled={fetchingPhotosFor === s.id}
+                    className="text-[11px] text-accent hover:underline disabled:opacity-50"
+                  >
+                    {fetchingPhotosFor === s.id ? 'Naťahujem…' : '+ Automaticky z TMDb'}
+                  </button>
+                )}
+              </div>
+
               {openFor === s.id && (
                 <div className="mt-2 ml-1 space-y-2">
                   {s.episodes.map((e) => (
@@ -287,6 +338,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                           initialPhotos={e.photos}
                           initialVideos={e.videos}
                           initialOnlineImage={e.onlineImage}
+                          hasTmdb={!!tmdbId}
                         />
                       )}
                     </div>

@@ -344,6 +344,7 @@ model Season {
   reviews      Review[]
   videos       MovieVideo[] @relation("SeasonVideos")
   notes        SeasonNote[]
+  photos       MoviePhoto[]
 
   @@index([movieId])
   @@unique([movieId, number])
@@ -424,6 +425,8 @@ model MoviePhoto {
   id        String   @id @default(cuid())
   movieId   String
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  seasonId  String?
+  season    Season?  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   episodeId String?
   episode   Episode? @relation(fields: [episodeId], references: [id], onDelete: Cascade)
   thumbnail String   @db.Text
@@ -432,6 +435,7 @@ model MoviePhoto {
   createdAt DateTime @default(now())
 
   @@index([movieId])
+  @@index([seasonId])
   @@index([episodeId])
 }
 

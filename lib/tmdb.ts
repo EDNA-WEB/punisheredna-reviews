@@ -241,7 +241,7 @@ export async function tmdbGetTvSeasonsList(tvId: number): Promise<{ number: numb
     }));
 }
 
-export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number): Promise<{ number: number; title: string; synopsis: string }[]> {
+export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number): Promise<{ number: number; title: string; synopsis: string; stillUrl: string | null }[]> {
   const url = `${TMDB_BASE}/tv/${tvId}/season/${seasonNumber}?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });
   if (!res.ok) return [];
@@ -249,7 +249,8 @@ export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number):
   return (d.episodes || []).map((e: any) => ({
     number: e.episode_number,
     title: e.name || '',
-    synopsis: e.overview || ''
+    synopsis: e.overview || '',
+    stillUrl: e.still_path ? `https://image.tmdb.org/t/p/w780${e.still_path}` : null
   }));
 }
 
@@ -295,6 +296,25 @@ export async function tmdbGetEpisodeStillUrl(tmdbId: number, seasonNumber: numbe
   const d = await res.json();
   const still = (d.stills || [])[0];
   return still ? `https://image.tmdb.org/t/p/w780${still.file_path}` : null;
+}
+
+// Vráti VŠETKY dostupné zábery epizódy z TMDb (nie len jeden) — pre galériu.
+export async function tmdbGetEpisodeStills(tmdbId: number, seasonNumber: number, episodeNumber: number, limit: number = 10): Promise<string[]> {
+  const url = `${TMDB_BASE}/tv/${tmdbId}/season/${seasonNumber}/episode/${episodeNumber}/images`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  return (d.stills || []).slice(0, limit).map((s: any) => `https://image.tmdb.org/t/p/w780${s.file_path}`);
+}
+
+// Vráti viacero plagátov/záberov k CELEJ SÉRII (nie ku konkrétnej epizóde) — pre galériu série.
+export async function tmdbGetSeasonImages(tmdbId: number, seasonNumber: number, limit: number = 10): Promise<string[]> {
+  const url = `${TMDB_BASE}/tv/${tmdbId}/season/${seasonNumber}/images`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  const posters = (d.posters || []).map((p: any) => `https://image.tmdb.org/t/p/w780${p.file_path}`);
+  return posters.slice(0, limit);
 }
 
 // Prevedie skratku vekového obmedzenia (napr. "12", "PG-13") na plnú, zrozumiteľnú vetu.

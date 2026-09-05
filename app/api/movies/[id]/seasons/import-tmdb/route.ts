@@ -39,8 +39,14 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
         releaseDate: released ? new Date(yearNum, 0, 1) : null,
         order: count,
         episodes: {
-          create: (episodes.length > 0 ? episodes : Array.from({ length: s.episodeCount }, (_, i) => ({ number: i + 1, title: '', synopsis: '' }))).map(
-            (e, i) => ({ number: e.number, title: e.title || null, synopsis: e.synopsis || null, order: i })
+          create: (episodes.length > 0 ? episodes : Array.from({ length: s.episodeCount }, (_, i) => ({ number: i + 1, title: '', synopsis: '', stillUrl: null }))).map(
+            (e, i) => ({
+              number: e.number,
+              title: e.title || null,
+              synopsis: e.synopsis || null,
+              order: i,
+              photos: e.stillUrl ? { create: [{ movieId: params.id, thumbnail: e.stillUrl, full: e.stillUrl }] } : undefined
+            })
           )
         }
       }

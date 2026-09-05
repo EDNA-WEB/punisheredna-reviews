@@ -69,6 +69,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
     include: {
       episodes: { orderBy: { number: 'asc' }, include: { ratings: true } },
       videos: { where: { episodeId: null }, orderBy: { order: 'asc' }, include: { subtitles: { orderBy: { startTime: 'asc' } } } },
+      photos: { where: { episodeId: null }, orderBy: { order: 'asc' } },
       ratings: { where: { episodeId: null } },
       reviews: {
         where: { episodeId: null },
@@ -635,7 +636,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
               label: 'Galéria',
               content:
                 movie.photos.length > 0 ? (
-                  <MovieGallery movieId={movie.id} photos={movie.photos} noHeading />
+                  <MovieGallery movieId={movie.id} photos={season.photos} noHeading />
                 ) : (
                   <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je nahratá žiadna fotka.</p>
                 )

@@ -21,7 +21,8 @@ export default function EpisodeContentManager({
   initialSynopsis,
   initialPhotos,
   initialVideos,
-  initialOnlineImage
+  initialOnlineImage,
+  hasTmdb
 }: {
   seasonId: string;
   episodeId: string;
@@ -29,6 +30,7 @@ export default function EpisodeContentManager({
   initialPhotos: PhotoT[];
   initialVideos: VideoT[];
   initialOnlineImage: string | null;
+  hasTmdb?: boolean;
 }) {
   const [synopsis, setSynopsis] = useState(initialSynopsis);
   const [savingSynopsis, setSavingSynopsis] = useState(false);
@@ -37,6 +39,21 @@ export default function EpisodeContentManager({
   const [videoUrl, setVideoUrl] = useState('');
   const [addingVideo, setAddingVideo] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [fetchingTmdbPhoto, setFetchingTmdbPhoto] = useState(false);
+
+  async function fetchPhotoFromTmdb() {
+    setFetchingTmdbPhoto(true);
+    try {
+      const res = await fetch(`/api/seasons/${seasonId}/episodes/${episodeId}/tmdb-photo`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setPhotos((prev) => [...prev, ...data]);
+    } catch (err: any) {
+      alert(err.message || 'Natiahnutie fotky z TMDb zlyhalo.');
+    } finally {
+      setFetchingTmdbPhoto(false);
+    }
+  }
   const [onlineImage, setOnlineImage] = useState(initialOnlineImage);
   const [uploadingOnlineImage, setUploadingOnlineImage] = useState(false);
 
@@ -169,10 +186,22 @@ export default function EpisodeContentManager({
             </div>
           ))}
         </div>
-        <label className="text-[11px] text-accent hover:underline cursor-pointer">
-          {uploading ? 'Nahrávam…' : '+ Pridať fotku'}
-          <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
-        </label>
+        <div className="flex items-center gap-3">
+          <label className="text-[11px] text-accent hover:underline cursor-pointer">
+            {uploading ? 'Nahrávam…' : '+ Pridať fotku'}
+            <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
+          </label>
+          {hasTmdb && (
+            <button
+              type="button"
+              onClick={fetchPhotoFromTmdb}
+              disabled={fetchingTmdbPhoto}
+              className="text-[11px] text-accent hover:underline disabled:opacity-50"
+            >
+              {fetchingTmdbPhoto ? 'Naťahujem…' : '+ Automaticky z TMDb'}
+            </button>
+          )}
+        </div>
       </div>
 
       <div>
