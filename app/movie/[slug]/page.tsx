@@ -452,8 +452,13 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
             <div className="p-4">
               <div className={`relative flex gap-3 mb-3 w-full min-w-0 overflow-hidden ${!primaryVideo ? 'justify-center' : ''}`}>
-                <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
+                <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
                   {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
+                  {movie.isCamVersion && (
+                    <span className="absolute top-1.5 right-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+                      CAM
+                    </span>
+                  )}
                 </div>
                 {primaryVideo && (
                   <div className="relative flex-1 min-w-0 rounded-xl overflow-hidden border border-line bg-black aspect-video">
@@ -548,8 +553,13 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
           <div className="hidden sm:block relative mb-4 border border-line rounded-xl p-4">
             <div className="flex gap-5 items-start">
-            <div className="w-32 sm:w-40 flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
+            <div className="w-32 sm:w-40 flex-none relative rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
               {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
+              {movie.isCamVersion && (
+                <span className="absolute top-1.5 right-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+                  CAM
+                </span>
+              )}
             </div>
             <div className="min-w-0 pt-1 flex-1">
               <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink leading-tight mb-1">{movie.title}</h1>

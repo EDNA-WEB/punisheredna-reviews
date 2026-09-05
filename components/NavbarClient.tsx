@@ -13,7 +13,7 @@ import { useT } from './TranslationProvider';
 import LanguageSwitcher from './LanguageSwitcher';
 import AccountMenu from './AccountMenu';
 import AvatarMenu from './AvatarMenu';
-import { IconUser } from './Icons';
+import { IconUser, IconShoppingCart } from './Icons';
 
 export default function NavbarClient({
   role,
@@ -118,10 +118,11 @@ export default function NavbarClient({
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`text-[13px] font-semibold px-3 py-2.5 border-b-2 whitespace-nowrap transition-colors ${
+                  className={`text-[13px] font-semibold px-3 py-2.5 border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     isActive(l.href) ? 'text-accent border-accent' : 'text-ink border-transparent hover:text-accent hover:border-line'
                   }`}
                 >
+                  {l.href === '/obchod' && <IconShoppingCart className="w-3.5 h-3.5" />}
                   {l.label}
                 </Link>
               ))}
@@ -145,7 +146,8 @@ export default function NavbarClient({
           </div>
           <nav className="flex flex-col px-8 gap-1 overflow-y-auto">
             {secondaryLinks.map((l) => (
-              <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-3.5 border-b border-white/10 text-lg font-display font-semibold">
+              <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-3.5 border-b border-white/10 text-lg font-display font-semibold flex items-center gap-2">
+                {l.href === '/obchod' && <IconShoppingCart className="w-4 h-4" />}
                 {l.label}
               </Link>
             ))}

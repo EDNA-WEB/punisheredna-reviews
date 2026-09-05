@@ -22,6 +22,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     data.watchUrl = url || null;
   }
 
+  if ('isCamVersion' in body) {
+    data.isCamVersion = !!body.isCamVersion;
+  }
+
   let oldImage: string | null = null;
   if ('onlineImage' in body) {
     if (body.onlineImage) {
@@ -39,5 +43,5 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
   const movie = await prisma.movie.update({ where: { id: params.id }, data });
   if (oldImage && oldImage !== movie.onlineImage) await deleteImageByUrl(oldImage);
-  return NextResponse.json({ ok: true, watchUrl: movie.watchUrl, onlineImage: movie.onlineImage });
+  return NextResponse.json({ ok: true, watchUrl: movie.watchUrl, onlineImage: movie.onlineImage, isCamVersion: movie.isCamVersion });
 }

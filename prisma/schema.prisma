@@ -252,6 +252,7 @@ model Movie {
   synopsis       String?  @db.Text
   trailerUrl     String?
   watchUrl       String?
+  isCamVersion   Boolean  @default(false)
   onlineImage    String? @db.Text
   nowShowing     Boolean  @default(false)
   distributor    String?

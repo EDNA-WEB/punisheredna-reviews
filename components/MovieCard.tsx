@@ -16,6 +16,7 @@ export default function MovieCard({
     hasSubtitles?: boolean;
     hasDubbing?: boolean;
     releaseDate?: Date | string | null;
+    isCamVersion?: boolean;
   };
 }) {
   const isUpcoming = !!(movie.releaseDate && new Date(movie.releaseDate) > new Date());
@@ -37,6 +38,11 @@ export default function MovieCard({
         {isUpcoming && (
           <span className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/85 text-ink backdrop-blur-sm border border-line">
             Pripravuje sa
+          </span>
+        )}
+        {movie.isCamVersion && (
+          <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+            CAM
           </span>
         )}
         <div className="absolute bottom-2 left-2">

@@ -20,6 +20,7 @@ export default async function AdminOnlinePage() {
       slug: true,
       poster: true,
       watchUrl: true,
+      isCamVersion: true,
       onlineImage: true,
       contentType: true,
       tmdbId: true,

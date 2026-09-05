@@ -177,7 +177,8 @@ export default async function HomePage() {
                   genre: (m.genres || '').split(',')[0]?.trim() || null,
                   hasSubtitles: m.hasSubtitles,
                   hasDubbing: m.hasDubbing,
-                  releaseDate: m.releaseDate
+                  releaseDate: m.releaseDate,
+                  isCamVersion: m.isCamVersion
                 }}
               />
             ))}
@@ -223,45 +224,10 @@ export default async function HomePage() {
           )}
         </div>
 
-        <div className="border border-line rounded-xl p-4 bg-card">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-sm text-ink">{t('home.najsledovanejsie_serialy')}</h3>
-            <Link href="/recenzie/filter" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              viac
-            </Link>
-          </div>
-
-          {popularSeries.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne seriály.</p>
-          ) : (
-            <div className="space-y-4">
-              {popularSeries.map((s) => {
-                const g = firstGenre(s.genres);
-                return (
-                  <Link key={s.id} href={`/movie/${s.slug}`} className="flex gap-3 group">
-                    <div
-                      className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
-                      style={s.poster ? { backgroundImage: `url('${s.poster}')` } : undefined}
-                    />
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {g && (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-surface border border-line text-muted">
-                            {g}
-                          </span>
-                        )}
-                        {s.year && <span className="text-[11px] text-muted">{s.year}</span>}
-                      </div>
-                      <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                        {s.title}
-                      </h4>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <MovieMiniList
+          title={t('home.najsledovanejsie_serialy')}
+          items={popularSeries.map((s) => ({ id: s.id, title: s.title, slug: s.slug, year: s.year, poster: s.poster, genre: firstGenre(s.genres), country: s.countries }))}
+        />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">

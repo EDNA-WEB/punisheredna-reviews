@@ -14,6 +14,7 @@ type MovieItem = {
   onlineImage: string | null;
   contentType: string;
   tmdbId: number | null;
+  isCamVersion: boolean;
   seasons: SeasonItem[];
 };
 
@@ -39,6 +40,22 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
 
   function urlFor(m: MovieItem) {
     return urlDrafts[m.id] ?? m.watchUrl ?? '';
+  }
+
+  async function toggleCam(m: MovieItem) {
+    const next = !m.isCamVersion;
+    setMovies((prev) => prev.map((x) => (x.id === m.id ? { ...x, isCamVersion: next } : x)));
+    try {
+      const res = await fetch(`/api/movies/${m.id}/online`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isCamVersion: next })
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setMovies((prev) => prev.map((x) => (x.id === m.id ? { ...x, isCamVersion: !next } : x)));
+      alert('Uloženie zlyhalo. Skús to prosím znova.');
+    }
   }
 
   async function saveUrl(m: MovieItem) {
@@ -259,6 +276,11 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                   </button>
                 </div>
               </div>
+
+              <label className="flex items-center gap-2 text-xs text-ink cursor-pointer">
+                <input type="checkbox" checked={m.isCamVersion} onChange={() => toggleCam(m)} />
+                Ide o CAM verziu (nahrané kamerou v kine — nízka kvalita obrazu/zvuku)
+              </label>
 
               <div>
                 <label className="block text-xs font-semibold text-ink mb-1.5">
