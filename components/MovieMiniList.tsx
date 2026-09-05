@@ -19,7 +19,7 @@ export default function MovieMiniList({ title, items }: { title: string; items: 
                 href={`/movie/${m.slug}`}
                 className="flex items-center gap-3 group rounded-lg p-1.5 -mx-1.5 hover:bg-surface transition-colors"
               >
-                <div className="relative w-9 h-[52px] rounded-md overflow-hidden bg-surface flex-none shadow-sm">
+                <div className="relative w-9 h-12 rounded-md overflow-hidden bg-surface flex-none shadow-sm">
                   {m.poster && (
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
