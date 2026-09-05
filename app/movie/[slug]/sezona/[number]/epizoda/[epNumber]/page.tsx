@@ -13,6 +13,7 @@ import WatchedEyeToggle from '@/components/WatchedEyeToggle';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
 import TagsBox from '@/components/TagsBox';
+import AdminQuickEditButton from '@/components/AdminQuickEditButton';
 import EpisodeNoteBox from '@/components/EpisodeNoteBox';
 import FlagCZ from '@/components/FlagCZ';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
@@ -758,6 +759,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
           </div>
         )}
       </div>
+
+      {isAdmin && <AdminQuickEditButton movieId={movie.id} />}
     </div>
   );
 }

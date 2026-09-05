@@ -40,18 +40,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   // nahráme ho na Cloudinary a do databázy uložíme len jeho trvalú adresu —
   // nikdy znova samotný (veľký) obrázok.
   let posterUrl = data.poster || null;
-  console.log('[Cloudinary] poster hodnota začína na:', typeof posterUrl === 'string' ? posterUrl.slice(0, 30) : posterUrl);
   if (posterUrl && posterUrl.startsWith('data:image')) {
-    console.log('[Cloudinary] spúšťam nahrávanie...');
     try {
       posterUrl = await uploadImage(posterUrl, 'movies/posters');
-      console.log('[Cloudinary] nahraté úspešne, nová adresa:', posterUrl);
     } catch (err: any) {
       console.error('[Cloudinary] NAHRÁVANIE ZLYHALO:', err?.message || err);
       return NextResponse.json({ error: `Nahratie obrázka na Cloudinary zlyhalo: ${err?.message || 'neznáma chyba'}` }, { status: 500 });
     }
-  } else {
-    console.log('[Cloudinary] preskočené — hodnota nezačína na "data:image" (buď sa nezmenila, alebo je prázdna).');
   }
 
   const updated = await prisma.movie.update({

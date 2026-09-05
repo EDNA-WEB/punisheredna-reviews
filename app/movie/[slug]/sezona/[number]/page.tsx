@@ -16,6 +16,7 @@ import FlagCZ from '@/components/FlagCZ';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import SeasonNoteBox from '@/components/SeasonNoteBox';
 import TagsBox from '@/components/TagsBox';
+import AdminQuickEditButton from '@/components/AdminQuickEditButton';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
 import MovieGallery from '@/components/MovieGallery';
@@ -782,6 +783,8 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
           </div>
         )}
       </div>
+
+      {isAdmin && <AdminQuickEditButton movieId={movie.id} />}
     </div>
   );
 }
