@@ -6,7 +6,7 @@ import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
 import { issueTrialCode } from '@/lib/membership';
-import { sendEmail } from '@/lib/resend';
+// import { sendEmail } from '@/lib/resend'; // dočasne nepoužívané, pozri komentár nižšie
 
 export async function POST(req: Request) {
   try {
@@ -76,17 +76,20 @@ export async function POST(req: Request) {
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
     await issueTrialCode(user.id).catch((err) => console.error('issueTrialCode', err));
 
-    const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
-    await sendEmail({
-      to: normalizedEmail,
-      subject: 'Potvrď svoj e-mail — PunisherEDNA reviews',
-      html: `
-        <p>Ahoj ${trimmedNickname},</p>
-        <p>ďakujeme za registráciu na PunisherEDNA reviews. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
-        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
-        <p>Ak si sa na našom webe neregistroval, tento e-mail jednoducho ignoruj.</p>
-      `
-    }).catch((err) => console.error('sendEmail (overenie)', err));
+    // DOČASNE VYPNUTÉ — spolu s kontrolou v lib/auth.ts. Resend zatiaľ nevie doručiť
+    // na ľubovoľnú adresu (chýba vlastná overená doména), takže by sa tento e-mail
+    // stále odosielal nadarmo. Znova zapnúť odkomentovaním, hneď ako bude doména hotová.
+    // const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
+    // await sendEmail({
+    //   to: normalizedEmail,
+    //   subject: 'Potvrď svoj e-mail — PunisherEDNA reviews',
+    //   html: `
+    //     <p>Ahoj ${trimmedNickname},</p>
+    //     <p>ďakujeme za registráciu na PunisherEDNA reviews. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
+    //     <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+    //     <p>Ak si sa na našom webe neregistroval, tento e-mail jednoducho ignoruj.</p>
+    //   `
+    // }).catch((err) => console.error('sendEmail (overenie)', err));
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {

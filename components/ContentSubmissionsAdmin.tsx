@@ -5,11 +5,28 @@ import Link from 'next/link';
 
 type Submission = {
   id: string;
+  type: string;
   body: string;
   createdAt: string | Date;
   movie: { title: string; slug: string; poster: string | null; year: string | null };
   author: { name: string | null; id: string };
 };
+
+const TYPE_LABELS: Record<string, string> = {
+  CONTENT: 'Obsah (dej filmu)',
+  TAGS: 'Tagy',
+  TRIVIA: 'Zaujímavosť',
+  IMAGES: 'Obrázky',
+  SIMILAR_MOVIES: 'Podobné filmy',
+  RELATED_MOVIES: 'Súvisiace filmy',
+  EXTERNAL_REVIEW: 'Externá recenzia',
+  WEB: 'Web'
+};
+
+// Tieto typy nemajú v databáze automatické prepojenie — schválenie len označí
+// návrh ako vybavený, no admin musí údaj prípadne ručne nastaviť inde (napr. cez
+// Administrácia → Odkazy).
+const MANUAL_TYPES = new Set(['SIMILAR_MOVIES', 'RELATED_MOVIES', 'EXTERNAL_REVIEW', 'WEB']);
 
 export default function ContentSubmissionsAdmin({ initialSubmissions }: { initialSubmissions: Submission[] }) {
   const [submissions, setSubmissions] = useState(initialSubmissions);
@@ -52,7 +69,15 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
                 {' · '}{new Date(s.createdAt).toLocaleDateString('sk-SK')}
               </div>
             </div>
+            <span className="text-[10px] font-bold uppercase tracking-wide text-accent bg-accent/10 px-2 py-1 rounded-full flex-none ml-auto">
+              {TYPE_LABELS[s.type] || s.type}
+            </span>
           </div>
+          {MANUAL_TYPES.has(s.type) && (
+            <p className="text-xs text-amber-600 mb-2">
+              ⚠ Tento typ sa neukladá automaticky nikam na web — schválenie len označí návrh ako vybavený. Údaj priraď ručne inde (napr. cez Administrácia → Odkazy), ak treba.
+            </p>
+          )}
           <textarea
             defaultValue={s.body}
             onChange={(e) => setDrafts((prev) => ({ ...prev, [s.id]: e.target.value }))}
