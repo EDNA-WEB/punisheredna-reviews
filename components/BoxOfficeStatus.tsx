@@ -1,5 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import { computeBoxOffice, formatMoney } from '@/lib/boxOffice';
-import { IconCheck, IconTrendingDown, IconBanknote } from './Icons';
+import { IconCheck, IconTrendingDown, IconBanknote, IconInfo } from './Icons';
 import BoxOfficeBreakdown from './BoxOfficeBreakdown';
 
 export default function BoxOfficeStatus({
@@ -33,6 +36,8 @@ export default function BoxOfficeStatus({
     vsetky_uvedenia?: string;
   };
 }) {
+  const [showInfo, setShowInfo] = useState(false);
+
   const budgetN = budget !== null ? Number(budget) : null;
   const marketingBudgetN = marketingBudget !== null ? Number(marketingBudget) : null;
   const boxOfficeN = boxOffice !== null ? Number(boxOffice) : null;
@@ -59,6 +64,16 @@ export default function BoxOfficeStatus({
   const profitText = stats.profitable
     ? `+${formatMoney(stats.profit)} ${l.nad_cielom || 'zisk štúdia'}`
     : `−${formatMoney(Math.abs(stats.profit))} ${l.do_ciela || 'strata štúdia'}`;
+
+  // Rozpad na jednotlivé zložky podielu štúdia — len na účely info panelu.
+  const domesticVal = domesticBoxOfficeN || 0;
+  const chinaVal = chinaBoxOfficeN || 0;
+  const internationalVal = internationalBoxOfficeN || 0;
+  const internationalNonChinaVal = Math.max(0, internationalVal - chinaVal);
+  const hasCountryBreakdown = domesticBoxOfficeN !== null || internationalBoxOfficeN !== null;
+  const domesticShare = domesticVal * 0.5;
+  const internationalShare = internationalNonChinaVal * 0.4;
+  const chinaShare = chinaVal * 0.25;
 
   const badge = (
     <span
@@ -98,7 +113,52 @@ export default function BoxOfficeStatus({
         )}
       </div>
 
-      <div className={`mb-1 font-semibold ${stats.profitable ? 'text-emerald-600' : 'text-danger'}`}>{profitText}</div>
+      <div className={`mb-1 font-semibold flex items-center gap-1.5 ${stats.profitable ? 'text-emerald-600' : 'text-danger'}`}>
+        {profitText}
+        <button
+          type="button"
+          onClick={() => setShowInfo((v) => !v)}
+          className="text-muted hover:text-accent flex-none"
+          aria-label="Ako sa to počíta?"
+          title="Ako sa to počíta?"
+        >
+          <IconInfo className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {showInfo && (
+        <div className="mb-2 p-2.5 rounded-lg bg-surface border border-line text-[11px] text-ink space-y-1.5 leading-snug">
+          <p className="font-semibold text-ink">Ako sa počíta zisk štúdia</p>
+          <p className="text-muted">
+            Kiná si nechávajú väčšinu z predaných lístkov — štúdiu sa vracia len jeho podiel, ktorý sa líši podľa regiónu.
+          </p>
+          <div className="space-y-0.5 pt-1 border-t border-line">
+            {hasCountryBreakdown ? (
+              <>
+                <div className="flex justify-between"><span>Domáce (USA/Kanada) × 50 %</span><span className="font-semibold">{formatMoney(domesticVal)} → {formatMoney(domesticShare)}</span></div>
+                <div className="flex justify-between"><span>Medzinárodné bez Číny × 40 %</span><span className="font-semibold">{formatMoney(internationalNonChinaVal)} → {formatMoney(internationalShare)}</span></div>
+                {chinaVal > 0 && (
+                  <div className="flex justify-between"><span>Čína × 25 %</span><span className="font-semibold">{formatMoney(chinaVal)} → {formatMoney(chinaShare)}</span></div>
+                )}
+              </>
+            ) : (
+              <div className="flex justify-between"><span>Celosvetové tržby × 40 % (odhad, bez rozpadu podľa krajín)</span><span className="font-semibold">{formatMoney(stats.earned)} → {formatMoney(stats.studioTheatricalRevenue)}</span></div>
+            )}
+            <div className="flex justify-between font-semibold pt-1 border-t border-line"><span>Podiel štúdia z kín</span><span>{formatMoney(stats.studioTheatricalRevenue)}</span></div>
+            {stats.ancillaryRevenue > 0 && (
+              <div className="flex justify-between"><span>+ Sekundárne príjmy (VOD/streaming/TV)</span><span className="font-semibold">{formatMoney(stats.ancillaryRevenue)}</span></div>
+            )}
+            <div className="flex justify-between"><span>− Rozpočet + marketing</span><span className="font-semibold">{formatMoney(stats.totalCost)}</span></div>
+            <div className={`flex justify-between font-bold pt-1 border-t border-line ${stats.profitable ? 'text-emerald-600' : 'text-danger'}`}>
+              <span>{stats.profitable ? 'Zisk štúdia' : 'Strata štúdia'}</span>
+              <span>{formatMoney(stats.profit)}</span>
+            </div>
+          </div>
+          <p className="text-muted pt-1 border-t border-line">
+            Rýchly orientačný ukazovateľ: film musí celosvetovo v kinách zarobiť aspoň 2,5-násobok rozpočtu ({formatMoney(stats.target)}), aby sa rátal za úspešný pri prvom pohľade — momentálne na {pct}%.
+          </p>
+        </div>
+      )}
 
       {!compact && (
         <div className="text-[11px] text-muted mb-1.5 leading-snug">
