@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useT } from './TranslationProvider';
 
-export default function KinoYearFilter({ year }: { year: number }) {
+export default function KinoYearFilter({ year, basePath = '/kino/rocny-prehlad' }: { year: number; basePath?: string }) {
   const router = useRouter();
   const t = useT();
   const currentYear = new Date().getFullYear();
@@ -15,7 +15,7 @@ export default function KinoYearFilter({ year }: { year: number }) {
       <select
         className="field-input-sm w-auto"
         value={year}
-        onChange={(e) => router.push(`/kino/rocny-prehlad?year=${e.target.value}`)}
+        onChange={(e) => router.push(`${basePath}?year=${e.target.value}`)}
       >
         {years.map((y) => (
           <option key={y} value={y}>{y}</option>

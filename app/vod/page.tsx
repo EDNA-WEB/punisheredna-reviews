@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import KinoFilter from '@/components/KinoFilter';
+import VodTabs from '@/components/VodTabs';
 import PersonNameList from '@/components/PersonNameList';
 
 export const dynamic = 'force-dynamic';
@@ -64,6 +65,8 @@ export default async function VodPage({ searchParams }: { searchParams: { month?
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6 text-center">
         VOD premiéry {t(`month.${month}`)}/{year}
       </h1>
+
+      <VodTabs />
 
       <div className="border border-line rounded-xl bg-card p-4 mb-6">
         <KinoFilter month={month} year={year} basePath="/vod" />
