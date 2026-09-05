@@ -8,6 +8,8 @@ export default function BoxOfficeStatus({
   boxOffice,
   domesticBoxOffice,
   internationalBoxOffice,
+  chinaBoxOffice,
+  ancillaryRevenue,
   compact,
   labels
 }: {
@@ -16,6 +18,8 @@ export default function BoxOfficeStatus({
   boxOffice: number | bigint | null;
   domesticBoxOffice?: number | bigint | null;
   internationalBoxOffice?: number | bigint | null;
+  chinaBoxOffice?: number | bigint | null;
+  ancillaryRevenue?: number | bigint | null;
   compact?: boolean;
   labels?: {
     ciel: string;
@@ -34,27 +38,36 @@ export default function BoxOfficeStatus({
   const boxOfficeN = boxOffice !== null ? Number(boxOffice) : null;
   const domesticBoxOfficeN = domesticBoxOffice != null ? Number(domesticBoxOffice) : domesticBoxOffice;
   const internationalBoxOfficeN = internationalBoxOffice != null ? Number(internationalBoxOffice) : internationalBoxOffice;
+  const chinaBoxOfficeN = chinaBoxOffice != null ? Number(chinaBoxOffice) : null;
+  const ancillaryRevenueN = ancillaryRevenue != null ? Number(ancillaryRevenue) : null;
 
-  const stats = computeBoxOffice(budgetN, marketingBudgetN, boxOfficeN);
+  const stats = computeBoxOffice(
+    budgetN,
+    marketingBudgetN,
+    boxOfficeN,
+    domesticBoxOfficeN ?? null,
+    internationalBoxOfficeN ?? null,
+    chinaBoxOfficeN,
+    ancillaryRevenueN
+  );
   if (!stats) return null;
 
-  const l = labels || { ciel: 'cieľ', ziskovy: 'Ziskový', nedosiahnute: 'Nedosiahnuté' };
+  const l = labels || { ciel: 'cieľ', ziskovy: 'Ziskový', nedosiahnute: 'Stratový' };
   const pct = Math.min(100, Math.round((stats.ratio || 0) * 100));
   const hasBreakdown = !!(domesticBoxOfficeN || internationalBoxOfficeN);
 
-  const diff = stats.earned - stats.target;
-  const diffText = stats.success
-    ? `+${formatMoney(diff)} ${l.nad_cielom || 'nad cieľom'}`
-    : `−${formatMoney(Math.abs(diff))} ${l.do_ciela || 'do cieľa'}`;
+  const profitText = stats.profitable
+    ? `+${formatMoney(stats.profit)} ${l.nad_cielom || 'zisk štúdia'}`
+    : `−${formatMoney(Math.abs(stats.profit))} ${l.do_ciela || 'strata štúdia'}`;
 
   const badge = (
     <span
       className={`inline-flex items-center gap-1 font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap ${
-        stats.success ? 'bg-emerald-50 text-emerald-700' : 'bg-danger/10 text-danger'
+        stats.profitable ? 'bg-emerald-50 text-emerald-700' : 'bg-danger/10 text-danger'
       } ${hasBreakdown ? 'cursor-help underline decoration-dotted underline-offset-2' : ''}`}
     >
-      {stats.success ? <IconCheck className="w-3 h-3 flex-none" /> : <IconTrendingDown className="w-3 h-3 flex-none" />}
-      {stats.success ? l.ziskovy : l.nedosiahnute}
+      {stats.profitable ? <IconCheck className="w-3 h-3 flex-none" /> : <IconTrendingDown className="w-3 h-3 flex-none" />}
+      {stats.profitable ? l.ziskovy : l.nedosiahnute}
     </span>
   );
 
@@ -70,7 +83,7 @@ export default function BoxOfficeStatus({
           <BoxOfficeBreakdown
             domestic={domesticBoxOfficeN || 0}
             international={internationalBoxOfficeN || 0}
-            success={stats.success}
+            success={stats.profitable}
             labels={{
               domace: l.domace || 'Domáce',
               medzinarodne: l.medzinarodne || 'Medzinárodné',
@@ -85,7 +98,15 @@ export default function BoxOfficeStatus({
         )}
       </div>
 
-      <div className={`mb-1.5 font-semibold ${stats.success ? 'text-emerald-600' : 'text-danger'}`}>{diffText}</div>
+      <div className={`mb-1 font-semibold ${stats.profitable ? 'text-emerald-600' : 'text-danger'}`}>{profitText}</div>
+
+      {!compact && (
+        <div className="text-[11px] text-muted mb-1.5 leading-snug">
+          Podiel štúdia z kín {formatMoney(stats.studioTheatricalRevenue)}
+          {stats.ancillaryRevenue > 0 && <> + sekundárne príjmy {formatMoney(stats.ancillaryRevenue)}</>}
+          {' '}− náklady {formatMoney(stats.totalCost)}
+        </div>
+      )}
 
       <div className="h-1.5 rounded-full bg-line overflow-hidden">
         <div
@@ -93,6 +114,11 @@ export default function BoxOfficeStatus({
           style={{ width: `${pct}%` }}
         />
       </div>
+      {!compact && (
+        <div className="text-[10px] text-muted mt-1">
+          Rýchly odhad bodu zvratu (2,5× rozpočtu): {pct}%
+        </div>
+      )}
     </div>
   );
 }

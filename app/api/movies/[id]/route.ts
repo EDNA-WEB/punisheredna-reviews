@@ -77,7 +77,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       marketingBudget: data.marketingBudget ? BigInt(Math.round(Number(data.marketingBudget))) : null,
       boxOffice: data.boxOffice ? BigInt(Math.round(Number(data.boxOffice))) : null,
       domesticBoxOffice: data.domesticBoxOffice ? BigInt(Math.round(Number(data.domesticBoxOffice))) : null,
-      internationalBoxOffice: data.internationalBoxOffice ? BigInt(Math.round(Number(data.internationalBoxOffice))) : null
+      internationalBoxOffice: data.internationalBoxOffice ? BigInt(Math.round(Number(data.internationalBoxOffice))) : null,
+      chinaBoxOffice: data.chinaBoxOffice ? BigInt(Math.round(Number(data.chinaBoxOffice))) : null,
+      ancillaryRevenue: data.ancillaryRevenue ? BigInt(Math.round(Number(data.ancillaryRevenue))) : null
     }
   });
 

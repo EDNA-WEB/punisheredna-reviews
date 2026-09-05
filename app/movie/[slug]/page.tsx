@@ -147,6 +147,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   // do našej databázy, len sa zobrazí aktuálny stav priamo z TMDb.
   const liveBoxOffice = movie.tmdbId ? await tmdbGetLiveBoxOffice(movie.tmdbId) : null;
   const effectiveBudget = liveBoxOffice?.budget ?? movie.budget;
+  // Filmy, čo vyšli LEN na VOD, box office nemajú (žiadne tržby z kín) — box
+  // office sekcia sa im na profile vôbec nezobrazí.
+  const isVodOnly = movie.premiereDates.length > 0 && movie.premiereDates.every((p) => p.type === 'VOD');
   const effectiveBoxOffice = liveBoxOffice?.boxOffice ?? movie.boxOffice;
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
@@ -476,7 +479,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 <div className="text-sm text-muted">
                   {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
                 </div>
-                {effectiveBudget && (
+                {effectiveBudget && !isVodOnly && (
                   <details className="flex-none text-right">
                     <summary className="cursor-pointer select-none text-xs font-semibold text-accent list-none">{t('boxoffice.nadpis')}</summary>
                     <div className="mt-2 text-right">
@@ -486,6 +489,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                         boxOffice={effectiveBoxOffice}
                         domesticBoxOffice={movie.domesticBoxOffice}
                         internationalBoxOffice={movie.internationalBoxOffice}
+                        chinaBoxOffice={movie.chinaBoxOffice}
+                        ancillaryRevenue={movie.ancillaryRevenue}
                         compact
                         labels={{
                           ciel: t('boxoffice.ciel'),
@@ -671,7 +676,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             </div>
           )}
 
-          {effectiveBudget && (
+          {effectiveBudget && !isVodOnly && (
             <details className="hidden sm:block mt-4 text-xs text-muted group">
               <summary className="cursor-pointer select-none hover:text-ink w-fit">{t('boxoffice.nadpis')}</summary>
               <div className="mt-2 max-w-xs">
@@ -681,6 +686,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   boxOffice={effectiveBoxOffice}
                   domesticBoxOffice={movie.domesticBoxOffice}
                   internationalBoxOffice={movie.internationalBoxOffice}
+                  chinaBoxOffice={movie.chinaBoxOffice}
+                  ancillaryRevenue={movie.ancillaryRevenue}
                   compact
                   labels={{
                     ciel: t('boxoffice.ciel'),

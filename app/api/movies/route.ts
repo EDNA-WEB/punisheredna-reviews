@@ -102,6 +102,8 @@ export async function POST(req: Request) {
       boxOffice: isAdmin && data.boxOffice ? BigInt(Math.round(Number(data.boxOffice))) : null,
       domesticBoxOffice: isAdmin && data.domesticBoxOffice ? BigInt(Math.round(Number(data.domesticBoxOffice))) : null,
       internationalBoxOffice: isAdmin && data.internationalBoxOffice ? BigInt(Math.round(Number(data.internationalBoxOffice))) : null,
+      chinaBoxOffice: isAdmin && data.chinaBoxOffice ? BigInt(Math.round(Number(data.chinaBoxOffice))) : null,
+      ancillaryRevenue: isAdmin && data.ancillaryRevenue ? BigInt(Math.round(Number(data.ancillaryRevenue))) : null,
       tmdbId: data.tmdbId ? Number(data.tmdbId) : null,
       approved: isAdmin,
       submittedById: isAdmin ? null : userId

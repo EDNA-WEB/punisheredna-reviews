@@ -10,10 +10,21 @@ export default async function BoxOfficePage() {
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
 
-  const movies = await prisma.movie.findMany({
+  const allMovies = await prisma.movie.findMany({
     where: { approved: true, budget: { not: null } },
     orderBy: { boxOffice: 'desc' },
-    select: { id: true, title: true, slug: true, poster: true, year: true, budget: true, marketingBudget: true, boxOffice: true, domesticBoxOffice: true, internationalBoxOffice: true }
+    select: {
+      id: true, title: true, slug: true, poster: true, year: true, budget: true, marketingBudget: true, boxOffice: true,
+      domesticBoxOffice: true, internationalBoxOffice: true, chinaBoxOffice: true, ancillaryRevenue: true,
+      premiereDates: { select: { type: true } }
+    }
+  });
+
+  // Filmy, čo vyšli LEN na VOD (žiadna kinová premiéra), do box office nepatria —
+  // nemajú žiadne tržby z kín, box office model na ne jednoducho nesedí.
+  const movies = allMovies.filter((m) => {
+    if (m.premiereDates.length === 0) return true; // premiéry ešte nevyplnené — nechávame tak, ako doteraz
+    return m.premiereDates.some((p) => p.type !== 'VOD');
   });
 
   const labels = {
@@ -40,7 +51,15 @@ export default async function BoxOfficePage() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
           {movies.map((m) => {
-            const stats = computeBoxOffice(m.budget !== null ? Number(m.budget) : null, m.marketingBudget !== null ? Number(m.marketingBudget) : null, m.boxOffice !== null ? Number(m.boxOffice) : null);
+            const stats = computeBoxOffice(
+              m.budget !== null ? Number(m.budget) : null,
+              m.marketingBudget !== null ? Number(m.marketingBudget) : null,
+              m.boxOffice !== null ? Number(m.boxOffice) : null,
+              m.domesticBoxOffice !== null ? Number(m.domesticBoxOffice) : null,
+              m.internationalBoxOffice !== null ? Number(m.internationalBoxOffice) : null,
+              m.chinaBoxOffice !== null ? Number(m.chinaBoxOffice) : null,
+              m.ancillaryRevenue !== null ? Number(m.ancillaryRevenue) : null
+            );
             return (
               <Link
                 key={m.id}
@@ -66,6 +85,8 @@ export default async function BoxOfficePage() {
                       boxOffice={m.boxOffice}
                       domesticBoxOffice={m.domesticBoxOffice}
                       internationalBoxOffice={m.internationalBoxOffice}
+                      chinaBoxOffice={m.chinaBoxOffice}
+                      ancillaryRevenue={m.ancillaryRevenue}
                       labels={labels}
                       compact
                     />

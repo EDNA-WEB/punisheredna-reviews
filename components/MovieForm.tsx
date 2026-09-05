@@ -33,6 +33,8 @@ type Initial = {
   boxOffice?: number | bigint | null;
   domesticBoxOffice?: number | bigint | null;
   internationalBoxOffice?: number | bigint | null;
+  chinaBoxOffice?: number | bigint | null;
+  ancillaryRevenue?: number | bigint | null;
   tmdbId?: number | null;
 };
 
@@ -71,6 +73,8 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
   const [boxOffice, setBoxOffice] = useState(initial?.boxOffice?.toString() || '');
   const [domesticBoxOffice, setDomesticBoxOffice] = useState(initial?.domesticBoxOffice?.toString() || '');
   const [internationalBoxOffice, setInternationalBoxOffice] = useState(initial?.internationalBoxOffice?.toString() || '');
+  const [chinaBoxOffice, setChinaBoxOffice] = useState(initial?.chinaBoxOffice?.toString() || '');
+  const [ancillaryRevenue, setAncillaryRevenue] = useState(initial?.ancillaryRevenue?.toString() || '');
   const [tmdbId] = useState(initial?.tmdbId || null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -117,6 +121,8 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
         boxOffice: boxOffice ? Number(boxOffice) : null,
         domesticBoxOffice: domesticBoxOffice ? Number(domesticBoxOffice) : null,
         internationalBoxOffice: internationalBoxOffice ? Number(internationalBoxOffice) : null,
+        chinaBoxOffice: chinaBoxOffice ? Number(chinaBoxOffice) : null,
+        ancillaryRevenue: ancillaryRevenue ? Number(ancillaryRevenue) : null,
         tmdbId
       };
       const res = await fetch(isEdit ? `/api/movies/${initial!.id}` : '/api/movies', {
@@ -172,15 +178,27 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5">Domáce tržby ($)</label>
+            <label className="block text-xs font-semibold text-ink mb-1.5">Domáce tržby ($) — USA/Kanada</label>
             <input type="number" min="0" className="field-input-sm" value={domesticBoxOffice} onChange={(e) => setDomesticBoxOffice(e.target.value)} placeholder="napr. 180000000" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5">Medzinárodné tržby ($)</label>
+            <label className="block text-xs font-semibold text-ink mb-1.5">Medzinárodné tržby ($) — vrátane Číny</label>
             <input type="number" min="0" className="field-input-sm" value={internationalBoxOffice} onChange={(e) => setInternationalBoxOffice(e.target.value)} placeholder="napr. 220000000" />
           </div>
         </div>
-        <p className="text-xs text-muted">Domáce a medzinárodné tržby sú nepovinné — ak ich vyplníš, na profile filmu pribudne okienko s rozpadom po prejdení myšou.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-ink mb-1.5">z toho Čína ($)</label>
+            <input type="number" min="0" className="field-input-sm" value={chinaBoxOffice} onChange={(e) => setChinaBoxOffice(e.target.value)} placeholder="napr. 50000000" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-ink mb-1.5">Sekundárne príjmy ($) — VOD/streaming/TV</label>
+            <input type="number" min="0" className="field-input-sm" value={ancillaryRevenue} onChange={(e) => setAncillaryRevenue(e.target.value)} placeholder="napr. 75000000" />
+          </div>
+        </div>
+        <p className="text-xs text-muted">
+          Čína má nižší podiel pre štúdio (25 % namiesto bežných 40 %) — preto ju uveď zvlášť, ak je súčasťou medzinárodných tržieb. Sekundárne príjmy (predaj práv na VOD, streaming, TV) sa pripočítajú k zisku štúdia.
+        </p>
       </div>
       )}
 
