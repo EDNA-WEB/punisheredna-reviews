@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import NewMessageSearch from '@/components/NewMessageSearch';
+import ChatPolling from '@/components/ChatPolling';
 import MessagesListClient from '@/components/MessagesListClient';
 import { IconMessage } from '@/components/Icons';
 
@@ -73,6 +74,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="pt-8">
+      <ChatPolling intervalMs={8000} />
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Pošta</h1>
 
       <div className="grid md:grid-cols-[340px_1fr] gap-6 border border-line rounded-xl overflow-hidden bg-card min-h-[420px]">
