@@ -30,6 +30,23 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
       setImportingTmdb(false);
     }
   }
+
+  const [syncingAllDates, setSyncingAllDates] = useState(false);
+
+  async function syncAllDatesFromTmdb() {
+    setSyncingAllDates(true);
+    try {
+      const res = await fetch(`/api/movies/${movieId}/sync-all-dates`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Aktualizácia zlyhala.');
+      alert(`Hotovo — aktualizovaný dátum pri ${data.updatedSeasons} sériách a ${data.updatedEpisodes} epizódach. Obnov stránku, nech sa to prejaví.`);
+      router.refresh();
+    } catch (err: any) {
+      alert(err.message || 'Aktualizácia zlyhala.');
+    } finally {
+      setSyncingAllDates(false);
+    }
+  }
   const [videoUrlFor, setVideoUrlFor] = useState<Record<string, string>>({});
   const [addingVideoFor, setAddingVideoFor] = useState<string | null>(null);
 
@@ -58,34 +75,19 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
     await fetch(`/api/seasons/${seasonId}/videos/${videoId}`, { method: 'DELETE' }).catch(() => {});
   }
 
-  const [syncingFor, setSyncingFor] = useState<string | null>(null);
+  const [fetchingPhotosFor, setFetchingPhotosFor] = useState<string | null>(null);
 
-  async function syncFromTmdb(seasonId: string) {
-    setSyncingFor(seasonId);
+  async function fetchSeasonPhotosFromTmdb(seasonId: string) {
+    setFetchingPhotosFor(seasonId);
     try {
-      const [photosRes, datesRes] = await Promise.all([
-        fetch(`/api/seasons/${seasonId}/tmdb-photos`, { method: 'POST' }),
-        fetch(`/api/seasons/${seasonId}/sync-dates`, { method: 'POST' })
-      ]);
-      const photosData = await photosRes.json();
-      const datesData = await datesRes.json();
-
-      if (photosRes.ok) {
-        setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, photos: [...(s.photos || []), ...photosData] } : s)));
-      }
-
-      if (!photosRes.ok && !datesRes.ok) {
-        throw new Error(photosData.error || datesData.error || 'Synchronizácia zlyhala.');
-      }
-
-      const parts: string[] = [];
-      if (photosRes.ok) parts.push(`${photosData.length} fotiek`);
-      if (datesRes.ok) parts.push(`dátumy pri ${datesData.updated} epizódach`);
-      alert(`Hotovo — doplnené: ${parts.join(', ')}. Obnov stránku, nech sa dátumy prejavia v zozname.`);
+      const res = await fetch(`/api/seasons/${seasonId}/tmdb-photos`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, photos: [...(s.photos || []), ...data] } : s)));
     } catch (err: any) {
-      alert(err.message || 'Synchronizácia zlyhala.');
+      alert(err.message || 'Natiahnutie fotiek z TMDb zlyhalo.');
     } finally {
-      setSyncingFor(null);
+      setFetchingPhotosFor(null);
     }
   }
 
@@ -317,11 +319,11 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                 {tmdbId && (
                   <button
                     type="button"
-                    onClick={() => syncFromTmdb(s.id)}
-                    disabled={syncingFor === s.id}
+                    onClick={() => fetchSeasonPhotosFromTmdb(s.id)}
+                    disabled={fetchingPhotosFor === s.id}
                     className="text-[11px] text-accent hover:underline disabled:opacity-50"
                   >
-                    {syncingFor === s.id ? 'Synchronizujem…' : '📅 Aktualizovať z TMDb (fotky aj dátumy)'}
+                    {fetchingPhotosFor === s.id ? 'Naťahujem…' : '+ Automaticky z TMDb'}
                   </button>
                 )}
               </div>
@@ -380,6 +382,20 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
             Doplní chýbajúce série s ich epizódami (názov, obsah). Série, čo už máš pridané, sa nepreprepíšu.
           </p>
           {importError && <p className="text-danger text-xs mt-1.5">{importError}</p>}
+
+          <div className="mt-3 pt-3 border-t border-line">
+            <button
+              type="button"
+              onClick={syncAllDatesFromTmdb}
+              disabled={syncingAllDates}
+              className="border border-accent text-accent text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent hover:text-white disabled:opacity-50"
+            >
+              {syncingAllDates ? 'Aktualizujem dátumy…' : '📅 Aktualizovať dátumy vysielania pre celý seriál'}
+            </button>
+            <p className="text-[11px] text-muted mt-1.5">
+              Jedným kliknutím doplní/opraví dátum vysielania pri VŠETKÝCH sériách aj epizódach naraz — nemusíš klikať sériu po sérii.
+            </p>
+          </div>
         </div>
       )}
 
