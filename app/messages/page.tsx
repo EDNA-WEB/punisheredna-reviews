@@ -54,44 +54,40 @@ export default async function MessagesPage() {
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Pošta</h1>
 
-      <div className="grid md:grid-cols-[360px_1fr] rounded-xl overflow-hidden min-h-[560px] shadow-lg" style={{ backgroundColor: '#111b21' }}>
-        <div className="border-r border-black/30 flex flex-col">
-          <div className="p-3 border-b border-black/20">
-            <NewMessageSearch dark />
-          </div>
+      <div className="grid md:grid-cols-[340px_1fr] gap-6 border border-line rounded-xl overflow-hidden bg-card min-h-[420px]">
+        <div className="border-b md:border-b-0 md:border-r border-line p-4">
+          <NewMessageSearch />
 
-          <div className="flex-1 overflow-y-auto">
-            {list.length === 0 ? (
-              <div className="text-sm text-[#8696a0] text-center py-10 px-4">
-                Zatiaľ nemáš žiadne konverzácie. Nájdi si niekoho vyššie a napíš mu.
-              </div>
-            ) : (
-              list.map((c) => (
+          {list.length === 0 ? (
+            <div className="text-sm text-muted text-center py-10 px-4">
+              Zatiaľ nemáš žiadne konverzácie. Nájdi si niekoho vyššie a napíš mu.
+            </div>
+          ) : (
+            <div className="space-y-1 -mx-4">
+              {list.map((c) => (
                 <Link
                   key={c.user.id}
                   href={`/messages/${c.user.id}`}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-black/10 hover:bg-[#202c33] transition-colors"
+                  className={`flex items-center gap-3 px-4 py-3 hover:bg-surface transition-colors ${c.unread > 0 ? 'bg-accent/5' : ''}`}
                 >
                   {c.user.avatar ? (
-                    <img src={c.user.avatar} alt={c.user.name} className="w-12 h-12 rounded-full object-cover flex-none" />
+                    <img src={c.user.avatar} alt={c.user.name} className="w-11 h-11 rounded-full object-cover flex-none" />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-[#2a3942] flex items-center justify-center flex-none">
-                      <IconUser className="w-5 h-5 text-[#8696a0]" />
+                    <div className="w-11 h-11 rounded-full bg-surface flex items-center justify-center flex-none">
+                      <IconUser className="w-5 h-5 text-muted" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium text-[#e9edef] text-[15px] truncate">{c.user.name}</span>
-                      <span className="text-[11px] text-[#8696a0] flex-none">
-                        {new Date(c.lastAt).toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit' })}
-                      </span>
+                      <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
+                      <span className="text-[11px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('sk-SK')}</span>
                     </div>
-                    <p className="text-[13px] text-[#8696a0] truncate mt-0.5">
+                    <p className="text-xs text-muted truncate">
                       {(() => {
                         const st = statusByOtherId.get(c.user.id);
-                        if (st?.status === 'DECLINED') return <span className="text-[#f15c6d]">Zamietnuté</span>;
-                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-[#ffb454]">Čaká na potvrdenie</span>;
-                        if (st?.status === 'PENDING') return <span className="text-[#00a884] font-medium">Chce s tebou komunikovať</span>;
+                        if (st?.status === 'DECLINED') return <span className="text-danger">Zamietnuté</span>;
+                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-amber-600">Čaká na potvrdenie</span>;
+                        if (st?.status === 'PENDING') return <span className="text-accent font-semibold">Chce s tebou komunikovať</span>;
                         return (
                           <>
                             {c.lastMine && <span className="mr-1">✓✓</span>}
@@ -102,22 +98,19 @@ export default async function MessagesPage() {
                     </p>
                   </div>
                   {c.unread > 0 && (
-                    <span className="w-5 h-5 bg-[#00a884] text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
+                    <span className="w-5 h-5 bg-accent text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
                       {c.unread}
                     </span>
                   )}
                 </Link>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div
-          className="hidden md:flex flex-col items-center justify-center text-center p-10"
-          style={{ backgroundColor: '#0b141a' }}
-        >
-          <IconMessage className="w-12 h-12 text-[#364147] mb-3" />
-          <p className="text-sm text-[#8696a0] max-w-xs">
+        <div className="hidden md:flex flex-col items-center justify-center text-center p-10 bg-surface/40">
+          <IconMessage className="w-10 h-10 text-line mb-3" />
+          <p className="text-sm text-muted max-w-xs">
             Vyber konverzáciu zo zoznamu vľavo, alebo si vyhľadaj niekoho a napíš mu.
           </p>
         </div>

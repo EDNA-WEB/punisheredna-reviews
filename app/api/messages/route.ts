@@ -39,6 +39,19 @@ export async function POST(req: Request) {
     const receiver = await prisma.user.findUnique({ where: { id: receiverId } });
     if (!receiver) return NextResponse.json({ error: 'Príjemca sa nenašiel.' }, { status: 404 });
 
+    const blocked = await prisma.blockedUser.findFirst({
+      where: {
+        OR: [
+          { blockerId: senderId, blockedId: receiverId },
+          { blockerId: receiverId, blockedId: senderId }
+        ]
+      }
+    });
+    if (blocked) {
+      const message = blocked.blockerId === senderId ? 'Tohto používateľa si zablokoval.' : 'Tento používateľ ťa zablokoval.';
+      return NextResponse.json({ error: message }, { status: 403 });
+    }
+
     // Súhlas s komunikáciou — kým adresát prvú správu výslovne neprijme,
     // odosielateľ (ten, kto konverzáciu začal) nemôže poslať ďalšiu. Ak adresát
     // konverzáciu zamietol, odosielateľ už nemôže poslať vôbec nič.

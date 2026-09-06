@@ -2,10 +2,32 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-const EMOJIS = ['😀', '😂', '😍', '😉', '😢', '😮', '😡', '👍', '👎', '❤️', '🔥', '🎉', '🙏', '👏', '😎', '🤔', '😴', '🥳', '😱', '🤝'];
+const CATEGORIES: { label: string; icon: string; emojis: string[] }[] = [
+  {
+    label: 'Smajlíky',
+    icon: '😀',
+    emojis: ['😀', '😁', '😂', '🤣', '😊', '😉', '😍', '😘', '😎', '🤔', '😴', '😢', '😭', '😡', '😮', '😱', '🥳', '🤗', '🙄', '😅']
+  },
+  {
+    label: 'Gestá',
+    icon: '👍',
+    emojis: ['👍', '👎', '👏', '🙏', '🤝', '✌️', '🤞', '👌', '💪', '🙌', '👋', '🤙']
+  },
+  {
+    label: 'Srdcia',
+    icon: '❤️',
+    emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '💕', '💔', '😻', '💯']
+  },
+  {
+    label: 'Filmy a zábava',
+    icon: '🎬',
+    emojis: ['🎬', '🍿', '🎥', '📺', '🎭', '🎞️', '⭐', '🔥', '🎉', '🎊', '🏆', '👀']
+  }
+];
 
-export default function EmojiPicker({ onPick, dark }: { onPick: (emoji: string) => void; dark?: boolean }) {
+export default function EmojiPicker({ onPick }: { onPick: (emoji: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,9 +43,7 @@ export default function EmojiPicker({ onPick, dark }: { onPick: (emoji: string) 
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`w-9 h-9 flex-none rounded-full flex items-center justify-center transition-colors ${
-          dark ? 'text-[#8696a0] hover:text-white' : 'text-muted hover:text-accent'
-        }`}
+        className="w-9 h-9 flex-none rounded-full flex items-center justify-center text-muted hover:text-accent transition-colors"
         title="Emotikony"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -34,23 +54,37 @@ export default function EmojiPicker({ onPick, dark }: { onPick: (emoji: string) 
         </svg>
       </button>
       {open && (
-        <div
-          className="absolute bottom-full left-0 mb-2 grid grid-cols-5 gap-1 p-2 rounded-xl shadow-lg z-20"
-          style={{ backgroundColor: dark ? '#233138' : 'white', border: dark ? '1px solid rgba(0,0,0,0.3)' : '1px solid #e5e5e5' }}
-        >
-          {EMOJIS.map((e) => (
-            <button
-              key={e}
-              type="button"
-              onClick={() => {
-                onPick(e);
-                setOpen(false);
-              }}
-              className="w-9 h-9 text-xl flex items-center justify-center rounded-lg hover:bg-black/10 transition-colors"
-            >
-              {e}
-            </button>
-          ))}
+        <div className="absolute bottom-full left-0 mb-2 w-72 bg-card border border-line rounded-xl shadow-lg z-20 overflow-hidden">
+          <div className="flex border-b border-line">
+            {CATEGORIES.map((c, i) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => setTab(i)}
+                title={c.label}
+                className={`flex-1 py-2 text-lg flex items-center justify-center transition-colors ${
+                  tab === i ? 'bg-surface border-b-2 border-accent' : 'hover:bg-surface'
+                }`}
+              >
+                {c.icon}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-6 gap-1 p-3 max-h-48 overflow-y-auto">
+            {CATEGORIES[tab].emojis.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => {
+                  onPick(e);
+                  setOpen(false);
+                }}
+                className="w-9 h-9 text-2xl flex items-center justify-center rounded-lg hover:bg-surface transition-colors leading-none"
+              >
+                {e}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

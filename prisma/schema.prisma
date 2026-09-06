@@ -797,6 +797,17 @@ model Conversation {
   @@unique([userAId, userBId])
 }
 
+// Zablokovanie iného používateľa v Pošte — blocker už od blocked nedostane
+// žiadnu správu a nemôže mu ani sám písať.
+model BlockedUser {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+}
+
 model Notification {
   id        String   @id @default(cuid())
   userId    String

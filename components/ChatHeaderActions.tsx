@@ -1,36 +1,96 @@
 'use client';
 
-function notReady() {
-  alert('Táto funkcia zatiaľ nie je dostupná.');
-}
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function ChatHeaderActions() {
+export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked }: { otherId: string; otherName: string; initiallyBlocked: boolean }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [blocked, setBlocked] = useState(initiallyBlocked);
+  const [loading, setLoading] = useState(false);
+
+  async function toggleBlock() {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/blocked-users', {
+        method: blocked ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: otherId })
+      });
+      if (!res.ok) throw new Error();
+      setBlocked((v) => !v);
+      setShowConfirm(false);
+      router.refresh();
+    } catch {
+      alert('Akcia zlyhala. Skús to prosím znova.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="flex items-center gap-1 flex-none">
-      <button type="button" onClick={notReady} title="Videohovor" className="w-9 h-9 rounded-full flex items-center justify-center text-[#aebac1] hover:text-white hover:bg-white/5 transition-colors">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-          <polygon points="23 7 16 12 23 17 23 7" />
-          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-        </svg>
-      </button>
-      <button type="button" onClick={notReady} title="Hlasový hovor" className="w-9 h-9 rounded-full flex items-center justify-center text-[#aebac1] hover:text-white hover:bg-white/5 transition-colors">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-        </svg>
-      </button>
-      <button type="button" onClick={notReady} title="Hľadať v správach" className="w-9 h-9 rounded-full flex items-center justify-center text-[#aebac1] hover:text-white hover:bg-white/5 transition-colors">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-      </button>
-      <button type="button" onClick={notReady} title="Ďalšie možnosti" className="w-9 h-9 rounded-full flex items-center justify-center text-[#aebac1] hover:text-white hover:bg-white/5 transition-colors">
+    <div className="relative flex-none">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title="Ďalšie možnosti"
+        className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-ink hover:bg-surface transition-colors"
+      >
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]">
           <circle cx="12" cy="5" r="1.8" />
           <circle cx="12" cy="12" r="1.8" />
           <circle cx="12" cy="19" r="1.8" />
         </svg>
       </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-1 w-56 bg-card border border-line rounded-xl shadow-lg overflow-hidden z-40">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setShowConfirm(true);
+              }}
+              className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-surface transition-colors ${blocked ? 'text-ink' : 'text-danger'}`}
+            >
+              {blocked ? 'Odblokovať používateľa' : 'Zablokovať používateľa'}
+            </button>
+          </div>
+        </>
+      )}
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowConfirm(false)}>
+          <div className="bg-card border border-line rounded-xl p-5 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-display font-bold text-ink mb-2">
+              {blocked ? `Odblokovať ${otherName}?` : `Zablokovať ${otherName}?`}
+            </h3>
+            <p className="text-sm text-muted mb-4">
+              {blocked
+                ? 'Táto osoba ti bude môcť opäť napísať a ty jej.'
+                : 'Táto osoba ti už nebude môcť napísať a ani ty jej. Kedykoľvek to môžeš vrátiť späť.'}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
+                Zrušiť
+              </button>
+              <button
+                type="button"
+                onClick={toggleBlock}
+                disabled={loading}
+                className={`text-sm font-semibold px-4 py-2 rounded-full text-white disabled:opacity-50 ${
+                  blocked ? 'bg-accent hover:bg-accent-dark' : 'bg-danger hover:opacity-90'
+                }`}
+              >
+                {loading ? '…' : blocked ? 'Odblokovať' : 'Zablokovať'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

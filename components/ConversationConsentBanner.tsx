@@ -28,8 +28,8 @@ export default function ConversationConsentBanner({ otherId, otherName }: { othe
   }
 
   return (
-    <div className="rounded-xl p-4 mb-4 text-center" style={{ backgroundColor: '#202c33' }}>
-      <p className="text-sm text-[#e9edef] mb-3">
+    <div className="border border-line rounded-xl bg-surface p-4 mb-4 text-center">
+      <p className="text-sm text-ink mb-3">
         <strong>{otherName}</strong> ti chce napísať. Chceš s ňou/ním komunikovať?
       </p>
       <div className="flex items-center justify-center gap-2">
@@ -37,7 +37,7 @@ export default function ConversationConsentBanner({ otherId, otherName }: { othe
           type="button"
           onClick={() => respond('accept')}
           disabled={loading !== null}
-          className="bg-[#00a884] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#029271] disabled:opacity-50"
+          className="bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
           {loading === 'accept' ? 'Prijímam…' : 'Prijať'}
         </button>
@@ -45,12 +45,12 @@ export default function ConversationConsentBanner({ otherId, otherName }: { othe
           type="button"
           onClick={() => respond('decline')}
           disabled={loading !== null}
-          className="border border-[#3b4a54] text-[#e9edef] text-sm font-semibold px-5 py-2 rounded-full hover:border-[#f15c6d] hover:text-[#f15c6d] disabled:opacity-50"
+          className="border border-line text-ink text-sm font-semibold px-5 py-2 rounded-full hover:border-danger hover:text-danger disabled:opacity-50"
         >
           {loading === 'decline' ? 'Zamietam…' : 'Zamietnuť'}
         </button>
       </div>
-      {error && <p className="text-[#f15c6d] text-xs mt-2">{error}</p>}
+      {error && <p className="text-danger text-xs mt-2">{error}</p>}
     </div>
   );
 }

@@ -29,23 +29,23 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
     return (
       <div className="mb-1.5">
         <img src={revealedUrl} alt="Príloha" className="rounded-xl max-h-64" />
-        <p className="text-[10px] mt-1 text-white/60">Táto fotka sa už znova nezobrazí.</p>
+        <p className={`text-[10px] mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>Táto fotka sa už znova nezobrazí.</p>
       </div>
     );
   }
 
   if (viewed) {
     return (
-      <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-black/20">
-        <IconImage className="w-4 h-4 flex-none text-white/70" />
-        <span className="text-xs italic text-white/70">Fotka bola zobrazená</span>
+      <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
+        <IconImage className={`w-4 h-4 flex-none ${mine ? 'text-white/70' : 'text-muted'}`} />
+        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>Fotka bola zobrazená</span>
       </div>
     );
   }
 
   if (mine) {
     return (
-      <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-black/20">
+      <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-black/15">
         <IconImage className="w-4 h-4 flex-none text-white/85" />
         <span className="text-xs text-white/85">Fotka odoslaná — zobrazí sa len raz</span>
       </div>
@@ -57,11 +57,11 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
       type="button"
       onClick={reveal}
       disabled={loading}
-      className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-black/20 hover:bg-black/30 transition-colors disabled:opacity-60"
+      className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-line/50 hover:bg-line transition-colors disabled:opacity-60"
     >
-      <IconImage className="w-4 h-4 flex-none text-white/85" />
-      <span className="text-xs font-semibold text-white/85">{loading ? 'Otváram…' : 'Klikni pre zobrazenie fotky (zobrazí sa len raz)'}</span>
-      {error && <span className="text-[10px] text-[#f15c6d]">{error}</span>}
+      <IconImage className="w-4 h-4 flex-none text-ink" />
+      <span className="text-xs font-semibold text-ink">{loading ? 'Otváram…' : 'Klikni pre zobrazenie fotky (zobrazí sa len raz)'}</span>
+      {error && <span className="text-[10px] text-danger">{error}</span>}
     </button>
   );
 }
