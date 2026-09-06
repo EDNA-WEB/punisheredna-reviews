@@ -227,7 +227,7 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
   return { asActor, asCrew };
 }
 
-export async function tmdbGetTvSeasonsList(tvId: number): Promise<{ number: number; episodeCount: number; year: string }[]> {
+export async function tmdbGetTvSeasonsList(tvId: number): Promise<{ number: number; episodeCount: number; year: string; releaseDate: string | null }[]> {
   const url = `${TMDB_BASE}/tv/${tvId}?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });
   if (!res.ok) return [];
@@ -237,11 +237,12 @@ export async function tmdbGetTvSeasonsList(tvId: number): Promise<{ number: numb
     .map((s: any) => ({
       number: s.season_number,
       episodeCount: s.episode_count || 0,
-      year: (s.air_date || '').slice(0, 4)
+      year: (s.air_date || '').slice(0, 4),
+      releaseDate: s.air_date || null
     }));
 }
 
-export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number): Promise<{ number: number; title: string; synopsis: string; stillUrl: string | null }[]> {
+export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number): Promise<{ number: number; title: string; synopsis: string; stillUrl: string | null; airDate: string | null }[]> {
   const url = `${TMDB_BASE}/tv/${tvId}/season/${seasonNumber}?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });
   if (!res.ok) return [];
@@ -250,7 +251,8 @@ export async function tmdbGetSeasonEpisodes(tvId: number, seasonNumber: number):
     number: e.episode_number,
     title: e.name || '',
     synopsis: e.overview || '',
-    stillUrl: e.still_path ? `https://image.tmdb.org/t/p/w780${e.still_path}` : null
+    stillUrl: e.still_path ? `https://image.tmdb.org/t/p/w780${e.still_path}` : null,
+    airDate: e.air_date || null
   }));
 }
 

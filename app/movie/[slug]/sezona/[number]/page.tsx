@@ -16,6 +16,7 @@ import FlagCZ from '@/components/FlagCZ';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import SeasonNoteBox from '@/components/SeasonNoteBox';
 import TagsBox from '@/components/TagsBox';
+import AirDateBox from '@/components/AirDateBox';
 import AdminQuickEditButton from '@/components/AdminQuickEditButton';
 import MovieTabsSection from '@/components/MovieTabsSection';
 import MovieGoToTabButton from '@/components/MovieGoToTabButton';
@@ -752,6 +753,9 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
         <div className="sm:hidden mt-5">
           <TagsBox tags={movieTags} />
         </div>
+        <div className="sm:hidden mt-4">
+          <AirDateBox label={`Séria ${season.number} vysielaná od`} date={season.releaseDate} />
+        </div>
       </div>
 
       <div>
@@ -776,6 +780,10 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
 
         <div className="hidden sm:block mt-4">
           <TagsBox tags={movieTags} />
+        </div>
+
+        <div className="hidden sm:block mt-4">
+          <AirDateBox label={`Séria ${season.number} vysielaná od`} date={season.releaseDate} />
         </div>
 
         {viewerId && (

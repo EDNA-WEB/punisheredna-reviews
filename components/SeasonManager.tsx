@@ -78,6 +78,22 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
     setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, photos: (s.photos || []).filter((p) => p.id !== photoId) } : s)));
     await fetch(`/api/movies/${movieId}/photos/${photoId}`, { method: 'DELETE' }).catch(() => {});
   }
+
+  const [syncingDatesFor, setSyncingDatesFor] = useState<string | null>(null);
+
+  async function syncDatesFromTmdb(seasonId: string) {
+    setSyncingDatesFor(seasonId);
+    try {
+      const res = await fetch(`/api/seasons/${seasonId}/sync-dates`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      alert(`Hotovo — doplnené dátumy pri ${data.updated} epizódach. Obnov stránku, nech sa dátumy prejavia v zozname.`);
+    } catch (err: any) {
+      alert(err.message || 'Synchronizácia zlyhala.');
+    } finally {
+      setSyncingDatesFor(null);
+    }
+  }
   const [howMany, setHowMany] = useState('1');
   const [drafts, setDrafts] = useState<DraftSeason[] | null>(null);
   const [error, setError] = useState('');
@@ -306,6 +322,16 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     className="text-[11px] text-accent hover:underline disabled:opacity-50"
                   >
                     {fetchingPhotosFor === s.id ? 'Naťahujem…' : '+ Automaticky z TMDb'}
+                  </button>
+                )}
+                {tmdbId && (
+                  <button
+                    type="button"
+                    onClick={() => syncDatesFromTmdb(s.id)}
+                    disabled={syncingDatesFor === s.id}
+                    className="text-[11px] text-accent hover:underline disabled:opacity-50 ml-3"
+                  >
+                    {syncingDatesFor === s.id ? 'Synchronizujem…' : '📅 Doplniť dátumy vysielania z TMDb'}
                   </button>
                 )}
               </div>

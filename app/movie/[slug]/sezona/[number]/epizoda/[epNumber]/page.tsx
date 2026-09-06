@@ -13,6 +13,7 @@ import WatchedEyeToggle from '@/components/WatchedEyeToggle';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import SeasonEpisodeQuickActionsBar from '@/components/SeasonEpisodeQuickActionsBar';
 import TagsBox from '@/components/TagsBox';
+import AirDateBox from '@/components/AirDateBox';
 import AdminQuickEditButton from '@/components/AdminQuickEditButton';
 import EpisodeNoteBox from '@/components/EpisodeNoteBox';
 import FlagCZ from '@/components/FlagCZ';
@@ -727,6 +728,9 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
         <div className="sm:hidden mt-5">
           <TagsBox tags={movieTags} />
         </div>
+        <div className="sm:hidden mt-4">
+          <AirDateBox label={`Epizóda ${episode.number} vysielaná`} date={episode.releaseDate} />
+        </div>
       </div>
 
       <div>
@@ -751,6 +755,10 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
         <div className="hidden sm:block mt-4">
           <TagsBox tags={movieTags} />
+        </div>
+
+        <div className="hidden sm:block mt-4">
+          <AirDateBox label={`Epizóda ${episode.number} vysielaná`} date={episode.releaseDate} />
         </div>
 
         {viewerId && (

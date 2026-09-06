@@ -362,6 +362,7 @@ model Episode {
   synopsis String?  @db.Text
   onlineImage String? @db.Text
   onlineUrl   String?
+  releaseDate DateTime?
   order    Int      @default(0)
   ratings  Rating[]
   reviews  Review[]
