@@ -63,6 +63,8 @@ model User {
   seasonNotes        SeasonNote[]
   episodeNotes       EpisodeNote[]
   shopReviews        ShopReview[]
+  messageReportsSent     MessageReport[] @relation("reportedMessages")
+  messageReportsReceived MessageReport[] @relation("receivedMessageReports")
   comments     Comment[]
   threads          Thread[]
   posts            Post[]
@@ -818,6 +820,22 @@ model BlockedUser {
   createdAt DateTime @default(now())
 
   @@unique([blockerId, blockedId])
+}
+
+// Nahlásenie konverzácie adminovi — keďže text správ je v databáze zašifrovaný,
+// zachytíme si v momente nahlásenia jeho dešifrovaný odpis (transcript), aby ho
+// admin vedel neskôr posúdiť aj bez schopnosti dešifrovať priamo databázu.
+model MessageReport {
+  id             String   @id @default(cuid())
+  reporterId     String
+  reporter       User     @relation("reportedMessages", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUserId String
+  reportedUser   User     @relation("receivedMessageReports", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  transcript     String   @db.Text
+  reviewed       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@index([reviewed])
 }
 
 model Notification {

@@ -27,7 +27,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
     }
   }
 
-  async function toggleBlock() {
+  async function toggleBlock(alsoReport?: boolean) {
     setLoading(true);
     try {
       const res = await fetch('/api/blocked-users', {
@@ -36,6 +36,15 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
         body: JSON.stringify({ userId: otherId })
       });
       if (!res.ok) throw new Error();
+
+      if (alsoReport) {
+        await fetch('/api/message-reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ otherId })
+        }).catch(() => {});
+      }
+
       setBlocked((v) => !v);
       setShowConfirm(false);
       router.refresh();
@@ -146,21 +155,43 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
                 ? 'Táto osoba ti bude môcť opäť napísať a ty jej.'
                 : 'Táto osoba ti už nebude môcť napísať a ani ty jej. Kedykoľvek to môžeš vrátiť späť.'}
             </p>
-            <div className="flex justify-end gap-2">
-              <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
-                Zrušiť
-              </button>
-              <button
-                type="button"
-                onClick={toggleBlock}
-                disabled={loading}
-                className={`text-sm font-semibold px-4 py-2 rounded-full text-white disabled:opacity-50 ${
-                  blocked ? 'bg-accent hover:bg-accent-dark' : 'bg-danger hover:opacity-90'
-                }`}
-              >
-                {loading ? '…' : blocked ? 'Odblokovať' : 'Zablokovať'}
-              </button>
-            </div>
+            {blocked ? (
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
+                  Zrušiť
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleBlock(false)}
+                  disabled={loading}
+                  className="text-sm font-semibold px-4 py-2 rounded-full text-white bg-accent hover:bg-accent-dark disabled:opacity-50"
+                >
+                  {loading ? '…' : 'Odblokovať'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => toggleBlock(true)}
+                  disabled={loading}
+                  className="text-sm font-semibold px-4 py-2.5 rounded-full text-white bg-danger hover:opacity-90 disabled:opacity-50"
+                >
+                  {loading ? '…' : 'Zablokovať a nahlásiť chat'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleBlock(false)}
+                  disabled={loading}
+                  className="text-sm font-semibold px-4 py-2.5 rounded-full text-ink border border-line hover:border-danger hover:text-danger disabled:opacity-50"
+                >
+                  {loading ? '…' : 'Len zablokovať'}
+                </button>
+                <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink py-1.5">
+                  Zrušiť
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

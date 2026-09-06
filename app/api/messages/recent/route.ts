@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -22,11 +23,12 @@ export async function GET() {
   for (const m of messages) {
     const other = m.senderId === myId ? m.receiver : m.sender;
     if (!map.has(other.id)) {
+      const lastText = m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       map.set(other.id, {
         userId: other.id,
         name: other.name,
         avatar: other.avatar,
-        lastText: m.body || (m.image ? 'Fotka' : ''),
+        lastText,
         lastAt: m.createdAt,
         unread: 0
       });
