@@ -89,6 +89,16 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
               type="button"
               onClick={() => {
                 setOpen(false);
+                window.dispatchEvent(new Event('chat-selection-mode-toggle'));
+              }}
+              className="w-full text-left px-4 py-3 text-sm font-medium text-ink hover:bg-surface transition-colors border-b border-line"
+            >
+              ☑ Vymazať vybrané správy
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
                 setShowDeleteConfirm(true);
               }}
               className="w-full text-left px-4 py-3 text-sm font-medium text-danger hover:bg-surface transition-colors"

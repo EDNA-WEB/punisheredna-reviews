@@ -2,9 +2,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { IconUser, IconMessage } from '@/components/Icons';
 import NewMessageSearch from '@/components/NewMessageSearch';
+import MessagesListClient from '@/components/MessagesListClient';
+import { IconMessage } from '@/components/Icons';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,12 +13,15 @@ export default async function MessagesPage() {
   if (!session) redirect('/login');
   const myId = (session.user as any).id;
 
+  const myDeletions = await prisma.conversationDeletion.findMany({ where: { userId: myId } });
+  const deletionByOtherId = new Map(myDeletions.map((d) => [d.otherId, d.deletedAt]));
+
   const messages = await prisma.message.findMany({
     where: { OR: [{ senderId: myId }, { receiverId: myId }] },
     orderBy: { createdAt: 'desc' },
     include: {
-      sender: { select: { id: true, name: true, avatar: true } },
-      receiver: { select: { id: true, name: true, avatar: true } }
+      sender: { select: { id: true, name: true, avatar: true, publicKey: true } },
+      receiver: { select: { id: true, name: true, avatar: true, publicKey: true } }
     }
   });
 
@@ -31,16 +34,34 @@ export default async function MessagesPage() {
     statusByOtherId.set(otherId, { status: c.status, initiatorId: c.initiatorId });
   }
 
-  const conversations = new Map<string, { user: any; lastText: string; lastAt: Date; unread: number; lastMine: boolean }>();
+  const conversations = new Map<
+    string,
+    {
+      user: { id: string; name: string; avatar: string | null; publicKey: string | null };
+      lastBody: string | null;
+      lastIv: string | null;
+      lastIsImage: boolean;
+      lastAt: Date;
+      unread: number;
+      lastMine: boolean;
+      status: { status: string; initiatorId: string } | null;
+    }
+  >();
   for (const m of messages) {
     const other = m.senderId === myId ? m.receiver : m.sender;
+    const myDeletedAt = deletionByOtherId.get(other.id);
+    if (myDeletedAt && m.createdAt <= myDeletedAt) continue; // ja som si túto konverzáciu vymazal(a) po tento bod
+
     if (!conversations.has(other.id)) {
       conversations.set(other.id, {
         user: other,
-        lastText: m.image ? '📷 Fotka' : m.iv ? '🔒 Nová správa' : m.body || '',
+        lastBody: m.body,
+        lastIv: m.iv,
+        lastIsImage: !!m.image,
         lastAt: m.createdAt,
         unread: 0,
-        lastMine: m.senderId === myId
+        lastMine: m.senderId === myId,
+        status: statusByOtherId.get(other.id) || null
       });
     }
     if (m.receiverId === myId && !m.read) {
@@ -63,48 +84,7 @@ export default async function MessagesPage() {
               Zatiaľ nemáš žiadne konverzácie. Nájdi si niekoho vyššie a napíš mu.
             </div>
           ) : (
-            <div className="space-y-1 -mx-4">
-              {list.map((c) => (
-                <Link
-                  key={c.user.id}
-                  href={`/messages/${c.user.id}`}
-                  className={`flex items-center gap-3 px-4 py-3 hover:bg-surface transition-colors ${c.unread > 0 ? 'bg-accent/5' : ''}`}
-                >
-                  {c.user.avatar ? (
-                    <img src={c.user.avatar} alt={c.user.name} className="w-11 h-11 rounded-full object-cover flex-none" />
-                  ) : (
-                    <div className="w-11 h-11 rounded-full bg-surface flex items-center justify-center flex-none">
-                      <IconUser className="w-5 h-5 text-muted" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
-                      <span className="text-[11px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('sk-SK', { timeZone: 'Europe/Bratislava' })}</span>
-                    </div>
-                    <p className="text-xs text-muted truncate">
-                      {(() => {
-                        const st = statusByOtherId.get(c.user.id);
-                        if (st?.status === 'DECLINED') return <span className="text-danger">Zamietnuté</span>;
-                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-amber-600">Čaká na potvrdenie</span>;
-                        if (st?.status === 'PENDING') return <span className="text-accent font-semibold">Chce s tebou komunikovať</span>;
-                        return (
-                          <>
-                            {c.lastMine && <span className="mr-1">✓✓</span>}
-                            {c.lastText}
-                          </>
-                        );
-                      })()}
-                    </p>
-                  </div>
-                  {c.unread > 0 && (
-                    <span className="w-5 h-5 bg-accent text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
-                      {c.unread}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
+            <MessagesListClient conversations={list} myId={myId} />
           )}
         </div>
 

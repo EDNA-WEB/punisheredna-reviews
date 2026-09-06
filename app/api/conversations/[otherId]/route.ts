@@ -2,24 +2,19 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { sortedPair } from '@/lib/conversation';
 
+// Vymazanie konverzácie je len pre toho, kto to urobil — len si zapamätáme čas,
+// odkedy on/ona nechce vidieť staršie správy. Druhej strane sa nič nezmaže.
 export async function DELETE(_req: Request, { params }: { params: { otherId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const myId = (session.user as any).id;
 
-  await prisma.message.deleteMany({
-    where: {
-      OR: [
-        { senderId: myId, receiverId: params.otherId },
-        { senderId: params.otherId, receiverId: myId }
-      ]
-    }
+  await prisma.conversationDeletion.upsert({
+    where: { userId_otherId: { userId: myId, otherId: params.otherId } },
+    update: { deletedAt: new Date() },
+    create: { userId: myId, otherId: params.otherId, deletedAt: new Date() }
   });
-
-  const [userAId, userBId] = sortedPair(myId, params.otherId);
-  await prisma.conversation.deleteMany({ where: { userAId, userBId } });
 
   return NextResponse.json({ ok: true });
 }

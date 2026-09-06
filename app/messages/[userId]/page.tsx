@@ -8,7 +8,6 @@ import MessageForm from '@/components/MessageForm';
 import ChatMessageList from '@/components/ChatMessageList';
 import ConversationConsentBanner from '@/components/ConversationConsentBanner';
 import ChatHeaderActions from '@/components/ChatHeaderActions';
-import ChatThemeWrapper from '@/components/ChatThemeWrapper';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 
@@ -35,12 +34,17 @@ export default async function ConversationPage({ params }: { params: { userId: s
     data: { read: true }
   });
 
+  const myDeletion = await prisma.conversationDeletion.findUnique({
+    where: { userId_otherId: { userId: myId, otherId: other.id } }
+  });
+
   const messages = await prisma.message.findMany({
     where: {
       OR: [
         { senderId: myId, receiverId: other.id },
         { senderId: other.id, receiverId: myId }
-      ]
+      ],
+      ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
     select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
@@ -81,10 +85,16 @@ export default async function ConversationPage({ params }: { params: { userId: s
         <ChatHeaderActions otherId={other.id} otherName={other.name} initiallyBlocked={!!iBlockedThem} />
       </div>
 
-      <ChatThemeWrapper otherId={other.id}>
+      <div
+        className="flex-1 overflow-y-auto py-5 space-y-1"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(128,128,128,0.18) 1px, transparent 0)',
+          backgroundSize: '18px 18px'
+        }}
+      >
         {isPendingForMe && <ConversationConsentBanner otherId={other.id} otherName={other.name} />}
         <ChatMessageList messages={messages} myId={myId} otherId={other.id} otherPublicKey={other.publicKey} />
-      </ChatThemeWrapper>
+      </div>
 
       <MessageForm receiverId={other.id} receiverPublicKey={other.publicKey} disabledReason={disabledReason} />
     </div>

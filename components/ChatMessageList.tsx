@@ -55,19 +55,43 @@ export default function ChatMessageList({
   }, [otherId]);
   const [keyError, setKeyError] = useState(false);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deletingSelection, setDeletingSelection] = useState(false);
 
-  async function deleteMessage(id: string) {
-    setDeletingId(id);
+  useEffect(() => {
+    function onToggle() {
+      setSelectionMode((v) => !v);
+      setSelectedIds(new Set());
+    }
+    window.addEventListener('chat-selection-mode-toggle', onToggle);
+    return () => window.removeEventListener('chat-selection-mode-toggle', onToggle);
+  }, []);
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  async function deleteSelected() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Zmazať ${selectedIds.size} vybraných správ? Zmiznú aj druhej strane.`)) return;
+    setDeletingSelection(true);
     try {
-      const res = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setDeletedIds((prev) => new Set(prev).add(id));
-    } catch (err: any) {
-      alert(err.message || 'Zmazanie zlyhalo.');
+      await Promise.all(
+        Array.from(selectedIds).map((id) => fetch(`/api/messages/${id}`, { method: 'DELETE' }))
+      );
+      setDeletedIds((prev) => new Set([...prev, ...selectedIds]));
+      setSelectedIds(new Set());
+      setSelectionMode(false);
+    } catch {
+      alert('Niektoré správy sa nepodarilo zmazať.');
     } finally {
-      setDeletingId(null);
+      setDeletingSelection(false);
     }
   }
 
@@ -158,22 +182,19 @@ export default function ChatMessageList({
                 <span className="text-[11px] font-semibold text-muted bg-surface px-3 py-1 rounded-full">{thisDay}</span>
               </div>
             )}
-            <div className={`flex items-center gap-1.5 group ${mine ? 'justify-end' : 'justify-start'}`}>
-              {mine && canDelete && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm('Zmazať túto správu? Zmizne aj druhej strane.')) deleteMessage(m.id);
-                  }}
-                  disabled={deletingId === m.id}
-                  title="Zmazať správu"
-                  className="opacity-0 group-hover:opacity-100 text-muted hover:text-danger text-xs transition-opacity flex-none disabled:opacity-50"
-                >
-                  🗑
-                </button>
+            <div className={`flex items-center gap-1.5 ${mine ? 'justify-end' : 'justify-start'}`}>
+              {selectionMode && canDelete && (
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(m.id)}
+                  onChange={() => toggleSelected(m.id)}
+                  className="flex-none w-4 h-4 accent-accent cursor-pointer"
+                />
               )}
               <div
-                className={`max-w-[75%] rounded-xl px-4 py-2.5 ${mine ? 'text-white' : 'bg-surface text-ink'} ${mine && !bubbleColor ? 'bg-accent' : ''}`}
+                className={`max-w-[75%] rounded-xl px-4 py-2.5 ${mine ? 'text-white' : 'bg-surface text-ink'} ${mine && !bubbleColor ? 'bg-accent' : ''} ${
+                  selectionMode && !canDelete ? 'opacity-50' : ''
+                }`}
                 style={mine && bubbleColor ? { backgroundColor: bubbleColor } : undefined}
               >
                 {m.image && <MessageImageReveal messageId={m.id} mine={mine} alreadyViewed={!!m.imageViewedAt} />}
@@ -187,6 +208,33 @@ export default function ChatMessageList({
           </div>
         );
       })}
+      {selectionMode && (
+        <div className="sticky bottom-0 mt-3 flex items-center justify-between gap-3 bg-card border border-line rounded-xl px-4 py-3 shadow-lg">
+          <span className="text-sm text-ink">
+            {selectedIds.size === 0 ? 'Vyber správy na zmazanie' : `Vybraných: ${selectedIds.size}`}
+          </span>
+          <div className="flex items-center gap-2 flex-none">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectionMode(false);
+                setSelectedIds(new Set());
+              }}
+              className="text-sm font-semibold text-muted hover:text-ink px-3 py-1.5"
+            >
+              Zrušiť
+            </button>
+            <button
+              type="button"
+              onClick={deleteSelected}
+              disabled={selectedIds.size === 0 || deletingSelection}
+              className="text-sm font-semibold text-white bg-danger px-4 py-1.5 rounded-full hover:opacity-90 disabled:opacity-50"
+            >
+              {deletingSelection ? 'Mažem…' : `Zmazať vybrané (${selectedIds.size})`}
+            </button>
+          </div>
+        </div>
+      )}
       <ChatAutoScroll dep={messages.length} />
     </>
   );

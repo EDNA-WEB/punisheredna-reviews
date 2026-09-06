@@ -1,9 +1,9 @@
-// Vzhľad konverzácie (farba bublín a pozadia) je čisto lokálne nastavenie —
-// ukladá sa len v prehliadači daného zariadenia (nie na server), takže druhá
-// strana ho nevidí a každý si môže mať konverzáciu nafarbenú inak.
-export type ChatTheme = { bubbleColor: string; backgroundColor: string };
+// Vzhľad konverzácie (farba bublín) je čisto lokálne nastavenie — ukladá sa len
+// v prehliadači daného zariadenia (nie na server), takže druhá strana ho nevidí
+// a každý si môže mať svoje bubliny nafarbené inak.
+export type ChatTheme = { bubbleColor: string };
 
-const DEFAULT_THEME: ChatTheme = { bubbleColor: '', backgroundColor: '' };
+const DEFAULT_THEME: ChatTheme = { bubbleColor: '' };
 
 function key(otherId: string) {
   return `chat_theme_${otherId}`;

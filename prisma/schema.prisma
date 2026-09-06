@@ -799,6 +799,17 @@ model Conversation {
   @@unique([userAId, userBId])
 }
 
+// Vymazanie konverzácie je "len pre mňa" — skryje staré správy len tomu, kto
+// zmazanie vykonal, druhá strana o tom ani nevie a jej história ostáva netknutá.
+model ConversationDeletion {
+  id        String   @id @default(cuid())
+  userId    String
+  otherId   String
+  deletedAt DateTime @default(now())
+
+  @@unique([userId, otherId])
+}
+
 // Zablokovanie iného používateľa v Pošte — blocker už od blocked nedostane
 // žiadnu správu a nemôže mu ani sám písať.
 model BlockedUser {
