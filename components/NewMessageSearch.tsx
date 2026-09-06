@@ -8,7 +8,7 @@ import { useT } from './TranslationProvider';
 
 type UserResult = { id: string; name: string; avatar: string | null; role: string; membershipUntil?: string | null };
 
-export default function NewMessageSearch() {
+export default function NewMessageSearch({ dark }: { dark?: boolean }) {
   const t = useT();
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -42,10 +42,16 @@ export default function NewMessageSearch() {
   }, [query]);
 
   return (
-    <div ref={boxRef} className="relative mb-4">
+    <div ref={boxRef} className={dark ? 'relative' : 'relative mb-4'}>
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${dark ? 'text-[#8696a0]' : 'text-muted'}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
           </svg>
@@ -54,37 +60,43 @@ export default function NewMessageSearch() {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => query.trim().length >= 2 && setOpen(true)}
             placeholder={t('spravy.hladat_uzivatelov')}
-            className="field-input py-2 text-sm"
+            className={dark ? 'w-full py-2 text-sm bg-[#202c33] text-[#e9edef] placeholder-[#8696a0] border-0 rounded-lg outline-none' : 'field-input py-2 text-sm'}
             style={{ paddingLeft: '2.25rem' }}
           />
         </div>
         <button
           onClick={() => setOpen((o) => query.trim().length >= 2 ? !o : o)}
-          className="bg-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent-dark flex-none"
+          className={
+            dark
+              ? 'bg-[#00a884] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#029271] flex-none'
+              : 'bg-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent-dark flex-none'
+          }
         >
           {t('spravy.napisat')}
         </button>
       </div>
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full rounded-xl border border-line bg-card shadow-lg overflow-hidden">
+        <div className={`absolute z-50 mt-2 w-full rounded-xl border shadow-lg overflow-hidden ${dark ? 'border-black/30 bg-[#233138]' : 'border-line bg-card'}`}>
           {results.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-muted">{t('spravy.nic_najdene')}</div>
+            <div className={`px-4 py-3 text-sm ${dark ? 'text-[#8696a0]' : 'text-muted'}`}>{t('spravy.nic_najdene')}</div>
           ) : (
             results.map((u) => (
               <button
                 key={u.id}
                 onClick={() => router.push(`/messages/${u.id}`)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface text-left border-b border-line last:border-b-0"
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-left border-b last:border-b-0 ${
+                  dark ? 'hover:bg-[#2a3942] border-black/20' : 'hover:bg-surface border-line'
+                }`}
               >
                 {u.avatar ? (
                   <img src={u.avatar} alt={u.name} className="w-8 h-8 rounded-full object-cover flex-none" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-surface flex items-center justify-center flex-none">
-                    <IconUser className="w-4 h-4 text-muted" />
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-none ${dark ? 'bg-[#2a3942]' : 'bg-surface'}`}>
+                    <IconUser className={`w-4 h-4 ${dark ? 'text-[#8696a0]' : 'text-muted'}`} />
                   </div>
                 )}
-                <span className="text-sm font-semibold text-ink">{u.name}</span>
+                <span className={`text-sm font-semibold ${dark ? 'text-[#e9edef]' : 'text-ink'}`}>{u.name}</span>
                 {u.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
               </button>
             ))
