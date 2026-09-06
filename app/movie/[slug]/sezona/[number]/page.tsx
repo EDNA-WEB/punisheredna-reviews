@@ -60,10 +60,12 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
     where: { slug: params.slug },
     include: {
       photos: { where: { episodeId: null }, orderBy: { order: 'asc' }, select: { id: true, thumbnail: true } },
-      trivia: { orderBy: { order: 'asc' } }
+      trivia: { orderBy: { order: 'asc' } },
+      streamingServices: { include: { streamingService: { select: { name: true } } }, take: 1 }
     }
   });
   if (!movie) return notFound();
+  const distributorName = movie.streamingServices[0]?.streamingService.name || null;
 
   const season = await prisma.season.findUnique({
     where: { movieId_number: { movieId: movie.id, number: Number(params.number) } },
@@ -754,7 +756,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
           <TagsBox tags={movieTags} />
         </div>
         <div className="sm:hidden mt-4">
-          <AirDateBox label={`Séria ${season.number} vysielaná od`} date={season.releaseDate} />
+          <AirDateBox date={season.releaseDate} distributor={distributorName} />
         </div>
       </div>
 
@@ -783,7 +785,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
         </div>
 
         <div className="hidden sm:block mt-4">
-          <AirDateBox label={`Séria ${season.number} vysielaná od`} date={season.releaseDate} />
+          <AirDateBox date={season.releaseDate} distributor={distributorName} />
         </div>
 
         {viewerId && (
