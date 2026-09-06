@@ -3,11 +3,15 @@
 import { useState } from 'react';
 import { IconImage } from './Icons';
 
-export default function MessageImageReveal({ messageId, mine, alreadyViewed }: { messageId: string; mine: boolean; alreadyViewed: boolean }) {
+// hasImage = true, kým fotka ešte existuje na serveri (v rámci 1-minútového
+// okna od prvého otvorenia sa dá zobraziť aj opakovane — napr. po obnovení
+// stránky). Až keď server fotku natrvalo odstráni (po uplynutí okna), táto
+// hodnota bude false a namiesto tlačidla sa ukáže "bola zobrazená".
+export default function MessageImageReveal({ messageId, mine, hasImage }: { messageId: string; mine: boolean; hasImage: boolean }) {
   const [revealedUrl, setRevealedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [gone, setGone] = useState(!hasImage);
   const [error, setError] = useState('');
-  const [viewed, setViewed] = useState(alreadyViewed);
 
   async function reveal() {
     setLoading(true);
@@ -19,7 +23,7 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
       setRevealedUrl(data.image);
     } catch (err: any) {
       setError(err.message || 'Fotku sa nepodarilo zobraziť.');
-      setViewed(true);
+      setGone(true);
     } finally {
       setLoading(false);
     }
@@ -29,12 +33,12 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
     return (
       <div className="mb-1.5">
         <img src={revealedUrl} alt="Príloha" className="rounded-xl max-h-64" />
-        <p className={`text-[10px] mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>Táto fotka sa už znova nezobrazí.</p>
+        <p className={`text-[10px] mt-1 ${mine ? 'text-white/60' : 'text-muted'}`}>Dostupné ešte asi minútu od prvého otvorenia.</p>
       </div>
     );
   }
 
-  if (viewed) {
+  if (gone) {
     return (
       <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
         <IconImage className={`w-4 h-4 flex-none ${mine ? 'text-white/70' : 'text-muted'}`} />
@@ -47,7 +51,7 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
     return (
       <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-black/15">
         <IconImage className="w-4 h-4 flex-none text-white/85" />
-        <span className="text-xs text-white/85">Fotka odoslaná — zobrazí sa len raz</span>
+        <span className="text-xs text-white/85">Fotka odoslaná — po otvorení bude dostupná ešte minútu</span>
       </div>
     );
   }
@@ -60,7 +64,7 @@ export default function MessageImageReveal({ messageId, mine, alreadyViewed }: {
       className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 bg-line/50 hover:bg-line transition-colors disabled:opacity-60"
     >
       <IconImage className="w-4 h-4 flex-none text-ink" />
-      <span className="text-xs font-semibold text-ink">{loading ? 'Otváram…' : 'Klikni pre zobrazenie fotky (zobrazí sa len raz)'}</span>
+      <span className="text-xs font-semibold text-ink">{loading ? 'Otváram…' : 'Klikni pre zobrazenie fotky (dostupná ešte minútu)'}</span>
       {error && <span className="text-[10px] text-danger">{error}</span>}
     </button>
   );

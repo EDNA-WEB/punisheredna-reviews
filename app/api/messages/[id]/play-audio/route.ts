@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+const GRACE_PERIOD_MS = 60 * 1000; // 1 minúta
+
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
@@ -16,11 +18,19 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ error: 'Táto hlasová správa už bola prehraná a je nedostupná.' }, { status: 410 });
   }
 
-  const audioUrl = message.audio;
-  // Na rozdiel od fotky (tú len označíme ako zobrazenú) sa hlasovka po prehratí
-  // skutočne odstráni z databázy — už sa nedá vôbec nikde znova pustiť, ani
-  // priamym prístupom k tejto adrese.
-  await prisma.message.update({ where: { id: params.id }, data: { audio: null, audioPlayedAt: new Date() } });
+  // Prvé otvorenie spustí 1-minútové okno — počas neho sa hlasovka dá prehrať
+  // aj opakovane (napr. pri obnovení stránky, alebo ak sa prvé prehratie nestihlo
+  // poriadne stiahnuť). Až po uplynutí tejto minúty sa natrvalo odstráni.
+  if (!message.audioPlayedAt) {
+    await prisma.message.update({ where: { id: params.id }, data: { audioPlayedAt: new Date() } });
+    return NextResponse.json({ audio: message.audio });
+  }
 
-  return NextResponse.json({ audio: audioUrl });
+  const elapsed = Date.now() - message.audioPlayedAt.getTime();
+  if (elapsed > GRACE_PERIOD_MS) {
+    await prisma.message.update({ where: { id: params.id }, data: { audio: null } });
+    return NextResponse.json({ error: 'Táto hlasová správa už bola prehraná a je nedostupná.' }, { status: 410 });
+  }
+
+  return NextResponse.json({ audio: message.audio });
 }
