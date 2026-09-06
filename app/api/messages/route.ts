@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
+import { checkRateLimit } from '@/lib/antiSpam';
 import { uploadImage } from '@/lib/cloudinary';
 import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
     }
 
-    const { receiverId, body, image } = await req.json();
+    const { receiverId, body, iv, image } = await req.json();
 
     if (!receiverId || receiverId === senderId) {
       return NextResponse.json({ error: 'Neplatný príjemca.' }, { status: 400 });
@@ -25,13 +25,12 @@ export async function POST(req: Request) {
     if ((!body || !String(body).trim()) && !image) {
       return NextResponse.json({ error: 'Správa nemôže byť prázdna.' }, { status: 400 });
     }
-    if (body && String(body).length > 3000) {
+    if (body && String(body).length > 6000) {
       return NextResponse.json({ error: 'Správa je príliš dlhá.' }, { status: 400 });
     }
-    if (body) {
-      const spamReason = looksLikeSpam(String(body));
-      if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
-    }
+    // Text je teraz šifrovaný (end-to-end) — obsah nevieme (a ani nemáme) čítať,
+    // takže kontrola na spamový obsah tu už nedáva zmysel. Ochranu proti spamu
+    // naďalej zabezpečuje limit počtu správ nižšie.
 
     const rateLimitError = await checkRateLimit('message', senderId, sender.createdAt);
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
@@ -89,6 +88,7 @@ export async function POST(req: Request) {
         senderId,
         receiverId,
         body: body ? String(body).trim() : null,
+        iv: iv || null,
         image: imageUrl
       }
     });

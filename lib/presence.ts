@@ -11,10 +11,10 @@ export function formatPresence(lastActiveAt: Date): string {
   yesterday.setDate(yesterday.getDate() - 1);
   const isYesterday = lastActiveAt.toDateString() === yesterday.toDateString();
 
-  const time = lastActiveAt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+  const time = lastActiveAt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' });
   if (isToday) return `naposledy videný/á dnes o ${time}`;
   if (isYesterday) return `naposledy videný/á včera o ${time}`;
-  return `naposledy videný/á ${lastActiveAt.toLocaleDateString('sk-SK')}`;
+  return `naposledy videný/á ${lastActiveAt.toLocaleDateString('sk-SK', { timeZone: 'Europe/Bratislava' })}`;
 }
 
 export function isOnline(lastActiveAt: Date): boolean {

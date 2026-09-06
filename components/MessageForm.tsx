@@ -4,9 +4,10 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconImage } from './Icons';
 import EmojiPicker from './EmojiPicker';
+import { ensureMyKeyPair, deriveSharedKey, encryptText } from '@/lib/e2ee';
 import { useT } from './TranslationProvider';
 
-export default function MessageForm({ receiverId, disabledReason }: { receiverId: string; disabledReason?: string | null }) {
+export default function MessageForm({ receiverId, receiverPublicKey, disabledReason }: { receiverId: string; receiverPublicKey: string | null; disabledReason?: string | null }) {
   const t = useT();
   const router = useRouter();
   const [text, setText] = useState('');
@@ -42,10 +43,27 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
     setLoading(true);
     setError('');
     try {
+      let payloadBody: string | null = text.trim() || null;
+      let payloadIv: string | null = null;
+
+      // Ak druhá strana už má nastavené šifrovanie, text zašifrujeme priamo v
+      // prehliadači — na server ide už len nezmyselný, zašifrovaný text.
+      if (payloadBody && receiverPublicKey) {
+        const myPrivateKey = await ensureMyKeyPair();
+        const sharedKey = await deriveSharedKey(myPrivateKey, receiverPublicKey);
+        const encrypted = await encryptText(sharedKey, payloadBody);
+        payloadBody = encrypted.ciphertext;
+        payloadIv = encrypted.iv;
+      } else if (payloadBody) {
+        // Druhá strana ešte nikdy nenavštívila Poštu (nemá kľúč) — správa sa
+        // pošle nezašifrovaná, aby konverzácia vôbec mohla začať.
+        await ensureMyKeyPair().catch(() => {});
+      }
+
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receiverId, body: text, image })
+        body: JSON.stringify({ receiverId, body: payloadBody, iv: payloadIv, image })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));

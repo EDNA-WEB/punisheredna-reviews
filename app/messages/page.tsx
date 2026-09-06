@@ -37,7 +37,7 @@ export default async function MessagesPage() {
     if (!conversations.has(other.id)) {
       conversations.set(other.id, {
         user: other,
-        lastText: m.body || (m.image ? '📷 Fotka' : ''),
+        lastText: m.image ? '📷 Fotka' : m.iv ? '🔒 Nová správa' : m.body || '',
         lastAt: m.createdAt,
         unread: 0,
         lastMine: m.senderId === myId
@@ -80,7 +80,7 @@ export default async function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
-                      <span className="text-[11px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('sk-SK')}</span>
+                      <span className="text-[11px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('sk-SK', { timeZone: 'Europe/Bratislava' })}</span>
                     </div>
                     <p className="text-xs text-muted truncate">
                       {(() => {

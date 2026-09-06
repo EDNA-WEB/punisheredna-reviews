@@ -5,23 +5,14 @@ import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser } from '@/components/Icons';
 import MessageForm from '@/components/MessageForm';
-import MessageImageReveal from '@/components/MessageImageReveal';
+import ChatMessageList from '@/components/ChatMessageList';
 import ConversationConsentBanner from '@/components/ConversationConsentBanner';
-import ChatAutoScroll from '@/components/ChatAutoScroll';
 import ChatHeaderActions from '@/components/ChatHeaderActions';
+import ChatThemeWrapper from '@/components/ChatThemeWrapper';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 
 export const dynamic = 'force-dynamic';
-
-function dayLabel(date: Date): string {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  if (date.toDateString() === today.toDateString()) return 'DNES';
-  if (date.toDateString() === yesterday.toDateString()) return 'VČERA';
-  return date.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
-}
 
 export default async function ConversationPage({ params }: { params: { userId: string } }) {
   const session = await getServerSession(authOptions);
@@ -29,7 +20,10 @@ export default async function ConversationPage({ params }: { params: { userId: s
   const myId = (session.user as any).id;
   await prisma.user.update({ where: { id: myId }, data: { lastActiveAt: new Date() } }).catch(() => {});
 
-  const other = await prisma.user.findUnique({ where: { id: params.userId }, select: { id: true, name: true, avatar: true, lastActiveAt: true } });
+  const other = await prisma.user.findUnique({
+    where: { id: params.userId },
+    select: { id: true, name: true, avatar: true, lastActiveAt: true, publicKey: true }
+  });
   if (!other) return notFound();
 
   const iBlockedThem = await prisma.blockedUser.findUnique({
@@ -48,7 +42,8 @@ export default async function ConversationPage({ params }: { params: { userId: s
         { senderId: other.id, receiverId: myId }
       ]
     },
-    orderBy: { createdAt: 'asc' }
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
   });
 
   const [userAId, userBId] = sortedPair(myId, other.id);
@@ -63,9 +58,6 @@ export default async function ConversationPage({ params }: { params: { userId: s
   else if (isDeclined) disabledReason = `${other.name} odmietol/-la s tebou komunikovať.`;
   else if (isPendingForMe) disabledReason = 'Najprv rozhodni o žiadosti o komunikáciu vyššie.';
   else if (isPendingWaiting) disabledReason = 'Čakáš, kým druhá strana potvrdí, že s tebou chce komunikovať.';
-
-  // Zoskupenie správ podľa dňa, na vloženie dátumových oddeľovačov medzi ne.
-  let lastDay = '';
 
   return (
     <div className="pt-8 flex flex-col h-[calc(100vh-140px)]">
@@ -89,45 +81,12 @@ export default async function ConversationPage({ params }: { params: { userId: s
         <ChatHeaderActions otherId={other.id} otherName={other.name} initiallyBlocked={!!iBlockedThem} />
       </div>
 
-      <div className="flex-1 overflow-y-auto py-5 space-y-1">
+      <ChatThemeWrapper otherId={other.id}>
         {isPendingForMe && <ConversationConsentBanner otherId={other.id} otherName={other.name} />}
+        <ChatMessageList messages={messages} myId={myId} otherId={other.id} otherPublicKey={other.publicKey} />
+      </ChatThemeWrapper>
 
-        {messages.length === 0 ? (
-          <p className="text-muted text-sm text-center">Zatiaľ žiadne správy. Napíš prvú.</p>
-        ) : (
-          messages.map((m) => {
-            const mine = m.senderId === myId;
-            const thisDay = dayLabel(m.createdAt);
-            const showDivider = thisDay !== lastDay;
-            lastDay = thisDay;
-
-            return (
-              <div key={m.id}>
-                {showDivider && (
-                  <div className="flex justify-center my-3">
-                    <span className="text-[11px] font-semibold text-muted bg-surface px-3 py-1 rounded-full">{thisDay}</span>
-                  </div>
-                )}
-                <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[75%] rounded-xl px-4 py-2.5 ${mine ? 'bg-accent text-white' : 'bg-surface text-ink'}`}>
-                    {m.image && <MessageImageReveal messageId={m.id} mine={mine} alreadyViewed={!!m.imageViewedAt} />}
-                    {m.body && <p className="text-sm whitespace-pre-wrap leading-snug">{m.body}</p>}
-                    <div className={`flex items-center justify-end gap-1 mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>
-                      <span className="text-[10px]">
-                        {new Date(m.createdAt).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {mine && <span className={`text-[11px] ${m.read ? 'text-white' : 'text-white/60'}`}>✓✓</span>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-        <ChatAutoScroll dep={messages.length} />
-      </div>
-
-      <MessageForm receiverId={other.id} disabledReason={disabledReason} />
+      <MessageForm receiverId={other.id} receiverPublicKey={other.publicKey} disabledReason={disabledReason} />
     </div>
   );
 }
