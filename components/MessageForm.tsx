@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { IconImage } from './Icons';
 import { useT } from './TranslationProvider';
 
-export default function MessageForm({ receiverId }: { receiverId: string }) {
+export default function MessageForm({ receiverId, disabledReason }: { receiverId: string; disabledReason?: string | null }) {
   const t = useT();
   const router = useRouter();
   const [text, setText] = useState('');
@@ -59,19 +59,27 @@ export default function MessageForm({ receiverId }: { receiverId: string }) {
     }
   }
 
+  if (disabledReason) {
+    return (
+      <div className="border-t border-line pt-4 pb-1 text-center">
+        <p className="text-sm text-muted">{disabledReason}</p>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={submit} className="border-t border-line pt-4">
+    <form onSubmit={submit} className="border-t border-line pt-3">
       {image && (
         <div className="mb-3 relative w-fit">
           <img src={image} alt={t('spravy.nahlad')} className="max-h-40 rounded-xl border border-line" />
           <button type="button" onClick={() => setImage('')} className="absolute -top-2 -right-2 w-6 h-6 bg-night text-white rounded-full text-xs">✕</button>
         </div>
       )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 bg-surface rounded-full pl-2 pr-1.5 py-1.5">
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="w-11 h-11 flex-none rounded-full border border-line flex items-center justify-center hover:border-accent hover:text-accent"
+          className="w-9 h-9 flex-none rounded-full flex items-center justify-center text-muted hover:text-accent transition-colors"
           title={t('spravy.pridat_fotku')}
         >
           <IconImage className="w-5 h-5" />
@@ -81,18 +89,21 @@ export default function MessageForm({ receiverId }: { receiverId: string }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('spravy.napis_spravu')}
-          className="field-input flex-1 min-h-[44px] max-h-32"
+          className="flex-1 min-h-[36px] max-h-32 bg-transparent border-0 outline-none resize-none text-sm py-1.5 placeholder:text-muted"
           rows={1}
         />
         <button
           type="submit"
           disabled={loading || (!text.trim() && !image)}
-          className="h-11 px-5 flex-none bg-accent text-white rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
+          className="w-9 h-9 flex-none bg-accent text-white rounded-full flex items-center justify-center hover:bg-accent-dark disabled:opacity-40 transition-colors"
         >
-          {t('spravy.odoslat')}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
         </button>
       </div>
-      {error && <div className="text-danger text-sm mt-2">{error}</div>}
+      {error && <div className="text-danger text-sm mt-2 text-center">{error}</div>}
     </form>
   );
 }

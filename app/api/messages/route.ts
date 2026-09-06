@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { uploadImage } from '@/lib/cloudinary';
+import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
 
 export async function POST(req: Request) {
   try {
@@ -38,6 +39,33 @@ export async function POST(req: Request) {
     const receiver = await prisma.user.findUnique({ where: { id: receiverId } });
     if (!receiver) return NextResponse.json({ error: 'Príjemca sa nenašiel.' }, { status: 404 });
 
+    // Súhlas s komunikáciou — kým adresát prvú správu výslovne neprijme,
+    // odosielateľ (ten, kto konverzáciu začal) nemôže poslať ďalšiu. Ak adresát
+    // konverzáciu zamietol, odosielateľ už nemôže poslať vôbec nič.
+    const conversation = await getOrCreateConversation(senderId, receiverId, senderId);
+    if (conversation.status === 'DECLINED') {
+      return NextResponse.json({ error: 'Táto osoba odmietla s tebou komunikovať.' }, { status: 403 });
+    }
+    if (conversation.status === 'PENDING' && conversation.initiatorId === senderId) {
+      const alreadySent = await prisma.message.count({ where: { senderId, receiverId } });
+      if (alreadySent > 0) {
+        return NextResponse.json({ error: 'Už si poslal jednu správu — počkaj, kým ju druhá strana potvrdí.' }, { status: 403 });
+      }
+    }
+
+    // Fotku môže poslať len raz za 20 minút (nie text, len obrázok).
+    if (image) {
+      const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000);
+      const recentImage = await prisma.message.findFirst({
+        where: { senderId, image: { not: null }, createdAt: { gte: twentyMinutesAgo } },
+        orderBy: { createdAt: 'desc' }
+      });
+      if (recentImage) {
+        const waitMinutes = Math.ceil((recentImage.createdAt.getTime() + 20 * 60 * 1000 - Date.now()) / 60000);
+        return NextResponse.json({ error: `Fotku môžeš poslať len raz za 20 minút. Skús to znova o ${waitMinutes} min.` }, { status: 429 });
+      }
+    }
+
     let imageUrl = image || null;
     if (imageUrl && imageUrl.startsWith('data:image')) {
       imageUrl = await uploadImage(imageUrl, 'messages');
@@ -52,7 +80,7 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json(message, { status: 201 });
+    return NextResponse.json({ ...message, conversationStatus: conversation.status }, { status: 201 });
   } catch (err: any) {
     if (err?.code === 'P2002') {
       return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });

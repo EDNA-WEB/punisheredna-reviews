@@ -770,6 +770,7 @@ model Message {
   receiverId String
   body       String?  @db.Text
   image      String?  @db.Text
+  imageViewedAt DateTime?
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
   sender     User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
@@ -777,6 +778,22 @@ model Message {
 
   @@index([senderId, createdAt])
   @@index([receiverId])
+}
+
+// Súhlas s komunikáciou medzi dvoma používateľmi — kým adresát prvú správu
+// výslovne neprijme, odosielateľ nemôže poslať ďalšiu (žiadny spam). Jeden
+// riadok na dvojicu používateľov, userAId je vždy abecedne/hodnotovo menšie
+// ako userBId, aby dvojica nemohla vzniknúť dvakrát v opačnom poradí.
+model Conversation {
+  id           String    @id @default(cuid())
+  userAId      String
+  userBId      String
+  initiatorId  String
+  status       String    @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt    DateTime  @default(now())
+  respondedAt  DateTime?
+
+  @@unique([userAId, userBId])
 }
 
 model Notification {

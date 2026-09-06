@@ -22,6 +22,15 @@ export default async function MessagesPage() {
     }
   });
 
+  const conversationRows = await prisma.conversation.findMany({
+    where: { OR: [{ userAId: myId }, { userBId: myId }] }
+  });
+  const statusByOtherId = new Map<string, { status: string; initiatorId: string }>();
+  for (const c of conversationRows) {
+    const otherId = c.userAId === myId ? c.userBId : c.userAId;
+    statusByOtherId.set(otherId, { status: c.status, initiatorId: c.initiatorId });
+  }
+
   const conversations = new Map<string, { user: any; lastText: string; lastAt: Date; unread: number }>();
   for (const m of messages) {
     const other = m.senderId === myId ? m.receiver : m.sender;
@@ -72,7 +81,15 @@ export default async function MessagesPage() {
                       <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
                       <span className="text-[11px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('sk-SK')}</span>
                     </div>
-                    <p className="text-xs text-muted truncate">{c.lastText}</p>
+                    <p className="text-xs text-muted truncate">
+                      {(() => {
+                        const st = statusByOtherId.get(c.user.id);
+                        if (st?.status === 'DECLINED') return <span className="text-danger">Zamietnuté</span>;
+                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-amber-600">Čaká na potvrdenie</span>;
+                        if (st?.status === 'PENDING') return <span className="text-accent font-semibold">Chce s tebou komunikovať</span>;
+                        return c.lastText;
+                      })()}
+                    </p>
                   </div>
                   {c.unread > 0 && (
                     <span className="w-5 h-5 bg-accent text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
