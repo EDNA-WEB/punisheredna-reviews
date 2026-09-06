@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import MessageImageReveal from './MessageImageReveal';
 import ChatAutoScroll from './ChatAutoScroll';
-import { ensureMyKeyPair, deriveSharedKey, decryptText } from '@/lib/e2ee';
+import { ensureMyKeyPair, deriveSharedKey, decryptText, resetMyKeyPair } from '@/lib/e2ee';
 import { getChatTheme } from '@/lib/chatTheme';
 
 type RawMessage = {
@@ -54,6 +54,20 @@ export default function ChatMessageList({
     };
   }, [otherId]);
   const [keyError, setKeyError] = useState(false);
+  const [decryptFailures, setDecryptFailures] = useState(0);
+  const [resettingKey, setResettingKey] = useState(false);
+
+  function handleResetKey() {
+    if (!confirm('Obnoviť šifrovací kľúč tohto zariadenia? Staré nedešifrovateľné správy sa tým nezachránia, ale nové správy od tohto bodu už budú fungovať správne.')) return;
+    setResettingKey(true);
+    resetMyKeyPair();
+    ensureMyKeyPair()
+      .then(() => window.location.reload())
+      .catch(() => {
+        alert('Obnova zlyhala. Skús to prosím znova.');
+        setResettingKey(false);
+      });
+  }
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -116,13 +130,16 @@ export default function ChatMessageList({
           } else {
             const myPrivateKey = await ensureMyKeyPair();
             const sharedKey = await deriveSharedKey(myPrivateKey, otherPublicKey);
+            let failures = 0;
             for (const m of encrypted) {
               try {
                 results[m.id] = await decryptText(sharedKey, m.body!, m.iv!);
               } catch {
                 results[m.id] = '⚠ Túto správu sa nepodarilo dešifrovať.';
+                failures++;
               }
             }
+            if (!cancelled) setDecryptFailures(failures);
           }
         } else {
           // Aj keď nie sú žiadne šifrované správy na dešifrovanie, zabezpečíme
@@ -164,6 +181,21 @@ export default function ChatMessageList({
         <p className="text-xs text-amber-600 text-center mb-3">
           Druhá strana ešte nemá nastavené šifrovanie na svojom zariadení — text sa zobrazí, hneď ako si aspoň raz otvorí Poštu.
         </p>
+      )}
+      {decryptFailures > 0 && (
+        <div className="text-xs text-amber-600 text-center mb-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="mb-2">
+            Tvoje zariadenie nemôže dešifrovať {decryptFailures} {decryptFailures === 1 ? 'správu' : 'správy'} — kľúč tohto zariadenia sa nezhoduje s tým, čo je uložené na serveri.
+          </p>
+          <button
+            type="button"
+            onClick={handleResetKey}
+            disabled={resettingKey}
+            className="font-semibold underline hover:no-underline disabled:opacity-50"
+          >
+            {resettingKey ? 'Obnovujem…' : 'Obnoviť šifrovací kľúč tohto zariadenia'}
+          </button>
+        </div>
       )}
       {messages
         .filter((m) => !deletedIds.has(m.id))
