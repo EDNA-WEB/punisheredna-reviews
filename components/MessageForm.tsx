@@ -50,16 +50,32 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
 
   async function startRecording() {
     setError('');
+
+    if (typeof MediaRecorder === 'undefined') {
+      setError('Tento prehliadač nepodporuje nahrávanie hlasu.');
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       recordedChunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
+
+      // Rôzne prehliadače (najmä Safari na iPhone) podporujú iné kodeky —
+      // "audio/webm" napríklad na iPhone vôbec nefunguje. Vyberieme prvý
+      // formát, čo daný prehliadač skutočne vie nahrať, namiesto toho, aby
+      // sme jeden formát natvrdo predpokladali všade.
+      const candidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+      const supportedType = candidates.find((type) => MediaRecorder.isTypeSupported?.(type));
+
+      const recorder = supportedType ? new MediaRecorder(stream, { mimeType: supportedType }) : new MediaRecorder(stream);
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
+        // Použijeme presne ten formát, čo nahrávač skutočne použil (recorder.mimeType)
+        // — nie natvrdo predpokladaný — nech súbor vždy zodpovedá svojmu skutočnému obsahu.
+        const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
         const reader = new FileReader();
         reader.onload = () => setAudio(reader.result as string);
         reader.readAsDataURL(blob);
