@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { checkRateLimit } from '@/lib/antiSpam';
+import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { uploadImage } from '@/lib/cloudinary';
 import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
+import { encryptMessageBody } from '@/lib/serverCrypto';
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
     }
 
-    const { receiverId, body, iv, image } = await req.json();
+    const { receiverId, body, image } = await req.json();
 
     if (!receiverId || receiverId === senderId) {
       return NextResponse.json({ error: 'Neplatný príjemca.' }, { status: 400 });
@@ -25,12 +26,13 @@ export async function POST(req: Request) {
     if ((!body || !String(body).trim()) && !image) {
       return NextResponse.json({ error: 'Správa nemôže byť prázdna.' }, { status: 400 });
     }
-    if (body && String(body).length > 6000) {
+    if (body && String(body).length > 3000) {
       return NextResponse.json({ error: 'Správa je príliš dlhá.' }, { status: 400 });
     }
-    // Text je teraz šifrovaný (end-to-end) — obsah nevieme (a ani nemáme) čítať,
-    // takže kontrola na spamový obsah tu už nedáva zmysel. Ochranu proti spamu
-    // naďalej zabezpečuje limit počtu správ nižšie.
+    if (body) {
+      const spamReason = looksLikeSpam(String(body));
+      if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
+    }
 
     const rateLimitError = await checkRateLimit('message', senderId, sender.createdAt);
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
@@ -83,17 +85,27 @@ export async function POST(req: Request) {
       imageUrl = await uploadImage(imageUrl, 'messages');
     }
 
+    // Text sa šifruje priamo tu, na serveri — spoľahlivo, bez závislosti na
+    // tom, aké zariadenie/prehliadač odosielateľ alebo príjemca používa.
+    let encryptedBody: string | null = null;
+    let iv: string | null = null;
+    if (body && String(body).trim()) {
+      const encrypted = encryptMessageBody(String(body).trim());
+      encryptedBody = encrypted.ciphertext;
+      iv = encrypted.iv;
+    }
+
     const message = await prisma.message.create({
       data: {
         senderId,
         receiverId,
-        body: body ? String(body).trim() : null,
-        iv: iv || null,
+        body: encryptedBody,
+        iv,
         image: imageUrl
       }
     });
 
-    return NextResponse.json({ ...message, conversationStatus: conversation.status }, { status: 201 });
+    return NextResponse.json({ ...message, body: body ? String(body).trim() : null, conversationStatus: conversation.status }, { status: 201 });
   } catch (err: any) {
     if (err?.code === 'P2002') {
       return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });

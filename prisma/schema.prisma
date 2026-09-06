@@ -16,7 +16,6 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   lastActiveAt DateTime  @default(now())
-  publicKey    String?   @db.Text
   emailVerified       Boolean  @default(false)
   verificationToken   String?  @unique
   passwordHash String

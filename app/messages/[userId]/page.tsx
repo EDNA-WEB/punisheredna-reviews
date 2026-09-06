@@ -11,6 +11,7 @@ import ChatHeaderActions from '@/components/ChatHeaderActions';
 import ChatPolling from '@/components/ChatPolling';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
+import { decryptMessageBody } from '@/lib/serverCrypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
 
   const other = await prisma.user.findUnique({
     where: { id: params.userId },
-    select: { id: true, name: true, avatar: true, lastActiveAt: true, publicKey: true }
+    select: { id: true, name: true, avatar: true, lastActiveAt: true }
   });
   if (!other) return notFound();
 
@@ -39,7 +40,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
     where: { userId_otherId: { userId: myId, otherId: other.id } }
   });
 
-  const messages = await prisma.message.findMany({
+  const rawMessages = await prisma.message.findMany({
     where: {
       OR: [
         { senderId: myId, receiverId: other.id },
@@ -50,6 +51,13 @@ export default async function ConversationPage({ params }: { params: { userId: s
     orderBy: { createdAt: 'asc' },
     select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
   });
+
+  // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
+  // na to, aké zariadenie si používateľ práve otvoril.
+  const messages = rawMessages.map((m) => ({
+    ...m,
+    body: m.body && m.iv ? decryptMessageBody(m.body, m.iv) : m.body
+  }));
 
   const [userAId, userBId] = sortedPair(myId, other.id);
   const conversation = await prisma.conversation.findUnique({ where: { userAId_userBId: { userAId, userBId } } });
@@ -95,10 +103,10 @@ export default async function ConversationPage({ params }: { params: { userId: s
         }}
       >
         {isPendingForMe && <ConversationConsentBanner otherId={other.id} otherName={other.name} />}
-        <ChatMessageList messages={messages} myId={myId} otherId={other.id} otherPublicKey={other.publicKey} />
+        <ChatMessageList messages={messages} myId={myId} otherId={other.id} />
       </div>
 
-      <MessageForm receiverId={other.id} receiverPublicKey={other.publicKey} myId={myId} disabledReason={disabledReason} />
+      <MessageForm receiverId={other.id} disabledReason={disabledReason} />
     </div>
   );
 }
