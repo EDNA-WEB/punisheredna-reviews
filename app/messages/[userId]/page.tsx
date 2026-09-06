@@ -11,7 +11,7 @@ import ChatHeaderActions from '@/components/ChatHeaderActions';
 import ChatPolling from '@/components/ChatPolling';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
-import { decryptMessageBody } from '@/lib/serverCrypto';
+import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +56,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
   // na to, aké zariadenie si používateľ práve otvoril.
   const messages = rawMessages.map((m) => ({
     ...m,
-    body: m.body && m.iv ? decryptMessageBody(m.body, m.iv) : m.body
+    body: m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body
   }));
 
   const [userAId, userBId] = sortedPair(myId, other.id);

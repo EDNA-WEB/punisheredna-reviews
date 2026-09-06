@@ -42,3 +42,16 @@ export function decryptMessageBody(ciphertext: string, iv: string): string {
   decipher.setAuthTag(authTag);
   return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
 }
+
+// Bezpečná verzia na použitie priamo pri zobrazovaní — ak dešifrovanie zlyhá
+// (napr. chýbajúca/zmenená MESSAGE_ENCRYPTION_KEY, alebo ide o staršiu správu
+// zašifrovanú ešte iným, predošlým spôsobom), vráti náhradný text namiesto
+// toho, aby zhodila celú stránku nezachytenou výnimkou.
+export function tryDecryptMessageBody(ciphertext: string, iv: string): string {
+  try {
+    return decryptMessageBody(ciphertext, iv);
+  } catch (err) {
+    console.error('[serverCrypto] Dešifrovanie správy zlyhalo:', err);
+    return '⚠ Túto správu sa nepodarilo zobraziť.';
+  }
+}
