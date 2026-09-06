@@ -63,7 +63,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
     where: { slug: params.slug },
     include: {
       trivia: { orderBy: { order: 'asc' } },
-      premiereDates: { where: { type: 'VOD' }, select: { distributor: true }, orderBy: { createdAt: 'asc' }, take: 1 }
+      premiereDates: { select: { distributor: true }, orderBy: { createdAt: 'asc' }, take: 1 }
     }
   });
   if (!movie) return notFound();

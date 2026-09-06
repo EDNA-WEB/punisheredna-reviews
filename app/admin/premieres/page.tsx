@@ -22,6 +22,7 @@ export default async function AdminPremieresPage() {
       year: true,
       ageRating: true,
       tmdbId: true,
+      contentType: true,
       premiereDates: {
         orderBy: { releaseDate: 'asc' },
         select: { id: true, country: true, type: true, releaseDate: true, distributor: true }

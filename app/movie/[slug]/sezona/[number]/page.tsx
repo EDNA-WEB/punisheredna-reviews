@@ -61,7 +61,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
     include: {
       photos: { where: { episodeId: null }, orderBy: { order: 'asc' }, select: { id: true, thumbnail: true } },
       trivia: { orderBy: { order: 'asc' } },
-      premiereDates: { where: { type: 'VOD' }, select: { distributor: true }, orderBy: { createdAt: 'asc' }, take: 1 }
+      premiereDates: { select: { distributor: true }, orderBy: { createdAt: 'asc' }, take: 1 }
     }
   });
   if (!movie) return notFound();

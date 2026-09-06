@@ -11,6 +11,7 @@ type MovieItem = {
   year: string | null;
   ageRating: string | null;
   tmdbId: number | null;
+  contentType: string;
   premiereDates: { id: string; country: string; type?: string; releaseDate: string | Date; distributor: string | null }[];
 };
 
@@ -83,9 +84,11 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   }
 
   function addRow(movieId: string) {
+    const movie = movies.find((m) => m.id === movieId);
+    const defaultType = movie?.contentType === 'Seriál' ? 'VOD' : 'KINO';
     setRowDrafts((prev) => ({
       ...prev,
-      [movieId]: [...(prev[movieId] || []), { country: 'CZ', type: 'KINO', releaseDate: '', distributor: '' }]
+      [movieId]: [...(prev[movieId] || []), { country: 'CZ', type: defaultType, releaseDate: '', distributor: '' }]
     }));
   }
 
