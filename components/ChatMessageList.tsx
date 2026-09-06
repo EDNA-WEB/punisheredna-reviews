@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import MessageImageReveal from './MessageImageReveal';
-import MessageAudioPlayer from './MessageAudioPlayer';
 import ChatAutoScroll from './ChatAutoScroll';
 import { getChatTheme } from '@/lib/chatTheme';
 
@@ -12,8 +10,6 @@ type RawMessage = {
   body: string | null;
   image: string | null;
   imageViewedAt: Date | null;
-  audio: string | null;
-  audioPlayedAt: Date | null;
   read: boolean;
   createdAt: string | Date;
 };
@@ -121,8 +117,15 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   }`}
                   style={mine && bubbleColor ? { backgroundColor: bubbleColor } : undefined}
                 >
-                  {(m.image || m.imageViewedAt) && <MessageImageReveal messageId={m.id} mine={mine} hasImage={!!m.image} />}
-                  {(m.audio || m.audioPlayedAt) && <MessageAudioPlayer messageId={m.id} mine={mine} hasAudio={!!m.audio} />}
+                  {m.image ? (
+                    <img src={m.image} alt="Príloha" className="rounded-xl max-h-64 mb-1.5" />
+                  ) : (
+                    m.imageViewedAt && (
+                      <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
+                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka bola zobrazená</span>
+                      </div>
+                    )
+                  )}
                   {m.body && <p className="text-sm whitespace-pre-wrap leading-snug">{m.body}</p>}
                   <div className={`flex items-center justify-end gap-1 mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>
                     <span className="text-[10px]">{createdAt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>

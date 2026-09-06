@@ -43,7 +43,7 @@ export default async function MessagesPage() {
     if (myDeletedAt && m.createdAt <= myDeletedAt) continue; // ja som si túto konverzáciu vymazal(a) po tento bod
 
     if (!conversations.has(other.id)) {
-      const lastText = m.audio ? '🎤 Hlasová správa' : m.image ? '📷 Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+      const lastText = m.image ? '📷 Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       conversations.set(other.id, {
         user: other,
         lastText,

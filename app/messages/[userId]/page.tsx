@@ -12,8 +12,11 @@ import ChatPolling from '@/components/ChatPolling';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
+import { deleteImageByUrl } from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
+
+const IMAGE_GRACE_PERIOD_MS = 60 * 1000; // 1 minúta
 
 export default async function ConversationPage({ params }: { params: { userId: string } }) {
   const session = await getServerSession(authOptions);
@@ -49,8 +52,27 @@ export default async function ConversationPage({ params }: { params: { userId: s
       ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, audio: true, audioPlayedAt: true, read: true, createdAt: true }
+    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
   });
+
+  // Fotka sa teraz zobrazuje priamo, bez potreby na ňu klikať. "Hodiny" (1
+  // minúta) sa spustia hneď, ako si ju príjemca prvýkrát otvorí túto
+  // konverzáciu. Po uplynutí tej minúty sa fotka naozaj vymaže — aj z
+  // Cloudinary (nie len z databázy), nech tam nezostáva zabraté miesto navždy.
+  const now = Date.now();
+  for (const m of rawMessages) {
+    if (!m.image) continue;
+
+    if (m.receiverId === myId && !m.imageViewedAt) {
+      const viewedAt = new Date();
+      await prisma.message.update({ where: { id: m.id }, data: { imageViewedAt: viewedAt } });
+      m.imageViewedAt = viewedAt;
+    } else if (m.imageViewedAt && now - m.imageViewedAt.getTime() > IMAGE_GRACE_PERIOD_MS) {
+      await deleteImageByUrl(m.image);
+      await prisma.message.update({ where: { id: m.id }, data: { image: null } });
+      m.image = null;
+    }
+  }
 
   // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
   // na to, aké zariadenie si používateľ práve otvoril.
