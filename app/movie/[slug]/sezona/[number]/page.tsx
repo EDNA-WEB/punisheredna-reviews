@@ -61,11 +61,11 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
     include: {
       photos: { where: { episodeId: null }, orderBy: { order: 'asc' }, select: { id: true, thumbnail: true } },
       trivia: { orderBy: { order: 'asc' } },
-      streamingServices: { include: { streamingService: { select: { name: true } } }, take: 1 }
+      premiereDates: { where: { type: 'VOD' }, select: { distributor: true }, orderBy: { createdAt: 'asc' }, take: 1 }
     }
   });
   if (!movie) return notFound();
-  const distributorName = movie.streamingServices[0]?.streamingService.name || null;
+  const distributorName = movie.premiereDates[0]?.distributor || null;
 
   const season = await prisma.season.findUnique({
     where: { movieId_number: { movieId: movie.id, number: Number(params.number) } },
