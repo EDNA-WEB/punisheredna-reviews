@@ -100,7 +100,12 @@ export async function POST(req: Request) {
 
     let audioUrl = audio || null;
     if (audioUrl && audioUrl.startsWith('data:')) {
-      audioUrl = await uploadAudio(audioUrl, 'messages/hlasovky');
+      try {
+        audioUrl = await uploadAudio(audioUrl, 'messages/hlasovky');
+      } catch (uploadErr: any) {
+        console.error('[messages] Nahratie hlasovky na Cloudinary zlyhalo:', uploadErr?.message || uploadErr);
+        return NextResponse.json({ error: `Nahratie hlasovky zlyhalo: ${uploadErr?.message || 'neznáma chyba'}` }, { status: 500 });
+      }
     }
 
     // Text sa šifruje priamo tu, na serveri — spoľahlivo, bez závislosti na

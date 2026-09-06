@@ -24,7 +24,7 @@ export async function uploadImage(dataUrlOrUrl: string, folder: string): Promise
 export async function uploadAudio(dataUrlOrUrl: string, folder: string): Promise<string> {
   const result = await cloudinary.uploader.upload(dataUrlOrUrl, {
     folder: `punisheredna/${folder}`,
-    resource_type: 'video'
+    resource_type: 'auto'
   });
   return result.secure_url;
 }

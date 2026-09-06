@@ -73,13 +73,20 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
+        streamRef.current?.getTracks().forEach((tr) => tr.stop());
+
+        if (recordedChunksRef.current.length === 0) {
+          setError('Nahrávka je prázdna — skús to prosím znova, nahrávaj aspoň 1-2 sekundy.');
+          return;
+        }
+
         // Použijeme presne ten formát, čo nahrávač skutočne použil (recorder.mimeType)
         // — nie natvrdo predpokladaný — nech súbor vždy zodpovedá svojmu skutočnému obsahu.
         const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
         const reader = new FileReader();
         reader.onload = () => setAudio(reader.result as string);
+        reader.onerror = () => setError('Nahrávku sa nepodarilo spracovať. Skús to prosím znova.');
         reader.readAsDataURL(blob);
-        streamRef.current?.getTracks().forEach((tr) => tr.stop());
       };
       mediaRecorderRef.current = recorder;
       recorder.start();
@@ -102,9 +109,14 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
   }
 
   function stopRecording() {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
+    setError('');
     if (recordTimerRef.current) clearInterval(recordTimerRef.current);
+    setRecording(false);
+    try {
+      mediaRecorderRef.current?.stop();
+    } catch {
+      setError('Nahrávanie sa nepodarilo ukončiť. Skús to prosím znova.');
+    }
   }
 
   function cancelRecording() {
@@ -128,7 +140,14 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ receiverId, body: text.trim() || null, image, audio })
       });
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        // Server odpovedal niečím iným než JSON (napr. príliš veľká požiadavka) —
+        // aspoň takto vieme používateľovi povedať niečo konkrétnejšie.
+        throw new Error(res.status === 413 ? 'Súbor je príliš veľký na odoslanie.' : `Server odpovedal neočakávane (${res.status}).`);
+      }
       if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));
       setText('');
       setImage('');
