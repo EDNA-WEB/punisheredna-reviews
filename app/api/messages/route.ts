@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
-import { uploadImage } from '@/lib/cloudinary';
+import { uploadImage, uploadAudio } from '@/lib/cloudinary';
 import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
 
@@ -18,12 +18,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
     }
 
-    const { receiverId, body, image } = await req.json();
+    const { receiverId, body, image, audio } = await req.json();
 
     if (!receiverId || receiverId === senderId) {
       return NextResponse.json({ error: 'Neplatný príjemca.' }, { status: 400 });
     }
-    if ((!body || !String(body).trim()) && !image) {
+    if ((!body || !String(body).trim()) && !image && !audio) {
       return NextResponse.json({ error: 'Správa nemôže byť prázdna.' }, { status: 400 });
     }
     if (body && String(body).length > 3000) {
@@ -80,9 +80,27 @@ export async function POST(req: Request) {
       }
     }
 
+    // Hlasovú správu môže poslať len raz za 5 minút.
+    if (audio) {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const recentAudio = await prisma.message.findFirst({
+        where: { senderId, audio: { not: null }, createdAt: { gte: fiveMinutesAgo } },
+        orderBy: { createdAt: 'desc' }
+      });
+      if (recentAudio) {
+        const waitMinutes = Math.ceil((recentAudio.createdAt.getTime() + 5 * 60 * 1000 - Date.now()) / 60000);
+        return NextResponse.json({ error: `Hlasovú správu môžeš poslať len raz za 5 minút. Skús to znova o ${waitMinutes} min.` }, { status: 429 });
+      }
+    }
+
     let imageUrl = image || null;
     if (imageUrl && imageUrl.startsWith('data:image')) {
       imageUrl = await uploadImage(imageUrl, 'messages');
+    }
+
+    let audioUrl = audio || null;
+    if (audioUrl && audioUrl.startsWith('data:')) {
+      audioUrl = await uploadAudio(audioUrl, 'messages/hlasovky');
     }
 
     // Text sa šifruje priamo tu, na serveri — spoľahlivo, bez závislosti na
@@ -101,7 +119,8 @@ export async function POST(req: Request) {
         receiverId,
         body: encryptedBody,
         iv,
-        image: imageUrl
+        image: imageUrl,
+        audio: audioUrl
       }
     });
 

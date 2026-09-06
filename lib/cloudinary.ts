@@ -19,6 +19,16 @@ export async function uploadImage(dataUrlOrUrl: string, folder: string): Promise
   return result.secure_url;
 }
 
+// Nahrá zvukovú nahrávku (hlasová správa) — Cloudinary spracúva zvuk cez ten
+// istý "video" pipeline (bežný postup, aj bez obrazovej zložky).
+export async function uploadAudio(dataUrlOrUrl: string, folder: string): Promise<string> {
+  const result = await cloudinary.uploader.upload(dataUrlOrUrl, {
+    folder: `punisheredna/${folder}`,
+    resource_type: 'video'
+  });
+  return result.secure_url;
+}
+
 // Vygeneruje adresu MINIATÚRY z už nahraného obrázka — nenahráva sa druhý
 // súbor, len sa do tej istej Cloudinary adresy vloží transformačný parameter
 // (zmenšenie na šírku "width"). Cloudinary si zmenšenú verziu vygeneruje a

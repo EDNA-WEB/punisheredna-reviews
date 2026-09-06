@@ -23,7 +23,7 @@ export async function GET() {
   for (const m of messages) {
     const other = m.senderId === myId ? m.receiver : m.sender;
     if (!map.has(other.id)) {
-      const lastText = m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+      const lastText = m.audio ? '🎤 Hlasová správa' : m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       map.set(other.id, {
         userId: other.id,
         name: other.name,

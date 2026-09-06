@@ -775,6 +775,8 @@ model Message {
   iv         String?
   image      String?  @db.Text
   imageViewedAt DateTime?
+  audio      String?  @db.Text
+  audioPlayedAt DateTime?
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
   sender     User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)

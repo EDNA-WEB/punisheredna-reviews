@@ -49,7 +49,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
       ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
+    select: { id: true, senderId: true, body: true, iv: true, image: true, imageViewedAt: true, audio: true, audioPlayedAt: true, read: true, createdAt: true }
   });
 
   // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
