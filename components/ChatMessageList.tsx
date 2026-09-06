@@ -60,8 +60,8 @@ export default function ChatMessageList({
   function handleResetKey() {
     if (!confirm('Obnoviť šifrovací kľúč tohto zariadenia? Staré nedešifrovateľné správy sa tým nezachránia, ale nové správy od tohto bodu už budú fungovať správne.')) return;
     setResettingKey(true);
-    resetMyKeyPair();
-    ensureMyKeyPair()
+    resetMyKeyPair(myId);
+    ensureMyKeyPair(myId)
       .then(() => window.location.reload())
       .catch(() => {
         alert('Obnova zlyhala. Skús to prosím znova.');
@@ -128,7 +128,7 @@ export default function ChatMessageList({
           if (!otherPublicKey) {
             setKeyError(true);
           } else {
-            const myPrivateKey = await ensureMyKeyPair();
+            const myPrivateKey = await ensureMyKeyPair(myId);
             const sharedKey = await deriveSharedKey(myPrivateKey, otherPublicKey);
             let failures = 0;
             for (const m of encrypted) {
@@ -144,7 +144,7 @@ export default function ChatMessageList({
         } else {
           // Aj keď nie sú žiadne šifrované správy na dešifrovanie, zabezpečíme
           // aspoň, že toto zariadenie má svoj kľúč pripravený pre budúce správy.
-          await ensureMyKeyPair().catch(() => {});
+          await ensureMyKeyPair(myId).catch(() => {});
         }
 
         if (!cancelled) {

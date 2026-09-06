@@ -33,7 +33,7 @@ export default function MessagesListClient({ conversations, myId }: { conversati
             continue;
           }
           try {
-            const myPrivateKey = await ensureMyKeyPair();
+            const myPrivateKey = await ensureMyKeyPair(myId);
             const sharedKey = await deriveSharedKey(myPrivateKey, c.user.publicKey);
             results[c.user.id] = await decryptText(sharedKey, c.lastBody, c.lastIv);
           } catch {

@@ -98,7 +98,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
         <ChatMessageList messages={messages} myId={myId} otherId={other.id} otherPublicKey={other.publicKey} />
       </div>
 
-      <MessageForm receiverId={other.id} receiverPublicKey={other.publicKey} disabledReason={disabledReason} />
+      <MessageForm receiverId={other.id} receiverPublicKey={other.publicKey} myId={myId} disabledReason={disabledReason} />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import EmojiPicker from './EmojiPicker';
 import { ensureMyKeyPair, deriveSharedKey, encryptText } from '@/lib/e2ee';
 import { useT } from './TranslationProvider';
 
-export default function MessageForm({ receiverId, receiverPublicKey, disabledReason }: { receiverId: string; receiverPublicKey: string | null; disabledReason?: string | null }) {
+export default function MessageForm({ receiverId, receiverPublicKey, myId, disabledReason }: { receiverId: string; receiverPublicKey: string | null; myId: string; disabledReason?: string | null }) {
   const t = useT();
   const router = useRouter();
   const [text, setText] = useState('');
@@ -49,7 +49,7 @@ export default function MessageForm({ receiverId, receiverPublicKey, disabledRea
       // Ak druhá strana už má nastavené šifrovanie, text zašifrujeme priamo v
       // prehliadači — na server ide už len nezmyselný, zašifrovaný text.
       if (payloadBody && receiverPublicKey) {
-        const myPrivateKey = await ensureMyKeyPair();
+        const myPrivateKey = await ensureMyKeyPair(myId);
         const sharedKey = await deriveSharedKey(myPrivateKey, receiverPublicKey);
         const encrypted = await encryptText(sharedKey, payloadBody);
         payloadBody = encrypted.ciphertext;
@@ -57,7 +57,7 @@ export default function MessageForm({ receiverId, receiverPublicKey, disabledRea
       } else if (payloadBody) {
         // Druhá strana ešte nikdy nenavštívila Poštu (nemá kľúč) — správa sa
         // pošle nezašifrovaná, aby konverzácia vôbec mohla začať.
-        await ensureMyKeyPair().catch(() => {});
+        await ensureMyKeyPair(myId).catch(() => {});
       }
 
       const res = await fetch('/api/messages', {
