@@ -476,3 +476,26 @@ export function IconShoppingCart({ className = 'w-4 h-4' }: { className?: string
     </svg>
   );
 }
+
+export function IconCake({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8" />
+      <path d="M4 16s.5-1 2-1 2 1 3.5 1 2-1 3.5-1 2 1 3.5 1 2-1 3.5-1 2 1 2 1" />
+      <line x1="12" y1="11" x2="12" y2="4" />
+      <path d="M9 4a1.5 1.5 0 0 1 3 0 1.5 1.5 0 0 0 3 0" />
+      <line x1="4" y1="21" x2="20" y2="21" />
+    </svg>
+  );
+}
+
+export function IconCandle({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M9 18h6" />
+      <rect x="9" y="10" width="6" height="8" rx="1" />
+      <path d="M12 10V5" />
+      <path d="M12 5c-1.2-1.2-1.2-2.8 0-4 1.2 1.2 1.2 2.8 0 4z" />
+    </svg>
+  );
+}

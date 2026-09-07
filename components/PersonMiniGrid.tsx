@@ -34,12 +34,9 @@ export default function PersonMiniGrid({
           >
             <div className="relative mb-1.5">
               <div
-                className="w-16 h-16 rounded-lg bg-line bg-cover bg-center group-hover:ring-2 group-hover:ring-accent transition-all"
+                className="w-16 h-16 rounded-lg bg-line bg-cover bg-center shadow-sm group-hover:shadow-md group-hover:ring-2 group-hover:ring-accent transition-all"
                 style={p.photo ? { backgroundImage: `url('${p.photo}')` } : undefined}
               />
-              <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-accent text-white text-[10px] font-extrabold flex items-center justify-center border-2 border-white">
-                {i + 1}
-              </span>
             </div>
             <span className="text-xs font-semibold text-ink leading-tight group-hover:text-accent transition-colors">{p.name}</span>
           </Link>

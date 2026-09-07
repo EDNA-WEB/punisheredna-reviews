@@ -9,6 +9,8 @@ import PremieresList from '@/components/PremieresList';
 import MovieMiniList from '@/components/MovieMiniList';
 import ReviewPreviewCard from '@/components/ReviewPreviewCard';
 import PersonMiniGrid from '@/components/PersonMiniGrid';
+import PersonMemorialGrid from '@/components/PersonMemorialGrid';
+import { IconCake, IconCandle } from '@/components/Icons';
 import TopVideosList from '@/components/TopVideosList';
 import TopVisitedUsersList from '@/components/TopVisitedUsersList';
 import { getVerifiedCriticIds } from '@/lib/criticStatus';
@@ -142,8 +144,8 @@ export default async function HomePage() {
 
   // "Dnes slávia narodeniny" — zhoda mesiaca a dňa narodenia s dneškom, bez
   // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo.
-  const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null }[]>`
-    SELECT id, name, slug, photo FROM "Person"
+  const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null; birthDate: Date | null; deathDate: Date | null }[]>`
+    SELECT id, name, slug, photo, "birthDate", "deathDate" FROM "Person"
     WHERE approved = true
       AND "deathDate" IS NULL
       AND "birthDate" IS NOT NULL
@@ -157,7 +159,7 @@ export default async function HomePage() {
     where: { approved: true, deathDate: { not: null } },
     orderBy: { deathDate: 'desc' },
     take: 12,
-    select: { id: true, name: true, slug: true, photo: true }
+    select: { id: true, name: true, slug: true, photo: true, birthDate: true, deathDate: true }
   });
 
   const firstGenre = (g: string | null) => (g || '').split(',').map((x) => x.trim()).filter(Boolean)[0] || null;
@@ -365,12 +367,22 @@ export default async function HomePage() {
         <div className="mt-6 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
           {birthdaysToday.length > 0 && (
             <div className="p-4">
-              <PersonMiniGrid title="🎂 Dnes slávia narodeniny" items={birthdaysToday} noWrapper />
+              <PersonMemorialGrid
+                title="Dnes slávia narodeniny"
+                icon={<IconCake className="w-4 h-4 text-accent" />}
+                items={birthdaysToday}
+                mode="birthday"
+              />
             </div>
           )}
           {recentlyDeceased.length > 0 && (
             <div className="p-4">
-              <PersonMiniGrid title="Naposledy zomreli" items={recentlyDeceased} noWrapper />
+              <PersonMemorialGrid
+                title="Naposledy zomreli"
+                icon={<IconCandle className="w-4 h-4 text-muted" />}
+                items={recentlyDeceased}
+                mode="death"
+              />
             </div>
           )}
         </div>
