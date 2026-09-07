@@ -2,11 +2,21 @@ import Link from 'next/link';
 
 type Item = { id: string; name: string; slug: string; photo: string | null };
 
-export default function PersonMiniGrid({ title, items, moreHref }: { title: string; items: Item[]; moreHref?: string }) {
+export default function PersonMiniGrid({
+  title,
+  items,
+  moreHref,
+  noWrapper
+}: {
+  title: string;
+  items: Item[];
+  moreHref?: string;
+  noWrapper?: boolean;
+}) {
   if (items.length === 0) return null;
 
-  return (
-    <div className="border border-line rounded-xl p-4 bg-card min-w-0">
+  const content = (
+    <>
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-display font-bold text-sm text-ink">{title}</h3>
         {moreHref && (
@@ -35,6 +45,10 @@ export default function PersonMiniGrid({ title, items, moreHref }: { title: stri
           </Link>
         ))}
       </div>
-    </div>
+    </>
   );
+
+  if (noWrapper) return <div className="min-w-0">{content}</div>;
+
+  return <div className="border border-line rounded-xl p-4 bg-card min-w-0">{content}</div>;
 }

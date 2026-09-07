@@ -140,6 +140,26 @@ export default async function HomePage() {
     })
   ]);
 
+  // "Dnes slávia narodeniny" — zhoda mesiaca a dňa narodenia s dneškom, bez
+  // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo.
+  const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null }[]>`
+    SELECT id, name, slug, photo FROM "Person"
+    WHERE approved = true
+      AND "deathDate" IS NULL
+      AND "birthDate" IS NOT NULL
+      AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM "birthDate") = EXTRACT(DAY FROM CURRENT_DATE)
+    ORDER BY name ASC
+    LIMIT 12
+  `;
+
+  const recentlyDeceased = await prisma.person.findMany({
+    where: { approved: true, deathDate: { not: null } },
+    orderBy: { deathDate: 'desc' },
+    take: 12,
+    select: { id: true, name: true, slug: true, photo: true }
+  });
+
   const firstGenre = (g: string | null) => (g || '').split(',').map((x) => x.trim()).filter(Boolean)[0] || null;
 
   return (
@@ -327,9 +347,32 @@ export default async function HomePage() {
       )}
 
       {(topActors.length > 0 || topCreators.length > 0) && (
-        <div className="mt-8 grid gap-6 min-w-0">
-          <PersonMiniGrid title={t('home.najsledovanejsi_herci')} items={topActors} moreHref="/herci" />
-          <PersonMiniGrid title={t('home.najsledovanejsi_tvorcovia')} items={topCreators} moreHref="/tvorcovia" />
+        <div className="mt-8 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
+          {topActors.length > 0 && (
+            <div className="p-4">
+              <PersonMiniGrid title={t('home.najsledovanejsi_herci')} items={topActors} moreHref="/herci" noWrapper />
+            </div>
+          )}
+          {topCreators.length > 0 && (
+            <div className="p-4">
+              <PersonMiniGrid title={t('home.najsledovanejsi_tvorcovia')} items={topCreators} moreHref="/tvorcovia" noWrapper />
+            </div>
+          )}
+        </div>
+      )}
+
+      {(birthdaysToday.length > 0 || recentlyDeceased.length > 0) && (
+        <div className="mt-6 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
+          {birthdaysToday.length > 0 && (
+            <div className="p-4">
+              <PersonMiniGrid title="🎂 Dnes slávia narodeniny" items={birthdaysToday} noWrapper />
+            </div>
+          )}
+          {recentlyDeceased.length > 0 && (
+            <div className="p-4">
+              <PersonMiniGrid title="Naposledy zomreli" items={recentlyDeceased} noWrapper />
+            </div>
+          )}
         </div>
       )}
 
