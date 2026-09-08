@@ -76,6 +76,31 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
   const [chinaBoxOffice, setChinaBoxOffice] = useState(initial?.chinaBoxOffice?.toString() || '');
   const [ancillaryRevenue, setAncillaryRevenue] = useState(initial?.ancillaryRevenue?.toString() || '');
   const [tmdbId] = useState(initial?.tmdbId || null);
+  const [importingCast, setImportingCast] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importSuccessCount, setImportSuccessCount] = useState<number | null>(null);
+
+  async function handleImportCast() {
+    if (!initial?.id) return;
+    setImportingCast(true);
+    setImportError('');
+    setImportSuccessCount(null);
+    try {
+      const res = await fetch(`/api/admin/movies/${initial.id}/import-cast`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+      setDirector(data.director || '');
+      setScreenplay(data.screenplay || '');
+      setCinematography(data.cinematography || '');
+      setMusic(data.music || '');
+      setCast(data.cast || '');
+      setImportSuccessCount(data.importedCount ?? null);
+    } catch (err: any) {
+      setImportError(err.message || 'Import zlyhal.');
+    } finally {
+      setImportingCast(false);
+    }
+  }
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -270,6 +295,27 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
           <input type="number" className="field-input" value={runtimeMinutes} onChange={(e) => setRuntimeMinutes(e.target.value)} placeholder="172" />
         </div>
       </div>
+
+      {initial?.id && tmdbId && (
+        <div className="border border-line rounded-xl p-4 bg-surface">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div className="text-sm font-semibold text-ink">Automatický import obsadenia</div>
+              <div className="text-xs text-muted">Natiahne réžiu, scenár, kameru, hudbu a hercov priamo z TMDb — nové osoby sa automaticky vytvoria, existujúce sa len použijú.</div>
+            </div>
+            <button
+              type="button"
+              onClick={handleImportCast}
+              disabled={importingCast}
+              className="flex-none bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
+            >
+              {importingCast ? 'Importujem…' : 'Importovať z TMDb'}
+            </button>
+          </div>
+          {importError && <p className="text-danger text-xs mt-2">{importError}</p>}
+          {importSuccessCount !== null && <p className="text-accent text-xs mt-2 font-semibold">Hotovo — spracovaných {importSuccessCount} osôb.</p>}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>

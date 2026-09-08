@@ -225,6 +225,37 @@ export async function tmdbGetPersonPopularity(tmdbId: number): Promise<number | 
 // zistenie, či popri hercovi hral aj niekto, koho už máme u nás vo vlastnej
 // databáze osôb (rozumný odhad "známeho" spoluherca, bez potreby subjektívne
 // vymýšľať, kto je slávny).
+export type MovieCastCrew = {
+  cast: { tmdbId: number; name: string; order: number }[];
+  director: { tmdbId: number; name: string }[];
+  screenplay: { tmdbId: number; name: string }[];
+  cinematography: { tmdbId: number; name: string }[];
+  music: { tmdbId: number; name: string }[];
+};
+
+// Kompletné obsadenie a hlavný štáb filmu z TMDb — na automatické doplnenie
+// polí réžia/scenár/kamera/hudba/herci priamo pri filme, bez ručného prepisovania.
+export async function tmdbGetMovieCastCrew(movieId: number): Promise<MovieCastCrew> {
+  const url = `${TMDB_BASE}/movie/${movieId}/credits`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return { cast: [], director: [], screenplay: [], cinematography: [], music: [] };
+  const d = await res.json();
+
+  const cast = (d.cast || []).slice(0, 15).map((c: any) => ({ tmdbId: c.id, name: c.name, order: c.order }));
+  const crew: any[] = d.crew || [];
+
+  const byJob = (jobs: string[]) =>
+    crew.filter((c) => jobs.includes(c.job)).map((c) => ({ tmdbId: c.id, name: c.name }));
+
+  return {
+    cast,
+    director: byJob(['Director']),
+    screenplay: byJob(['Screenplay', 'Writer', 'Story']),
+    cinematography: byJob(['Director of Photography']),
+    music: byJob(['Original Music Composer'])
+  };
+}
+
 export async function tmdbGetMovieTopCast(movieId: number): Promise<{ tmdbId: number; name: string; order: number }[]> {
   const url = `${TMDB_BASE}/movie/${movieId}/credits`;
   const res = await fetch(url, { headers: tmdbHeaders() });
