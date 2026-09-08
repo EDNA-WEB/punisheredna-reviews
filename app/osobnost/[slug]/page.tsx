@@ -82,7 +82,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
 
   // Štatistiky kariéry — počítané výhradne z filmov, čo máme reálne u nás v databáze.
   const yearsWithData = movies.map((m) => parseInt(m.year || '', 10)).filter((y) => !isNaN(y));
-  const careerSpan = yearsWithData.length > 0 ? `${Math.min(...yearsWithData)}–${Math.max(...yearsWithData)}` : null;
+  const careerSpan = yearsWithData.length > 0 ? `${Math.min(...yearsWithData)}–${isDead ? new Date(person.deathDate!).getFullYear() : 'súčasnosť'}` : null;
   const topRated = [...movies]
     .map((m) => ({ title: m.title, percent: computePercent(m.ratings) }))
     .filter((m) => m.percent !== null)
@@ -107,37 +107,53 @@ export default async function PersonPage({ params }: { params: { slug: string } 
       {/* Hlavička — na celú šírku */}
       <div className="border border-line rounded-xl bg-card p-5 sm:p-6 mb-4">
         <div className="flex items-start gap-6 flex-wrap">
-          <div className="relative flex-none">
-            <div
-              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-surface bg-cover bg-center shadow-sm ring-4 ring-surface"
-              style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined}
-            />
-            {popularity !== null && (
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] font-bold text-white bg-accent px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm">
-                {popularity.toFixed(0)} pop.
-              </span>
-            )}
-          </div>
+          <div className="w-32 h-44 sm:w-40 sm:h-56 rounded-xl bg-surface bg-cover bg-center shadow-md flex-none" style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined} />
           <div className="flex-1 min-w-[240px]">
-            <h1 className="font-display font-extrabold text-3xl text-ink mb-2">{person.name}</h1>
+            <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
+              <h1 className="font-display font-extrabold text-3xl text-ink">{person.name}</h1>
+              {popularity !== null && (
+                <div className="flex-none text-center bg-surface border border-line rounded-lg px-3 py-1.5">
+                  <div className="font-display font-bold text-lg text-accent leading-none">{popularity.toFixed(0)}</div>
+                  <div className="text-[10px] text-muted mt-0.5 uppercase tracking-wide">Popularita</div>
+                </div>
+              )}
+            </div>
             <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">
               {person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}
             </span>
 
-            <div className="text-sm text-muted space-y-0.5 mb-4">
+            <div className="text-sm text-ink space-y-1.5 mb-4">
               {person.birthDate && (
                 <div>
-                  Narodený/-á {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  {person.birthPlace && ` · ${person.birthPlace}`}
-                  {age !== null && !isDead && ` · ${age} rokov`}
+                  <span className="text-muted">Narodený/-á:</span> {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </div>
+              )}
+              {person.birthPlace && (
+                <div>
+                  <span className="text-muted">Miesto narodenia:</span> {person.birthPlace}
+                </div>
+              )}
+              {age !== null && !isDead && (
+                <div>
+                  <span className="text-muted">Vek:</span> {age} rokov
                 </div>
               )}
               {isDead && (
-                <div>
-                  Zomrel/-a {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  {person.deathPlace && ` · ${person.deathPlace}`}
-                  {age !== null && ` · dožil/-a sa ${age} rokov`}
-                </div>
+                <>
+                  <div>
+                    <span className="text-muted">Zomrel/-a:</span> {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                  {person.deathPlace && (
+                    <div>
+                      <span className="text-muted">Miesto úmrtia:</span> {person.deathPlace}
+                    </div>
+                  )}
+                  {age !== null && (
+                    <div>
+                      <span className="text-muted">Dožil/-a sa:</span> {age} rokov
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

@@ -62,35 +62,39 @@ export default function PersonFilmographyTabs({ categories }: { categories: Cate
         </div>
       </div>
 
-      <div className="p-4 space-y-5 max-h-[520px] overflow-y-auto">
+      <div className="p-4 space-y-6 max-h-[640px] overflow-y-auto">
         {grouped.length === 0 ? (
           <p className="text-sm text-muted text-center py-6">Nič nenájdené.</p>
         ) : (
           grouped.map(([year, items]) => (
             <div key={year}>
-              <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">{year}</div>
-              <div className="space-y-2">
+              <div className="text-sm font-bold text-ink mb-3">{year}</div>
+              <div className="flex flex-wrap gap-4">
                 {items.map((item, i) => {
                   const content = (
-                    <div className="flex items-center gap-3 group">
-                      <div
-                        className="w-10 h-14 rounded-md bg-surface bg-cover bg-center border border-line flex-none transition-transform group-hover:scale-105"
-                        style={item.poster ? { backgroundImage: `url('${item.poster}')` } : undefined}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className={`text-sm font-semibold leading-snug truncate ${item.ourSlug ? 'text-accent group-hover:underline' : 'text-ink'}`}>
-                          {item.title}
-                        </div>
-                        {item.roleLabel && <div className="text-xs text-muted truncate">{item.roleLabel}</div>}
+                    <>
+                      <div className="relative rounded-xl overflow-hidden bg-surface aspect-[2/3] mb-1.5 w-28 sm:w-32">
+                        {item.poster && (
+                          <div
+                            className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]"
+                            style={{ backgroundImage: `url('${item.poster}')` }}
+                          />
+                        )}
                       </div>
-                    </div>
+                      <div className={`text-sm font-semibold leading-snug w-28 sm:w-32 ${item.ourSlug ? 'text-accent group-hover:underline' : 'text-ink'}`}>
+                        {item.title}
+                      </div>
+                      {item.roleLabel && <div className="text-xs text-muted w-28 sm:w-32">{item.roleLabel}</div>}
+                    </>
                   );
                   return item.ourSlug ? (
-                    <Link key={`${item.tmdbId}-${i}`} href={`/movie/${item.ourSlug}`} className="block">
+                    <Link key={`${item.tmdbId}-${i}`} href={`/movie/${item.ourSlug}`} className="block group flex-none">
                       {content}
                     </Link>
                   ) : (
-                    <div key={`${item.tmdbId}-${i}`}>{content}</div>
+                    <div key={`${item.tmdbId}-${i}`} className="block group flex-none">
+                      {content}
+                    </div>
                   );
                 })}
               </div>

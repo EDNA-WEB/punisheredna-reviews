@@ -34,6 +34,7 @@ export default function PersonProfileMain({
   ].filter((s) => s.enabled);
 
   const [active, setActive] = useState(sections[0].key);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const knownFor = [...movies]
     .map((m) => ({ ...m, percent: m.ratings ? computePercent(m.ratings) : null }))
@@ -140,8 +141,30 @@ export default function PersonProfileMain({
       {active === 'fotogaleria' && (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {photos.map((url, i) => (
-            <div key={i} className="rounded-lg bg-surface bg-cover bg-center aspect-[2/3]" style={{ backgroundImage: `url('${url}')` }} />
+            <button
+              key={i}
+              type="button"
+              onClick={() => setLightboxUrl(url)}
+              className="rounded-lg bg-surface bg-cover bg-center aspect-[2/3] hover:opacity-90 transition-opacity"
+              style={{ backgroundImage: `url('${url}')` }}
+            />
           ))}
+        </div>
+      )}
+
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxUrl(null)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+          >
+            ✕
+          </button>
+          <img src={lightboxUrl} alt="Fotka v plnej veľkosti" className="max-w-full max-h-full rounded-lg object-contain" />
         </div>
       )}
 
