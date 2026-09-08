@@ -7,11 +7,13 @@ import { authOptions } from '@/lib/auth';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PersonFollowButton from '@/components/PersonFollowButton';
+import PopularityBadge from '@/components/PopularityBadge';
 import PersonProfileMain from '@/components/PersonProfileMain';
 import { calculateAge } from '@/lib/personUtils';
 import { computePercent } from '@/lib/rating';
 import { prepareFilmographyCategories } from '@/lib/personFilmography';
 import { tmdbGetPersonImages, tmdbGetPersonPopularity } from '@/lib/tmdb';
+import { getCountryFlagUrl } from '@/lib/countryFlags';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,13 +80,20 @@ export default async function PersonPage({ params }: { params: { slug: string } 
   ]);
 
   const isDead = !!person.deathDate;
+  const countryFlag = getCountryFlagUrl(person.birthPlace);
   const age = person.birthDate ? calculateAge(new Date(person.birthDate), person.deathDate ? new Date(person.deathDate) : null) : null;
 
-  // Štatistiky kariéry — počítané výhradne z filmov, čo máme reálne u nás v databáze.
-  const yearsWithData = movies.map((m) => parseInt(m.year || '', 10)).filter((y) => !isNaN(y));
-  const careerSpan = yearsWithData.length > 0 ? `${Math.min(...yearsWithData)}–${isDead ? new Date(person.deathDate!).getFullYear() : 'súčasnosť'}` : null;
+  // Aktívne obdobie — počítané z CELEJ TMDb filmografie (nie len z tých pár
+  // filmov, čo máme aktuálne recenzované u nás), inak by pri hercovi s dlhou
+  // karierou, ale len jedným filmom u nás, vyšlo úplne nezmyselné obdobie.
+  const allFilmographyYears = (filmographyCategories || [])
+    .flatMap((c) => c.items)
+    .map((item) => parseInt(item.year || '', 10))
+    .filter((y) => !isNaN(y) && y > 1888); // 1888 = najstarší zachovaný film na svete, poistka proti chybným dátam
+  const careerSpan = allFilmographyYears.length > 0 ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : 'súčasnosť'}` : null;
+
   const topRated = [...movies]
-    .map((m) => ({ title: m.title, percent: computePercent(m.ratings) }))
+    .map((m) => ({ title: m.title, slug: m.slug, poster: m.poster, percent: computePercent(m.ratings) }))
     .filter((m) => m.percent !== null)
     .sort((a, b) => (b.percent ?? 0) - (a.percent ?? 0))[0] || null;
 
@@ -111,12 +120,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
           <div className="flex-1 min-w-[240px]">
             <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
               <h1 className="font-display font-extrabold text-3xl text-ink">{person.name}</h1>
-              {popularity !== null && (
-                <div className="flex-none text-center bg-surface border border-line rounded-lg px-3 py-1.5">
-                  <div className="font-display font-bold text-lg text-accent leading-none">{popularity.toFixed(0)}</div>
-                  <div className="text-[10px] text-muted mt-0.5 uppercase tracking-wide">Popularita</div>
-                </div>
-              )}
+              {popularity !== null && <PopularityBadge value={popularity} />}
             </div>
             <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">
               {person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}
@@ -129,8 +133,9 @@ export default async function PersonPage({ params }: { params: { slug: string } 
                 </div>
               )}
               {person.birthPlace && (
-                <div>
+                <div className="flex items-center gap-2">
                   <span className="text-muted">Miesto narodenia:</span> {person.birthPlace}
+                  {countryFlag && <img src={countryFlag.url} alt={countryFlag.countryName} className="h-3.5 w-auto rounded-sm shadow-sm" />}
                 </div>
               )}
               {age !== null && !isDead && (
@@ -182,9 +187,21 @@ export default async function PersonPage({ params }: { params: { slug: string } 
           <div className="font-display font-bold text-xl text-ink">{careerSpan || '—'}</div>
           <div className="text-[11px] text-muted mt-0.5">aktívne obdobie</div>
         </div>
-        <div className="p-4 text-center min-w-0">
-          <div className="font-display font-bold text-xl text-ink truncate">{topRated ? `${topRated.percent}%` : '—'}</div>
-          <div className="text-[11px] text-muted mt-0.5 truncate">{topRated ? topRated.title : 'najlepšie hodnotený titul'}</div>
+        <div className="p-3 min-w-0">
+          <div className="text-[11px] text-muted mb-1.5 text-center">Najúspešnejší titul</div>
+          {topRated ? (
+            <Link href={`/movie/${topRated.slug}`} className="flex items-center gap-2.5 group">
+              <div className="relative w-10 h-14 rounded-md overflow-hidden bg-surface flex-none">
+                {topRated.poster && <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${topRated.poster}')` }} />}
+                <span className="absolute bottom-0.5 left-0.5 text-[9px] font-extrabold text-white bg-accent rounded px-1 leading-tight">
+                  {topRated.percent}%
+                </span>
+              </div>
+              <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors leading-snug line-clamp-2">{topRated.title}</div>
+            </Link>
+          ) : (
+            <div className="text-center text-sm text-muted">—</div>
+          )}
         </div>
       </div>
 
