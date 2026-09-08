@@ -30,6 +30,27 @@ export default function MovieLinksAdmin({
   initialMovies: MovieItem[];
 }) {
   const [linkTypes, setLinkTypes] = useState(initialLinkTypes);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkResult, setBulkResult] = useState<{ added: number; notFound: number; remainingAfterThisBatch: number } | null>(null);
+  const [bulkError, setBulkError] = useState('');
+
+  async function handleBulkImportImdb() {
+    setBulkImporting(true);
+    setBulkError('');
+    try {
+      const res = await fetch('/api/admin/link-types/bulk-import-imdb', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+      setBulkResult(data);
+      // Obnovíme stránku, nech katalóg typov aj tabuľka filmov ukazujú nové odkazy hneď.
+      if (data.added > 0) window.location.reload();
+    } catch (err: any) {
+      setBulkError(err.message || 'Import zlyhal.');
+    } finally {
+      setBulkImporting(false);
+    }
+  }
+
   const [movies, setMovies] = useState(initialMovies);
 
   // --- Katalóg typov odkazov ---
@@ -156,6 +177,37 @@ export default function MovieLinksAdmin({
 
   return (
     <div className="max-w-3xl space-y-8">
+      {/* Hromadný import IMDb odkazov z TMDb */}
+      <div className="border border-line rounded-xl p-4 bg-surface">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div className="text-sm font-semibold text-ink">Hromadne pridať IMDb odkazy</div>
+            <div className="text-xs text-muted">
+              Prejde všetky filmy prepojené na TMDb, čo ešte nemajú uložený IMDb odkaz, a automaticky ho doplní. Typ odkazu "IMDb" sa
+              pri prvom spustení sám vytvorí, ak ešte neexistuje. Spracúva sa po dávkach — ak filmov je veľa, môže byť potrebné
+              tlačidlo stlačiť viackrát.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleBulkImportImdb}
+            disabled={bulkImporting}
+            className="flex-none bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+          >
+            {bulkImporting ? 'Importujem…' : 'Importovať z TMDb'}
+          </button>
+        </div>
+        {bulkError && <p className="text-danger text-xs mt-2">{bulkError}</p>}
+        {bulkResult && (
+          <p className="text-xs mt-2 font-semibold text-ink">
+            Pridaných {bulkResult.added}, nenájdených {bulkResult.notFound}.{' '}
+            {bulkResult.remainingAfterThisBatch > 0
+              ? `Zostáva ešte približne ${bulkResult.remainingAfterThisBatch} filmov — stlač tlačidlo znova.`
+              : 'Hotovo, žiadne ďalšie filmy nezostávajú.'}
+          </p>
+        )}
+      </div>
+
       {/* Katalóg typov odkazov */}
       <div className="border border-line rounded-xl p-4">
         <h2 className="text-sm font-bold text-ink mb-3">Katalóg typov odkazov</h2>

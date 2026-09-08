@@ -22,12 +22,14 @@ function fill(template: string, vars: Record<string, string | number>): string {
 // Pripraví "časovú os kariéry" — sériu významných bodov v kariére osoby.
 // Zámerne berie do úvahy LEN klasické filmy (TMDb "movie") — seriály, televízne
 // programy, ceremónie a podobné TV formáty do rebríčka nepatria.
-export async function buildCareerMilestones(tmdbId: number, role: 'ACTOR' | 'CREATOR', t: Translator): Promise<Milestone[]> {
+export async function buildCareerMilestones(tmdbId: number, role: 'ACTOR' | 'CREATOR', t: Translator, birthYear: number | null = null): Promise<Milestone[]> {
   const { asActor, asCrew } = await tmdbGetPersonFilmography(tmdbId);
   const combinedPool = role === 'ACTOR' && asActor.length > 0 ? asActor : [...asActor, ...asCrew];
 
   const pool = combinedPool.filter((m) => m.mediaType === 'movie');
-  const withYear = pool.filter((m) => m.year && !isNaN(parseInt(m.year, 10)));
+  // Poistka proti chybným TMDb dátam (napr. archívne zábery vo filme z obdobia
+  // pred narodením osoby) — taký film do časovej osi vôbec nezaraďujeme.
+  const withYear = pool.filter((m) => m.year && !isNaN(parseInt(m.year, 10)) && (birthYear === null || parseInt(m.year, 10) >= birthYear));
   if (withYear.length === 0) return [];
 
   const byYearAsc = [...withYear].sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10));

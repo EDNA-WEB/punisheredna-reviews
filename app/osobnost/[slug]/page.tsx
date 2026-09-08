@@ -87,7 +87,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null),
     person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null),
     findFrequentCollaborators(person.name, movieIds, person.id),
-    person.tmdbId ? buildCareerMilestones(person.tmdbId, person.role, t) : Promise.resolve([])
+    person.tmdbId ? buildCareerMilestones(person.tmdbId, person.role, t, person.birthDate ? new Date(person.birthDate).getFullYear() : null) : Promise.resolve([])
   ]);
 
   const isDead = !!person.deathDate;
@@ -97,10 +97,14 @@ export default async function PersonPage({ params }: { params: { slug: string } 
   // Aktívne obdobie — počítané z CELEJ TMDb filmografie (nie len z tých pár
   // filmov, čo máme aktuálne recenzované u nás), inak by pri hercovi s dlhou
   // karierou, ale len jedným filmom u nás, vyšlo úplne nezmyselné obdobie.
+  // Dôležitá poistka: TMDb občas eviduje osobu aj pri filme z obdobia PRED jej
+  // narodením (napr. archívne zábery použité v dokumente, alebo chybný záznam)
+  // — taký rok jednoducho nemôže byť reálny, preto ho vyradíme.
+  const earliestPossibleYear = person.birthDate ? new Date(person.birthDate).getFullYear() : 1888; // 1888 = najstarší zachovaný film na svete, ak dátum narodenia nepoznáme
   const allFilmographyYears = (filmographyCategories || [])
     .flatMap((c) => c.items)
     .map((item) => parseInt(item.year || '', 10))
-    .filter((y) => !isNaN(y) && y > 1888); // 1888 = najstarší zachovaný film na svete, poistka proti chybným dátam
+    .filter((y) => !isNaN(y) && y >= earliestPossibleYear);
   const careerSpan = allFilmographyYears.length > 0 ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : t('person.sucasnost', 'súčasnosť')}` : null;
 
   const topRated = [...movies]
