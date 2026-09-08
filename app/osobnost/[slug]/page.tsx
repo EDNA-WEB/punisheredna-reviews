@@ -75,7 +75,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
   const age = person.birthDate ? calculateAge(new Date(person.birthDate), person.deathDate ? new Date(person.deathDate) : null) : null;
 
   return (
-    <div className="pt-8 max-w-2xl mx-auto">
+    <div className="pt-8">
       {person.approved && (
         <script
           type="application/ld+json"
@@ -89,48 +89,35 @@ export default async function PersonPage({ params }: { params: { slug: string } 
           Tento profil ešte čaká na schválenie administrátorom. Vidíš ho len ty (a admin).
         </div>
       )}
-      <div className="border border-line rounded-xl bg-card p-5 mb-6">
-        <div className="flex items-start gap-5 flex-wrap">
+
+      {/* Hlavička — na celú šírku, nad dvojstĺpcovým rozložením */}
+      <div className="border border-line rounded-xl bg-card p-5 sm:p-6 mb-6">
+        <div className="flex items-start gap-6 flex-wrap">
           <div
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-surface bg-cover bg-center flex-none shadow-sm ring-4 ring-surface"
+            className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-surface bg-cover bg-center flex-none shadow-sm ring-4 ring-surface"
             style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined}
           />
-          <div className="flex-1 min-w-[200px]">
-            <h1 className="font-display font-extrabold text-2xl text-ink mb-2">{person.name}</h1>
-            <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-3">
+          <div className="flex-1 min-w-[240px]">
+            <h1 className="font-display font-extrabold text-3xl text-ink mb-2">{person.name}</h1>
+            <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">
               {person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}
             </span>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-2 mb-3">
+            <div className="flex flex-wrap gap-x-8 gap-y-3 mb-4">
               {age !== null && (
                 <div>
-                  <div className="font-display font-bold text-lg text-ink leading-none">{age}</div>
-                  <div className="text-[11px] text-muted mt-0.5">{isDead ? 'rokov (dožil/-a sa)' : 'rokov'}</div>
+                  <div className="font-display font-bold text-2xl text-ink leading-none">{age}</div>
+                  <div className="text-[11px] text-muted mt-1">{isDead ? 'rokov (dožil/-a sa)' : 'rokov'}</div>
                 </div>
               )}
               <div>
-                <div className="font-display font-bold text-lg text-ink leading-none">{person.followers.length}</div>
-                <div className="text-[11px] text-muted mt-0.5">sledovateľov</div>
+                <div className="font-display font-bold text-2xl text-ink leading-none">{person.followers.length}</div>
+                <div className="text-[11px] text-muted mt-1">sledovateľov</div>
               </div>
               <div>
-                <div className="font-display font-bold text-lg text-ink leading-none">{movies.length}</div>
-                <div className="text-[11px] text-muted mt-0.5">filmov u nás</div>
+                <div className="font-display font-bold text-2xl text-ink leading-none">{movies.length}</div>
+                <div className="text-[11px] text-muted mt-1">filmov u nás</div>
               </div>
-            </div>
-
-            <div className="text-sm text-muted space-y-0.5 mb-4">
-              {person.birthDate && (
-                <div>
-                  Narodený/-á {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  {person.birthPlace && ` · ${person.birthPlace}`}
-                </div>
-              )}
-              {isDead && (
-                <div>
-                  Zomrel/-a {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  {person.deathPlace && ` · ${person.deathPlace}`}
-                </div>
-              )}
             </div>
 
             {viewerId ? (
@@ -144,14 +131,58 @@ export default async function PersonPage({ params }: { params: { slug: string } 
         </div>
       </div>
 
-      {person.tmdbId && <PersonPhotoGallery tmdbId={person.tmdbId} />}
-      {person.tmdbId && <PersonTmdbFilmography tmdbId={person.tmdbId} role={person.role} />}
+      {/* Dvojstĺpcové rozloženie — hlavný obsah vľavo, osobné údaje vpravo */}
+      <div className="grid lg:grid-cols-[1fr_300px] gap-6 items-start">
+        <div className="min-w-0">
+          {person.tmdbId && <PersonPhotoGallery tmdbId={person.tmdbId} />}
+          {person.tmdbId && <PersonTmdbFilmography tmdbId={person.tmdbId} role={person.role} />}
 
-      <PersonProfileTabs
-        bio={person.bio}
-        movies={movies}
-        news={relatedNews.map((n) => ({ title: n.title, slug: n.slug, coverImage: n.coverImage, movieTitle: n.movie?.title || '' }))}
-      />
+          <PersonProfileTabs
+            bio={person.bio}
+            movies={movies}
+            news={relatedNews.map((n) => ({ title: n.title, slug: n.slug, coverImage: n.coverImage, movieTitle: n.movie?.title || '' }))}
+          />
+        </div>
+
+        <div className="border border-line rounded-xl bg-card p-5 lg:sticky lg:top-20">
+          <h3 className="font-display font-bold text-sm text-ink mb-4">Osobné údaje</h3>
+          <div className="space-y-4 text-sm">
+            <div>
+              <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Rola</div>
+              <div className="text-ink">{person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}</div>
+            </div>
+            {person.birthDate && (
+              <div>
+                <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Narodený/-á</div>
+                <div className="text-ink">{new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              </div>
+            )}
+            {person.birthPlace && (
+              <div>
+                <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Miesto narodenia</div>
+                <div className="text-ink">{person.birthPlace}</div>
+              </div>
+            )}
+            {isDead && (
+              <div>
+                <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Zomrel/-a</div>
+                <div className="text-ink">
+                  {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {person.deathPlace && ` · ${person.deathPlace}`}
+                </div>
+              </div>
+            )}
+            <div>
+              <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Sledovatelia</div>
+              <div className="text-ink">{person.followers.length}</div>
+            </div>
+            <div>
+              <div className="text-[11px] font-semibold text-muted uppercase tracking-wide mb-1">Filmov a seriálov u nás</div>
+              <div className="text-ink">{movies.length}</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
