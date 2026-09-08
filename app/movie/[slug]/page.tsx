@@ -218,6 +218,17 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       })
     : [];
 
+  // Pri seriáli môžu jednotlivé série vychádzať naprieč viacerými rokmi — namiesto
+  // jedného čísla (rok premiéry) preto v hlavičke zobrazíme celý rozsah, napr.
+  // "2022–2026", ak seriál stále beží alebo mal série v rôznych rokoch.
+  const seasonYears = seasons.map((s) => s.releaseDate?.getFullYear()).filter((y): y is number => !!y);
+  const displayYear =
+    seasonYears.length > 1
+      ? Math.min(...seasonYears) === Math.max(...seasonYears)
+        ? String(Math.min(...seasonYears))
+        : `${Math.min(...seasonYears)}–${Math.max(...seasonYears)}`
+      : movie.year;
+
   const watchedEpisodeIds = viewerId
     ? new Set(
         (
@@ -482,7 +493,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
               <div className="flex items-start justify-between gap-3">
                 <div className="text-sm text-muted">
-                  {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+                  {[movie.countries, displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
                 </div>
                 {effectiveBudget && !isVodOnly && (
                   <details className="flex-none text-right">
@@ -578,7 +589,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               )}
 
               <div className="text-sm text-muted mb-3">
-                {[movie.countries, movie.year, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+                {[movie.countries, displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
               </div>
 
               {isUpcoming && (

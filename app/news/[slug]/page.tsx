@@ -67,7 +67,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     : [];
 
   return (
-    <div className="pt-6 max-w-2xl">
+    <div className="pt-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -82,12 +82,14 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
           })
         }}
       />
-      <div className="flex items-center gap-2 text-sm text-muted mb-5">
+      <div className="flex items-center gap-2 text-sm text-muted mb-5 max-w-2xl">
         <Link href="/" className="hover:text-accent">Domov</Link>
         <span>/</span>
         <span className="text-ink">Novinky</span>
       </div>
 
+      <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
+        <div className="max-w-2xl min-w-0">
       {news.isDraft && (
         <div className="flex items-center gap-2 mb-5 text-xs font-semibold text-accent bg-surface border border-accent/40 rounded-full px-3 py-1.5 w-fit">
           <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
@@ -140,7 +142,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
       )}
 
       {relatedByTags.length > 0 && (
-        <div className="mb-10">
+        <div className="mb-10 lg:hidden">
           <h2 className="font-display font-bold text-lg text-ink mb-3">Súvisiace články</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {relatedByTags.map((r) => (
@@ -190,6 +192,25 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         </div>
 
         <CommentForm target={{ newsId: news.id }} />
+      </div>
+        </div>
+
+        {relatedByTags.length > 0 && (
+          <div className="hidden lg:block sticky top-20">
+            <h2 className="font-display font-bold text-xl text-ink mb-4">Súvisiace články</h2>
+            <div className="space-y-4">
+              {relatedByTags.map((r) => (
+                <Link key={r.id} href={`/news/${r.slug}`} className="block group border border-line rounded-xl overflow-hidden hover:border-accent transition-colors">
+                  <div className="aspect-[16/9] bg-surface bg-cover bg-center" style={r.coverImage ? { backgroundImage: `url('${r.coverImage}')` } : undefined} />
+                  <div className="p-4">
+                    <div className="text-base font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2 mb-1.5">{r.title}</div>
+                    {r.summary && <div className="text-sm text-muted line-clamp-2">{r.summary}</div>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
