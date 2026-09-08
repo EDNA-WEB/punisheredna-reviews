@@ -221,6 +221,18 @@ export async function tmdbGetPersonPopularity(tmdbId: number): Promise<number | 
   return typeof d.popularity === 'number' ? d.popularity : null;
 }
 
+// Vráti hlavné obsadenie (podľa poradia v titulkoch) konkrétneho filmu — na
+// zistenie, či popri hercovi hral aj niekto, koho už máme u nás vo vlastnej
+// databáze osôb (rozumný odhad "známeho" spoluherca, bez potreby subjektívne
+// vymýšľať, kto je slávny).
+export async function tmdbGetMovieTopCast(movieId: number): Promise<{ tmdbId: number; name: string; order: number }[]> {
+  const url = `${TMDB_BASE}/movie/${movieId}/credits`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  return (d.cast || []).slice(0, 8).map((c: any) => ({ tmdbId: c.id, name: c.name, order: c.order }));
+}
+
 export async function tmdbGetPersonFilmography(tmdbId: number) {
   const url = `${TMDB_BASE}/person/${tmdbId}/combined_credits?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });
@@ -247,7 +259,8 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
       backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
       voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
       voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
-      order: typeof c.order === 'number' ? c.order : 999
+      order: typeof c.order === 'number' ? c.order : 999,
+      mediaType: c.media_type === 'movie' ? 'movie' : 'tv'
     }));
 
   const asCrew = dedupe(d.crew || [])
@@ -261,7 +274,8 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
       backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
       voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
       voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
-      order: 999
+      order: 999,
+      mediaType: c.media_type === 'movie' ? 'movie' : 'tv'
     }));
 
   return { asActor, asCrew };

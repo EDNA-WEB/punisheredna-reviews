@@ -75,9 +75,9 @@ export default function PremieresCarousel({ premieres }: { premieres: PremiereIt
       onMouseEnter={() => (hoveredRef.current = true)}
       onMouseLeave={() => (hoveredRef.current = false)}
     >
-      <div ref={scrollerRef} className="flex gap-3 overflow-x-auto p-4 pt-5 snap-x">
+      <div ref={scrollerRef} className="flex gap-3 overflow-x-auto p-4 pt-5">
         {premieres.map((p) => (
-          <Link key={p.id} href={`/movie/${p.movie.slug}`} className="group relative flex-none w-28 snap-start">
+          <Link key={p.id} href={`/movie/${p.movie.slug}`} className="group relative flex-none w-28">
             <div className="relative rounded-xl overflow-hidden bg-surface aspect-[2/3] shadow-sm border border-line">
               {p.movie.poster && (
                 <div

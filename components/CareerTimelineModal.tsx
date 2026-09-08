@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { IconFlag, IconTrendingUp, IconTrophy, IconEye, IconTrendingDown, IconClock, IconX } from './Icons';
+import { IconFlag, IconTrendingUp, IconTrophy, IconEye, IconTrendingDown, IconClock, IconX, IconStar } from './Icons';
 
 type Milestone = {
   key: string;
@@ -15,6 +15,7 @@ type Milestone = {
 
 const MILESTONE_STYLE: Record<string, { icon: (c: string) => React.ReactNode; color: string; bg: string }> = {
   debut: { icon: (c) => <IconFlag className={c} />, color: '#2563EB', bg: 'rgba(37,99,235,0.12)' },
+  'first-combo': { icon: (c) => <IconStar className={c} />, color: '#D97706', bg: 'rgba(217,119,6,0.12)' },
   'notable-role': { icon: (c) => <IconTrendingUp className={c} />, color: '#2563EB', bg: 'rgba(37,99,235,0.12)' },
   'busiest-year': { icon: (c) => <IconClock className={c} />, color: '#7C3AED', bg: 'rgba(124,58,237,0.12)' },
   'most-voted': { icon: (c) => <IconEye className={c} />, color: '#7C3AED', bg: 'rgba(124,58,237,0.12)' },
