@@ -15,6 +15,7 @@ import { prepareFilmographyCategories } from '@/lib/personFilmography';
 import { tmdbGetPersonImages, tmdbGetPersonPopularity, tmdbGetPersonExternalIds } from '@/lib/tmdb';
 import { IconImdb, IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
+import { findFrequentCollaborators } from '@/lib/collaborators';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,7 +67,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
         });
 
   const movieIds = movies.map((m) => m.id);
-  const [relatedNews, filmographyCategories, photos, popularity, externalLinks] = await Promise.all([
+  const [relatedNews, filmographyCategories, photos, popularity, externalLinks, frequentCollaborators] = await Promise.all([
     movieIds.length
       ? prisma.newsPost.findMany({
           where: { movieId: { in: movieIds }, ...publishedNewsFilter() },
@@ -78,7 +79,8 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     person.tmdbId ? prepareFilmographyCategories(person.tmdbId, person.role) : Promise.resolve(null),
     person.tmdbId ? tmdbGetPersonImages(person.tmdbId) : Promise.resolve([]),
     person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null),
-    person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null)
+    person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null),
+    findFrequentCollaborators(person.name, movieIds, person.id)
   ]);
 
   const isDead = !!person.deathDate;
@@ -239,6 +241,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
         news={relatedNews.map((n) => ({ title: n.title, slug: n.slug, coverImage: n.coverImage, movieTitle: n.movie?.title || '' }))}
         filmographyCategories={filmographyCategories}
         photos={photos}
+        collaborators={frequentCollaborators}
       />
     </div>
   );

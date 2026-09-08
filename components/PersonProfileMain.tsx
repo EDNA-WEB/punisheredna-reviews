@@ -15,13 +15,15 @@ export default function PersonProfileMain({
   movies,
   news,
   filmographyCategories,
-  photos
+  photos,
+  collaborators
 }: {
   bio: string | null;
   movies: Movie[];
   news: NewsItem[];
   filmographyCategories: FilmographyCategory[] | null;
   photos: string[];
+  collaborators: { id: string; name: string; slug: string; photo: string | null; role: string; count: number }[];
 }) {
   const hasFilmography = !!filmographyCategories && filmographyCategories.some((c) => c.items.length > 0);
   const hasPhotos = photos.length > 0;
@@ -98,6 +100,26 @@ export default function PersonProfileMain({
                     </div>
                     <div className="text-xs font-semibold text-ink group-hover:text-accent transition-colors line-clamp-2">{n.title}</div>
                     <div className="text-[11px] text-muted mt-0.5">{n.movieTitle}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {collaborators.length > 0 && (
+            <div className="mb-8">
+              <h3 className="font-display font-bold text-lg text-ink mb-1">Často spolupracuje s</h3>
+              <p className="text-xs text-muted mb-4">Na základe filmov, čo máme u nás v databáze.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {collaborators.map((c) => (
+                  <Link key={c.id} href={`/osobnost/${c.slug}`} className="flex items-center gap-3 border border-line rounded-xl p-3 hover:border-accent transition-colors group">
+                    <div className="w-11 h-11 rounded-full bg-surface bg-cover bg-center flex-none" style={c.photo ? { backgroundImage: `url('${c.photo}')` } : undefined} />
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors truncate">{c.name}</div>
+                      <div className="text-[11px] text-muted truncate">
+                        {c.role} · {c.count} {c.count === 1 ? 'film' : c.count < 5 ? 'filmy' : 'filmov'} spolu
+                      </div>
+                    </div>
                   </Link>
                 ))}
               </div>
