@@ -12,7 +12,8 @@ import PersonProfileMain from '@/components/PersonProfileMain';
 import { calculateAge } from '@/lib/personUtils';
 import { computePercent } from '@/lib/rating';
 import { prepareFilmographyCategories } from '@/lib/personFilmography';
-import { tmdbGetPersonImages, tmdbGetPersonPopularity } from '@/lib/tmdb';
+import { tmdbGetPersonImages, tmdbGetPersonPopularity, tmdbGetPersonExternalIds } from '@/lib/tmdb';
+import { IconImdb, IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 
 export const dynamic = 'force-dynamic';
@@ -65,7 +66,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
         });
 
   const movieIds = movies.map((m) => m.id);
-  const [relatedNews, filmographyCategories, photos, popularity] = await Promise.all([
+  const [relatedNews, filmographyCategories, photos, popularity, externalLinks] = await Promise.all([
     movieIds.length
       ? prisma.newsPost.findMany({
           where: { movieId: { in: movieIds }, ...publishedNewsFilter() },
@@ -76,7 +77,8 @@ export default async function PersonPage({ params }: { params: { slug: string } 
       : Promise.resolve([]),
     person.tmdbId ? prepareFilmographyCategories(person.tmdbId, person.role) : Promise.resolve(null),
     person.tmdbId ? tmdbGetPersonImages(person.tmdbId) : Promise.resolve([]),
-    person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null)
+    person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null),
+    person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null)
   ]);
 
   const isDead = !!person.deathDate;
@@ -162,13 +164,39 @@ export default async function PersonPage({ params }: { params: { slug: string } 
               )}
             </div>
 
-            {viewerId ? (
-              <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
-            ) : (
-              <p className="text-xs text-muted">
-                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
-              </p>
-            )}
+            <div className="flex items-center gap-3 flex-wrap">
+              {viewerId ? (
+                <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
+              ) : (
+                <p className="text-xs text-muted">
+                  <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
+                </p>
+              )}
+              {externalLinks && (externalLinks.imdbUrl || externalLinks.instagramUrl || externalLinks.twitterUrl || externalLinks.facebookUrl) && (
+                <div className="flex items-center gap-1.5">
+                  {externalLinks.imdbUrl && (
+                    <a href={externalLinks.imdbUrl} target="_blank" rel="noopener noreferrer" title="IMDb" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
+                      <IconImdb className="w-4 h-4" />
+                    </a>
+                  )}
+                  {externalLinks.instagramUrl && (
+                    <a href={externalLinks.instagramUrl} target="_blank" rel="noopener noreferrer" title="Instagram" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
+                      <IconInstagram className="w-4 h-4" />
+                    </a>
+                  )}
+                  {externalLinks.twitterUrl && (
+                    <a href={externalLinks.twitterUrl} target="_blank" rel="noopener noreferrer" title="X (Twitter)" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
+                      <IconTwitterX className="w-4 h-4" />
+                    </a>
+                  )}
+                  {externalLinks.facebookUrl && (
+                    <a href={externalLinks.facebookUrl} target="_blank" rel="noopener noreferrer" title="Facebook" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
+                      <IconFacebook className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

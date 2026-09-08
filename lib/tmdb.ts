@@ -198,6 +198,21 @@ export async function tmdbGetPersonImages(tmdbId: number): Promise<string[]> {
     .filter(Boolean);
 }
 
+export type PersonExternalLinks = { imdbUrl: string | null; instagramUrl: string | null; twitterUrl: string | null; facebookUrl: string | null };
+
+export async function tmdbGetPersonExternalIds(tmdbId: number): Promise<PersonExternalLinks> {
+  const url = `${TMDB_BASE}/person/${tmdbId}/external_ids`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return { imdbUrl: null, instagramUrl: null, twitterUrl: null, facebookUrl: null };
+  const d = await res.json();
+  return {
+    imdbUrl: d.imdb_id ? `https://www.imdb.com/name/${d.imdb_id}/` : null,
+    instagramUrl: d.instagram_id ? `https://www.instagram.com/${d.instagram_id}/` : null,
+    twitterUrl: d.twitter_id ? `https://x.com/${d.twitter_id}` : null,
+    facebookUrl: d.facebook_id ? `https://www.facebook.com/${d.facebook_id}/` : null
+  };
+}
+
 export async function tmdbGetPersonPopularity(tmdbId: number): Promise<number | null> {
   const url = `${TMDB_BASE}/person/${tmdbId}`;
   const res = await fetch(url, { headers: tmdbHeaders() });
