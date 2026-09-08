@@ -2,14 +2,15 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useT } from './TranslationProvider';
 
 type FilmItem = { tmdbId: number; title: string; year: string; roleLabel: string | null; poster: string | null; ourSlug: string | null };
 type Category = { key: string; label: string; items: FilmItem[] };
 
-function groupByYear(items: FilmItem[]) {
+function groupByYear(items: FilmItem[], unknownYearLabel: string) {
   const groups = new Map<string, FilmItem[]>();
   for (const item of items) {
-    const key = item.year || 'Neznámy rok';
+    const key = item.year || unknownYearLabel;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }
@@ -17,6 +18,7 @@ function groupByYear(items: FilmItem[]) {
 }
 
 export default function PersonFilmographyTabs({ categories }: { categories: Category[] }) {
+  const t = useT();
   const visible = categories.filter((c) => c.items.length > 0);
   const [active, setActive] = useState(visible[0]?.key);
   const [query, setQuery] = useState('');
@@ -26,7 +28,7 @@ export default function PersonFilmographyTabs({ categories }: { categories: Cate
   const filteredItems = query.trim()
     ? current.items.filter((item) => item.title.toLowerCase().includes(query.trim().toLowerCase()))
     : current.items;
-  const grouped = groupByYear(filteredItems);
+  const grouped = groupByYear(filteredItems, t('person.neznamy_rok', 'Neznámy rok'));
 
   return (
     <div className="border border-line rounded-xl overflow-hidden mb-6">
@@ -55,7 +57,7 @@ export default function PersonFilmographyTabs({ categories }: { categories: Cate
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Hľadať v tejto filmografii…"
+            placeholder={t('person.hladat_filmografia', 'Hľadať v tejto filmografii…')}
             className="field-input text-xs py-1.5"
             style={{ paddingLeft: '2rem' }}
           />
@@ -64,7 +66,7 @@ export default function PersonFilmographyTabs({ categories }: { categories: Cate
 
       <div className="p-4 space-y-6 max-h-[640px] overflow-y-auto">
         {grouped.length === 0 ? (
-          <p className="text-sm text-muted text-center py-6">Nič nenájdené.</p>
+          <p className="text-sm text-muted text-center py-6">{t('person.nic_najdene', 'Nič nenájdené.')}</p>
         ) : (
           grouped.map(([year, items]) => (
             <div key={year}>

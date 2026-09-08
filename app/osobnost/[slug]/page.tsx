@@ -18,6 +18,7 @@ import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { findFrequentCollaborators } from '@/lib/collaborators';
 import { buildCareerMilestones } from '@/lib/careerMilestones';
 import CareerTimelineModal from '@/components/CareerTimelineModal';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function PersonPage({ params }: { params: { slug: string } }) {
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
+
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (key: string, fallback?: string) => dict[key] || fallback || key;
 
   const person = await prisma.person.findUnique({
     where: { slug: params.slug },
@@ -83,7 +87,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null),
     person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null),
     findFrequentCollaborators(person.name, movieIds, person.id),
-    person.tmdbId ? buildCareerMilestones(person.tmdbId, person.role) : Promise.resolve([])
+    person.tmdbId ? buildCareerMilestones(person.tmdbId, person.role, t) : Promise.resolve([])
   ]);
 
   const isDead = !!person.deathDate;
@@ -97,7 +101,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     .flatMap((c) => c.items)
     .map((item) => parseInt(item.year || '', 10))
     .filter((y) => !isNaN(y) && y > 1888); // 1888 = najstarší zachovaný film na svete, poistka proti chybným dátam
-  const careerSpan = allFilmographyYears.length > 0 ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : 'súčasnosť'}` : null;
+  const careerSpan = allFilmographyYears.length > 0 ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : t('person.sucasnost', 'súčasnosť')}` : null;
 
   const topRated = [...movies]
     .map((m) => ({ title: m.title, slug: m.slug, poster: m.poster, percent: computePercent(m.ratings) }))
@@ -116,7 +120,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
       )}
       {!person.approved && (
         <div className="mb-5 bg-amber-50 border border-amber-300 text-amber-800 text-sm font-semibold rounded-xl px-4 py-3">
-          Tento profil ešte čaká na schválenie administrátorom. Vidíš ho len ty (a admin).
+          {t('person.caka_na_schvalenie')}
         </div>
       )}
 
@@ -130,39 +134,39 @@ export default async function PersonPage({ params }: { params: { slug: string } 
               {popularity !== null && <PopularityBadge value={popularity} />}
             </div>
             <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">
-              {person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}
+              {person.role === 'ACTOR' ? t('person.herec') : t('person.tvorca')}
             </span>
 
             <div className="text-sm text-ink space-y-1.5 mb-4">
               {person.birthDate && (
                 <div>
-                  <span className="text-muted">Narodený/-á:</span> {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  <span className="text-muted">{t('person.narodeny')}</span> {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
               {person.birthPlace && (
                 <div className="flex items-center gap-2">
-                  <span className="text-muted">Miesto narodenia:</span> {person.birthPlace}
+                  <span className="text-muted">{t('person.miesto_narodenia')}</span> {person.birthPlace}
                   {countryFlag && <img src={countryFlag.url} alt={countryFlag.countryName} className="h-3.5 w-auto rounded-sm shadow-sm" />}
                 </div>
               )}
               {age !== null && !isDead && (
                 <div>
-                  <span className="text-muted">Vek:</span> {age} rokov
+                  <span className="text-muted">{t('person.vek')}</span> {age} {t('person.rokov')}
                 </div>
               )}
               {isDead && (
                 <>
                   <div>
-                    <span className="text-muted">Zomrel/-a:</span> {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <span className="text-muted">{t('person.zomrel')}</span> {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
                   {person.deathPlace && (
                     <div>
-                      <span className="text-muted">Miesto úmrtia:</span> {person.deathPlace}
+                      <span className="text-muted">{t('person.miesto_umrtia')}</span> {person.deathPlace}
                     </div>
                   )}
                   {age !== null && (
                     <div>
-                      <span className="text-muted">Dožil/-a sa:</span> {age} rokov
+                      <span className="text-muted">{t('person.dozil_sa')}</span> {age} {t('person.rokov')}
                     </div>
                   )}
                 </>
@@ -174,7 +178,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
                 <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
               ) : (
                 <p className="text-xs text-muted">
-                  <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
+                  <Link href="/login" className="text-accent font-semibold hover:underline">{t('person.prihlas_sa')}</Link> {t('person.a_sleduj')}
                 </p>
               )}
               {careerMilestones.length > 0 && <CareerTimelineModal personName={person.name} milestones={careerMilestones} />}
@@ -211,18 +215,18 @@ export default async function PersonPage({ params }: { params: { slug: string } 
       <div className="grid grid-cols-2 sm:grid-cols-4 border border-line rounded-xl bg-card divide-x divide-line mb-6 overflow-hidden">
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{movies.length}</div>
-          <div className="text-[11px] text-muted mt-0.5">filmov a seriálov u nás</div>
+          <div className="text-[11px] text-muted mt-0.5">{t('person.filmov_u_nas')}</div>
         </div>
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{person.followers.length}</div>
-          <div className="text-[11px] text-muted mt-0.5">sledovateľov</div>
+          <div className="text-[11px] text-muted mt-0.5">{t('person.sledovatelov')}</div>
         </div>
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{careerSpan || '—'}</div>
-          <div className="text-[11px] text-muted mt-0.5">aktívne obdobie</div>
+          <div className="text-[11px] text-muted mt-0.5">{t('person.aktivne_obdobie')}</div>
         </div>
         <div className="p-3 min-w-0">
-          <div className="text-[11px] text-muted mb-1.5 text-center">Najúspešnejší titul</div>
+          <div className="text-[11px] text-muted mb-1.5 text-center">{t('person.najuspesnejsi_titul')}</div>
           {topRated ? (
             <Link href={`/movie/${topRated.slug}`} className="flex items-center gap-2.5 group">
               <div className="relative w-10 h-14 rounded-md overflow-hidden bg-surface flex-none">

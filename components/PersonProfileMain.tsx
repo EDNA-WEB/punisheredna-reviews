@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ScoreBadge from './ScoreBadge';
 import PersonFilmographyTabs from './PersonFilmographyTabs';
 import { computePercent } from '@/lib/rating';
+import { useT } from './TranslationProvider';
 
 type Movie = { title: string; slug: string; year: string | null; poster: string | null; ratings?: { value: number }[] };
 type NewsItem = { title: string; slug: string; coverImage: string | null; movieTitle: string };
@@ -25,14 +26,15 @@ export default function PersonProfileMain({
   photos: string[];
   collaborators: { id: string; name: string; slug: string; photo: string | null; role: string; count: number }[];
 }) {
+  const t = useT();
   const hasFilmography = !!filmographyCategories && filmographyCategories.some((c) => c.items.length > 0);
   const hasPhotos = photos.length > 0;
 
   const sections = [
-    { key: 'prehlad', label: 'Prehľad', enabled: true },
-    { key: 'filmografia', label: 'Filmografia', enabled: hasFilmography },
-    { key: 'fotogaleria', label: 'Fotogaléria', enabled: hasPhotos },
-    { key: 'zivotopis', label: 'Životopis', enabled: !!bio }
+    { key: 'prehlad', label: t('person.tab_prehlad', 'Prehľad'), enabled: true },
+    { key: 'filmografia', label: t('person.tab_filmografia', 'Filmografia'), enabled: hasFilmography },
+    { key: 'fotogaleria', label: t('person.tab_fotogaleria', 'Fotogaléria'), enabled: hasPhotos },
+    { key: 'zivotopis', label: t('person.tab_zivotopis', 'Životopis'), enabled: !!bio }
   ].filter((s) => s.enabled);
 
   const [active, setActive] = useState(sections[0].key);
@@ -42,6 +44,12 @@ export default function PersonProfileMain({
     .map((m) => ({ ...m, percent: m.ratings ? computePercent(m.ratings) : null }))
     .sort((a, b) => (b.percent ?? -1) - (a.percent ?? -1))
     .slice(0, 6);
+
+  function filmCountLabel(count: number) {
+    if (count === 1) return t('person.film', 'film');
+    if (count < 5) return t('person.filmy', 'filmy');
+    return t('person.filmov', 'filmov');
+  }
 
   return (
     <div>
@@ -66,7 +74,7 @@ export default function PersonProfileMain({
         <div>
           {knownFor.length > 0 && (
             <div className="mb-8">
-              <h3 className="font-display font-bold text-lg text-ink mb-4">Známy/-a z</h3>
+              <h3 className="font-display font-bold text-lg text-ink mb-4">{t('person.znamy_z', 'Známy/-a z')}</h3>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
                 {knownFor.map((m) => (
                   <Link key={m.slug} href={`/movie/${m.slug}`} className="block group">
@@ -91,7 +99,7 @@ export default function PersonProfileMain({
 
           {news.length > 0 && (
             <div className="mb-8">
-              <h3 className="font-display font-bold text-lg text-ink mb-4">Súvisiace novinky</h3>
+              <h3 className="font-display font-bold text-lg text-ink mb-4">{t('person.suvisiace_novinky', 'Súvisiace novinky')}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {news.map((n) => (
                   <Link key={n.slug} href={`/news/${n.slug}`} className="block group">
@@ -108,8 +116,8 @@ export default function PersonProfileMain({
 
           {collaborators.length > 0 && (
             <div className="mb-8">
-              <h3 className="font-display font-bold text-lg text-ink mb-1">Často spolupracuje s</h3>
-              <p className="text-xs text-muted mb-4">Na základe filmov, čo máme u nás v databáze.</p>
+              <h3 className="font-display font-bold text-lg text-ink mb-1">{t('person.casto_spolupracuje', 'Často spolupracuje s')}</h3>
+              <p className="text-xs text-muted mb-4">{t('person.na_zaklade_filmov', 'Na základe filmov, čo máme u nás v databáze.')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {collaborators.map((c) => (
                   <Link key={c.id} href={`/osobnost/${c.slug}`} className="flex items-center gap-3 border border-line rounded-xl p-3 hover:border-accent transition-colors group">
@@ -117,7 +125,7 @@ export default function PersonProfileMain({
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors truncate">{c.name}</div>
                       <div className="text-[11px] text-muted truncate">
-                        {c.role} · {c.count} {c.count === 1 ? 'film' : c.count < 5 ? 'filmy' : 'filmov'} spolu
+                        {c.role} · {c.count} {filmCountLabel(c.count)} {t('person.spolu', 'spolu')}
                       </div>
                     </div>
                   </Link>
@@ -128,10 +136,10 @@ export default function PersonProfileMain({
 
           {bio && (
             <div className="mb-2">
-              <h3 className="font-display font-bold text-lg text-ink mb-3">Životopis</h3>
+              <h3 className="font-display font-bold text-lg text-ink mb-3">{t('person.tab_zivotopis', 'Životopis')}</h3>
               <p className="text-[15px] text-ink leading-relaxed whitespace-pre-wrap line-clamp-6">{bio}</p>
               <button onClick={() => setActive('zivotopis')} className="text-sm font-semibold text-accent hover:underline mt-2">
-                Zobraziť celý životopis
+                {t('person.zobrazit_cely_zivotopis', 'Zobraziť celý životopis')}
               </button>
             </div>
           )}
@@ -141,9 +149,9 @@ export default function PersonProfileMain({
       {active === 'filmografia' && (
         <div>
           {hasFilmography && <PersonFilmographyTabs categories={filmographyCategories!} />}
-          <h3 className="font-display font-bold text-lg text-ink mb-4">Všetky filmy a seriály u nás</h3>
+          <h3 className="font-display font-bold text-lg text-ink mb-4">{t('person.vsetky_filmy_u_nas', 'Všetky filmy a seriály u nás')}</h3>
           {movies.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne filmy priradené k tejto osobe.</p>
+            <p className="text-sm text-muted">{t('person.zatial_ziadne_filmy', 'Zatiaľ žiadne filmy priradené k tejto osobe.')}</p>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
               {movies.map((m) => (
@@ -186,7 +194,7 @@ export default function PersonProfileMain({
           >
             ✕
           </button>
-          <img src={lightboxUrl} alt="Fotka v plnej veľkosti" className="max-w-full max-h-full rounded-lg object-contain" />
+          <img src={lightboxUrl} alt={t('person.fotka_plna_velkost', 'Fotka v plnej veľkosti')} className="max-w-full max-h-full rounded-lg object-contain" />
         </div>
       )}
 

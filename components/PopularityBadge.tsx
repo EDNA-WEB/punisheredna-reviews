@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from './TranslationProvider';
 
 export default function PopularityBadge({ value }: { value: number }) {
+  const t = useT();
   const [showInfo, setShowInfo] = useState(false);
 
   return (
@@ -14,7 +16,7 @@ export default function PopularityBadge({ value }: { value: number }) {
         </svg>
         <div className="text-center">
           <div className="font-display font-bold text-lg text-accent leading-none">{value.toFixed(0)}</div>
-          <div className="text-[10px] text-muted mt-0.5 uppercase tracking-wide">Popularita</div>
+          <div className="text-[10px] text-muted mt-0.5 uppercase tracking-wide">{t('person.popularita', 'Popularita')}</div>
         </div>
         <button
           type="button"
@@ -22,14 +24,14 @@ export default function PopularityBadge({ value }: { value: number }) {
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
           className="w-4 h-4 rounded-full border border-muted text-muted text-[10px] font-bold flex items-center justify-center hover:border-accent hover:text-accent transition-colors flex-none"
-          aria-label="Čo znamená popularita?"
+          aria-label={t('person.co_znamena_popularita', 'Čo znamená popularita?')}
         >
           i
         </button>
       </div>
       {showInfo && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-line rounded-lg shadow-lg p-3 z-20 text-xs text-muted leading-relaxed">
-          Hodnota popularity pochádza z databázy TMDb a odzrkadľuje, ako často si ľudia túto osobu momentálne prezerajú, hodnotia jej filmy a pridávajú si ich do zoznamov — nie je to hodnotenie kvality, ale miera aktuálneho záujmu.
+          {t('person.popularita_vysvetlenie')}
         </div>
       )}
     </div>

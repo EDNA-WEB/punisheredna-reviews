@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { IconFlag, IconTrendingUp, IconTrophy, IconEye, IconTrendingDown, IconClock, IconX, IconStar } from './Icons';
+import { useT } from './TranslationProvider';
 
 type Milestone = {
   key: string;
@@ -25,6 +26,7 @@ const MILESTONE_STYLE: Record<string, { icon: (c: string) => React.ReactNode; co
 };
 
 export default function CareerTimelineModal({ personName, milestones }: { personName: string; milestones: Milestone[] }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   if (milestones.length === 0) return null;
 
@@ -36,7 +38,7 @@ export default function CareerTimelineModal({ personName, milestones }: { person
         className="inline-flex items-center gap-2 text-sm font-semibold text-accent border border-accent/30 bg-accent/5 px-4 py-2 rounded-full hover:bg-accent/10 transition-colors"
       >
         <IconTrendingUp className="w-4 h-4" />
-        Zobraziť časovú os kariéry
+        {t('person.zobrazit_casovu_os', 'Zobraziť časovú os kariéry')}
       </button>
 
       {open && (
@@ -47,14 +49,14 @@ export default function CareerTimelineModal({ personName, milestones }: { person
           >
             <div className="sticky top-0 bg-card border-b border-line px-5 sm:px-8 py-4 flex items-center justify-between z-10">
               <div>
-                <h2 className="font-display font-extrabold text-xl sm:text-2xl text-ink">Časová os kariéry</h2>
+                <h2 className="font-display font-extrabold text-xl sm:text-2xl text-ink">{t('person.casova_os_kariery', 'Časová os kariéry')}</h2>
                 <p className="text-sm text-muted">{personName}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-ink hover:bg-surface transition-colors flex-none"
-                aria-label="Zavrieť"
+                aria-label={t('person.zavriet', 'Zavrieť')}
               >
                 <IconX className="w-5 h-5" />
               </button>
