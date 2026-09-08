@@ -13,7 +13,7 @@ import { calculateAge } from '@/lib/personUtils';
 import { computePercent } from '@/lib/rating';
 import { prepareFilmographyCategories } from '@/lib/personFilmography';
 import { tmdbGetPersonImages, tmdbGetPersonPopularity, tmdbGetPersonExternalIds } from '@/lib/tmdb';
-import { IconImdb, IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
+import { IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { findFrequentCollaborators } from '@/lib/collaborators';
 
@@ -177,8 +177,8 @@ export default async function PersonPage({ params }: { params: { slug: string } 
               {externalLinks && (externalLinks.imdbUrl || externalLinks.instagramUrl || externalLinks.twitterUrl || externalLinks.facebookUrl) && (
                 <div className="flex items-center gap-1.5">
                   {externalLinks.imdbUrl && (
-                    <a href={externalLinks.imdbUrl} target="_blank" rel="noopener noreferrer" title="IMDb" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
-                      <IconImdb className="w-4 h-4" />
+                    <a href={externalLinks.imdbUrl} target="_blank" rel="noopener noreferrer" title="IMDb" className="w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-105" style={{ backgroundColor: '#F5C518' }}>
+                      <img src="https://cdn.simpleicons.org/imdb/000000" alt="IMDb" className="w-4 h-4" />
                     </a>
                   )}
                   {externalLinks.instagramUrl && (

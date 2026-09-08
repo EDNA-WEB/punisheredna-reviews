@@ -500,15 +500,6 @@ export function IconCandle({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
-export function IconImdb({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect x="2" y="6" width="20" height="12" rx="2" />
-      <text x="12" y="15" textAnchor="middle" fontSize="7" fontWeight="700" fill="currentColor" stroke="none">IMDb</text>
-    </svg>
-  );
-}
-
 export function IconTwitterX({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>

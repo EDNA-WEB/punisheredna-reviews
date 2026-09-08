@@ -35,9 +35,14 @@ export default async function AdminPeoplePage() {
           <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
           <h1 className="font-display font-extrabold text-3xl text-ink">Herci a tvorcovia</h1>
         </div>
-        <Link href="/admin/people/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
-          + Pridať osobu
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/people/hromadne" className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent">
+            Hromadne pridať
+          </Link>
+          <Link href="/admin/people/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
+            + Pridať osobu
+          </Link>
+        </div>
       </div>
 
       {pending.length > 0 && (
