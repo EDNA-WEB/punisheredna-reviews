@@ -107,13 +107,6 @@ export default function CareerTimelineModal({ personName, milestones }: { person
                 </div>
               </div>
             </div>
-
-            <div className="px-5 sm:px-8 pb-6">
-              <p className="text-[11px] text-muted border-t border-line pt-4">
-                Časová os je zostavená automaticky z verejne dostupných dát o filmografii (TMDb) — hodnotenia a počty hlasov
-                zodpovedajú aktuálnemu stavu na TMDb, nie nutne nášmu vlastnému hodnoteniu na tomto webe.
-              </p>
-            </div>
           </div>
         </div>
       )}
