@@ -198,6 +198,14 @@ export async function tmdbGetPersonImages(tmdbId: number): Promise<string[]> {
     .filter(Boolean);
 }
 
+export async function tmdbGetPersonPopularity(tmdbId: number): Promise<number | null> {
+  const url = `${TMDB_BASE}/person/${tmdbId}`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return null;
+  const d = await res.json();
+  return typeof d.popularity === 'number' ? d.popularity : null;
+}
+
 export async function tmdbGetPersonFilmography(tmdbId: number) {
   const url = `${TMDB_BASE}/person/${tmdbId}/combined_credits?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });
