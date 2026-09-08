@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconChevronLeft, IconChevronRight, IconPlay } from './Icons';
 import YouTubeSubtitlePlayer from './YouTubeSubtitlePlayer';
 
@@ -15,6 +15,16 @@ type Trailer = {
 export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
+
+  // Automatické prepínanie medzi trailermi každých 10 sekúnd — len kým sa
+  // nič neprehráva (náhľadový stav), nech to nikoho neruší uprostred sledovania.
+  useEffect(() => {
+    if (playing || trailers.length <= 1) return;
+    const interval = setInterval(() => {
+      setActive((a) => (a + 1) % trailers.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [playing, trailers.length]);
 
   if (trailers.length === 0) {
     return (
@@ -88,7 +98,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
               <IconChevronRight className="w-5 h-5" />
             </button>
 
-            <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+            <div className="absolute bottom-10 sm:bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
               {trailers.map((t, i) => (
                 <button
                   key={t.id}
