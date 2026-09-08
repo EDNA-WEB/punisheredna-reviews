@@ -11,45 +11,62 @@ type PremiereItem = {
   movie: { title: string; slug: string; poster: string | null };
 };
 
-const SCROLL_STEP = 260;
-const TICK_MS = 3000;
-const END_PAUSE_MS = 10000;
+const PIXELS_PER_SECOND = 40; // rýchlosť plynulého posunu
+const END_PAUSE_MS = 5000;
 
 export default function PremieresCarousel({ premieres }: { premieres: PremiereItem[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const pausedUntilRef = useRef<number | null>(null);
   const hoveredRef = useRef(false);
+  const directionRef = useRef<1 | -1>(1);
+  const pausedUntilRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
 
   function scrollByAmount(dir: 1 | -1) {
-    scrollerRef.current?.scrollBy({ left: dir * SCROLL_STEP, behavior: 'smooth' });
+    scrollerRef.current?.scrollBy({ left: dir * 260, behavior: 'smooth' });
   }
 
-  // Automatický, plynulý pohyb karuselu — každé 3 sekundy sa posunie kúsok
-  // dopredu; keď dôjde na koniec, počká 10 sekúnd a vráti sa na začiatok, potom
-  // cyklus opakuje. Ručné posúvanie (myšou/dotykom/šípkami) naďalej funguje
-  // normálne — automatika ho nijako neprepisuje ani nezastavuje natrvalo.
+  // Plynulý, nepretržitý pohyb karuselu (cez requestAnimationFrame — nie skoky
+  // po pár sekundách, aby to nepôsobilo trhane). Keď dôjde na koniec, na 5
+  // sekúnd sa zastaví a potom sa vydá opačným smerom naspäť — a to isté sa
+  // zopakuje aj po návrate na začiatok, takže sa to plynule "hompáľe" tam a
+  // späť, nikdy neskáče naraz na začiatok. Ručné posúvanie naďalej funguje.
   useEffect(() => {
-    const interval = setInterval(() => {
+    let frameId: number;
+
+    function tick(now: number) {
+      frameId = requestAnimationFrame(tick);
       const el = scrollerRef.current;
-      if (!el || hoveredRef.current) return;
-
-      const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-
-      if (isAtEnd) {
-        if (pausedUntilRef.current === null) {
-          // Práve sme dorazili na koniec — spusti 10-sekundové čakanie.
-          pausedUntilRef.current = Date.now() + END_PAUSE_MS;
-        } else if (Date.now() >= pausedUntilRef.current) {
-          // Čakanie uplynulo — vráť sa plynule na začiatok a začni znova.
-          el.scrollTo({ left: 0, behavior: 'smooth' });
-          pausedUntilRef.current = null;
-        }
-      } else {
-        el.scrollBy({ left: SCROLL_STEP, behavior: 'smooth' });
+      if (!el || hoveredRef.current) {
+        lastTimeRef.current = now;
+        return;
       }
-    }, TICK_MS);
 
-    return () => clearInterval(interval);
+      if (pausedUntilRef.current !== null) {
+        if (now < pausedUntilRef.current) {
+          lastTimeRef.current = now;
+          return;
+        }
+        pausedUntilRef.current = null;
+      }
+
+      const delta = lastTimeRef.current === null ? 0 : (now - lastTimeRef.current) / 1000;
+      lastTimeRef.current = now;
+
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      el.scrollLeft += directionRef.current * PIXELS_PER_SECOND * delta;
+
+      const atEnd = el.scrollLeft >= maxScroll - 1;
+      const atStart = el.scrollLeft <= 1;
+
+      if (atEnd || atStart) {
+        el.scrollLeft = atEnd ? maxScroll : 0;
+        directionRef.current = atEnd ? -1 : 1;
+        pausedUntilRef.current = now + END_PAUSE_MS;
+      }
+    }
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
   }, []);
 
   return (
@@ -58,7 +75,7 @@ export default function PremieresCarousel({ premieres }: { premieres: PremiereIt
       onMouseEnter={() => (hoveredRef.current = true)}
       onMouseLeave={() => (hoveredRef.current = false)}
     >
-      <div ref={scrollerRef} className="flex gap-3 overflow-x-auto p-4 pt-5 snap-x scroll-smooth">
+      <div ref={scrollerRef} className="flex gap-3 overflow-x-auto p-4 pt-5 snap-x">
         {premieres.map((p) => (
           <Link key={p.id} href={`/movie/${p.movie.slug}`} className="group relative flex-none w-28 snap-start">
             <div className="relative rounded-xl overflow-hidden bg-surface aspect-[2/3] shadow-sm border border-line">

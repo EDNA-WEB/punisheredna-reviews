@@ -238,24 +238,30 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
 
   const asActor = dedupe(d.cast || [])
     .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
-    .slice(0, 60)
     .map((c: any) => ({
       tmdbId: c.id,
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       character: c.character || null,
-      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null,
+      backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
+      voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
+      voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
+      order: typeof c.order === 'number' ? c.order : 999
     }));
 
   const asCrew = dedupe(d.crew || [])
     .sort((a: any, b: any) => (b.release_date || b.first_air_date || '').localeCompare(a.release_date || a.first_air_date || ''))
-    .slice(0, 60)
     .map((c: any) => ({
       tmdbId: c.id,
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       job: c.job || null,
-      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null,
+      backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
+      voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
+      voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
+      order: 999
     }));
 
   return { asActor, asCrew };

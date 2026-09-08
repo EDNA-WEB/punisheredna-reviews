@@ -16,6 +16,8 @@ import { tmdbGetPersonImages, tmdbGetPersonPopularity, tmdbGetPersonExternalIds 
 import { IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { findFrequentCollaborators } from '@/lib/collaborators';
+import { buildCareerMilestones } from '@/lib/careerMilestones';
+import CareerTimelineModal from '@/components/CareerTimelineModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,7 +69,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
         });
 
   const movieIds = movies.map((m) => m.id);
-  const [relatedNews, filmographyCategories, photos, popularity, externalLinks, frequentCollaborators] = await Promise.all([
+  const [relatedNews, filmographyCategories, photos, popularity, externalLinks, frequentCollaborators, careerMilestones] = await Promise.all([
     movieIds.length
       ? prisma.newsPost.findMany({
           where: { movieId: { in: movieIds }, ...publishedNewsFilter() },
@@ -80,7 +82,8 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     person.tmdbId ? tmdbGetPersonImages(person.tmdbId) : Promise.resolve([]),
     person.tmdbId ? tmdbGetPersonPopularity(person.tmdbId) : Promise.resolve(null),
     person.tmdbId ? tmdbGetPersonExternalIds(person.tmdbId) : Promise.resolve(null),
-    findFrequentCollaborators(person.name, movieIds, person.id)
+    findFrequentCollaborators(person.name, movieIds, person.id),
+    person.tmdbId ? buildCareerMilestones(person.tmdbId, person.role) : Promise.resolve([])
   ]);
 
   const isDead = !!person.deathDate;
@@ -174,6 +177,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
                   <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
                 </p>
               )}
+              {careerMilestones.length > 0 && <CareerTimelineModal personName={person.name} milestones={careerMilestones} />}
               {externalLinks && (externalLinks.imdbUrl || externalLinks.instagramUrl || externalLinks.twitterUrl || externalLinks.facebookUrl) && (
                 <div className="flex items-center gap-1.5">
                   {externalLinks.imdbUrl && (
