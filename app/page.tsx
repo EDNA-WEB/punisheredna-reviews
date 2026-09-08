@@ -129,13 +129,13 @@ export default async function HomePage() {
 
   const [topActors, topCreators] = await Promise.all([
     prisma.person.findMany({
-      where: { role: 'ACTOR', approved: true },
+      where: { role: 'ACTOR', approved: true, photo: { not: null } },
       orderBy: { followers: { _count: 'desc' } },
       take: 8,
       select: { id: true, name: true, slug: true, photo: true }
     }),
     prisma.person.findMany({
-      where: { role: 'CREATOR', approved: true },
+      where: { role: 'CREATOR', approved: true, photo: { not: null } },
       orderBy: { followers: { _count: 'desc' } },
       take: 8,
       select: { id: true, name: true, slug: true, photo: true }
@@ -143,12 +143,14 @@ export default async function HomePage() {
   ]);
 
   // "Dnes slávia narodeniny" — zhoda mesiaca a dňa narodenia s dneškom, bez
-  // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo.
+  // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo. Osoba bez
+  // fotky sa na hlavnej stránke nikdy nezobrazí (photo IS NOT NULL).
   const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null; birthDate: Date | null; deathDate: Date | null }[]>`
     SELECT id, name, slug, photo, "birthDate", "deathDate" FROM "Person"
     WHERE approved = true
       AND "deathDate" IS NULL
       AND "birthDate" IS NOT NULL
+      AND photo IS NOT NULL
       AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
       AND EXTRACT(DAY FROM "birthDate") = EXTRACT(DAY FROM CURRENT_DATE)
     ORDER BY name ASC
@@ -156,7 +158,7 @@ export default async function HomePage() {
   `;
 
   const recentlyDeceased = await prisma.person.findMany({
-    where: { approved: true, deathDate: { not: null } },
+    where: { approved: true, deathDate: { not: null }, photo: { not: null } },
     orderBy: { deathDate: 'desc' },
     take: 12,
     select: { id: true, name: true, slug: true, photo: true, birthDate: true, deathDate: true }

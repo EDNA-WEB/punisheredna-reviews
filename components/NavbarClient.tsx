@@ -118,7 +118,7 @@ export default function NavbarClient({
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`text-[13px] font-semibold px-3 py-2.5 border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  className={`text-[12px] font-semibold px-3 py-2.5 border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     isActive(l.href) ? 'text-accent border-accent' : 'text-ink border-transparent hover:text-accent hover:border-line'
                   }`}
                 >

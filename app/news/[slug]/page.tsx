@@ -144,12 +144,20 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
       {relatedByTags.length > 0 && (
         <div className="mb-10 lg:hidden">
           <h2 className="font-display font-bold text-lg text-ink mb-3">Súvisiace články</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid sm:grid-cols-2 gap-4">
             {relatedByTags.map((r) => (
-              <Link key={r.id} href={`/news/${r.slug}`} className="flex gap-3 border border-line rounded-xl p-3 hover:border-accent transition-colors">
-                <div className="w-14 h-14 rounded-lg bg-surface bg-cover bg-center flex-none" style={r.coverImage ? { backgroundImage: `url('${r.coverImage}')` } : undefined} />
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold text-ink line-clamp-2">{r.title}</div>
+              <Link key={r.id} href={`/news/${r.slug}`} className="group block rounded-xl overflow-hidden bg-card border border-line hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                <div className="relative aspect-[16/10] bg-surface overflow-hidden">
+                  {r.coverImage && (
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                      style={{ backgroundImage: `url('${r.coverImage}')` }}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
+                </div>
+                <div className="p-3">
+                  <div className="text-sm font-semibold text-ink leading-snug line-clamp-2 group-hover:text-accent transition-colors">{r.title}</div>
                 </div>
               </Link>
             ))}
@@ -198,10 +206,25 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         {relatedByTags.length > 0 && (
           <div className="hidden lg:block sticky top-20">
             <h2 className="font-display font-bold text-xl text-ink mb-4">Súvisiace články</h2>
-            <div className="space-y-4">
-              {relatedByTags.map((r) => (
-                <Link key={r.id} href={`/news/${r.slug}`} className="block group border border-line rounded-xl overflow-hidden hover:border-accent transition-colors">
-                  <div className="aspect-[16/9] bg-surface bg-cover bg-center" style={r.coverImage ? { backgroundImage: `url('${r.coverImage}')` } : undefined} />
+            <div className="space-y-3">
+              {relatedByTags.map((r, i) => (
+                <Link
+                  key={r.id}
+                  href={`/news/${r.slug}`}
+                  className="group block rounded-xl overflow-hidden bg-card border border-line hover:border-accent hover:shadow-lg transition-all duration-200"
+                >
+                  <div className="relative aspect-[16/9] bg-surface overflow-hidden">
+                    {r.coverImage && (
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                        style={{ backgroundImage: `url('${r.coverImage}')` }}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-night/80 via-night/10 to-transparent" />
+                    <span className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full bg-accent text-white text-[11px] font-extrabold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                  </div>
                   <div className="p-4">
                     <div className="text-base font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2 mb-1.5">{r.title}</div>
                     {r.summary && <div className="text-sm text-muted line-clamp-2">{r.summary}</div>}

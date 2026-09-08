@@ -49,6 +49,24 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
     }
   }
 
+  async function handleAutoFromYoutube(movieId: string, videoId: string) {
+    setUploadingFor(videoId);
+    try {
+      const res = await fetch(`/api/movies/${movieId}/videos/${videoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ autoFromYoutube: true })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setItems((prev) => prev.map((it) => (it.id === videoId ? { ...it, previewImage: data.previewImage ?? it.previewImage } : it)));
+    } catch (err: any) {
+      alert(err.message || 'Stiahnutie náhľadu z YouTube zlyhalo.');
+    } finally {
+      setUploadingFor(null);
+    }
+  }
+
   function handleUpload(movieId: string, videoId: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -103,6 +121,15 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
               </Link>
               {item.title && <div className="text-xs text-muted truncate">{item.title}</div>}
             </div>
+
+            <button
+              type="button"
+              onClick={() => handleAutoFromYoutube(item.movie.id, item.id)}
+              disabled={uploadingFor === item.id}
+              className="text-xs font-semibold text-ink border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent flex-none whitespace-nowrap disabled:opacity-50"
+            >
+              {uploadingFor === item.id ? '…' : 'Stiahnuť z YouTube'}
+            </button>
 
             <label className="text-xs font-semibold text-accent hover:underline flex-none whitespace-nowrap cursor-pointer">
               {uploadingFor === item.id ? 'Nahrávam…' : item.previewImage ? 'Zmeniť náhľad' : 'Pridať náhľad'}

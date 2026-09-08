@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
+import GenreDropdown from '@/components/GenreDropdown';
 import { computePercent } from '@/lib/rating';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
@@ -156,16 +157,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
 
       {allGenres.length > 0 && (
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
-          <div className="flex gap-2 flex-wrap flex-1">
-            <Link href="/recenzie" className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border ${!genreFilter && !hasAdvancedFilter ? 'bg-night text-white border-night' : 'text-muted border-line hover:border-night'}`}>
-              {t('recenzie.vsetky')}
-            </Link>
-            {allGenres.map((g) => (
-              <Link key={g} href={`/recenzie?genre=${encodeURIComponent(g)}`} className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border ${genreFilter === g ? 'bg-night text-white border-night' : 'text-muted border-line hover:border-night'}`}>
-                {g}
-              </Link>
-            ))}
-          </div>
+          <GenreDropdown genres={allGenres} activeGenre={genreFilter} allLabel={t('recenzie.vsetky')} />
 
           <SortDropdown />
 
