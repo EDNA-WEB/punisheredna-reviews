@@ -187,6 +187,17 @@ export async function tmdbGetPersonDetails(id: number) {
   };
 }
 
+export async function tmdbGetPersonImages(tmdbId: number): Promise<string[]> {
+  const url = `${TMDB_BASE}/person/${tmdbId}/images`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return [];
+  const d = await res.json();
+  return (d.profiles || [])
+    .slice(0, 12)
+    .map((p: any) => (p.file_path ? `https://image.tmdb.org/t/p/w500${p.file_path}` : null))
+    .filter(Boolean);
+}
+
 export async function tmdbGetPersonFilmography(tmdbId: number) {
   const url = `${TMDB_BASE}/person/${tmdbId}/combined_credits?language=cs-CZ`;
   const res = await fetch(url, { headers: tmdbHeaders() });

@@ -9,6 +9,7 @@ import Link from 'next/link';
 import PersonFollowButton from '@/components/PersonFollowButton';
 import PersonProfileTabs from '@/components/PersonProfileTabs';
 import PersonTmdbFilmography from '@/components/PersonTmdbFilmography';
+import PersonPhotoGallery from '@/components/PersonPhotoGallery';
 import { calculateAge } from '@/lib/personUtils';
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +46,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
       ? await prisma.movie.findMany({
           where: { cast: { contains: person.name, mode: 'insensitive' } },
           orderBy: { year: 'desc' },
-          select: { id: true, title: true, slug: true, year: true, poster: true }
+          select: { id: true, title: true, slug: true, year: true, poster: true, ratings: { select: { value: true } } }
         })
       : await prisma.movie.findMany({
           where: {
@@ -57,7 +58,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
             ]
           },
           orderBy: { year: 'desc' },
-          select: { id: true, title: true, slug: true, year: true, poster: true }
+          select: { id: true, title: true, slug: true, year: true, poster: true, ratings: { select: { value: true } } }
         });
 
   const movieIds = movies.map((m) => m.id);
@@ -88,40 +89,62 @@ export default async function PersonPage({ params }: { params: { slug: string } 
           Tento profil ešte čaká na schválenie administrátorom. Vidíš ho len ty (a admin).
         </div>
       )}
-      <div className="flex items-start gap-5 mb-6 flex-wrap">
-        <div className="w-28 h-28 rounded-full bg-surface bg-cover bg-center flex-none" style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined} />
-        <div className="flex-1 min-w-[180px]">
-          <h1 className="font-display font-extrabold text-2xl text-ink mb-1">{person.name}</h1>
-          <div className="text-sm text-muted mb-1">{person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}</div>
+      <div className="border border-line rounded-xl bg-card p-5 mb-6">
+        <div className="flex items-start gap-5 flex-wrap">
+          <div
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-surface bg-cover bg-center flex-none shadow-sm ring-4 ring-surface"
+            style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined}
+          />
+          <div className="flex-1 min-w-[200px]">
+            <h1 className="font-display font-extrabold text-2xl text-ink mb-2">{person.name}</h1>
+            <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-3">
+              {person.role === 'ACTOR' ? 'Herec / herečka' : 'Tvorca'}
+            </span>
 
-          <div className="text-sm text-muted space-y-0.5 mb-3">
-            {person.birthDate && (
+            <div className="flex flex-wrap gap-x-6 gap-y-2 mb-3">
+              {age !== null && (
+                <div>
+                  <div className="font-display font-bold text-lg text-ink leading-none">{age}</div>
+                  <div className="text-[11px] text-muted mt-0.5">{isDead ? 'rokov (dožil/-a sa)' : 'rokov'}</div>
+                </div>
+              )}
               <div>
-                Narodený/-á: {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                {person.birthPlace && ` · ${person.birthPlace}`}
-                {age !== null && !isDead && ` · ${age} rokov`}
+                <div className="font-display font-bold text-lg text-ink leading-none">{person.followers.length}</div>
+                <div className="text-[11px] text-muted mt-0.5">sledovateľov</div>
               </div>
-            )}
-            {isDead && (
               <div>
-                Zomrel/-a: {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                {person.deathPlace && ` · ${person.deathPlace}`}
-                {age !== null && ` · dožil/-a sa ${age} rokov`}
+                <div className="font-display font-bold text-lg text-ink leading-none">{movies.length}</div>
+                <div className="text-[11px] text-muted mt-0.5">filmov u nás</div>
               </div>
+            </div>
+
+            <div className="text-sm text-muted space-y-0.5 mb-4">
+              {person.birthDate && (
+                <div>
+                  Narodený/-á {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {person.birthPlace && ` · ${person.birthPlace}`}
+                </div>
+              )}
+              {isDead && (
+                <div>
+                  Zomrel/-a {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {person.deathPlace && ` · ${person.deathPlace}`}
+                </div>
+              )}
+            </div>
+
+            {viewerId ? (
+              <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
+            ) : (
+              <p className="text-xs text-muted">
+                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
+              </p>
             )}
-            <div>{person.followers.length} sledovateľov</div>
           </div>
-
-          {viewerId ? (
-            <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
-          ) : (
-            <p className="text-xs text-muted">
-              <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a sleduj túto osobu.
-            </p>
-          )}
         </div>
       </div>
 
+      {person.tmdbId && <PersonPhotoGallery tmdbId={person.tmdbId} />}
       {person.tmdbId && <PersonTmdbFilmography tmdbId={person.tmdbId} role={person.role} />}
 
       <PersonProfileTabs
