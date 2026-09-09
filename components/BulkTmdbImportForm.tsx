@@ -19,14 +19,25 @@ export default function BulkTmdbImportForm() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [trimmedNotice, setTrimmedNotice] = useState('');
 
-  async function importOne(title: string): Promise<ResultRow> {
+  async function importOne(rawTitle: string): Promise<ResultRow> {
     try {
+      // Rok v zátvorke na konci názvu (napr. "Alien (1979)") sa NESMIE poslať
+      // ako súčasť vyhľadávacieho textu na TMDb — tam by hľadalo doslovnú
+      // frázu s "(1979)", čo takmer nikdy nesedí so skutočným názvom filmu
+      // a spôsobuje väčšinu "nenájdených" výsledkov. Rok namiesto toho
+      // použijeme len na výber správneho výsledku z viacerých kandidátov
+      // (klasické tituly ako "Halloween" alebo "It" majú na TMDb viac
+      // filmov/remakov s rovnakým názvom).
+      const yearMatch = rawTitle.match(/^(.+?)\s*\((\d{4})\)\s*$/);
+      const title = yearMatch ? yearMatch[1].trim() : rawTitle.trim();
+      const explicitYear = yearMatch ? yearMatch[2] : null;
+
       const searchRes = await fetch(`/api/admin/tmdb-search?query=${encodeURIComponent(title)}`);
       const searchData = await searchRes.json();
       if (!searchRes.ok) throw new Error(searchData.error || 'Vyhľadávanie zlyhalo.');
-      if (!searchData.length) return { title, status: 'notfound', message: 'Na TMDb sa nenašiel žiadny výsledok.' };
+      if (!searchData.length) return { title: rawTitle, status: 'notfound', message: 'Na TMDb sa nenašiel žiadny výsledok.' };
 
-      const best = searchData[0];
+      const best = explicitYear ? searchData.find((r: any) => r.year === explicitYear) || searchData[0] : searchData[0];
 
       const detailsRes = await fetch(`/api/admin/tmdb-details/${best.mediaType}/${best.id}`);
       const details = await detailsRes.json();
@@ -60,9 +71,9 @@ export default function BulkTmdbImportForm() {
         }
       }
 
-      return { title, status: 'done', slug: created.slug, message: `${details.title} (${details.year || '?'})` };
+      return { title: rawTitle, status: 'done', slug: created.slug, message: `${details.title} (${details.year || '?'})` };
     } catch (err: any) {
-      return { title, status: 'error', message: err.message || 'Neznáma chyba.' };
+      return { title: rawTitle, status: 'error', message: err.message || 'Neznáma chyba.' };
     }
   }
 
