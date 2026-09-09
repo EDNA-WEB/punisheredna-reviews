@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import BulkImportRunner from './BulkImportRunner';
 
 type PremiereRow = { country: string; type: string; releaseDate: string; distributor: string };
 type MovieItem = {
@@ -51,28 +52,6 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       setRecentResults([{ title: '', status: 'CHYBA', detail: err.message || 'Doplnenie zlyhalo.' }]);
     } finally {
       setRecentImporting(false);
-    }
-  }
-  const [distributorBulkText, setDistributorBulkText] = useState('');
-  const [distributorImporting, setDistributorImporting] = useState(false);
-  const [distributorResults, setDistributorResults] = useState<{ line: string; status: string; detail?: string }[] | null>(null);
-
-  async function handleBulkImportDistributors() {
-    setDistributorImporting(true);
-    setDistributorResults(null);
-    try {
-      const res = await fetch('/api/admin/movies/bulk-import-distributors', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: distributorBulkText })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
-      setDistributorResults(data.results);
-    } catch (err: any) {
-      setDistributorResults([{ line: '', status: 'CHYBA', detail: err.message || 'Import zlyhal.' }]);
-    } finally {
-      setDistributorImporting(false);
     }
   }
   const [openFor, setOpenFor] = useState<string | null>(null);
@@ -207,38 +186,13 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         )}
       </div>
 
-      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Hromadne priradiť distribútorov</div>
-        <div className="text-xs text-muted mb-3">
-          Vlož zoznam v tvare <code>Názov filmu – Distribútor ČR, Distribútor pôvodnej premiéry</code>, jeden riadok na
-          film. Prvý distribútor sa priradí k domácej premiére (ČR, potom SR), ďalší k nasledujúcej krajine v poradí —
-          film musí mať dátumy premiér už pridané.
-        </div>
-        <textarea
-          value={distributorBulkText}
-          onChange={(e) => setDistributorBulkText(e.target.value)}
-          rows={5}
-          placeholder={'Together – Bontonfilm, Neon'}
-          className="w-full border border-line rounded-lg px-3 py-2 text-sm font-mono mb-3"
-        />
-        <button
-          type="button"
-          onClick={handleBulkImportDistributors}
-          disabled={distributorImporting || !distributorBulkText.trim()}
-          className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
-        >
-          {distributorImporting ? 'Priraďujem…' : 'Priradiť distribútorov'}
-        </button>
-        {distributorResults && (
-          <div className="mt-3 text-xs space-y-1 max-h-64 overflow-y-auto">
-            {distributorResults.map((r, i) => (
-              <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
-                <span className="font-semibold">{r.status}</span> — {r.detail || r.line}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <BulkImportRunner
+        endpoint="/api/admin/movies/bulk-import-distributors"
+        title="Hromadne priradiť distribútorov"
+        description={'Vlož zoznam v tvare "Názov filmu – Distribútor ČR, Distribútor pôvodnej premiéry", jeden riadok na film. Prvý distribútor sa priradí k domácej premiére (ČR, potom SR), ďalší k nasledujúcej krajine v poradí — film musí mať dátumy premiér už pridané.'}
+        placeholder={'Together – Bontonfilm, Neon'}
+        buttonLabel="Priradiť distribútorov"
+      />
 
       <input
         className="field-input mb-4"

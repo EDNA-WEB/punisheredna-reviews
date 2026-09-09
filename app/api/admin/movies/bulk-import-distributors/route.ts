@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
 
 function normalize(title: string): string {
   return title
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 
-  const { text } = await req.json();
+  const { text, preview } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
     return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
   }
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
   }
 
   const results: { line: string; status: string; detail?: string }[] = [];
+  const changes: LoggedChange[] = [];
 
   for (const line of lines) {
     const match = line.match(/^(.+?)\s*[–-]\s*(.+)$/);
@@ -104,17 +106,27 @@ export async function POST(req: Request) {
       if (!countriesInOrder.includes(p.country)) countriesInOrder.push(p.country);
     }
 
-    let updatedCount = 0;
     const assignments: string[] = [];
     for (let i = 0; i < distributors.length && i < countriesInOrder.length; i++) {
       const country = countriesInOrder[i];
       const distributor = distributors[i];
-      const res = await prisma.moviePremiereDate.updateMany({
-        where: { movieId: movie.id, country },
-        data: { distributor }
-      });
-      updatedCount += res.count;
+      const rowsForCountry = premieres.filter((p) => p.country === country);
       assignments.push(`${country}: ${distributor}`);
+
+      if (!preview) {
+        for (const row of rowsForCountry) {
+          if (row.distributor === distributor) continue;
+          await prisma.moviePremiereDate.update({ where: { id: row.id }, data: { distributor } });
+          changes.push({
+            targetType: 'premiere',
+            targetId: row.id,
+            movieTitle: movie.title,
+            field: 'distributor',
+            oldValue: row.distributor,
+            newValue: distributor
+          });
+        }
+      }
     }
 
     if (distributors.length > countriesInOrder.length) {
@@ -124,9 +136,14 @@ export async function POST(req: Request) {
         detail: `${movie.title} — priradené: ${assignments.join(', ')}. Zvyšní distribútori nemajú k dispozícii ďalšiu krajinu premiéry.`
       });
     } else {
-      results.push({ line, status: 'OK', detail: `${movie.title} — priradené: ${assignments.join(', ')} (${updatedCount} záznamov)` });
+      results.push({ line, status: 'OK', detail: `${movie.title} — priradené: ${assignments.join(', ')}` });
     }
   }
 
-  return NextResponse.json({ results });
+  if (preview) {
+    return NextResponse.json({ results, preview: true });
+  }
+
+  const batchId = await logBulkImportBatch('distributors', changes);
+  return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

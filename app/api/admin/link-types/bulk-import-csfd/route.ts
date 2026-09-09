@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
 
 // Normalizácia názvu na porovnávanie — malé písmená, bez diakritiky,
 // orezané medzery, nech "Kmotr" a "kmotr " nájdu rovnaký film.
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 
-  const { text } = await req.json();
+  const { text, preview } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
     return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
   }
@@ -31,26 +32,24 @@ export async function POST(req: Request) {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const csfdType = await prisma.movieLinkType.upsert({
-    where: { name: 'ČSFD' },
-    update: {},
-    create: { name: 'ČSFD', color: '#c0392b' }
-  });
+  const csfdType = await prisma.movieLinkType.findUnique({ where: { name: 'ČSFD' } });
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },
-    select: { id: true, title: true, originalTitle: true, year: true }
+    select: { id: true, title: true, originalTitle: true, year: true, links: { where: csfdType ? { linkTypeId: csfdType.id } : undefined } }
   });
-  const byNormalizedTitle = new Map<string, { id: string; title: string; year: string | null }[]>();
+  const byNormalizedTitle = new Map<string, (typeof allMovies)[number][]>();
   for (const m of allMovies) {
     for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
       const key = normalize(t);
       if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push({ id: m.id, title: m.title, year: m.year });
+      byNormalizedTitle.get(key)!.push(m);
     }
   }
 
-  const results: { line: string; status: string; detail?: string }[] = [];
+  const results: { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string }[] = [];
+  const changes: LoggedChange[] = [];
+  const pendingWrites: { movieId: string; existingLinkId: string | null; url: string; movieTitle: string }[] = [];
 
   for (const line of lines) {
     const match = line.match(/^(.+?)\s*[–-]\s*(https?:\/\/\S+)$/);
@@ -92,13 +91,58 @@ export async function POST(req: Request) {
     }
 
     const movie = candidates[0];
-    await prisma.movieLink.upsert({
-      where: { movieId_linkTypeId: { movieId: movie.id, linkTypeId: csfdType.id } },
-      update: { url },
-      create: { movieId: movie.id, linkTypeId: csfdType.id, url }
+    const existingLink = movie.links[0] || null;
+    const oldUrl = existingLink?.url || null;
+
+    results.push({
+      line,
+      status: oldUrl === url ? 'BEZ ZMENY' : 'OK',
+      detail: movie.title,
+      oldValue: oldUrl,
+      newValue: url
     });
-    results.push({ line, status: 'OK', detail: movie.title });
+
+    if (oldUrl !== url) {
+      pendingWrites.push({ movieId: movie.id, existingLinkId: existingLink?.id || null, url, movieTitle: movie.title });
+    }
   }
 
-  return NextResponse.json({ results });
+  if (preview) {
+    return NextResponse.json({ results, preview: true });
+  }
+
+  const finalCsfdType = csfdType || (await prisma.movieLinkType.create({ data: { name: 'ČSFD', color: '#c0392b' } }));
+
+  for (const w of pendingWrites) {
+    if (w.existingLinkId) {
+      const before = await prisma.movieLink.findUnique({ where: { id: w.existingLinkId } });
+      await prisma.movieLink.update({ where: { id: w.existingLinkId }, data: { url: w.url } });
+      changes.push({
+        targetType: 'movieLink',
+        targetId: w.existingLinkId,
+        movieTitle: w.movieTitle,
+        field: 'url',
+        oldValue: before?.url || null,
+        newValue: w.url,
+        wasCreated: false
+      });
+    } else {
+      const created = await prisma.movieLink.create({
+        data: { movieId: w.movieId, linkTypeId: finalCsfdType.id, url: w.url }
+      });
+      changes.push({
+        targetType: 'movieLink',
+        targetId: created.id,
+        movieTitle: w.movieTitle,
+        field: 'url',
+        oldValue: null,
+        newValue: w.url,
+        wasCreated: true
+      });
+    }
+  }
+
+  const batchId = await logBulkImportBatch('csfd-links', changes);
+
+  return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

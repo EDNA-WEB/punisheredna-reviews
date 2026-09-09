@@ -698,6 +698,23 @@ model ArticleRevision {
   @@index([blogPostId])
 }
 
+model BulkImportChange {
+  id         String   @id @default(cuid())
+  batchId    String
+  importType String
+  targetType String
+  targetId   String
+  movieTitle String
+  field      String
+  oldValue   String?  @db.Text
+  newValue   String?  @db.Text
+  wasCreated Boolean  @default(false)
+  undone     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([batchId])
+}
+
 model AuditLog {
   id          String   @id @default(cuid())
   userId      String

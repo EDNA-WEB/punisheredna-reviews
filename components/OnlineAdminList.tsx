@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import BulkImportRunner from './BulkImportRunner';
 
 type EpisodeItem = { id: string; number: number; title: string | null; onlineImage: string | null; onlineUrl: string | null };
 type SeasonItem = { id: string; number: number; episodes: EpisodeItem[] };
@@ -231,6 +232,14 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
 
   return (
     <div className="space-y-2 max-w-2xl">
+      <BulkImportRunner
+        endpoint="/api/admin/movies/bulk-import-online"
+        title="Hromadne pridať online odkazy"
+        description={'Vlož zoznam v tvare "Názov filmu – https://..." pre filmy, alebo "Názov seriálu S01E01 – https://..." pre konkrétnu epizódu, jeden riadok na položku.'}
+        placeholder={'Together – https://...\nHra o trůny S01E01 – https://...'}
+        buttonLabel="Priradiť odkazy"
+      />
+
       {movies.map((m) => (
         <div key={m.id} className="border border-line rounded-xl overflow-hidden bg-card">
           <div className="flex items-center gap-3 p-3.5">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import BulkImportRunner from './BulkImportRunner';
 
 type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; tags: string | null; tmdbId: number | null };
 
@@ -10,34 +11,6 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
   const [saving, setSaving] = useState<string | null>(null);
   const [suggesting, setSuggesting] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [bulkTagsText, setBulkTagsText] = useState('');
-  const [bulkImporting, setBulkImporting] = useState(false);
-  const [bulkResults, setBulkResults] = useState<{ line: string; status: string; detail?: string }[] | null>(null);
-
-  async function handleBulkImportTags() {
-    setBulkImporting(true);
-    setBulkResults(null);
-    try {
-      const res = await fetch('/api/admin/movies/bulk-import-tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: bulkTagsText })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
-      setBulkResults(data.results);
-      setMovies((prev) =>
-        prev.map((m) => {
-          const found = data.results.find((r: any) => r.status === 'OK' && r.detail?.startsWith(`${m.title}:`));
-          return found ? { ...m, tags: found.detail.slice(m.title.length + 2) } : m;
-        })
-      );
-    } catch (err: any) {
-      setBulkResults([{ line: '', status: 'CHYBA', detail: err.message || 'Import zlyhal.' }]);
-    } finally {
-      setBulkImporting(false);
-    }
-  }
 
   function tagsFor(m: MovieItem) {
     return drafts[m.id] ?? m.tags ?? '';
@@ -81,37 +54,13 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
 
   return (
     <div>
-      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Hromadne pridať vlastné tagy</div>
-        <div className="text-xs text-muted mb-3">
-          Vlož zoznam v tvare <code>Názov filmu – tag1, tag2, tag3</code>, jeden riadok na film. Nové tagy sa pridajú k už
-          existujúcim, nič sa neprepíše.
-        </div>
-        <textarea
-          value={bulkTagsText}
-          onChange={(e) => setBulkTagsText(e.target.value)}
-          rows={5}
-          placeholder={'Batman – Batman, Joker, hádanka, kladivo, policie'}
-          className="w-full border border-line rounded-lg px-3 py-2 text-sm font-mono mb-3"
-        />
-        <button
-          type="button"
-          onClick={handleBulkImportTags}
-          disabled={bulkImporting || !bulkTagsText.trim()}
-          className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
-        >
-          {bulkImporting ? 'Priraďujem…' : 'Priradiť tagy'}
-        </button>
-        {bulkResults && (
-          <div className="mt-3 text-xs space-y-1 max-h-64 overflow-y-auto">
-            {bulkResults.map((r, i) => (
-              <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
-                <span className="font-semibold">{r.status}</span> — {r.detail || r.line}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <BulkImportRunner
+        endpoint="/api/admin/movies/bulk-import-tags"
+        title="Hromadne pridať vlastné tagy"
+        description={'Vlož zoznam v tvare "Názov filmu – tag1, tag2, tag3", jeden riadok na film. Nové tagy sa pridajú k už existujúcim, nič sa neprepíše.'}
+        placeholder={'Batman – Batman, Joker, hádanka, kladivo, policie'}
+        buttonLabel="Priradiť tagy"
+      />
 
       <input
         className="field-input-sm max-w-sm mb-4"

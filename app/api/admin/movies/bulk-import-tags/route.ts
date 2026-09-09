@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
 
 function normalize(title: string): string {
   return title
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 
-  const { text } = await req.json();
+  const { text, preview } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
     return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
   }
@@ -41,7 +42,8 @@ export async function POST(req: Request) {
     }
   }
 
-  const results: { line: string; status: string; detail?: string }[] = [];
+  const results: { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string }[] = [];
+  const changes: LoggedChange[] = [];
 
   for (const line of lines) {
     const match = line.match(/^(.+?)\s*[–-]\s*(.+)$/);
@@ -70,10 +72,33 @@ export async function POST(req: Request) {
     // Existujúce tagy zlúčime s novými, nech sa nič neprepíše ani neduplikuje.
     const existingTags = (movie.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
     const merged = Array.from(new Set([...existingTags, ...newTags]));
+    const mergedStr = merged.join(', ');
 
-    await prisma.movie.update({ where: { id: movie.id }, data: { tags: merged.join(', ') } });
-    results.push({ line, status: 'OK', detail: `${movie.title}: ${merged.join(', ')}` });
+    results.push({
+      line,
+      status: mergedStr === (movie.tags || '') ? 'BEZ ZMENY' : 'OK',
+      detail: `${movie.title}: ${mergedStr}`,
+      oldValue: movie.tags,
+      newValue: mergedStr
+    });
+
+    if (!preview && mergedStr !== (movie.tags || '')) {
+      await prisma.movie.update({ where: { id: movie.id }, data: { tags: mergedStr } });
+      changes.push({
+        targetType: 'movie',
+        targetId: movie.id,
+        movieTitle: movie.title,
+        field: 'tags',
+        oldValue: movie.tags,
+        newValue: mergedStr
+      });
+    }
   }
 
-  return NextResponse.json({ results });
+  if (preview) {
+    return NextResponse.json({ results, preview: true });
+  }
+
+  const batchId = await logBulkImportBatch('tags', changes);
+  return NextResponse.json({ results, batchId, changedCount: changes.length });
 }
