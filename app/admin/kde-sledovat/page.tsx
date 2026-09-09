@@ -23,6 +23,7 @@ export default async function AdminKdeSledovatPage() {
         poster: true,
         year: true,
         tmdbId: true,
+        createdAt: true,
         streamingServices: {
           select: { streamingServiceId: true, url: true }
         }
@@ -30,12 +31,22 @@ export default async function AdminKdeSledovatPage() {
     })
   ]);
 
+  // Filmy bez akejkoľvek priradenej VOD platformy idú navrch (od najnovšie
+  // pridaných), nech sa nestratia v dlhom zozname. Vyplnené nasledujú za
+  // nimi, tiež zoradené od najnovších.
+  const sortedMovies = [...movies].sort((a, b) => {
+    const aFilled = a.streamingServices.length > 0;
+    const bFilled = b.streamingServices.length > 0;
+    if (aFilled !== bFilled) return aFilled ? 1 : -1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Kde sledovať</h1>
-      <StreamingServicesAdmin initialServices={services} initialMovies={movies} />
+      <StreamingServicesAdmin initialServices={services} initialMovies={sortedMovies} />
     </div>
   );
 }

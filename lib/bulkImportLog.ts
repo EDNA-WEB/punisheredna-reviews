@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 import { randomUUID } from 'crypto';
 
 export type LoggedChange = {
-  targetType: 'movie' | 'episode' | 'premiere' | 'movieLink';
+  targetType: 'movie' | 'episode' | 'premiere' | 'movieLink' | 'streamingService';
   targetId: string;
   movieTitle: string;
   field: string;
@@ -35,6 +35,13 @@ export async function logBulkImportBatch(importType: string, changes: LoggedChan
   return batchId;
 }
 
+const BOOLEAN_FIELDS = new Set(['hasSubtitles', 'hasDubbing']);
+
+function coerceValue(field: string, value: string | null): any {
+  if (BOOLEAN_FIELDS.has(field)) return value === 'true';
+  return value;
+}
+
 // Vráti celú dávku zmien späť na pôvodné hodnoty. Ak riadok vznikol novo
 // (wasCreated), pri vrátení sa rovno vymaže namiesto nastavenia na null.
 export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: number; errors: string[] }> {
@@ -47,7 +54,7 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
       if (change.targetType === 'movie') {
         await prisma.movie.update({
           where: { id: change.targetId },
-          data: { [change.field]: change.oldValue }
+          data: { [change.field]: coerceValue(change.field, change.oldValue) }
         });
       } else if (change.targetType === 'episode') {
         await prisma.episode.update({
@@ -64,6 +71,12 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
           await prisma.movieLink.delete({ where: { id: change.targetId } }).catch(() => {});
         } else {
           await prisma.movieLink.update({ where: { id: change.targetId }, data: { url: change.oldValue || '' } });
+        }
+      } else if (change.targetType === 'streamingService') {
+        if (change.wasCreated) {
+          await prisma.movieStreamingService.delete({ where: { id: change.targetId } }).catch(() => {});
+        } else {
+          await prisma.movieStreamingService.update({ where: { id: change.targetId }, data: { url: change.oldValue || '' } });
         }
       }
       reverted++;

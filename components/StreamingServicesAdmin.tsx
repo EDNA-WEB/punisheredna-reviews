@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import BulkImportRunner from './BulkImportRunner';
+import ClientPagination from './ClientPagination';
 
 type Service = { id: string; name: string; icon: string | null; color: string | null; order: number };
 type MovieItem = {
@@ -90,12 +92,17 @@ export default function StreamingServicesAdmin({
 
   // --- Priradenie k filmom ---
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [openFor, setOpenFor] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, { checked: Set<string>; urls: Record<string, string> }>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState('');
 
   const filteredMovies = movies.filter((m) => m.title.toLowerCase().includes(search.toLowerCase()));
+  const PAGE_SIZE = 50;
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageMovies = filteredMovies.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function openMovie(m: MovieItem) {
     if (openFor === m.id) {
@@ -184,6 +191,14 @@ export default function StreamingServicesAdmin({
 
   return (
     <div className="max-w-3xl space-y-8">
+      <BulkImportRunner
+        endpoint="/api/admin/movies/bulk-import-streaming"
+        title="Hromadne priradiť VOD platformy a odkazy"
+        description={'Vlož zoznam v tvare "Názov filmu – Platforma – https://...", jeden riadok na film. Ak platforma ešte neexistuje v katalógu, automaticky sa vytvorí.'}
+        placeholder={'Together – Netflix – https://www.netflix.com/title/...'}
+        buttonLabel="Priradiť platformy"
+      />
+
       {/* Katalóg služieb */}
       <div className="border border-line rounded-xl p-4">
         <h2 className="text-sm font-bold text-ink mb-3">Katalóg streamovacích služieb</h2>
@@ -235,14 +250,17 @@ export default function StreamingServicesAdmin({
         <input
           className="field-input mb-4"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           placeholder="Hľadať film…"
         />
 
         {saveError && <p className="text-danger text-xs mb-3">{saveError}</p>}
 
         <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
-          {filteredMovies.slice(0, 50).map((m) => {
+          {pageMovies.map((m) => {
             const draft = drafts[m.id];
             return (
               <div key={m.id}>
@@ -311,9 +329,9 @@ export default function StreamingServicesAdmin({
             );
           })}
         </div>
-        {filteredMovies.length > 50 && (
-          <p className="text-xs text-muted mt-2">Zobrazených prvých 50 výsledkov — hľadaj presnejšie, ak nevidíš svoj film.</p>
-        )}
+        <div className="mt-4">
+          <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+        </div>
       </div>
     </div>
   );

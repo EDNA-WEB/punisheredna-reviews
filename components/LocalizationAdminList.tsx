@@ -11,6 +11,67 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
   const [savingId, setSavingId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [oldPreview, setOldPreview] = useState<{ count: number; sample: string[] } | null>(null);
+  const [oldBusy, setOldBusy] = useState(false);
+  const [oldDone, setOldDone] = useState<{ count: number; batchId: string | null } | null>(null);
+  const [oldUndoStatus, setOldUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
+
+  async function previewOldMovies() {
+    setOldBusy(true);
+    setOldDone(null);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-localize-old', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: true })
+      });
+      const data = await res.json();
+      setOldPreview(data);
+    } finally {
+      setOldBusy(false);
+    }
+  }
+
+  async function confirmOldMovies() {
+    setOldBusy(true);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-localize-old', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: false })
+      });
+      const data = await res.json();
+      setOldDone({ count: data.count, batchId: data.batchId || null });
+      setOldPreview(null);
+      setOldUndoStatus('idle');
+      // Lokálne premietneme zmenu aj do zobrazeného zoznamu, nech to sedí bez reloadu.
+      setMovies((prev) =>
+        prev.map((m) => {
+          const startYear = parseInt((m.year || '').slice(0, 4), 10);
+          return !Number.isNaN(startYear) && startYear < 2025 ? { ...m, hasSubtitles: true, hasDubbing: true } : m;
+        })
+      );
+    } finally {
+      setOldBusy(false);
+    }
+  }
+
+  async function undoOldMovies() {
+    if (!oldDone?.batchId) return;
+    setOldUndoStatus('undoing');
+    try {
+      const res = await fetch('/api/admin/bulk-import/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId: oldDone.batchId })
+      });
+      if (!res.ok) throw new Error();
+      setOldUndoStatus('done');
+    } catch {
+      setOldUndoStatus('idle');
+      alert('Vrátenie späť zlyhalo.');
+    }
+  }
 
   async function toggle(movieId: string, field: 'hasSubtitles' | 'hasDubbing', current: boolean) {
     setSavingId(movieId);
@@ -42,6 +103,68 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
 
   return (
     <div>
+      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
+        <div className="text-sm font-semibold text-ink mb-1">Označiť staršie filmy ako dabing + titulky</div>
+        <div className="text-xs text-muted mb-3">
+          Jednorazovo označí všetky filmy a seriály staršie ako rok 2025 (kde ešte nie je nastavené oboje), že majú
+          český dabing aj titulky. Neovplyvní filmy z roku 2025 a novšie.
+        </div>
+
+        {!oldPreview && !oldDone && (
+          <button
+            type="button"
+            onClick={previewOldMovies}
+            disabled={oldBusy}
+            className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {oldBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+          </button>
+        )}
+
+        {oldPreview && !oldDone && (
+          <div>
+            <div className="text-xs text-ink mb-2">
+              Zmení sa <strong>{oldPreview.count}</strong> filmov/seriálov. Ukážka prvých {oldPreview.sample.length}:
+            </div>
+            <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{oldPreview.sample.join(', ')}</div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={confirmOldMovies}
+                disabled={oldBusy}
+                className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {oldBusy ? 'Ukladám…' : `Potvrdiť a uložiť (${oldPreview.count})`}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOldPreview(null)}
+                className="text-sm font-semibold text-muted hover:text-ink"
+              >
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {oldDone && (
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-semibold text-ink">Hotovo — upravených {oldDone.count} filmov/seriálov.</div>
+            {oldDone.batchId && oldUndoStatus !== 'done' && (
+              <button
+                type="button"
+                onClick={undoOldMovies}
+                disabled={oldUndoStatus === 'undoing'}
+                className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
+              >
+                {oldUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+              </button>
+            )}
+            {oldUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+          </div>
+        )}
+      </div>
+
       <input
         className="field-input-sm max-w-xs mb-4"
         value={query}
