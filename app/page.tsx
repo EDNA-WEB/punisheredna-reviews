@@ -19,6 +19,7 @@ import { cookies } from 'next/headers';
 import { parseConsentCookie, isConsentGranted } from '@/lib/privacyDefaults';
 import { getRecommendationsForUser } from '@/lib/recommendations';
 import MovieCard from '@/components/MovieCard';
+import { primaryGenreLabel } from '@/lib/genreLabel';
 
 export const dynamic = 'force-dynamic';
 
@@ -198,11 +199,13 @@ export default async function HomePage() {
                   year: m.year,
                   percent: m.percent,
                   ratingCount: m.ratings.length,
-                  genre: (m.genres || '').split(',')[0]?.trim() || null,
+                  genre: primaryGenreLabel((m.genres || '').split(',').map((g) => g.trim()).filter(Boolean)),
                   hasSubtitles: m.hasSubtitles,
                   hasDubbing: m.hasDubbing,
                   releaseDate: m.releaseDate,
-                  isCamVersion: m.isCamVersion
+                  isCamVersion: m.isCamVersion,
+                  contentType: m.contentType,
+                  premiereType: m.premiereDates[0]?.type || null
                 }}
               />
             ))}

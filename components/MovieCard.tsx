@@ -17,9 +17,23 @@ export default function MovieCard({
     hasDubbing?: boolean;
     releaseDate?: Date | string | null;
     isCamVersion?: boolean;
+    contentType?: string;
+    premiereType?: string | null;
   };
 }) {
   const isUpcoming = !!(movie.releaseDate && new Date(movie.releaseDate) > new Date());
+
+  function upcomingLabel(): string {
+    if (!movie.releaseDate) return 'Čoskoro';
+    const premiereYear = new Date(movie.releaseDate).getFullYear();
+    const currentYear = new Date().getFullYear();
+    // Ak premiéra nie je v aktuálnom roku (napr. film vyjde až o rok/dva),
+    // konkrétny typ (kino/VOD) sa ešte môže zmeniť — radšej jednotné "Čoskoro".
+    if (premiereYear !== currentYear) return 'Čoskoro';
+
+    if (movie.contentType === 'Seriál') return 'Čoskoro na VOD';
+    return movie.premiereType === 'VOD' ? 'Čoskoro na VOD' : 'Čoskoro v kinách';
+  }
 
   return (
     <Link href={`/movie/${movie.slug}`} className="block group">
@@ -37,7 +51,7 @@ export default function MovieCard({
         )}
         {isUpcoming && (
           <span className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/85 text-ink backdrop-blur-sm border border-line">
-            Pripravuje sa
+            {upcomingLabel()}
           </span>
         )}
         {movie.isCamVersion && (

@@ -25,7 +25,7 @@ export default function AudioBadges({
       {hasDubbing && (
         <span
           title="Dostupný dabing"
-          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 border border-accent/30 text-accent"
+          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-600"
         >
           <IconDubbing className={size} />
         </span>
@@ -33,7 +33,7 @@ export default function AudioBadges({
       {hasSubtitles && (
         <span
           title="Dostupné titulky"
-          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 border border-accent/30 text-accent"
+          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-50 border border-sky-300 text-sky-600"
         >
           <IconSubtitles className={size} />
         </span>

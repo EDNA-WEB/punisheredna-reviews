@@ -160,39 +160,43 @@ export default function BoxOfficeCompareTool() {
             </div>
           </div>
 
-          <p className="text-xs text-muted text-center mb-3 pb-3 border-b border-line">
-            Filmy vznikli v rôznych rokoch — pre férové porovnanie sú sumy nižšie prepočítané na dnešnú hodnotu peňazí (inflácia).
-          </p>
+          {data.a.releaseYear !== data.b.releaseYear && (
+            <p className="text-xs text-muted text-center mb-3 pb-3 border-b border-line">
+              Filmy vznikli v rôznych rokoch — pre férové porovnanie sú sumy nižšie prepočítané na dnešnú hodnotu peňazí (inflácia).
+            </p>
+          )}
 
-          <Row
-            label="Rozpočet (dnes)"
-            a={formatMoney(data.a.adjusted.totalCost)}
-            b={formatMoney(data.b.adjusted.totalCost)}
-          />
-          <Row
-            label="Tržby z kín (dnes)"
-            a={formatMoney(data.a.adjusted.earned)}
-            b={formatMoney(data.b.adjusted.earned)}
-            aBetter={data.a.adjusted.earned > data.b.adjusted.earned}
-            bBetter={data.b.adjusted.earned > data.a.adjusted.earned}
-          />
-          <Row
-            label="Podiel štúdia z kín (dnes)"
-            a={formatMoney(data.a.adjusted.studioTheatricalRevenue)}
-            b={formatMoney(data.b.adjusted.studioTheatricalRevenue)}
-          />
-          <Row
-            label="Sekundárne príjmy (dnes)"
-            a={formatMoney(data.a.adjusted.ancillaryRevenue)}
-            b={formatMoney(data.b.adjusted.ancillaryRevenue)}
-          />
-          <Row
-            label="Zisk štúdia (dnes)"
-            a={formatMoney(data.a.adjusted.profit)}
-            b={formatMoney(data.b.adjusted.profit)}
-            aBetter={data.a.adjusted.profit > data.b.adjusted.profit}
-            bBetter={data.b.adjusted.profit > data.a.adjusted.profit}
-          />
+          {(() => {
+            // Prepočet na dnešnú hodnotu má zmysel LEN keď filmy vznikli v
+            // rôznych rokoch — pri rovnakom roku porovnávame pôvodné sumy
+            // priamo, žiadny prepočet netreba a labely to nemajú zavádzajúco naznačovať.
+            const sameYear = data.a.releaseYear === data.b.releaseYear;
+            const av = sameYear ? data.a.stats! : data.a.adjusted!;
+            const bv = sameYear ? data.b.stats! : data.b.adjusted!;
+            const suffix = sameYear ? '' : ' (dnes)';
+            return (
+              <>
+                <Row label={`Rozpočet${suffix}`} a={formatMoney(av.totalCost)} b={formatMoney(bv.totalCost)} />
+                <Row
+                  label={`Tržby z kín${suffix}`}
+                  a={formatMoney(av.earned)}
+                  b={formatMoney(bv.earned)}
+                  aBetter={av.earned > bv.earned}
+                  bBetter={bv.earned > av.earned}
+                />
+                <Row label={`Podiel štúdia z kín${suffix}`} a={formatMoney(av.studioTheatricalRevenue)} b={formatMoney(bv.studioTheatricalRevenue)} />
+                <Row label={`Sekundárne príjmy${suffix}`} a={formatMoney(av.ancillaryRevenue)} b={formatMoney(bv.ancillaryRevenue)} />
+                <Row
+                  label={`Zisk štúdia${suffix}`}
+                  a={formatMoney(av.profit)}
+                  b={formatMoney(bv.profit)}
+                  aBetter={av.profit > bv.profit}
+                  bBetter={bv.profit > av.profit}
+                />
+              </>
+            );
+          })()}
+
           <Row
             label="Návratnosť (zisk / náklady)"
             a={data.a.profitRatio !== null ? `${(data.a.profitRatio * 100).toFixed(0)} %` : '—'}
@@ -206,7 +210,9 @@ export default function BoxOfficeCompareTool() {
               <p className="text-sm font-semibold text-ink">
                 {data.a.profitRatio === data.b.profitRatio
                   ? 'Oba filmy dosiahli rovnakú návratnosť vzhľadom na svoje náklady.'
-                  : `${data.a.profitRatio > data.b.profitRatio ? data.a.movie.title : data.b.movie.title} bol úspešnejší — vyššia návratnosť vzhľadom na náklady, prepočítané na dnešnú hodnotu peňazí.`}
+                  : `${data.a.profitRatio > data.b.profitRatio ? data.a.movie.title : data.b.movie.title} bol úspešnejší — vyššia návratnosť vzhľadom na náklady${
+                      data.a.releaseYear !== data.b.releaseYear ? ', prepočítané na dnešnú hodnotu peňazí' : ''
+                    }.`}
               </p>
             ) : (
               <p className="text-sm text-muted">Na jednoznačné porovnanie chýbajú niektoré údaje.</p>

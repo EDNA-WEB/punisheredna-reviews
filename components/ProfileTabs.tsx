@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser, IconEdit } from './Icons';
+import Pagination from './Pagination';
 import CriticBadge from './CriticBadge';
 import StarRating from './StarRating';
 import { useT } from './TranslationProvider';
@@ -67,38 +68,36 @@ export default function ProfileTabs({
 
   const [active, setActive] = useState('prehlad');
   const [reviewList, setReviewList] = useState(reviews);
-  const [reviewsHasMore, setReviewsHasMore] = useState(reviews.length >= 20);
   const [reviewsPage, setReviewsPage] = useState(1);
+  const [reviewsTotalPages, setReviewsTotalPages] = useState(1);
   const [loadingReviews, setLoadingReviews] = useState(false);
 
   const [ratingList, setRatingList] = useState(latestRatings);
-  const [ratingsHasMore, setRatingsHasMore] = useState(latestRatings.length >= 20);
   const [ratingsPage, setRatingsPage] = useState(1);
+  const [ratingsTotalPages, setRatingsTotalPages] = useState(1);
   const [loadingRatings, setLoadingRatings] = useState(false);
 
-  async function loadMoreReviews() {
+  async function goToReviewsPage(page: number) {
     setLoadingReviews(true);
     try {
-      const nextPage = reviewsPage + 1;
-      const res = await fetch(`/api/users/${userId}/reviews?page=${nextPage}`);
+      const res = await fetch(`/api/users/${userId}/reviews?page=${page}`);
       const data = await res.json();
-      setReviewList((prev) => [...prev, ...data.reviews]);
-      setReviewsHasMore(data.hasMore);
-      setReviewsPage(nextPage);
+      setReviewList(data.reviews);
+      setReviewsTotalPages(data.totalPages);
+      setReviewsPage(page);
     } finally {
       setLoadingReviews(false);
     }
   }
 
-  async function loadMoreRatings() {
+  async function goToRatingsPage(page: number) {
     setLoadingRatings(true);
     try {
-      const nextPage = ratingsPage + 1;
-      const res = await fetch(`/api/users/${userId}/ratings?page=${nextPage}`);
+      const res = await fetch(`/api/users/${userId}/ratings?page=${page}`);
       const data = await res.json();
-      setRatingList((prev) => [...prev, ...data.ratings]);
-      setRatingsHasMore(data.hasMore);
-      setRatingsPage(nextPage);
+      setRatingList(data.ratings);
+      setRatingsTotalPages(data.totalPages);
+      setRatingsPage(page);
     } finally {
       setLoadingRatings(false);
     }
@@ -342,15 +341,7 @@ export default function ProfileTabs({
               );
             })
           )}
-          {ratingsHasMore && (
-            <button
-              onClick={loadMoreRatings}
-              disabled={loadingRatings}
-              className="w-full text-sm font-semibold text-accent border border-line rounded-xl py-2.5 hover:border-accent disabled:opacity-50"
-            >
-              {loadingRatings ? 'Načítavam…' : 'Načítať ďalšie'}
-            </button>
-          )}
+          <Pagination currentPage={ratingsPage} totalPages={ratingsTotalPages} onPageChange={goToRatingsPage} loading={loadingRatings} />
         </div>
       )}
 
@@ -384,15 +375,7 @@ export default function ProfileTabs({
               </div>
             ))
           )}
-          {reviewsHasMore && (
-            <button
-              onClick={loadMoreReviews}
-              disabled={loadingReviews}
-              className="w-full text-sm font-semibold text-accent border border-line rounded-xl py-2.5 hover:border-accent disabled:opacity-50"
-            >
-              {loadingReviews ? 'Načítavam…' : 'Načítať ďalšie'}
-            </button>
-          )}
+          <Pagination currentPage={reviewsPage} totalPages={reviewsTotalPages} onPageChange={goToReviewsPage} loading={loadingReviews} />
         </div>
       )}
 

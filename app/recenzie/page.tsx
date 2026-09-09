@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
 import GenreDropdown from '@/components/GenreDropdown';
+import { primaryGenreLabel } from '@/lib/genreLabel';
 import { computePercent } from '@/lib/rating';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
@@ -90,6 +91,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     },
     include: {
       ratings: { where: { seasonId: null, episodeId: null } },
+      premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } },
       _count: {
         select: {
           reviews: { where: { seasonId: null, episodeId: null } },
@@ -185,7 +187,24 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-9">
             {paged.map((m) => (
-              <MovieCard key={m.id} movie={{ title: m.title, slug: m.slug, poster: m.poster, year: m.year, percent: m.percent, ratingCount: m.ratings.length, genre: m.genreList[0] || null, hasSubtitles: m.hasSubtitles, hasDubbing: m.hasDubbing, releaseDate: m.releaseDate, isCamVersion: m.isCamVersion }} />
+              <MovieCard
+                key={m.id}
+                movie={{
+                  title: m.title,
+                  slug: m.slug,
+                  poster: m.poster,
+                  year: m.year,
+                  percent: m.percent,
+                  ratingCount: m.ratings.length,
+                  genre: primaryGenreLabel(m.genreList),
+                  hasSubtitles: m.hasSubtitles,
+                  hasDubbing: m.hasDubbing,
+                  releaseDate: m.releaseDate,
+                  isCamVersion: m.isCamVersion,
+                  contentType: m.contentType,
+                  premiereType: m.premiereDates[0]?.type || null
+                }}
+              />
             ))}
           </div>
           {totalPages > 1 && (

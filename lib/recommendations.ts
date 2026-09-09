@@ -44,7 +44,7 @@ export async function getRecommendationsForUser(userId: string, limit = 8) {
       id: { notIn: Array.from(alreadyRatedIds) },
       OR: topGenres.map((g) => ({ genres: { contains: g, mode: 'insensitive' as const } }))
     },
-    include: { ratings: { where: { seasonId: null, episodeId: null } } },
+    include: { ratings: { where: { seasonId: null, episodeId: null } }, premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } } },
     take: 200
   });
 
