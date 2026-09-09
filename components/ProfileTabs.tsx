@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser, IconEdit } from './Icons';
-import Pagination from './Pagination';
+import Pagination from './ClientPagination';
 import CriticBadge from './CriticBadge';
 import StarRating from './StarRating';
 import { useT } from './TranslationProvider';

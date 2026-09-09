@@ -1,25 +1,19 @@
-'use client';
-
+import Link from 'next/link';
 import { IconChevronLeft, IconChevronRight } from './Icons';
 
-export default function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-  loading
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  loading?: boolean;
-}) {
+export default function Pagination({ page, totalPages, basePath }: { page: number; totalPages: number; basePath: string }) {
   if (totalPages <= 1) return null;
+
+  function hrefFor(p: number) {
+    const separator = basePath.includes('?') ? '&' : '?';
+    return `${basePath}${separator}page=${p}`;
+  }
 
   // Pri veľkom počte strán ukážeme len okolie aktuálnej strany + prvú a
   // poslednú, s "…" medzerami — nech to nezaberá celú šírku obrazovky.
   const pages: (number | 'gap')[] = [];
   for (let p = 1; p <= totalPages; p++) {
-    if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+    if (p === 1 || p === totalPages || Math.abs(p - page) <= 1) {
       pages.push(p);
     } else if (pages[pages.length - 1] !== 'gap') {
       pages.push('gap');
@@ -28,15 +22,19 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-center gap-1.5 pt-2">
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1 || loading}
-        aria-label="Predchádzajúca strana"
-        className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent disabled:opacity-40 disabled:hover:border-line disabled:hover:text-ink"
-      >
-        <IconChevronLeft className="w-4 h-4" />
-      </button>
+      {page > 1 ? (
+        <Link
+          href={hrefFor(page - 1)}
+          aria-label="Predchádzajúca strana"
+          className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent"
+        >
+          <IconChevronLeft className="w-4 h-4" />
+        </Link>
+      ) : (
+        <span className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink opacity-40">
+          <IconChevronLeft className="w-4 h-4" />
+        </span>
+      )}
 
       {pages.map((p, i) =>
         p === 'gap' ? (
@@ -44,29 +42,31 @@ export default function Pagination({
             …
           </span>
         ) : (
-          <button
+          <Link
             key={p}
-            type="button"
-            onClick={() => onPageChange(p)}
-            disabled={loading}
+            href={hrefFor(p)}
             className={`w-8 h-8 rounded-lg text-sm font-semibold flex items-center justify-center transition-colors ${
-              p === currentPage ? 'bg-accent text-white' : 'border border-line text-ink hover:border-accent hover:text-accent'
+              p === page ? 'bg-accent text-white' : 'border border-line text-ink hover:border-accent hover:text-accent'
             }`}
           >
             {p}
-          </button>
+          </Link>
         )
       )}
 
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages || loading}
-        aria-label="Ďalšia strana"
-        className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent disabled:opacity-40 disabled:hover:border-line disabled:hover:text-ink"
-      >
-        <IconChevronRight className="w-4 h-4" />
-      </button>
+      {page < totalPages ? (
+        <Link
+          href={hrefFor(page + 1)}
+          aria-label="Ďalšia strana"
+          className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent"
+        >
+          <IconChevronRight className="w-4 h-4" />
+        </Link>
+      ) : (
+        <span className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink opacity-40">
+          <IconChevronRight className="w-4 h-4" />
+        </span>
+      )}
     </div>
   );
 }
