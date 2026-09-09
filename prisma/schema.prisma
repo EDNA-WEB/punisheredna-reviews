@@ -289,6 +289,7 @@ model Movie {
   listItems      MovieListItem[]
   seasons        Season[]
   streamingServices MovieStreamingService[]
+  keywords MovieKeyword[]
   links MovieLink[]
   premiereDates MoviePremiereDate[]
   tmdbId Int?
@@ -634,6 +635,17 @@ model MoviePremiereDate {
   distributor String?
   createdAt   DateTime @default(now())
 
+  @@index([movieId])
+}
+
+model MovieKeyword {
+  id        String   @id @default(cuid())
+  movieId   String
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  @@unique([movieId, name])
   @@index([movieId])
 }
 
