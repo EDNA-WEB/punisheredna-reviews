@@ -42,6 +42,89 @@ export default function StreamingServicesAdmin({
   const [addingService, setAddingService] = useState(false);
   const [serviceError, setServiceError] = useState('');
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editIcon, setEditIcon] = useState('');
+  const [editColor, setEditColor] = useState('#000000');
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  const [mergeFrom, setMergeFrom] = useState('');
+  const [mergeTo, setMergeTo] = useState('');
+  const [merging, setMerging] = useState(false);
+  const [mergeMessage, setMergeMessage] = useState('');
+
+  function openEdit(s: Service) {
+    setEditingId(s.id);
+    setEditName(s.name);
+    setEditIcon(s.icon || '');
+    setEditColor(s.color || '#000000');
+    setEditError('');
+  }
+
+  function handleEditIconFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement('img');
+      img.onload = () => setEditIcon(resizeToDataUrl(img, 200, 0.9));
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveEdit() {
+    if (!editingId) return;
+    setSavingEdit(true);
+    setEditError('');
+    try {
+      const res = await fetch(`/api/admin/streaming-services/${editingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName.trim(), icon: editIcon || null, color: editColor })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Úprava zlyhala.');
+      setServices((prev) => prev.map((s) => (s.id === editingId ? data : s)));
+      setEditingId(null);
+    } catch (err: any) {
+      setEditError(err.message);
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  async function handleMerge() {
+    if (!mergeFrom || !mergeTo || mergeFrom === mergeTo) return;
+    if (!confirm('Naozaj zlúčiť tieto dve služby? Táto akcia sa nedá vrátiť späť.')) return;
+    setMerging(true);
+    setMergeMessage('');
+    try {
+      const res = await fetch('/api/admin/streaming-services/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keepId: mergeTo, mergeId: mergeFrom })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Zlúčenie zlyhalo.');
+      setServices((prev) => prev.filter((s) => s.id !== mergeFrom));
+      setMovies((prev) =>
+        prev.map((m) => ({
+          ...m,
+          streamingServices: m.streamingServices.map((s) => (s.streamingServiceId === mergeFrom ? { ...s, streamingServiceId: mergeTo } : s))
+        }))
+      );
+      setMergeMessage(`Hotovo — "${data.removedService}" zlúčené do "${data.keptService}" (${data.moved} presunutých, ${data.skipped} duplicít odstránených).`);
+      setMergeFrom('');
+      setMergeTo('');
+    } catch (err: any) {
+      setMergeMessage(err.message);
+    } finally {
+      setMerging(false);
+    }
+  }
+
   function handleIconFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -207,17 +290,85 @@ export default function StreamingServicesAdmin({
           <div className="flex flex-wrap gap-2 mb-4">
             {services.map((s) => (
               <div key={s.id} className="flex items-center gap-2 border border-line rounded-full pl-1.5 pr-3 py-1.5">
-                {s.icon ? (
-                  <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: s.color || '#f3f3f3' }}>
-                          <img src={s.icon} alt="" className="w-full h-full object-cover" />
-                        </span>
-                ) : (
-                  <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: s.color || '#ccc' }} />
-                )}
-                <span className="text-sm font-semibold text-ink">{s.name}</span>
+                <button type="button" onClick={() => openEdit(s)} className="flex items-center gap-2 hover:opacity-70">
+                  {s.icon ? (
+                    <span className="w-6 h-6 rounded-full flex-none flex items-center justify-center overflow-hidden" style={{ backgroundColor: s.color || '#f3f3f3' }}>
+                      <img src={s.icon} alt="" className="w-full h-full object-cover" />
+                    </span>
+                  ) : (
+                    <span className="w-6 h-6 rounded-full flex-none" style={{ backgroundColor: s.color || '#ccc' }} />
+                  )}
+                  <span className="text-sm font-semibold text-ink">{s.name}</span>
+                </button>
                 <button onClick={() => deleteService(s.id)} className="text-muted hover:text-danger text-xs ml-1">✕</button>
               </div>
             ))}
+          </div>
+        )}
+
+        {editingId && (
+          <div className="border border-line rounded-xl p-4 bg-surface mb-4">
+            <div className="text-xs font-semibold text-ink mb-2">Upraviť službu</div>
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <label className="w-9 h-9 rounded-full border border-line flex items-center justify-center cursor-pointer hover:border-accent flex-none overflow-hidden">
+                {editIcon ? <img src={editIcon} alt="" className="w-full h-full object-cover" /> : <span className="text-muted text-xs">＋</span>}
+                <input type="file" accept="image/*" className="hidden" onChange={handleEditIconFile} />
+              </label>
+              <input className="field-input-sm flex-1 min-w-[160px]" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Názov" />
+              <input type="color" value={editColor} onChange={(e) => setEditColor(e.target.value)} className="w-9 h-9 rounded-full border border-line cursor-pointer flex-none" />
+            </div>
+            {editError && <p className="text-danger text-xs mb-2">{editError}</p>}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={saveEdit}
+                disabled={savingEdit || !editName.trim()}
+                className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {savingEdit ? 'Ukladám…' : 'Uložiť zmeny'}
+              </button>
+              <button type="button" onClick={() => setEditingId(null)} className="text-xs font-semibold text-muted hover:text-ink">
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {services.length > 1 && (
+          <div className="border border-line rounded-xl p-4 bg-surface mb-4">
+            <div className="text-xs font-semibold text-ink mb-1">Zlúčiť duplicitné služby</div>
+            <div className="text-xs text-muted mb-3">
+              Ak máš tú istú platformu dvakrát pod rôznymi názvami (napr. z omylom vytvorenej duplicity pri hromadnom
+              importe), zlúč ju sem — všetky priradenia filmov sa presunú na ponechanú službu a duplicita sa vymaže.
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <select className="field-input-sm" value={mergeFrom} onChange={(e) => setMergeFrom(e.target.value)}>
+                <option value="">Zlúčiť službu…</option>
+                {services.map((s) => (
+                  <option key={s.id} value={s.id} disabled={s.id === mergeTo}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-xs text-muted">do</span>
+              <select className="field-input-sm" value={mergeTo} onChange={(e) => setMergeTo(e.target.value)}>
+                <option value="">…tejto služby</option>
+                {services.map((s) => (
+                  <option key={s.id} value={s.id} disabled={s.id === mergeFrom}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleMerge}
+                disabled={merging || !mergeFrom || !mergeTo}
+                className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {merging ? 'Zlučujem…' : 'Zlúčiť'}
+              </button>
+            </div>
+            {mergeMessage && <p className="text-xs text-ink mt-2">{mergeMessage}</p>}
           </div>
         )}
 
