@@ -3,16 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-
-// Normalizácia názvu na porovnávanie — malé písmená, bez diakritiky,
-// orezané medzery, nech "Kmotr" a "kmotr " nájdu rovnaký film.
-function normalize(title: string): string {
-  return title
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -26,7 +17,6 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – https://www.csfd.cz/film/..."
-  // (pomlčka môže byť aj obyčajná "-" alebo "–").
   const lines = text
     .split('\n')
     .map((l) => l.trim())
@@ -38,55 +28,31 @@ export async function POST(req: Request) {
     where: { approved: true },
     select: { id: true, title: true, originalTitle: true, year: true, links: { where: csfdType ? { linkTypeId: csfdType.id } : undefined } }
   });
-  const byNormalizedTitle = new Map<string, (typeof allMovies)[number][]>();
-  for (const m of allMovies) {
-    for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
-      const key = normalize(t);
-      if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push(m);
-    }
-  }
+  const index = buildTitleIndex(allMovies);
 
   const results: { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string }[] = [];
-  const changes: LoggedChange[] = [];
   const pendingWrites: { movieId: string; existingLinkId: string | null; url: string; movieTitle: string }[] = [];
 
   for (const line of lines) {
-    const match = line.match(/^(.+?)\s*[–-]\s*(https?:\/\/\S+)$/);
-    if (!match) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL"' });
+    const parts = splitLineParts(line, 2);
+    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj medzery okolo pomlčky)' });
       continue;
     }
-    const [, rawTitleFull, url] = match;
-
-    // Voliteľný rok v zátvorke na konci názvu, napr. "Street Fighter (2026)" —
-    // rieši prípady, keď máme vo filmotéke viac filmov s rovnakým názvom.
-    const yearMatch = rawTitleFull.match(/^(.+?)\s*\((\d{4})\)\s*$/);
-    const rawTitle = yearMatch ? yearMatch[1].trim() : rawTitleFull.trim();
-    const explicitYear = yearMatch ? yearMatch[2] : null;
-
-    let candidates = byNormalizedTitle.get(normalize(rawTitle)) || [];
-    if (explicitYear) candidates = candidates.filter((c) => (c.year || '').startsWith(explicitYear));
+    const [rawTitleFull, url] = parts;
+    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {
-      const allTitles = Array.from(byNormalizedTitle.keys());
-      const suggestion = allTitles.find((t) => t.includes(normalize(rawTitle)) || normalize(rawTitle).includes(t));
       results.push({
         line,
         status: 'NENÁJDENÉ',
-        detail: suggestion
-          ? `Žiadny presný film s názvom "${rawTitle}" — možno myslíš niečo podobné, over si presný názov vo filmotéke`
-          : `Žiadny film s názvom "${rawTitle}"`
+        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
       });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({
-        line,
-        status: 'NEJEDNOZNAČNÉ',
-        detail: `Viac filmov s názvom "${rawTitle}" (roky: ${years}) — pridaj rok do zátvorky, napr. "${rawTitle} (${candidates[0].year})"`
-      });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
       continue;
     }
 
@@ -111,6 +77,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ results, preview: true });
   }
 
+  const changes: LoggedChange[] = [];
   const finalCsfdType = csfdType || (await prisma.movieLinkType.create({ data: { name: 'ČSFD', color: '#c0392b' } }));
 
   for (const w of pendingWrites) {
@@ -143,6 +110,5 @@ export async function POST(req: Request) {
   }
 
   const batchId = await logBulkImportBatch('csfd-links', changes);
-
   return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

@@ -3,14 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-
-function normalize(title: string): string {
-  return title
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -31,35 +24,35 @@ export async function POST(req: Request) {
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },
-    select: { id: true, title: true, originalTitle: true, tags: true }
+    select: { id: true, title: true, originalTitle: true, tags: true, year: true }
   });
-  const byNormalizedTitle = new Map<string, { id: string; title: string; tags: string | null }[]>();
-  for (const m of allMovies) {
-    for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
-      const key = normalize(t);
-      if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push(m);
-    }
-  }
+  const index = buildTitleIndex(allMovies);
 
   const results: { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string }[] = [];
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    const match = line.match(/^(.+?)\s*[–-]\s*(.+)$/);
-    if (!match) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – tagy"' });
+    const parts = splitLineParts(line, 2);
+    if (!parts) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – tagy" (skontroluj medzery okolo pomlčky)' });
       continue;
     }
-    const [, rawTitle, rawTags] = match;
-    const candidates = byNormalizedTitle.get(normalize(rawTitle));
+    const [rawTitleFull, rawTags] = parts;
+    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
-    if (!candidates || candidates.length === 0) {
-      results.push({ line, status: 'NENÁJDENÉ', detail: `Žiadny film s názvom "${rawTitle}"` });
+    if (candidates.length === 0) {
+      results.push({
+        line,
+        status: 'NENÁJDENÉ',
+        detail: suggestion
+          ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}", skontroluj presný názov`
+          : `Žiadny film s názvom "${title}"`
+      });
       continue;
     }
     if (candidates.length > 1) {
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${rawTitle}" — preskočené` });
+      const years = candidates.map((c) => c.year || '?').join(', ');
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
       continue;
     }
 

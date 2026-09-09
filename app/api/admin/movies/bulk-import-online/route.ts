@@ -3,14 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-
-function normalize(title: string): string {
-  return title
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -25,7 +18,7 @@ export async function POST(req: Request) {
 
   // Dva podporované formáty riadku:
   //   "Together – https://..."                  → odkaz na film
-  //   "Hra o trůny S01E01 – https://...         → odkaz na konkrétnu epizódu
+  //   "Hra o trůny S01E01 – https://..."         → odkaz na konkrétnu epizódu
   const lines = text
     .split('\n')
     .map((l) => l.trim())
@@ -35,25 +28,18 @@ export async function POST(req: Request) {
     where: { approved: true },
     select: { id: true, title: true, originalTitle: true, year: true, contentType: true, watchUrl: true }
   });
-  const byNormalizedTitle = new Map<string, (typeof allMovies)[number][]>();
-  for (const m of allMovies) {
-    for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
-      const key = normalize(t);
-      if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push(m);
-    }
-  }
+  const index = buildTitleIndex(allMovies);
 
   const results: { line: string; status: string; detail?: string }[] = [];
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    const match = line.match(/^(.+?)\s*[–-]\s*(https?:\/\/\S+)$/);
-    if (!match) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL"' });
+    const parts = splitLineParts(line, 2);
+    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj medzery okolo pomlčky)' });
       continue;
     }
-    const [, titlePart, url] = match;
+    const [titlePart, url] = parts;
 
     // Rozpoznanie vzoru "S01E01" na konci názvu — určuje, že ide o epizódu.
     const episodeMatch = titlePart.match(/^(.+?)\s+S(\d{1,2})E(\d{1,3})\s*$/i);
@@ -69,24 +55,19 @@ export async function POST(req: Request) {
       rawTitleFull = titlePart.trim();
     }
 
-    const yearMatch = rawTitleFull.match(/^(.+?)\s*\((\d{4})\)\s*$/);
-    const rawTitle = yearMatch ? yearMatch[1].trim() : rawTitleFull;
-    const explicitYear = yearMatch ? yearMatch[2] : null;
-
-    let candidates = byNormalizedTitle.get(normalize(rawTitle)) || [];
-    if (explicitYear) candidates = candidates.filter((c) => (c.year || '').startsWith(explicitYear));
+    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {
-      results.push({ line, status: 'NENÁJDENÉ', detail: `Žiadny film/seriál s názvom "${rawTitle}"` });
+      results.push({
+        line,
+        status: 'NENÁJDENÉ',
+        detail: suggestion ? `Žiadny presný film/seriál s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film/seriál s názvom "${title}"`
+      });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({
-        line,
-        status: 'NEJEDNOZNAČNÉ',
-        detail: `Viac záznamov s názvom "${rawTitle}" (roky: ${years}) — pridaj rok do zátvorky`
-      });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac záznamov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
       continue;
     }
 
@@ -98,7 +79,7 @@ export async function POST(req: Request) {
         results.push({
           line,
           status: 'CHYBA',
-          detail: `"${movie.title}" je seriál — pri seriáloch treba uviesť aj sériu a diel, napr. "${rawTitle} S01E01"`
+          detail: `"${movie.title}" je seriál — pri seriáloch treba uviesť aj sériu a diel, napr. "${title} S01E01"`
         });
         continue;
       }
@@ -110,7 +91,6 @@ export async function POST(req: Request) {
       continue;
     }
 
-    // Odkaz na konkrétnu epizódu.
     if (episodeNumber === null) {
       results.push({ line, status: 'CHYBA', detail: 'Chýba číslo epizódy vo vzore "S01E01"' });
       continue;

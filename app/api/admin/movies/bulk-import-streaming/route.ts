@@ -3,14 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-
-function normalize(title: string): string {
-  return title
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+import { buildTitleIndex, findCandidates, splitLineParts, normalizeTitle } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -33,56 +26,45 @@ export async function POST(req: Request) {
     where: { approved: true },
     select: { id: true, title: true, originalTitle: true, year: true, streamingServices: { include: { streamingService: true } } }
   });
-  const byNormalizedTitle = new Map<string, (typeof allMovies)[number][]>();
-  for (const m of allMovies) {
-    for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
-      const key = normalize(t);
-      if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push(m);
-    }
-  }
+  const index = buildTitleIndex(allMovies);
 
   const allServices = await prisma.streamingService.findMany();
-  const serviceByName = new Map(allServices.map((s) => [normalize(s.name), s]));
+  const serviceByName = new Map(allServices.map((s) => [normalizeTitle(s.name), s]));
 
   const results: { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string }[] = [];
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    // Tri časti oddelené pomlčkou: Názov filmu – Platforma – URL
-    const match = line.match(/^(.+?)\s*[–-]\s*(.+?)\s*[–-]\s*(https?:\/\/\S+)$/);
-    if (!match) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – Platforma – URL"' });
+    const parts = splitLineParts(line, 3);
+    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – Platforma – URL" (skontroluj medzery okolo pomlčiek)' });
       continue;
     }
-    const [, rawTitleFull, rawService, url] = match;
+    // Ak je v názve filmu pomlčka s medzerami (nezvyčajné, ale pre istotu),
+    // posledné dve časti sú vždy Platforma a URL, zvyšok je názov filmu.
+    const url = parts[parts.length - 1];
+    const rawService = parts[parts.length - 2];
+    const rawTitleFull = parts.slice(0, parts.length - 2).join(' – ');
 
-    const yearMatch = rawTitleFull.match(/^(.+?)\s*\((\d{4})\)\s*$/);
-    const rawTitle = yearMatch ? yearMatch[1].trim() : rawTitleFull.trim();
-    const explicitYear = yearMatch ? yearMatch[2] : null;
-
-    let candidates = byNormalizedTitle.get(normalize(rawTitle)) || [];
-    if (explicitYear) candidates = candidates.filter((c) => (c.year || '').startsWith(explicitYear));
+    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {
-      results.push({ line, status: 'NENÁJDENÉ', detail: `Žiadny film s názvom "${rawTitle}"` });
+      results.push({
+        line,
+        status: 'NENÁJDENÉ',
+        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
+      });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({
-        line,
-        status: 'NEJEDNOZNAČNÉ',
-        detail: `Viac filmov s názvom "${rawTitle}" (roky: ${years}) — pridaj rok do zátvorky`
-      });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
       continue;
     }
 
     const movie = candidates[0];
 
-    // Platformu nájdeme podľa existujúceho zoznamu služieb — ak nejestvuje,
-    // vytvoríme novú (rovnaký princíp ako pri type odkazu "ČSFD").
-    let service = serviceByName.get(normalize(rawService));
+    let service = serviceByName.get(normalizeTitle(rawService));
     const serviceIsNew = !service;
 
     const existingLink = movie.streamingServices.find((s) => service && s.streamingServiceId === service.id);
@@ -99,7 +81,7 @@ export async function POST(req: Request) {
     if (!preview && oldUrl !== url) {
       if (!service) {
         service = await prisma.streamingService.create({ data: { name: rawService.trim() } });
-        serviceByName.set(normalize(service.name), service);
+        serviceByName.set(normalizeTitle(service.name), service);
       }
 
       if (existingLink) {

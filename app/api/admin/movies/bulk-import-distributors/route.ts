@@ -3,14 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-
-function normalize(title: string): string {
-  return title
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
 
 // Domáce premiéry (ČR/SR) idú v poradí ako prvé, zvyšné krajiny nasledujú
 // podľa dátumu premiéry — spravidla ide o pôvodnú/americkú premiéru.
@@ -28,8 +21,6 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – Distribútor1, Distribútor2"
-  // Prvý distribútor sa priradí k domácej premiére (ČR, potom SR), ďalší
-  // k nasledujúcej krajine v poradí podľa dátumu premiéry (spravidla pôvodná).
   const lines = text
     .split('\n')
     .map((l) => l.trim())
@@ -39,44 +30,31 @@ export async function POST(req: Request) {
     where: { approved: true },
     select: { id: true, title: true, originalTitle: true, year: true }
   });
-  const byNormalizedTitle = new Map<string, { id: string; title: string; year: string | null }[]>();
-  for (const m of allMovies) {
-    for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
-      const key = normalize(t);
-      if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push(m);
-    }
-  }
+  const index = buildTitleIndex(allMovies);
 
   const results: { line: string; status: string; detail?: string }[] = [];
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    const match = line.match(/^(.+?)\s*[–-]\s*(.+)$/);
-    if (!match) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – distribútori"' });
+    const parts = splitLineParts(line, 2);
+    if (!parts) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – distribútori" (skontroluj medzery okolo pomlčky)' });
       continue;
     }
-    const [, rawTitleFull, rawDistributors] = match;
-
-    const yearMatch = rawTitleFull.match(/^(.+?)\s*\((\d{4})\)\s*$/);
-    const rawTitle = yearMatch ? yearMatch[1].trim() : rawTitleFull.trim();
-    const explicitYear = yearMatch ? yearMatch[2] : null;
-
-    let candidates = byNormalizedTitle.get(normalize(rawTitle)) || [];
-    if (explicitYear) candidates = candidates.filter((c) => (c.year || '').startsWith(explicitYear));
+    const [rawTitleFull, rawDistributors] = parts;
+    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {
-      results.push({ line, status: 'NENÁJDENÉ', detail: `Žiadny film s názvom "${rawTitle}"` });
+      results.push({
+        line,
+        status: 'NENÁJDENÉ',
+        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
+      });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({
-        line,
-        status: 'NEJEDNOZNAČNÉ',
-        detail: `Viac filmov s názvom "${rawTitle}" (roky: ${years}) — pridaj rok do zátvorky`
-      });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
       continue;
     }
 
