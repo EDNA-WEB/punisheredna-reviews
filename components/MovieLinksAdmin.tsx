@@ -235,13 +235,14 @@ export default function MovieLinksAdmin({
         <div className="text-sm font-semibold text-ink mb-1">Hromadne pridať ČSFD odkazy</div>
         <div className="text-xs text-muted mb-3">
           Vlož zoznam v tvare <code>Názov filmu – https://www.csfd.cz/...</code>, jeden riadok na film. Priradenie prebehne
-          podľa presnej zhody názvu filmu vo vašej databáze.
+          podľa presnej zhody názvu filmu vo vašej databáze. Ak máte vo filmotéke dva filmy s rovnakým názvom (napr. starý a
+          nový remake), pridaj rok do zátvorky: <code>Street Fighter (2026) – https://...</code>.
         </div>
         <textarea
           value={csfdBulkText}
           onChange={(e) => setCsfdBulkText(e.target.value)}
           rows={6}
-          placeholder={'Kmotr – https://www.csfd.cz/film/1644-kmotr/prehled/\nForrest Gump – https://www.csfd.cz/film/10135-forrest-gump/prehled/'}
+          placeholder={'Kmotr – https://www.csfd.cz/film/1644-kmotr/prehled/\nStreet Fighter (2026) – https://www.csfd.cz/film/1721046-street-fighter/prehled/'}
           className="w-full border border-line rounded-lg px-3 py-2 text-sm font-mono mb-3"
         />
         <button

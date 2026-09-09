@@ -39,14 +39,14 @@ export async function POST(req: Request) {
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },
-    select: { id: true, title: true, originalTitle: true }
+    select: { id: true, title: true, originalTitle: true, year: true }
   });
-  const byNormalizedTitle = new Map<string, { id: string; title: string }[]>();
+  const byNormalizedTitle = new Map<string, { id: string; title: string; year: string | null }[]>();
   for (const m of allMovies) {
     for (const t of [m.title, m.originalTitle].filter(Boolean) as string[]) {
       const key = normalize(t);
       if (!byNormalizedTitle.has(key)) byNormalizedTitle.set(key, []);
-      byNormalizedTitle.get(key)!.push({ id: m.id, title: m.title });
+      byNormalizedTitle.get(key)!.push({ id: m.id, title: m.title, year: m.year });
     }
   }
 
@@ -58,15 +58,36 @@ export async function POST(req: Request) {
       results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL"' });
       continue;
     }
-    const [, rawTitle, url] = match;
-    const candidates = byNormalizedTitle.get(normalize(rawTitle));
+    const [, rawTitleFull, url] = match;
 
-    if (!candidates || candidates.length === 0) {
-      results.push({ line, status: 'NENÁJDENÉ', detail: `Žiadny film s názvom "${rawTitle}"` });
+    // Voliteľný rok v zátvorke na konci názvu, napr. "Street Fighter (2026)" —
+    // rieši prípady, keď máme vo filmotéke viac filmov s rovnakým názvom.
+    const yearMatch = rawTitleFull.match(/^(.+?)\s*\((\d{4})\)\s*$/);
+    const rawTitle = yearMatch ? yearMatch[1].trim() : rawTitleFull.trim();
+    const explicitYear = yearMatch ? yearMatch[2] : null;
+
+    let candidates = byNormalizedTitle.get(normalize(rawTitle)) || [];
+    if (explicitYear) candidates = candidates.filter((c) => (c.year || '').startsWith(explicitYear));
+
+    if (candidates.length === 0) {
+      const allTitles = Array.from(byNormalizedTitle.keys());
+      const suggestion = allTitles.find((t) => t.includes(normalize(rawTitle)) || normalize(rawTitle).includes(t));
+      results.push({
+        line,
+        status: 'NENÁJDENÉ',
+        detail: suggestion
+          ? `Žiadny presný film s názvom "${rawTitle}" — možno myslíš niečo podobné, over si presný názov vo filmotéke`
+          : `Žiadny film s názvom "${rawTitle}"`
+      });
       continue;
     }
     if (candidates.length > 1) {
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${rawTitle}" — preskočené` });
+      const years = candidates.map((c) => c.year || '?').join(', ');
+      results.push({
+        line,
+        status: 'NEJEDNOZNAČNÉ',
+        detail: `Viac filmov s názvom "${rawTitle}" (roky: ${years}) — pridaj rok do zátvorky, napr. "${rawTitle} (${candidates[0].year})"`
+      });
       continue;
     }
 
