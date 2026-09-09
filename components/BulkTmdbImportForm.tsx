@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+const MAX_MOVIES = 100;
+
 type ResultRow = {
   title: string;
   status: 'pending' | 'searching' | 'saving' | 'done' | 'notfound' | 'error';
@@ -14,6 +16,8 @@ export default function BulkTmdbImportForm() {
   const [namesText, setNamesText] = useState('');
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<ResultRow[]>([]);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [trimmedNotice, setTrimmedNotice] = useState('');
 
   async function importOne(title: string): Promise<ResultRow> {
     try {
@@ -63,19 +67,33 @@ export default function BulkTmdbImportForm() {
   }
 
   async function startImport() {
-    const titles = namesText
+    let titles = namesText
       .split('\n')
       .map((t) => t.trim())
       .filter(Boolean);
     if (titles.length === 0) return;
 
+    if (titles.length > MAX_MOVIES) {
+      setTrimmedNotice(`Zoznam mal ${titles.length} filmov — spracujem prvých ${MAX_MOVIES}, zvyšok vlož znova v ďalšej dávke.`);
+      titles = titles.slice(0, MAX_MOVIES);
+    } else {
+      setTrimmedNotice('');
+    }
+
     setRunning(true);
     setResults(titles.map((title) => ({ title, status: 'pending' })));
+    setProgress({ done: 0, total: titles.length });
 
     for (let i = 0; i < titles.length; i++) {
       setResults((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'searching' } : r)));
       const result = await importOne(titles[i]);
       setResults((prev) => prev.map((r, idx) => (idx === i ? result : r)));
+      setProgress({ done: i + 1, total: titles.length });
+
+      // Krátka pauza medzi filmami, nech dopytovanie TMDb nie je príliš rýchle
+      // za sebou — pri väčších dávkach (desiatky až 100 filmov) je to slušnejšie
+      // aj spoľahlivejšie ako spustiť všetko úplne bez prestávky.
+      if (i < titles.length - 1) await new Promise((resolve) => setTimeout(resolve, 350));
     }
 
     setRunning(false);
@@ -86,8 +104,11 @@ export default function BulkTmdbImportForm() {
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
         <h2 className="text-sm font-bold text-ink mb-1">Hromadný import z TMDb</h2>
         <p className="text-xs text-muted mb-3">
-          Napíš názvy filmov/seriálov, každý na nový riadok. Pre každý sa použije najlepšia zhoda na TMDb a automaticky sa vytvorí film — vrátane trailera a fotiek. Odporúčame potom každý skontrolovať v administrácii.
+          Napíš názvy filmov/seriálov, každý na nový riadok (max. {MAX_MOVIES} naraz). Pre každý sa použije najlepšia
+          zhoda na TMDb a automaticky sa vytvorí film — vrátane trailera a fotiek. Odporúčame potom každý skontrolovať
+          v administrácii.
         </p>
+        {trimmedNotice && <p className="text-xs text-amber-600 mb-3">{trimmedNotice}</p>}
         <textarea
           value={namesText}
           onChange={(e) => setNamesText(e.target.value)}
@@ -106,7 +127,22 @@ export default function BulkTmdbImportForm() {
 
       {results.length > 0 && (
         <div className="border border-line rounded-xl overflow-hidden">
-          <div className="bg-surface px-4 py-2.5 font-display font-bold text-sm text-ink">Priebeh</div>
+          <div className="bg-surface px-4 py-2.5 flex items-center justify-between">
+            <span className="font-display font-bold text-sm text-ink">Priebeh</span>
+            {running && (
+              <span className="text-xs font-semibold text-muted">
+                {progress.done} / {progress.total}
+              </span>
+            )}
+          </div>
+          {running && progress.total > 0 && (
+            <div className="h-1 bg-line">
+              <div
+                className="h-1 bg-accent transition-all duration-300"
+                style={{ width: `${(progress.done / progress.total) * 100}%` }}
+              />
+            </div>
+          )}
           <div className="divide-y divide-line">
             {results.map((r, i) => (
               <div key={i} className="px-4 py-3 flex items-center gap-3 text-sm">
