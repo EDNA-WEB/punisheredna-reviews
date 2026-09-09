@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import ClientPagination from './ClientPagination';
 
 type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; contentType: string; hasSubtitles: boolean; hasDubbing: boolean };
 
@@ -9,6 +10,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
   const [movies, setMovies] = useState(initialMovies);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
 
   async function toggle(movieId: string, field: 'hasSubtitles' | 'hasDubbing', current: boolean) {
     setSavingId(movieId);
@@ -33,12 +35,20 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
     ? movies.filter((m) => m.title.toLowerCase().includes(query.trim().toLowerCase()))
     : movies;
 
+  const PAGE_SIZE = 50;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   return (
     <div>
       <input
         className="field-input-sm max-w-xs mb-4"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setPage(1);
+        }}
         placeholder="Hľadať podľa názvu…"
       />
 
@@ -49,7 +59,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
           <span className="w-20 text-center flex-none">Titulky</span>
         </div>
 
-        {filtered.map((m) => (
+        {paged.map((m) => (
           <div key={m.id} className="flex items-center gap-3 px-4 py-2.5 bg-card">
             <div
               className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none"
@@ -83,6 +93,9 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
         ))}
 
         {filtered.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted">Nič sa nenašlo.</div>}
+      </div>
+      <div className="mt-4">
+        <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </div>
   );

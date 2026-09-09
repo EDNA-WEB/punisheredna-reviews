@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import BulkImportRunner from './BulkImportRunner';
+import ClientPagination from './ClientPagination';
 
 type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; tags: string | null; tmdbId: number | null };
 
@@ -11,6 +12,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
   const [saving, setSaving] = useState<string | null>(null);
   const [suggesting, setSuggesting] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
 
   function tagsFor(m: MovieItem) {
     return drafts[m.id] ?? m.tags ?? '';
@@ -52,6 +54,11 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
     ? movies.filter((m) => m.title.toLowerCase().includes(query.trim().toLowerCase()))
     : movies;
 
+  const PAGE_SIZE = 50;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   return (
     <div>
       <BulkImportRunner
@@ -65,13 +72,16 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       <input
         className="field-input-sm max-w-sm mb-4"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setPage(1);
+        }}
         placeholder="Hľadať film/seriál…"
       />
 
       <div className="border border-line rounded-xl overflow-hidden">
         <div className="divide-y divide-line">
-          {filtered.map((m) => {
+          {paged.map((m) => {
             const isDirty = drafts[m.id] !== undefined && drafts[m.id] !== (m.tags ?? '');
             return (
               <div key={m.id} className="flex items-center gap-3 p-3">
@@ -111,6 +121,9 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
           })}
           {filtered.length === 0 && <p className="text-sm text-muted p-4">Žiadny film/seriál sa nenašiel.</p>}
         </div>
+      </div>
+      <div className="mt-4">
+        <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </div>
   );

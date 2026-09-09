@@ -24,6 +24,7 @@ export default async function AdminOnlinePage() {
       onlineImage: true,
       contentType: true,
       tmdbId: true,
+      createdAt: true,
       seasons: {
         orderBy: { number: 'asc' },
         select: {
@@ -38,6 +39,15 @@ export default async function AdminOnlinePage() {
     }
   });
 
+  // Filmy/seriály bez online odkazu idú navrch (od najnovšie pridaných), nech
+  // sa nestratia v dlhom zozname. Vyplnené nasledujú za nimi, tiež od najnovších.
+  const sortedMovies = [...movies].sort((a, b) => {
+    const aFilled = a.contentType === 'Seriál' ? a.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!a.watchUrl;
+    const bFilled = b.contentType === 'Seriál' ? b.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!b.watchUrl;
+    if (aFilled !== bFilled) return aFilled ? 1 : -1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <div className="pt-8">
       <AdminTabs />
@@ -48,7 +58,7 @@ export default async function AdminOnlinePage() {
         im pri tom zobrazí. Pri seriáloch vieš rozkliknúť aj jednotlivé epizódy a nastaviť to isté pre každú zvlášť.
       </p>
 
-      <OnlineAdminList movies={movies} />
+      <OnlineAdminList movies={sortedMovies} />
     </div>
   );
 }

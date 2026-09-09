@@ -23,11 +23,22 @@ export default async function AdminPremieresPage() {
       ageRating: true,
       tmdbId: true,
       contentType: true,
+      createdAt: true,
       premiereDates: {
         orderBy: { releaseDate: 'asc' },
         select: { id: true, country: true, type: true, releaseDate: true, distributor: true }
       }
     }
+  });
+
+  // Filmy bez akejkoľvek premiéry idú navrch (v poradí od najnovšie pridaných),
+  // nech sa nestratia niekde v strede dlhého zoznamu. Vyplnené filmy nasledujú
+  // za nimi, tiež zoradené od najnovších.
+  const sortedMovies = [...movies].sort((a, b) => {
+    const aFilled = a.premiereDates.length > 0;
+    const bFilled = b.premiereDates.length > 0;
+    if (aFilled !== bFilled) return aFilled ? 1 : -1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return (
@@ -39,7 +50,7 @@ export default async function AdminPremieresPage() {
         Vyber existujúci film a nastav mu dátumy premiér v jednotlivých krajinách (s distribútorom) a vekové obmedzenie.
         Tieto dáta sa zobrazujú aj na profile filmu, aj v prehľade Kino.
       </p>
-      <MoviePremieresAdmin initialMovies={movies} />
+      <MoviePremieresAdmin initialMovies={sortedMovies} />
     </div>
   );
 }

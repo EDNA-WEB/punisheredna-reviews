@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import BulkImportRunner from './BulkImportRunner';
+import ClientPagination from './ClientPagination';
 
 type EpisodeItem = { id: string; number: number; title: string | null; onlineImage: string | null; onlineUrl: string | null };
 type SeasonItem = { id: string; number: number; episodes: EpisodeItem[] };
@@ -38,6 +39,8 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
   const [saving, setSaving] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
 
   function urlFor(m: MovieItem) {
     return urlDrafts[m.id] ?? m.watchUrl ?? '';
@@ -230,6 +233,12 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
     e.target.value = '';
   }
 
+  const filteredMovies = movies.filter((m) => m.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const PAGE_SIZE = 50;
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageMovies = filteredMovies.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   return (
     <div className="space-y-2 max-w-2xl">
       <BulkImportRunner
@@ -240,7 +249,17 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
         buttonLabel="Priradiť odkazy"
       />
 
-      {movies.map((m) => (
+      <input
+        className="field-input-sm max-w-sm mb-2"
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setPage(1);
+        }}
+        placeholder="Hľadať film/seriál…"
+      />
+
+      {pageMovies.map((m) => (
         <div key={m.id} className="border border-line rounded-xl overflow-hidden bg-card">
           <div className="flex items-center gap-3 p-3.5">
             <div className="w-10 h-14 rounded-md bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
@@ -393,6 +412,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
           )}
         </div>
       ))}
+      <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

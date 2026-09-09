@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import BulkImportRunner from './BulkImportRunner';
+import ClientPagination from './ClientPagination';
 
 type PremiereRow = { country: string; type: string; releaseDate: string; distributor: string };
 type MovieItem = {
@@ -35,6 +36,7 @@ function toDateInputValue(d: string | Date) {
 export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: MovieItem[] }) {
   const [movies, setMovies] = useState(initialMovies);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [recentImporting, setRecentImporting] = useState(false);
   const [recentResults, setRecentResults] = useState<{ title: string; status: string; detail?: string }[] | null>(null);
   const [recentChecked, setRecentChecked] = useState(0);
@@ -82,6 +84,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   }
 
   const filteredMovies = movies.filter((m) => m.title.toLowerCase().includes(search.toLowerCase()));
+  const PAGE_SIZE = 50;
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageMovies = filteredMovies.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function openMovie(m: MovieItem) {
     if (openFor === m.id) {
@@ -197,14 +203,17 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       <input
         className="field-input mb-4"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
         placeholder="Hľadať film…"
       />
 
       {saveError && <p className="text-danger text-xs mb-3">{saveError}</p>}
 
       <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
-        {filteredMovies.slice(0, 50).map((m) => {
+        {pageMovies.map((m) => {
           const rows = rowDrafts[m.id];
           return (
             <div key={m.id}>
@@ -297,9 +306,9 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
           );
         })}
       </div>
-      {filteredMovies.length > 50 && (
-        <p className="text-xs text-muted mt-2">Zobrazených prvých 50 výsledkov — hľadaj presnejšie, ak nevidíš svoj film.</p>
-      )}
+      <div className="mt-4">
+        <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+      </div>
     </div>
   );
 }
