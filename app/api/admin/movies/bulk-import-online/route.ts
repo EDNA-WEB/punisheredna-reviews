@@ -111,6 +111,10 @@ export async function POST(req: Request) {
     }
 
     // Odkaz na konkrétnu epizódu.
+    if (episodeNumber === null) {
+      results.push({ line, status: 'CHYBA', detail: 'Chýba číslo epizódy vo vzore "S01E01"' });
+      continue;
+    }
     const season = await prisma.season.findFirst({ where: { movieId: movie.id, number: seasonNumber } });
     if (!season) {
       results.push({ line, status: 'NENÁJDENÉ', detail: `"${movie.title}" nemá sériu ${seasonNumber} vo filmotéke` });
