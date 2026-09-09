@@ -40,6 +40,60 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
+  const [imgPreview, setImgPreview] = useState<{ count: number; sample: string[] } | null>(null);
+  const [imgBusy, setImgBusy] = useState(false);
+  const [imgDone, setImgDone] = useState<{ checked: number; batchId: string | null; results: { title: string; status: string; detail?: string }[] } | null>(null);
+  const [imgUndoStatus, setImgUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
+
+  async function previewImages() {
+    setImgBusy(true);
+    setImgDone(null);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-online-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: true })
+      });
+      const data = await res.json();
+      setImgPreview(data);
+    } finally {
+      setImgBusy(false);
+    }
+  }
+
+  async function confirmImages() {
+    setImgBusy(true);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-online-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: false })
+      });
+      const data = await res.json();
+      setImgDone({ checked: data.checked, batchId: data.batchId || null, results: data.results });
+      setImgPreview(null);
+      setImgUndoStatus('idle');
+    } finally {
+      setImgBusy(false);
+    }
+  }
+
+  async function undoImages() {
+    if (!imgDone?.batchId) return;
+    setImgUndoStatus('undoing');
+    try {
+      const res = await fetch('/api/admin/bulk-import/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId: imgDone.batchId })
+      });
+      if (!res.ok) throw new Error();
+      setImgUndoStatus('done');
+    } catch {
+      setImgUndoStatus('idle');
+      alert('Vrátenie späť zlyhalo.');
+    }
+  }
   const [page, setPage] = useState(1);
 
   function urlFor(m: MovieItem) {
@@ -248,6 +302,74 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
         placeholder={'Together – https://...\nHra o trůny S01E01 – https://...'}
         buttonLabel="Priradiť odkazy"
       />
+
+      <div className="border border-line rounded-xl p-4 bg-surface mb-2">
+        <div className="text-sm font-semibold text-ink mb-1">Doplniť náhľadové obrázky (TMDb)</div>
+        <div className="text-xs text-muted mb-3">
+          Automaticky doplní náhľadový obrázok pre všetky filmy/seriály prepojené s TMDb, čo ešte žiadny nemajú. Filmy
+          s už nastaveným obrázkom sa nedotknú.
+        </div>
+
+        {!imgPreview && !imgDone && (
+          <button
+            type="button"
+            onClick={previewImages}
+            disabled={imgBusy}
+            className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {imgBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+          </button>
+        )}
+
+        {imgPreview && !imgDone && (
+          <div>
+            <div className="text-xs text-ink mb-2">
+              Doplní sa <strong>{imgPreview.count}</strong> filmov/seriálov. Ukážka prvých {imgPreview.sample.length}:
+            </div>
+            <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{imgPreview.sample.join(', ')}</div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={confirmImages}
+                disabled={imgBusy}
+                className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {imgBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${imgPreview.count})`}
+              </button>
+              <button type="button" onClick={() => setImgPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {imgDone && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {imgDone.checked} filmov/seriálov.</div>
+              {imgDone.batchId && imgUndoStatus !== 'done' && (
+                <button
+                  type="button"
+                  onClick={undoImages}
+                  disabled={imgUndoStatus === 'undoing'}
+                  className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
+                >
+                  {imgUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                </button>
+              )}
+              {imgUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            </div>
+            <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
+              {imgDone.results.map((r, i) => (
+                <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
+                  <span className="font-semibold">{r.status}</span> — {r.title}
+                  {r.detail ? `: ${r.detail}` : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <input
         className="field-input-sm max-w-sm mb-2"
