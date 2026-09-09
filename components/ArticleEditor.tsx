@@ -159,7 +159,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
     e.target.value = '';
   }
 
-  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
@@ -167,18 +167,37 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
       return;
     }
     setUploading(true);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const img = new Image();
-      img.onload = () => {
-        const dataUrl = resizeToDataUrl(img, 1000, 0.82);
-        insertText(`\n\n![${file.name}](${dataUrl})\n\n`);
-        setUploading(false);
-      };
-      img.src = ev.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => resolve(resizeToDataUrl(img, 1000, 0.82));
+          img.onerror = reject;
+          img.src = ev.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Obrázok nahráme na Cloudinary a do textu vložíme len jeho krátku URL
+      // — priame vloženie celej dátovej URL (base64) by malo tisíce znakov
+      // a rýchlo by naplnilo limit dĺžky obsahu článku.
+      const res = await fetch('/api/admin/news/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      insertText(`\n\n![${file.name}](${data.url})\n\n`);
+    } catch {
+      alert('Nahratie obrázka zlyhalo. Skús to prosím znova.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   }
 
   async function runSearch(q: string, type: 'movie' | 'person') {
