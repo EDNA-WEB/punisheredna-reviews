@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -17,10 +17,23 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – tag1, tag2, tag3"
-  const lines = text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const jsonResult = tryParseJsonInput(text);
+  let lines: string[];
+  if (jsonResult) {
+    if ('error' in jsonResult) return NextResponse.json({ error: jsonResult.error }, { status: 400 });
+    lines = jsonResult.items
+      .map((item) => {
+        const title = pickField(item, ['title', 'name']);
+        const rawTags = pickField(item, ['tags']);
+        if (!title || !rawTags) return null;
+        const tagsStr = Array.isArray(rawTags) ? rawTags.filter((t) => typeof t === 'string').join(', ') : String(rawTags);
+        if (!tagsStr) return null;
+        return `${title} – ${tagsStr}`;
+      })
+      .filter(Boolean) as string[];
+  } else {
+    lines = splitLines(text);
+  }
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },

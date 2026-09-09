@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts, normalizeTitle } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, normalizeTitle, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -17,10 +17,23 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – Platforma – https://..."
-  const lines = text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const jsonResult = tryParseJsonInput(text);
+  let lines: string[];
+  if (jsonResult) {
+    if ('error' in jsonResult) return NextResponse.json({ error: jsonResult.error }, { status: 400 });
+    lines = jsonResult.items
+      .map((item) => {
+        const title = pickField(item, ['title', 'name']);
+        const year = pickField(item, ['year']);
+        const platform = pickField(item, ['platform', 'service']);
+        const url = pickField(item, ['url', 'link']);
+        if (!title || !platform || !url) return null;
+        return `${title}${year ? ` (${year})` : ''} – ${platform} – ${url}`;
+      })
+      .filter(Boolean) as string[];
+  } else {
+    lines = splitLines(text);
+  }
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },

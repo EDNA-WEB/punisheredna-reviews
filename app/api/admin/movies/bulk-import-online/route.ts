@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -19,10 +19,30 @@ export async function POST(req: Request) {
   // Dva podporované formáty riadku:
   //   "Together – https://..."                  → odkaz na film
   //   "Hra o trůny S01E01 – https://..."         → odkaz na konkrétnu epizódu
-  const lines = text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const jsonResult = tryParseJsonInput(text);
+  let lines: string[];
+  if (jsonResult) {
+    if ('error' in jsonResult) return NextResponse.json({ error: jsonResult.error }, { status: 400 });
+    lines = jsonResult.items
+      .map((item) => {
+        const title = pickField(item, ['title', 'name']);
+        const year = pickField(item, ['year']);
+        const url = pickField(item, ['url', 'link']);
+        const season = pickField(item, ['season']);
+        const episode = pickField(item, ['episode']);
+        if (!title || !url) return null;
+        const titlePart = `${title}${year ? ` (${year})` : ''}`;
+        if (season !== undefined && episode !== undefined) {
+          const s = String(season).padStart(2, '0');
+          const e = String(episode).padStart(2, '0');
+          return `${titlePart} S${s}E${e} – ${url}`;
+        }
+        return `${titlePart} – ${url}`;
+      })
+      .filter(Boolean) as string[];
+  } else {
+    lines = splitLines(text);
+  }
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },

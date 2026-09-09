@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 // Domáce premiéry (ČR/SR) idú v poradí ako prvé, zvyšné krajiny nasledujú
 // podľa dátumu premiéry — spravidla ide o pôvodnú/americkú premiéru.
@@ -21,10 +21,24 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – Distribútor1, Distribútor2"
-  const lines = text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const jsonResult = tryParseJsonInput(text);
+  let lines: string[];
+  if (jsonResult) {
+    if ('error' in jsonResult) return NextResponse.json({ error: jsonResult.error }, { status: 400 });
+    lines = jsonResult.items
+      .map((item) => {
+        const title = pickField(item, ['title', 'name']);
+        const year = pickField(item, ['year']);
+        const rawDistributors = pickField(item, ['distributors']);
+        if (!title || !rawDistributors) return null;
+        const distStr = Array.isArray(rawDistributors) ? rawDistributors.filter((d) => typeof d === 'string').join(', ') : String(rawDistributors);
+        if (!distStr) return null;
+        return `${title}${year ? ` (${year})` : ''} – ${distStr}`;
+      })
+      .filter(Boolean) as string[];
+  } else {
+    lines = splitLines(text);
+  }
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true },

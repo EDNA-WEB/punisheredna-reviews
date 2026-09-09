@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -17,10 +17,22 @@ export async function POST(req: Request) {
   }
 
   // Očakávaný formát riadku: "Názov filmu – https://www.csfd.cz/film/..."
-  const lines = text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const jsonResult = tryParseJsonInput(text);
+  let lines: string[];
+  if (jsonResult) {
+    if ('error' in jsonResult) return NextResponse.json({ error: jsonResult.error }, { status: 400 });
+    lines = jsonResult.items
+      .map((item) => {
+        const title = pickField(item, ['title', 'name']);
+        const year = pickField(item, ['year']);
+        const url = pickField(item, ['url', 'link', 'csfd_url']);
+        if (!title || !url) return null;
+        return `${title}${year ? ` (${year})` : ''} – ${url}`;
+      })
+      .filter(Boolean) as string[];
+  } else {
+    lines = splitLines(text);
+  }
 
   const csfdType = await prisma.movieLinkType.findUnique({ where: { name: 'ČSFD' } });
 
