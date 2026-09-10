@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const OPTIONS = [
   { value: 'najnovsie', label: 'Najnovšie' },
   { value: 'najstarsie', label: 'Najstaršie' },
+  { value: 'najnovsie-pridane', label: 'Najnovšie pridané' },
   { value: 'najlepsie', label: 'Najlepšie hodnotené' },
   { value: 'najhorsie', label: 'Najhoršie hodnotené' }
 ];

@@ -128,6 +128,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
   const sort = searchParams?.sort || 'najnovsie';
   filtered = [...filtered].sort((a, b) => {
     if (sort === 'najstarsie') return (a.yearNum ?? 0) - (b.yearNum ?? 0);
+    if (sort === 'najnovsie-pridane') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     if (sort === 'najlepsie') return (b.percent ?? -1) - (a.percent ?? -1);
     if (sort === 'najhorsie') return (a.percent ?? 101) - (b.percent ?? 101);
     // predvolené: najnovšie (podľa roku, nie podľa dátumu pridania na web)
