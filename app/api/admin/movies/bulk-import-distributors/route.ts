@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – distribútori" (skontroluj medzery okolo pomlčky)' });
       continue;
     }
-    const [rawTitleFull, rawDistributors] = parts;
+    const [rawTitleFull] = parts;
     const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     }
 
     const movie = candidates[0];
-    const distributors = rawDistributors
+    const rawDistributors = parts[1]
       .split(',')
       .map((d) => d.trim())
       .filter(Boolean);
@@ -88,24 +88,79 @@ export async function POST(req: Request) {
       continue;
     }
 
-    // Krajiny zoradíme: najprv domáce (ČR, SR), potom zvyšné podľa poradia
-    // ich najskoršej premiéry — a ku každej priradíme ďalšieho distribútora.
-    const countriesInOrder: string[] = [];
-    for (const c of DOMESTIC_PRIORITY) {
-      if (premieres.some((p) => p.country === c) && !countriesInOrder.includes(c)) countriesInOrder.push(c);
-    }
-    for (const p of premieres) {
-      if (!countriesInOrder.includes(p.country)) countriesInOrder.push(p.country);
-    }
+    // Explicitné označenie krajiny — "CZ: Bontonfilm" — je jednoznačné a
+    // odporúčané. Ak aspoň jeden distribútor takto označený je, vyžadujeme to
+    // pri všetkých, nech sa nemieša explicitný aj pozičný spôsob v jednom riadku.
+    const countryTagPattern = /^([A-Z]{2}):\s*(.+)$/;
+    const hasAnyExplicitCountry = rawDistributors.some((d) => countryTagPattern.test(d));
 
     const assignments: string[] = [];
-    for (let i = 0; i < distributors.length && i < countriesInOrder.length; i++) {
-      const country = countriesInOrder[i];
-      const distributor = distributors[i];
-      const rowsForCountry = premieres.filter((p) => p.country === country);
-      assignments.push(`${country}: ${distributor}`);
+    const pendingUpdates: { country: string; distributor: string }[] = [];
 
-      if (!preview) {
+    if (hasAnyExplicitCountry) {
+      const invalidEntries = rawDistributors.filter((d) => !countryTagPattern.test(d));
+      if (invalidEntries.length > 0) {
+        results.push({
+          line,
+          status: 'CHYBA',
+          detail: `Ak použiješ označenie krajiny pri jednom distribútorovi ("CZ: Názov"), treba ho použiť pri všetkých v tomto riadku. Chýba pri: ${invalidEntries.join(', ')}`
+        });
+        continue;
+      }
+      for (const raw of rawDistributors) {
+        const match = raw.match(countryTagPattern)!;
+        const country = match[1];
+        const distributor = match[2].trim();
+        if (!premieres.some((p) => p.country === country)) {
+          results.push({ line, status: 'CHYBA', detail: `Film "${movie.title}" nemá premiéru pre krajinu "${country}"` });
+          continue;
+        }
+        pendingUpdates.push({ country, distributor });
+        assignments.push(`${country}: ${distributor}`);
+      }
+    } else {
+      // Pozičný spôsob (bez označenia krajiny) — funguje len vtedy, keď film
+      // MÁ aspoň jednu domácu (ČR/SR) premiéru. Ak nemá, prvý distribútor by
+      // sa inak omylom priradil k inej krajine (napr. k americkej), preto
+      // radšej odmietneme hádať a vyžiadame explicitné označenie.
+      const hasDomestic = premieres.some((p) => DOMESTIC_PRIORITY.includes(p.country));
+      if (!hasDomestic) {
+        const availableCountries = Array.from(new Set(premieres.map((p) => p.country))).join(', ');
+        results.push({
+          line,
+          status: 'CHYBA',
+          detail: `Film "${movie.title}" nemá žiadnu domácu (ČR/SR) premiéru — bez nej nevieme bezpečne určiť poradie. Použi explicitné označenie krajiny, napr. "${availableCountries.split(', ')[0]}: ${rawDistributors[0]}".`
+        });
+        continue;
+      }
+
+      const countriesInOrder: string[] = [];
+      for (const c of DOMESTIC_PRIORITY) {
+        if (premieres.some((p) => p.country === c) && !countriesInOrder.includes(c)) countriesInOrder.push(c);
+      }
+      for (const p of premieres) {
+        if (!countriesInOrder.includes(p.country)) countriesInOrder.push(p.country);
+      }
+
+      for (let i = 0; i < rawDistributors.length && i < countriesInOrder.length; i++) {
+        pendingUpdates.push({ country: countriesInOrder[i], distributor: rawDistributors[i] });
+        assignments.push(`${countriesInOrder[i]}: ${rawDistributors[i]}`);
+      }
+
+      if (rawDistributors.length > countriesInOrder.length) {
+        results.push({
+          line,
+          status: 'ČIASTOČNE',
+          detail: `${movie.title} — priradené: ${assignments.join(', ')}. Zvyšní distribútori nemajú k dispozícii ďalšiu krajinu premiéry.`
+        });
+      }
+    }
+
+    if (pendingUpdates.length === 0) continue;
+
+    if (!preview) {
+      for (const { country, distributor } of pendingUpdates) {
+        const rowsForCountry = premieres.filter((p) => p.country === country);
         for (const row of rowsForCountry) {
           if (row.distributor === distributor) continue;
           await prisma.moviePremiereDate.update({ where: { id: row.id }, data: { distributor } });
@@ -121,13 +176,7 @@ export async function POST(req: Request) {
       }
     }
 
-    if (distributors.length > countriesInOrder.length) {
-      results.push({
-        line,
-        status: 'ČIASTOČNE',
-        detail: `${movie.title} — priradené: ${assignments.join(', ')}. Zvyšní distribútori nemajú k dispozícii ďalšiu krajinu premiéry.`
-      });
-    } else {
+    if (!results.some((r) => r.line === line)) {
       results.push({ line, status: 'OK', detail: `${movie.title} — priradené: ${assignments.join(', ')}` });
     }
   }
