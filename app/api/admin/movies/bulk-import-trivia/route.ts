@@ -84,25 +84,27 @@ export async function POST(req: Request) {
       continue;
     }
 
-    const existing = await prisma.movieTrivia.findMany({ where: { movieId: movie.id }, orderBy: { order: 'asc' } });
-    const existingTexts = new Set(existing.map((t) => t.text));
-    const toAdd = newFacts.filter((t) => !existingTexts.has(t));
-
-    if (toAdd.length === 0) {
-      results.push({ line, status: 'BEZ ZMENY', detail: `${movie.title}: všetky zaujímavosti už existujú` });
-      continue;
-    }
-
-    const availableSlots = MAX_TRIVIA_PER_MOVIE - existing.length;
-    if (availableSlots <= 0) {
-      results.push({ line, status: 'CHYBA', detail: `${movie.title}: dosiahnutý limit ${MAX_TRIVIA_PER_MOVIE} zaujímavostí na film` });
-      continue;
-    }
-
-    const finalToAdd = toAdd.slice(0, availableSlots);
+    const finalToAdd = newFacts.slice(0, MAX_TRIVIA_PER_MOVIE);
+    const existing = await prisma.movieTrivia.findMany({ where: { movieId: movie.id } });
 
     if (!preview) {
-      let order = existing.length;
+      // Nahradenie, nie zlúčenie: pôvodné zaujímavosti filmu sa najprv
+      // zalogujú (aby ich šlo pri "vrátiť späť" obnoviť) a zmažú, potom sa
+      // vytvoria nové presne podľa toho, čo je v tomto hromadnom importe.
+      for (const old of existing) {
+        changes.push({
+          targetType: 'trivia',
+          targetId: old.id,
+          movieTitle: movie.title,
+          field: '__deleted__',
+          oldValue: JSON.stringify({ movieId: old.movieId, text: old.text, order: old.order }),
+          newValue: null,
+          wasCreated: false
+        });
+      }
+      await prisma.movieTrivia.deleteMany({ where: { movieId: movie.id } });
+
+      let order = 0;
       for (const factText of finalToAdd) {
         const created = await prisma.movieTrivia.create({ data: { movieId: movie.id, text: factText, order: order++ } });
         changes.push({
@@ -117,8 +119,12 @@ export async function POST(req: Request) {
       }
     }
 
-    const skippedNote = finalToAdd.length < toAdd.length ? ` (${toAdd.length - finalToAdd.length} presiahlo limit)` : '';
-    results.push({ line, status: 'OK', detail: `${movie.title}: pridaných ${finalToAdd.length} zaujímavostí${skippedNote}` });
+    const skippedNote = newFacts.length > MAX_TRIVIA_PER_MOVIE ? ` (${newFacts.length - MAX_TRIVIA_PER_MOVIE} presiahlo limit ${MAX_TRIVIA_PER_MOVIE})` : '';
+    results.push({
+      line,
+      status: 'OK',
+      detail: `${movie.title}: nahradené — pôvodných ${existing.length}, nových ${finalToAdd.length}${skippedNote}`
+    });
   }
 
   if (preview) {

@@ -96,9 +96,18 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
           await prisma.movieStreamingService.update({ where: { id: change.targetId }, data: { url: change.oldValue || '' } });
         }
       } else if (change.targetType === 'trivia') {
-        // Zaujímavosti pridané hromadným importom sú vždy nové riadky —
-        // pri vrátení späť ich jednoducho vymažeme.
-        await prisma.movieTrivia.delete({ where: { id: change.targetId } }).catch(() => {});
+        if (change.field === '__deleted__' && change.oldValue) {
+          // Zaujímavosť bola hromadne nahradená (nový import prepísal staré)
+          // — pri vrátení späť ju znova vytvoríme s pôvodným textom a poradím.
+          const original = JSON.parse(change.oldValue);
+          await prisma.movieTrivia.create({
+            data: { movieId: original.movieId, text: original.text, order: original.order }
+          });
+        } else {
+          // Zaujímavosti pridané hromadným importom sú vždy nové riadky —
+          // pri vrátení späť ich jednoducho vymažeme.
+          await prisma.movieTrivia.delete({ where: { id: change.targetId } }).catch(() => {});
+        }
       }
       reverted++;
     } catch (err: any) {

@@ -32,7 +32,7 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-trivia"
         title="Hromadne pridať zaujímavosti"
-        description={'Vlož zoznam v tvare "Názov filmu – Zaujímavosť 1; Zaujímavosť 2", jeden riadok na film. Jednotlivé zaujímavosti oddeľuj bodkočiarkou (nie čiarkou, tá sa môže vyskytnúť priamo vo vete). Nové zaujímavosti sa pridajú k už existujúcim.'}
+        description={'Vlož zoznam v tvare "Názov filmu – Zaujímavosť 1; Zaujímavosť 2", jeden riadok na film. Jednotlivé zaujímavosti oddeľuj bodkočiarkou (nie čiarkou, tá sa môže vyskytnúť priamo vo vete). Pozor: pri filme, čo sa v zozname objaví, sa jeho PÔVODNÉ zaujímavosti úplne nahradia týmito novými (nezlučujú sa).'}
         placeholder={'Kmotr – Film sa natáčal v New Yorku a na Sicílii.; Marlon Brando za rolu dostal Oscara, ktorý odmietol prevziať.'}
         buttonLabel="Pridať zaujímavosti"
       />

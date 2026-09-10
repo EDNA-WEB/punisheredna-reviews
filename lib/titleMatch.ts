@@ -50,11 +50,33 @@ export function normalizeTitle(title: string): string {
 // Rozdelí riadok na časti. Vyskúša postupne tabulátor, zvislú čiaru a nakoniec
 // pomlčku s medzerami okolo — podľa toho, čo sa v riadku skutočne nachádza.
 // Vráti null, ak riadok neobsahuje aspoň minParts častí ani jedným spôsobom.
+// Rozdelí text presne "count"-krát podľa daného oddeľovača (nie pri KAŽDOM
+// výskyte) — zvyšná časť textu za posledným potrebným delením zostane vcelku,
+// aj keby obsahovala ďalšie výskyty toho istého oddeľovača. To je dôležité
+// napr. pri zaujímavostiach, kde bežná veta môže obsahovať pomlčku ako
+// interpunkciu (napr. "Ridley Scott čerpal inspiráciu — z filmu X").
+function splitAtMost(line: string, separator: RegExp, count: number): string[] {
+  const parts: string[] = [];
+  const re = new RegExp(separator.source, 'g');
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let splitsUsed = 0;
+
+  while (splitsUsed < count && (match = re.exec(line)) !== null) {
+    parts.push(line.slice(lastIndex, match.index));
+    lastIndex = match.index + match[0].length;
+    splitsUsed++;
+  }
+  parts.push(line.slice(lastIndex));
+
+  return parts.map((p) => p.trim());
+}
+
 export function splitLineParts(line: string, minParts: number): string[] | null {
   for (const separator of [TAB_SEPARATOR, PIPE_SEPARATOR, DASH_SEPARATOR]) {
     if (!separator.test(line)) continue;
-    const parts = line.split(separator).map((p) => p.trim()).filter(Boolean);
-    if (parts.length >= minParts) return parts;
+    const parts = splitAtMost(line, separator, minParts - 1);
+    if (parts.length >= minParts && parts.every((p) => p.length > 0)) return parts;
   }
   return null;
 }
