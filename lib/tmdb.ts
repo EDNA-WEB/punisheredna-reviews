@@ -235,8 +235,11 @@ export type MovieCastCrew = {
 
 // Kompletné obsadenie a hlavný štáb filmu z TMDb — na automatické doplnenie
 // polí réžia/scenár/kamera/hudba/herci priamo pri filme, bez ručného prepisovania.
-export async function tmdbGetMovieExternalIds(movieId: number): Promise<{ imdbUrl: string | null }> {
-  const url = `${TMDB_BASE}/movie/${movieId}/external_ids`;
+export async function tmdbGetMovieExternalIds(
+  movieId: number,
+  mediaType: 'movie' | 'tv' = 'movie'
+): Promise<{ imdbUrl: string | null }> {
+  const url = `${TMDB_BASE}/${mediaType}/${movieId}/external_ids`;
   const res = await fetch(url, { headers: tmdbHeaders() });
   if (!res.ok) return { imdbUrl: null };
   const d = await res.json();

@@ -62,10 +62,14 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
           data: { [change.field]: change.oldValue }
         });
       } else if (change.targetType === 'premiere') {
-        await prisma.moviePremiereDate.update({
-          where: { id: change.targetId },
-          data: { [change.field]: change.oldValue }
-        });
+        if (change.wasCreated) {
+          await prisma.moviePremiereDate.delete({ where: { id: change.targetId } }).catch(() => {});
+        } else {
+          await prisma.moviePremiereDate.update({
+            where: { id: change.targetId },
+            data: { [change.field]: change.oldValue }
+          });
+        }
       } else if (change.targetType === 'movieLink') {
         if (change.wasCreated) {
           await prisma.movieLink.delete({ where: { id: change.targetId } }).catch(() => {});

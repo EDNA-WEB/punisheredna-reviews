@@ -37,6 +37,62 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   const [movies, setMovies] = useState(initialMovies);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [includeVod, setIncludeVod] = useState(false);
+  const [allPreview, setAllPreview] = useState<{ count: number; sample: string[] } | null>(null);
+  const [allBusy, setAllBusy] = useState(false);
+  const [allDone, setAllDone] = useState<{ checked: number; batchId: string | null; results: { title: string; status: string; detail?: string }[] } | null>(null);
+  const [allUndoStatus, setAllUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
+
+  async function previewAllPremieres() {
+    setAllBusy(true);
+    setAllDone(null);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-tmdb-premieres-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ includeVod, preview: true })
+      });
+      const data = await res.json();
+      setAllPreview(data);
+    } finally {
+      setAllBusy(false);
+    }
+  }
+
+  async function confirmAllPremieres() {
+    setAllBusy(true);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-tmdb-premieres-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ includeVod, preview: false })
+      });
+      const data = await res.json();
+      setAllDone({ checked: data.checked, batchId: data.batchId || null, results: data.results });
+      setAllPreview(null);
+      setAllUndoStatus('idle');
+    } finally {
+      setAllBusy(false);
+    }
+  }
+
+  async function undoAllPremieres() {
+    if (!allDone?.batchId) return;
+    setAllUndoStatus('undoing');
+    try {
+      const res = await fetch('/api/admin/bulk-import/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId: allDone.batchId })
+      });
+      if (!res.ok) throw new Error();
+      setAllUndoStatus('done');
+    } catch {
+      setAllUndoStatus('idle');
+      alert('Vrátenie späť zlyhalo.');
+    }
+  }
+
   const [recentImporting, setRecentImporting] = useState(false);
   const [recentResults, setRecentResults] = useState<{ title: string; status: string; detail?: string }[] | null>(null);
   const [recentChecked, setRecentChecked] = useState(0);
@@ -166,6 +222,78 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
 
   return (
     <div className="max-w-3xl">
+      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
+        <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — všetky filmy</div>
+        <div className="text-xs text-muted mb-3">
+          Prejde všetky filmy/seriály bez akejkoľvek premiéry a doplní z TMDb len <strong>najskoršiu</strong> českú a
+          americkú premiéru — žiadne opakované neskoršie uvedenia. Filmy, čo už premiéru majú, sa nedotknú.
+        </div>
+        <label className="flex items-center gap-2 text-xs text-ink mb-3 cursor-pointer">
+          <input type="checkbox" checked={includeVod} onChange={(e) => setIncludeVod(e.target.checked)} />
+          Zahrnúť aj VOD premiéru (bez zaškrtnutia sa doplní len kino premiéra)
+        </label>
+
+        {!allPreview && !allDone && (
+          <button
+            type="button"
+            onClick={previewAllPremieres}
+            disabled={allBusy}
+            className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {allBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+          </button>
+        )}
+
+        {allPreview && !allDone && (
+          <div>
+            <div className="text-xs text-ink mb-2">
+              Doplní sa <strong>{allPreview.count}</strong> filmov/seriálov. Ukážka prvých {allPreview.sample.length}:
+            </div>
+            <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{allPreview.sample.join(', ')}</div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={confirmAllPremieres}
+                disabled={allBusy}
+                className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {allBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${allPreview.count})`}
+              </button>
+              <button type="button" onClick={() => setAllPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {allDone && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {allDone.checked} filmov/seriálov.</div>
+              {allDone.batchId && allUndoStatus !== 'done' && (
+                <button
+                  type="button"
+                  onClick={undoAllPremieres}
+                  disabled={allUndoStatus === 'undoing'}
+                  className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
+                >
+                  {allUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                </button>
+              )}
+              {allUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            </div>
+            <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
+              {allDone.results.map((r, i) => (
+                <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
+                  <span className="font-semibold">{r.status}</span> — {r.title}
+                  {r.detail ? `: ${r.detail}` : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
         <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — filmy za poslednú hodinu</div>
         <div className="text-xs text-muted mb-3">

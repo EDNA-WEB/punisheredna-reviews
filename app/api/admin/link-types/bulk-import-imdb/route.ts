@@ -27,7 +27,7 @@ export async function POST() {
       tmdbId: { not: null },
       links: { none: { linkTypeId: imdbType.id } }
     },
-    select: { id: true, tmdbId: true, title: true },
+    select: { id: true, tmdbId: true, title: true, contentType: true },
     take: BATCH_SIZE
   });
 
@@ -40,7 +40,10 @@ export async function POST() {
 
   for (const movie of candidates) {
     try {
-      const { imdbUrl } = await tmdbGetMovieExternalIds(movie.tmdbId!);
+      // Seriály majú v TMDb úplne inú číselnú databázu ID než filmy — bez
+      // tohto rozlíšenia by sa dopyt na seriál pýtal na neexistujúci/nesprávny film.
+      const mediaType = movie.contentType === 'Seriál' ? 'tv' : 'movie';
+      const { imdbUrl } = await tmdbGetMovieExternalIds(movie.tmdbId!, mediaType);
       if (!imdbUrl) {
         notFound++;
         continue;
