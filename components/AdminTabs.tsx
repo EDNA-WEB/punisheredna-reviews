@@ -13,7 +13,8 @@ const PROFILE_GROUP = {
     { href: '/admin/online', label: 'Online' },
     { href: '/admin/kde-sledovat', label: 'Kde sledovať' },
     { href: '/admin/odkazy', label: 'Odkazy' },
-    { href: '/admin/lokalizacia', label: 'Lokalizácia' }
+    { href: '/admin/lokalizacia', label: 'Lokalizácia' },
+    { href: '/admin/zaujimavosti', label: 'Zaujímavosti' }
   ]
 };
 

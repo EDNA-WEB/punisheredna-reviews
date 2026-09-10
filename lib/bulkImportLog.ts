@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 import { randomUUID } from 'crypto';
 
 export type LoggedChange = {
-  targetType: 'movie' | 'episode' | 'premiere' | 'movieLink' | 'streamingService';
+  targetType: 'movie' | 'episode' | 'premiere' | 'movieLink' | 'streamingService' | 'trivia';
   targetId: string;
   movieTitle: string;
   field: string;
@@ -95,6 +95,10 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
         } else {
           await prisma.movieStreamingService.update({ where: { id: change.targetId }, data: { url: change.oldValue || '' } });
         }
+      } else if (change.targetType === 'trivia') {
+        // Zaujímavosti pridané hromadným importom sú vždy nové riadky —
+        // pri vrátení späť ich jednoducho vymažeme.
+        await prisma.movieTrivia.delete({ where: { id: change.targetId } }).catch(() => {});
       }
       reverted++;
     } catch (err: any) {
