@@ -62,7 +62,20 @@ export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: 
           data: { [change.field]: change.oldValue }
         });
       } else if (change.targetType === 'premiere') {
-        if (change.wasCreated) {
+        if (change.field === '__deleted__' && change.oldValue) {
+          // Záznam bol hromadne vymazaný (napr. čistenie chybných dát) —
+          // pri vrátení späť ho znova vytvoríme presne s pôvodnými hodnotami.
+          const original = JSON.parse(change.oldValue);
+          await prisma.moviePremiereDate.create({
+            data: {
+              movieId: original.movieId,
+              country: original.country,
+              type: original.type,
+              releaseDate: new Date(original.releaseDate),
+              distributor: original.distributor || null
+            }
+          });
+        } else if (change.wasCreated) {
           await prisma.moviePremiereDate.delete({ where: { id: change.targetId } }).catch(() => {});
         } else {
           await prisma.moviePremiereDate.update({

@@ -113,6 +113,73 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
     }
   }
   const [openFor, setOpenFor] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIncludeVod, setSelectedIncludeVod] = useState(false);
+  const [selectedPreview, setSelectedPreview] = useState<{ count: number; sample: string[] } | null>(null);
+  const [selectedBusy, setSelectedBusy] = useState(false);
+  const [selectedDone, setSelectedDone] = useState<{ checked: number; batchId: string | null; results: { title: string; status: string; detail?: string }[] } | null>(null);
+  const [selectedUndoStatus, setSelectedUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  async function previewSelected() {
+    setSelectedBusy(true);
+    setSelectedDone(null);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-update-premieres-selected', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ movieIds: Array.from(selectedIds), includeVod: selectedIncludeVod, preview: true })
+      });
+      const data = await res.json();
+      setSelectedPreview(data);
+    } finally {
+      setSelectedBusy(false);
+    }
+  }
+
+  async function confirmSelected() {
+    setSelectedBusy(true);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-update-premieres-selected', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ movieIds: Array.from(selectedIds), includeVod: selectedIncludeVod, preview: false })
+      });
+      const data = await res.json();
+      setSelectedDone({ checked: data.checked, batchId: data.batchId || null, results: data.results });
+      setSelectedPreview(null);
+      setSelectedUndoStatus('idle');
+      setSelectedIds(new Set());
+    } finally {
+      setSelectedBusy(false);
+    }
+  }
+
+  async function undoSelected() {
+    if (!selectedDone?.batchId) return;
+    setSelectedUndoStatus('undoing');
+    try {
+      const res = await fetch('/api/admin/bulk-import/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId: selectedDone.batchId })
+      });
+      if (!res.ok) throw new Error();
+      setSelectedUndoStatus('done');
+    } catch {
+      setSelectedUndoStatus('idle');
+      alert('Vrátenie späť zlyhalo.');
+    }
+  }
+
   const [ageRatingDrafts, setAgeRatingDrafts] = useState<Record<string, string>>({});
   const [rowDrafts, setRowDrafts] = useState<Record<string, PremiereRow[]>>({});
   const [saving, setSaving] = useState<string | null>(null);
@@ -222,6 +289,80 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
 
   return (
     <div className="max-w-3xl">
+      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
+        <div className="text-sm font-semibold text-ink mb-1">Aktualizovať premiéry vybraných filmov</div>
+        <div className="text-xs text-muted mb-3">
+          Zaškrtni filmy v zozname nižšie (napr. tie s chybnou/starou premiérou) a klikni na tlačidlo — ich premiéry sa
+          nahradia čerstvo natiahnutými z TMDb (len najskoršia ČR/USA, žiadne anachronické "CZ" premiéry spred roku
+          1993).
+        </div>
+        <label className="flex items-center gap-2 text-xs text-ink mb-3 cursor-pointer">
+          <input type="checkbox" checked={selectedIncludeVod} onChange={(e) => setSelectedIncludeVod(e.target.checked)} />
+          Zahrnúť aj VOD premiéru
+        </label>
+        <div className="text-xs text-ink mb-2">Vybraných filmov: <strong>{selectedIds.size}</strong></div>
+
+        {!selectedPreview && !selectedDone && (
+          <button
+            type="button"
+            onClick={previewSelected}
+            disabled={selectedBusy || selectedIds.size === 0}
+            className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {selectedBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+          </button>
+        )}
+
+        {selectedPreview && !selectedDone && (
+          <div>
+            <div className="text-xs text-ink mb-2">
+              Aktualizuje sa <strong>{selectedPreview.count}</strong> vybraných filmov:
+            </div>
+            <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{selectedPreview.sample.join(', ')}</div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={confirmSelected}
+                disabled={selectedBusy}
+                className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {selectedBusy ? 'Aktualizujem…' : `Potvrdiť a aktualizovať (${selectedPreview.count})`}
+              </button>
+              <button type="button" onClick={() => setSelectedPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {selectedDone && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {selectedDone.checked} filmov.</div>
+              {selectedDone.batchId && selectedUndoStatus !== 'done' && (
+                <button
+                  type="button"
+                  onClick={undoSelected}
+                  disabled={selectedUndoStatus === 'undoing'}
+                  className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
+                >
+                  {selectedUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                </button>
+              )}
+              {selectedUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            </div>
+            <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
+              {selectedDone.results.map((r, i) => (
+                <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
+                  <span className="font-semibold">{r.status}</span> — {r.title}
+                  {r.detail ? `: ${r.detail}` : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
         <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — všetky filmy</div>
         <div className="text-xs text-muted mb-3">
@@ -346,6 +487,12 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
           return (
             <div key={m.id}>
               <div className="w-full flex items-center gap-3 p-3 hover:bg-surface">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(m.id)}
+                  onChange={() => toggleSelected(m.id)}
+                  className="flex-none w-4 h-4"
+                />
                 <button onClick={() => openMovie(m)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
                   <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                   <div className="flex-1 min-w-0">
