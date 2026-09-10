@@ -38,8 +38,19 @@ export async function POST(req: Request) {
       // nepridávajú opakované/neskoršie uvedenia toho istého filmu. Ak nechce
       // VOD, typ VOD úplne vynecháme, žiadny náhradný fallback naň.
       const earliestByKey = new Map<string, { country: string; type: string; releaseDate: string }>();
+      let skippedAnachronisticCz = false;
       for (const p of premieres) {
         if (!includeVod && p.type === 'VOD') continue;
+
+        // Česká republika vznikla až 1.1.1993 (rozdelením Československa) —
+        // "CZ" premiéra pri filme uvedenom skôr je historicky nepresná (v
+        // skutočnosti šlo o Československo, nie o dnešnú ČR), preto ju
+        // automaticky nepridávame a necháme na ručné posúdenie.
+        if (p.country === 'CZ' && p.releaseDate < '1993-01-01') {
+          skippedAnachronisticCz = true;
+          continue;
+        }
+
         const key = `${p.country}:${p.type}`;
         const existing = earliestByKey.get(key);
         if (!existing || p.releaseDate < existing.releaseDate) earliestByKey.set(key, p);
@@ -47,7 +58,13 @@ export async function POST(req: Request) {
       const filteredPremieres = Array.from(earliestByKey.values());
 
       if (filteredPremieres.length === 0) {
-        results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pre tento film žiadnu vyhovujúcu premiéru' });
+        results.push({
+          title: movie.title,
+          status: 'BEZ DÁT',
+          detail: skippedAnachronisticCz
+            ? 'TMDb má len CZ premiéru spred vzniku ČR (pred rokom 1993) — nepridané, over ručne'
+            : 'TMDb nemá pre tento film žiadnu vyhovujúcu premiéru'
+        });
         continue;
       }
 

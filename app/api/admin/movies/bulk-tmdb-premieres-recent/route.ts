@@ -33,12 +33,25 @@ export async function POST() {
         movie.contentType === 'Seriál' ? 'tv' : 'movie'
       );
 
-      if (premieres.length === 0) {
+      // Rovnaká logika ako pri hromadnom doplnení pre všetky filmy: len
+      // najskoršia premiéra na krajinu/typ, a žiadna "CZ" premiéra spred
+      // vzniku Českej republiky (1.1.1993) — pred tým dátumom išlo o
+      // Československo, nie o dnešnú ČR.
+      const earliestByKey = new Map<string, { country: string; type: string; releaseDate: string }>();
+      for (const p of premieres) {
+        if (p.country === 'CZ' && p.releaseDate < '1993-01-01') continue;
+        const key = `${p.country}:${p.type}`;
+        const existing = earliestByKey.get(key);
+        if (!existing || p.releaseDate < existing.releaseDate) earliestByKey.set(key, p);
+      }
+      const filteredPremieres = Array.from(earliestByKey.values());
+
+      if (filteredPremieres.length === 0) {
         results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pre tento film žiadne sledované premiéry (ČR/USA)' });
         continue;
       }
 
-      for (const p of premieres) {
+      for (const p of filteredPremieres) {
         await prisma.moviePremiereDate.create({
           data: { movieId: movie.id, country: p.country, type: p.type, releaseDate: new Date(p.releaseDate) }
         });
@@ -48,7 +61,7 @@ export async function POST() {
         await prisma.movie.update({ where: { id: movie.id }, data: { ageRating } });
       }
 
-      results.push({ title: movie.title, status: 'OK', detail: `Pridané premiéry: ${premieres.length}` });
+      results.push({ title: movie.title, status: 'OK', detail: `Pridané premiéry: ${filteredPremieres.length}` });
     } catch (err: any) {
       results.push({ title: movie.title, status: 'CHYBA', detail: err.message });
     }
