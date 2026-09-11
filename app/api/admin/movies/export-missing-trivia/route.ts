@@ -22,12 +22,12 @@ export async function GET() {
     }
   });
 
-  // Zoradíme podľa počtu zaujímavostí (najmenej navrch) a do zoznamu
-  // zaradíme len filmy, čo majú priradený ČSFD odkaz — bez neho by riadok
-  // v požadovanom tvare "Názov (Rok) – URL" nedával zmysel.
-  const sorted = [...movies]
-    .filter((m) => m.links && m.links.length > 0)
-    .sort((a, b) => a._count.trivia - b._count.trivia);
+  // Do zoznamu zaradíme len filmy, čo NEMAJÚ ani jednu zaujímavosť, a
+  // zároveň majú priradený ČSFD odkaz — bez odkazu by riadok v tvare
+  // "Názov (Rok) – URL" nedával zmysel.
+  const sorted = movies
+    .filter((m) => m._count.trivia === 0)
+    .filter((m) => m.links && m.links.length > 0);
 
   const lines = sorted.map((m) => `${m.title}${m.year ? ` (${m.year})` : ''} - ${m.links![0].url}`);
   const content = '\uFEFF' + lines.join('\n');
@@ -35,7 +35,7 @@ export async function GET() {
   return new NextResponse(content, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Content-Disposition': `attachment; filename="filmy-podla-poctu-zaujimavosti-${new Date().toISOString().slice(0, 10)}.txt"`
+      'Content-Disposition': `attachment; filename="filmy-bez-zaujimavosti-${new Date().toISOString().slice(0, 10)}.txt"`
     }
   });
 }
