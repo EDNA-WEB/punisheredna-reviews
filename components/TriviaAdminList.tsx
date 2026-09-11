@@ -29,6 +29,20 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
 
   return (
     <div>
+      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
+        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov podľa počtu zaujímavostí</div>
+        <div className="text-xs text-muted mb-3">
+          Vygeneruje textový súbor so všetkými filmami, čo majú priradený ČSFD odkaz, zoradený od filmov bez žiadnej
+          zaujímavosti po tie s najviac, v tvare "Názov (Rok) – ČSFD odkaz".
+        </div>
+        <a
+          href="/api/admin/movies/export-missing-trivia"
+          className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
+        >
+          Stiahnuť zoznam (.txt)
+        </a>
+      </div>
+
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-trivia"
         title="Hromadne pridať zaujímavosti"

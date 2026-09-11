@@ -25,12 +25,11 @@ export default async function AdminTriviaPage() {
     }
   });
 
-  // Filmy bez zaujímavostí idú navrch (od najnovšie pridaných), nech sa
-  // nestratia v dlhom zozname. Vyplnené filmy nasledujú za nimi, tiež od najnovších.
+  // Filmy zoradíme podľa POČTU zaujímavostí — bez žiadnej navrch, potom s
+  // jednou, potom s dvomi atď. V rámci rovnakého počtu sú najnovšie pridané
+  // filmy prvé, nech sa ani tie nestratia v dlhom zozname.
   const sortedMovies = [...movies].sort((a, b) => {
-    const aFilled = a._count.trivia > 0;
-    const bFilled = b._count.trivia > 0;
-    if (aFilled !== bFilled) return aFilled ? 1 : -1;
+    if (a._count.trivia !== b._count.trivia) return a._count.trivia - b._count.trivia;
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
