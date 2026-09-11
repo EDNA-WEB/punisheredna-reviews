@@ -178,6 +178,21 @@ export default function MovieLinksAdmin({
 
   return (
     <div className="max-w-3xl space-y-8">
+      {/* Stiahnutie zoznamu filmov s menej než 2 odkazmi */}
+      <div className="border border-line rounded-xl p-4 bg-surface">
+        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov bez 2 odkazov</div>
+        <div className="text-xs text-muted mb-3">
+          Vygeneruje textový súbor so všetkými filmami, čo majú priradený menej než dva odkazy (žiadny alebo len jeden),
+          jeden na riadok v tvare "Názov (Rok)".
+        </div>
+        <a
+          href="/api/admin/movies/export-missing-links"
+          className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
+        >
+          Stiahnuť zoznam (.txt)
+        </a>
+      </div>
+
       {/* Hromadný import IMDb odkazov z TMDb */}
       <div className="border border-line rounded-xl p-4 bg-surface">
         <div className="flex items-center justify-between gap-3 flex-wrap">
