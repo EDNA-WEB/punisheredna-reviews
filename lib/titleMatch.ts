@@ -42,6 +42,11 @@ export function normalizeTitle(title: string): string {
     .replace(/[\u200B-\u200D\uFEFF]/g, '') // neviditeľné znaky (zero-width, BOM)
     .replace(/['']/g, "'")
     .replace(/[""]/g, '"')
+    // Dvojbodka a pomlčka sa v podtitule filmu často používajú zameniteľne
+    // (napr. "Scary Movie: Děsnej biják" vs. "Scary Movie – Děsnej biják") —
+    // pri porovnávaní ich preto zjednotíme na rovnaký tvar.
+    .replace(/\s*:\s*/g, ' - ')
+    .replace(/\s*[–—]\s*/g, ' - ')
     .replace(/\s+/g, ' ') // viacnásobné medzery na jednu
     .toLowerCase()
     .trim();
