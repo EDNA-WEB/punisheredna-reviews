@@ -8,6 +8,8 @@ import { computePercent } from '@/lib/rating';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
 import { IconChevronRight } from '@/components/Icons';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +45,21 @@ type SearchParams = {
 export default async function MoviesPage({ searchParams }: { searchParams: SearchParams }) {
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
+
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id || null;
+
+  // Filmy, čo prihlásený používateľ už ohodnotil alebo k nim napísal recenziu
+  // (na hlavnej úrovni filmu, nie pri konkrétnej sezóne/epizóde) — tie sa na
+  // zozname označia ako "videné" zeleným rohom.
+  let watchedMovieIds = new Set<string>();
+  if (userId) {
+    const [ratedIds, reviewedIds] = await Promise.all([
+      prisma.rating.findMany({ where: { userId, seasonId: null, episodeId: null }, select: { movieId: true } }),
+      prisma.review.findMany({ where: { authorId: userId, seasonId: null, episodeId: null }, select: { movieId: true } })
+    ]);
+    watchedMovieIds = new Set([...ratedIds.map((r) => r.movieId), ...reviewedIds.map((r) => r.movieId)]);
+  }
 
   const page = Math.max(1, Number(searchParams?.page) || 1);
   const genreFilter = searchParams?.genre || null;
@@ -203,7 +220,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
                   releaseDate: m.releaseDate,
                   isCamVersion: m.isCamVersion,
                   contentType: m.contentType,
-                  premiereType: m.premiereDates[0]?.type || null
+                  premiereType: m.premiereDates[0]?.type || null,
+                  watched: watchedMovieIds.has(m.id)
                 }}
               />
             ))}

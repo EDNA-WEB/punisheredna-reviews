@@ -19,6 +19,7 @@ export default function MovieCard({
     isCamVersion?: boolean;
     contentType?: string;
     premiereType?: string | null;
+    watched?: boolean;
   };
 }) {
   const isUpcoming = !!(movie.releaseDate && new Date(movie.releaseDate) > new Date());
@@ -58,6 +59,23 @@ export default function MovieCard({
           <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
             CAM
           </span>
+        )}
+        {movie.watched && (
+          <svg
+            viewBox="0 0 40 40"
+            className="absolute top-0 right-0 w-9 h-9"
+            title="Už videné"
+          >
+            <polygon points="40,0 40,40 0,0" fill="#10b981" />
+            <polyline
+              points="24,10 29,15 37,7"
+              fill="none"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         )}
         <div className="absolute bottom-2 left-2">
           <ScoreBadge percent={movie.percent} count={movie.ratingCount} size="sm" />
