@@ -68,6 +68,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={language} className={theme}>
       <head>
+        {/* Next.js generuje z "appleWebApp" v metadata len starší, Apple-špecifický
+            tag "apple-mobile-web-app-capable" — moderné prehliadače (aj Chrome)
+            odporúčajú popri ňom aj tento novší, štandardizovaný ekvivalent. */}
+        <meta name="mobile-web-app-capable" content="yes" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
