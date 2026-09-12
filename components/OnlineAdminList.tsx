@@ -295,6 +295,20 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
 
   return (
     <div className="space-y-2 max-w-2xl">
+      <div className="border border-line rounded-xl p-4 bg-surface mb-2">
+        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov bez online</div>
+        <div className="text-xs text-muted mb-3">
+          Vygeneruje textový súbor so všetkými filmami a seriálmi, čo ešte nemajú nastavené online sledovanie (pri
+          filmoch chýba odkaz, pri seriáloch žiadna epizóda s odkazom), v tvare "Názov (Rok)".
+        </div>
+        <a
+          href="/api/admin/movies/export-missing-online"
+          className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
+        >
+          Stiahnuť zoznam (.txt)
+        </a>
+      </div>
+
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-online"
         title="Hromadne pridať online odkazy"

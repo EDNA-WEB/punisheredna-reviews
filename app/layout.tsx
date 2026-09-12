@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
 import TvNavigation from '@/components/TvNavigation';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
@@ -27,10 +28,27 @@ export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
+export const viewport: Viewport = {
+  themeColor: '#0F1013'
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: 'PunisherEDNA reviews', template: '%s | PunisherEDNA reviews' },
   description: 'Filmové recenzie od PunisherEDNA — úprimné pohľady na filmy, ktoré stoja za reč aj za mlčanie.',
+  manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
+    ],
+    apple: '/apple-touch-icon.png'
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'PunisherEDNA'
+  },
   alternates: {
     types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'PunisherEDNA reviews — Novinky (RSS)' }] }
   },
@@ -68,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
+        <ServiceWorkerRegister />
         <TranslationProvider dict={dict}>
           <Providers>
             <TvNavigation />
