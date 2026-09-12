@@ -64,8 +64,8 @@ export default function MovieCard({
           <svg
             viewBox="0 0 40 40"
             className="absolute top-0 right-0 w-9 h-9"
-            title="Už videné"
           >
+            <title>Už videné</title>
             <polygon points="40,0 40,40 0,0" fill="#10b981" />
             <polyline
               points="24,10 29,15 37,7"
