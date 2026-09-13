@@ -171,3 +171,67 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+/* =========================================================================
+   TV REŽIM (Smart TV, Android TV, set-top boxy...)
+   Aktivuje sa pridaním triedy "tv-mode" na <html> — rozhoduje o tom server
+   podľa User-Agent (app/layout.tsx). Nič tu neovplyvňuje bežný desktop ani
+   mobilný web, keďže všetky pravidlá sú zámerne zapuzdrené pod ".tv-mode".
+   ========================================================================= */
+
+/* Web pôsobil "nie na celú obrazovku" — hlavný obsah aj navigácia mali
+   pevnú maximálnu šírku (max-w-6xl = 72rem), čo na veľkej TV obrazovke
+   necháva veľké prázdne pruhy po stranách. Na TV chceme využiť celú šírku. */
+.tv-mode .max-w-6xl {
+  max-width: 100% !important;
+}
+
+/* Tieň okolo obsahu dával zmysel len ako vizuálne oddelenie "papiera" od
+   pozadia na širokej desktopovej obrazovke — na TV, kde obsah zaberá celú
+   šírku, pôsobí zbytočne a sivo. */
+.tv-mode .main-content-shell {
+  box-shadow: none !important;
+  padding-left: clamp(24px, 4vw, 64px);
+  padding-right: clamp(24px, 4vw, 64px);
+}
+
+/* Základné zväčšenie textu a medzier pre pohodlné čítanie z pohovky
+   ("10-foot UI") — web mal predtým 14.5px ako univerzálny základ, čo je
+   na diaľku niekoľkých metrov od obrazovky príliš malé. */
+.tv-mode {
+  font-size: 18px;
+}
+
+/* Zaostrenie (keď používateľ prechádza stránkou diaľkovým ovládačom) musí
+   byť oveľa výraznejšie než na počítači s myšou — inak nie je vôbec vidno,
+   kde sa práve nachádzame. Zväčšujeme už existujúci fokusový prstenec. */
+.tv-mode a:focus-visible,
+.tv-mode button:focus-visible,
+.tv-mode [tabindex]:focus-visible {
+  outline: 4px solid #E3141F;
+  outline-offset: 4px;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 8px rgba(227, 20, 31, 0.25);
+}
+
+/* Klikateľné prvky (tlačidlá, odkazy v navigácii, plagáty filmov) musia mať
+   dostatočne veľkú "dotykovú" plochu aj pri ovládaní šípkami — malé odkazy
+   sa na diaľku zle trafia a pôsobia to ako "veľa vecí sa nedá vybrať". */
+.tv-mode button,
+.tv-mode a {
+  min-height: 40px;
+}
+
+/* Menu položky s malým písmom (navigácia hore) zväčšíme, nech sú na TV
+   čitateľné — na desktope zámerne malé, aby "nevyčnievali", tu to naopak
+   prekáža čitateľnosti. */
+.tv-mode nav {
+  font-size: 1.1em;
+}
+
+/* Skryje prvky určené výhradne pre myš (napr. jemné hover-only doplnky),
+   nech sa na obrazovke nezobrazuje nič, čo sa cez diaľkový ovládač aj tak
+   nedá nikdy aktivovať. */
+.tv-mode [data-hover-only] {
+  display: none !important;
+}

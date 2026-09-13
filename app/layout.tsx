@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Poppins, Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import './globals.css';
 import Providers from './providers';
 import { TranslationProvider } from '@/components/TranslationProvider';
@@ -27,6 +27,17 @@ const body = Inter({
 export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+// Rozpoznanie Smart TV zariadení podľa User-Agent — pokrýva bežné platformy
+// (Samsung Tizen, LG webOS, Android TV/Google TV, Amazon Fire TV, Chromecast,
+// HbbTV vstavané do televízorov, Sony Bravia, Roku, PlayStation/Xbox prehliadače).
+// Nič sa tu nezapisuje do middleware.ts (ten rieši len prihlásenie do admin
+// sekcie) — ide o čisto vizuálny prepínač na úrovni tohto layoutu.
+function isSmartTvUserAgent(ua: string): boolean {
+  return /tizen|webos|smart-tv|smarttv|googletv|appletv|hbbtv|netcast|viera|aftb|aftt|aftm|firetv|crkey|roku|bravia|philipstv|playstation|xbox/i.test(
+    ua
+  );
+}
 
 export const viewport: Viewport = {
   themeColor: '#0F1013'
@@ -64,9 +75,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const theme = cookies().get('theme')?.value === 'dark' ? 'dark' : '';
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
+  const isTv = isSmartTvUserAgent(headers().get('user-agent') || '');
 
   return (
-    <html lang={language} className={theme}>
+    <html lang={language} className={`${theme} ${isTv ? 'tv-mode' : ''}`.trim()}>
       <head>
         {/* Next.js generuje z "appleWebApp" v metadata len starší, Apple-špecifický
             tag "apple-mobile-web-app-capable" — moderné prehliadače (aj Chrome)
@@ -97,7 +109,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SiteWallpaper />
             <TopBar />
             <Navbar />
-            <div className="max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
+            <div className="main-content-shell max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
               {children}
               <SiteFooter />
             </div>
