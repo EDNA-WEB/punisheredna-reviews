@@ -1,0 +1,35 @@
+<svg width="320" height="140" viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3CE"/>
+      <stop offset="35%" stop-color="#F4C542"/>
+      <stop offset="70%" stop-color="#D89B1D"/>
+      <stop offset="100%" stop-color="#A6710C"/>
+    </linearGradient>
+    <linearGradient id="goldEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8A5C0B"/>
+      <stop offset="100%" stop-color="#5C3A08"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <path id="ticketBody"
+        d="M14 8 H306 a8 8 0 0 1 8 8 V60 a14 14 0 0 0 0 28 V116 a8 8 0 0 1 -8 8 H14 a8 8 0 0 1 -8 -8 V88 a14 14 0 0 0 0 -28 V16 a8 8 0 0 1 8 -8 Z"
+        fill="url(#goldBody)" stroke="url(#goldEdge)" stroke-width="2"/>
+  <path d="M14 8 H306 a8 8 0 0 1 8 8 V60 a14 14 0 0 0 0 28 V116 a8 8 0 0 1 -8 8 H14 a8 8 0 0 1 -8 -8 V88 a14 14 0 0 0 0 -28 V16 a8 8 0 0 1 8 -8 Z"
+        fill="url(#shine)"/>
+
+  <line x1="238" y1="16" x2="238" y2="124" stroke="#8A5C0B" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>
+
+  <text x="126" y="58" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700" fill="#4A2E06" letter-spacing="2" text-anchor="middle">GOLDEN</text>
+  <text x="126" y="90" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700" fill="#4A2E06" letter-spacing="4" text-anchor="middle">TICKET</text>
+  <text x="126" y="107" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#6B4A12" letter-spacing="3" text-anchor="middle">PUNISHEREDNA REVIEWS</text>
+
+  <g transform="translate(272, 62)">
+    <polygon points="0,-16 4.5,-5.5 16,-5 7,2.5 10,14 0,7 -10,14 -7,2.5 -16,-5 -4.5,-5.5"
+             fill="#FFF3CE" stroke="#4A2E06" stroke-width="1.2"/>
+  </g>
+</svg>

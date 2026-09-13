@@ -1,0 +1,20 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldBodyS" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3CE"/>
+      <stop offset="35%" stop-color="#F4C542"/>
+      <stop offset="70%" stop-color="#D89B1D"/>
+      <stop offset="100%" stop-color="#A6710C"/>
+    </linearGradient>
+    <linearGradient id="shineS" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M6 3 H34 a3 3 0 0 1 3 3 V16 a4 4 0 0 0 0 8 V34 a3 3 0 0 1 -3 3 H6 a3 3 0 0 1 -3 -3 V24 a4 4 0 0 0 0 -8 V6 a3 3 0 0 1 3 -3 Z"
+        fill="url(#goldBodyS)" stroke="#5C3A08" stroke-width="1.3"/>
+  <path d="M6 3 H34 a3 3 0 0 1 3 3 V16 a4 4 0 0 0 0 8 V34 a3 3 0 0 1 -3 3 H6 a3 3 0 0 1 -3 -3 V24 a4 4 0 0 0 0 -8 V6 a3 3 0 0 1 3 -3 Z"
+        fill="url(#shineS)"/>
+  <polygon points="20,10 22.4,15.5 28.3,16 23.8,19.8 25.2,25.5 20,22.3 14.8,25.5 16.2,19.8 11.7,16 17.6,15.5"
+           fill="#5C3A08"/>
+</svg>

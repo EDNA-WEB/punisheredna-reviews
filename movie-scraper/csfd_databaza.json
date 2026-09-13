@@ -1,0 +1,354 @@
+[
+    {
+        "search_title": "The Cabin in the Woods",
+        "search_year": 2012,
+        "status": "SUCCESS",
+        "csfd_data": {
+            "page_url": "https://www.csfd.cz/film/253346-chata-v-horach/prehled/",
+            "type": "Film",
+            "title": "Chata v horách",
+            "rating": {
+                "percentage": "N/A",
+                "total_ratings": "N/A"
+            },
+            "where_to_watch": [
+                {
+                    "platform": "VOD",
+                    "target_url": "https://www.csfd.cz/vod/"
+                },
+                {
+                    "platform": "Telly",
+                    "target_url": "https://telly.cz/program/chata-v-horach/"
+                },
+                {
+                    "platform": "Oneplay",
+                    "target_url": "https://www.oneplay.cz/film/4349-chata-v-horach"
+                },
+                {
+                    "platform": "JOJ Play",
+                    "target_url": "https://play.joj.sk/videos/XXXwTn4rrURf8s2wB0Yr"
+                },
+                {
+                    "platform": "SledovaniTV",
+                    "target_url": "https://sledovanitv.cz/epg/event/film_plus:202609057c00c621c974115b504d082d149d9174"
+                },
+                {
+                    "platform": "více",
+                    "target_url": "javascript:void(0);"
+                }
+            ],
+            "tags": [
+                {
+                    "name": "muž",
+                    "link": "https://www.csfd.cz/tag/2818-muz/"
+                },
+                {
+                    "name": "žena",
+                    "link": "https://www.csfd.cz/tag/1492-zena/"
+                },
+                {
+                    "name": "smrt",
+                    "link": "https://www.csfd.cz/tag/76-smrt/"
+                },
+                {
+                    "name": "přátelství",
+                    "link": "https://www.csfd.cz/tag/71-pratelstvi/"
+                },
+                {
+                    "name": "přátelé",
+                    "link": "https://www.csfd.cz/tag/72-pratele/"
+                },
+                {
+                    "name": "vražda",
+                    "link": "https://www.csfd.cz/tag/91-vrazda/"
+                },
+                {
+                    "name": "násilí",
+                    "link": "https://www.csfd.cz/tag/59-nasili/"
+                },
+                {
+                    "name": "dívka",
+                    "link": "https://www.csfd.cz/tag/573-divka/"
+                },
+                {
+                    "name": "tajemství",
+                    "link": "https://www.csfd.cz/tag/234-tajemstvi/"
+                },
+                {
+                    "name": "mládež",
+                    "link": "https://www.csfd.cz/tag/1065-mladez/"
+                },
+                {
+                    "name": "záhady",
+                    "link": "https://www.csfd.cz/tag/219-zahady/"
+                },
+                {
+                    "name": "ženy",
+                    "link": "https://www.csfd.cz/tag/2020-zeny/"
+                },
+                {
+                    "name": "zbraně",
+                    "link": "https://www.csfd.cz/tag/97-zbrane/"
+                },
+                {
+                    "name": "oběť (autonehody/zločinu)",
+                    "link": "https://www.csfd.cz/tag/2348-obet-autonehody-zlocinu/"
+                },
+                {
+                    "name": "útěk",
+                    "link": "https://www.csfd.cz/tag/101-utek/"
+                },
+                {
+                    "name": "vrah",
+                    "link": "https://www.csfd.cz/tag/90-vrah/"
+                },
+                {
+                    "name": "cestování",
+                    "link": "https://www.csfd.cz/tag/574-cestovani/"
+                },
+                {
+                    "name": "manipulace",
+                    "link": "https://www.csfd.cz/tag/641-manipulace/"
+                },
+                {
+                    "name": "intriky",
+                    "link": "https://www.csfd.cz/tag/325-intriky/"
+                },
+                {
+                    "name": "kolegové",
+                    "link": "https://www.csfd.cz/tag/2404-kolegove/"
+                },
+                {
+                    "name": "pronásledování",
+                    "link": "https://www.csfd.cz/tag/1309-pronasledovani/"
+                },
+                {
+                    "name": "kamarádi",
+                    "link": "https://www.csfd.cz/tag/2717-kamaradi/"
+                },
+                {
+                    "name": "mrtvola",
+                    "link": "https://www.csfd.cz/tag/55-mrtvola/"
+                },
+                {
+                    "name": "boj o přežití",
+                    "link": "https://www.csfd.cz/tag/1992-boj-o-preziti/"
+                },
+                {
+                    "name": "umírání",
+                    "link": "https://www.csfd.cz/tag/1166-umirani/"
+                },
+                {
+                    "name": "nebezpečí",
+                    "link": "https://www.csfd.cz/tag/3014-nebezpeci/"
+                },
+                {
+                    "name": "bolest",
+                    "link": "https://www.csfd.cz/tag/2684-bolest/"
+                },
+                {
+                    "name": "smutek",
+                    "link": "https://www.csfd.cz/tag/2685-smutek/"
+                },
+                {
+                    "name": "krev",
+                    "link": "https://www.csfd.cz/tag/1036-krev/"
+                },
+                {
+                    "name": "zabijáci",
+                    "link": "https://www.csfd.cz/tag/96-zabijaci/"
+                },
+                {
+                    "name": "les",
+                    "link": "https://www.csfd.cz/tag/298-les/"
+                },
+                {
+                    "name": "krutost",
+                    "link": "https://www.csfd.cz/tag/2817-krutost/"
+                },
+                {
+                    "name": "divočina",
+                    "link": "https://www.csfd.cz/tag/80-divocina/"
+                },
+                {
+                    "name": "střelné zbraně",
+                    "link": "https://www.csfd.cz/tag/3195-strelne-zbrane/"
+                },
+                {
+                    "name": "dilema",
+                    "link": "https://www.csfd.cz/tag/1127-dilema/"
+                },
+                {
+                    "name": "chladnokrevnost",
+                    "link": "https://www.csfd.cz/tag/2616-chladnokrevnost/"
+                },
+                {
+                    "name": "zoufalství",
+                    "link": "https://www.csfd.cz/tag/3104-zoufalstvi/"
+                },
+                {
+                    "name": "zranění",
+                    "link": "https://www.csfd.cz/tag/2012-zraneni/"
+                },
+                {
+                    "name": "rvačka",
+                    "link": "https://www.csfd.cz/tag/1965-rvacka/"
+                },
+                {
+                    "name": "sériový vrah",
+                    "link": "https://www.csfd.cz/tag/264-seriovy-vrah/"
+                },
+                {
+                    "name": "gore",
+                    "link": "https://www.csfd.cz/tag/151-gore/"
+                },
+                {
+                    "name": "monstra",
+                    "link": "https://www.csfd.cz/tag/364-monstra/"
+                },
+                {
+                    "name": "střelba",
+                    "link": "https://www.csfd.cz/tag/2826-strelba/"
+                },
+                {
+                    "name": "černý humor",
+                    "link": "https://www.csfd.cz/tag/596-cerny-humor/"
+                },
+                {
+                    "name": "přepadení",
+                    "link": "https://www.csfd.cz/tag/1220-prepadeni/"
+                },
+                {
+                    "name": "duchové",
+                    "link": "https://www.csfd.cz/tag/23-duchove/"
+                },
+                {
+                    "name": "výlet",
+                    "link": "https://www.csfd.cz/tag/345-vylet/"
+                },
+                {
+                    "name": "příroda",
+                    "link": "https://www.csfd.cz/tag/2680-priroda/"
+                },
+                {
+                    "name": "paranormální jevy",
+                    "link": "https://www.csfd.cz/tag/427-paranormalni-jevy/"
+                },
+                {
+                    "name": "slasher",
+                    "link": "https://www.csfd.cz/tag/137-slasher/"
+                },
+                {
+                    "name": "upíři",
+                    "link": "https://www.csfd.cz/tag/32-upiri/"
+                },
+                {
+                    "name": "oběť (někomu/něčemu)",
+                    "link": "https://www.csfd.cz/tag/2347-obet-nekomu-necemu/"
+                },
+                {
+                    "name": "zombie",
+                    "link": "https://www.csfd.cz/tag/31-zombie/"
+                },
+                {
+                    "name": "bodné zbraně",
+                    "link": "https://www.csfd.cz/tag/3385-bodne-zbrane/"
+                },
+                {
+                    "name": "sečné zbraně",
+                    "link": "https://www.csfd.cz/tag/3196-secne-zbrane/"
+                },
+                {
+                    "name": "noc",
+                    "link": "https://www.csfd.cz/tag/3012-noc/"
+                },
+                {
+                    "name": "odvaha",
+                    "link": "https://www.csfd.cz/tag/3503-odvaha/"
+                },
+                {
+                    "name": "pokus o vraždu",
+                    "link": "https://www.csfd.cz/tag/2840-pokus-o-vrazdu/"
+                },
+                {
+                    "name": "motorky",
+                    "link": "https://www.csfd.cz/tag/198-motorky/"
+                },
+                {
+                    "name": "past",
+                    "link": "https://www.csfd.cz/tag/1604-past/"
+                },
+                {
+                    "name": "apokalypsa",
+                    "link": "https://www.csfd.cz/tag/115-apokalypsa/"
+                },
+                {
+                    "name": "přízrak",
+                    "link": "https://www.csfd.cz/tag/385-prizrak/"
+                },
+                {
+                    "name": "chata",
+                    "link": "https://www.csfd.cz/tag/466-chata/"
+                },
+                {
+                    "name": "úkryt",
+                    "link": "https://www.csfd.cz/tag/2952-ukryt/"
+                },
+                {
+                    "name": "mutanti",
+                    "link": "https://www.csfd.cz/tag/109-mutanti/"
+                },
+                {
+                    "name": "vlkodlaci",
+                    "link": "https://www.csfd.cz/tag/104-vlkodlaci/"
+                },
+                {
+                    "name": "tajná organizace",
+                    "link": "https://www.csfd.cz/tag/1255-tajna-organizace/"
+                },
+                {
+                    "name": "podzemí",
+                    "link": "https://www.csfd.cz/tag/1032-podzemi/"
+                },
+                {
+                    "name": "bohové",
+                    "link": "https://www.csfd.cz/tag/314-bohove/"
+                },
+                {
+                    "name": "sázka",
+                    "link": "https://www.csfd.cz/tag/737-sazka/"
+                },
+                {
+                    "name": "tma",
+                    "link": "https://www.csfd.cz/tag/2573-tma/"
+                },
+                {
+                    "name": "sázky",
+                    "link": "https://www.csfd.cz/tag/3412-sazky/"
+                },
+                {
+                    "name": "konec světa",
+                    "link": "https://www.csfd.cz/tag/2590-konec-sveta/"
+                },
+                {
+                    "name": "vodník",
+                    "link": "https://www.csfd.cz/tag/490-vodnik/"
+                },
+                {
+                    "name": "rybí lidé",
+                    "link": "https://www.csfd.cz/tag/3056-rybi-lide/"
+                },
+                {
+                    "name": "více",
+                    "link": "javascript:void(0);"
+                }
+            ],
+            "premieres": [
+                "Na DVD od\n\n10.10.2012 Bontonfilm",
+                "V kinech od\n\n13.04.2012 Lionsgate US"
+            ],
+            "external_links": [],
+            "related_movies_or_series": []
+        }
+    }
+]

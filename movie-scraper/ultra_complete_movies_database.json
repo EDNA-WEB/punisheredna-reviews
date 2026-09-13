@@ -1,0 +1,1789 @@
+[
+    {
+        "search_title": "The Dark Knight",
+        "search_year": 2008,
+        "status": "SUCCESS",
+        "data": {
+            "source_url": "https://www.boxofficemojo.com/title/tt0468569/",
+            "financial_summary": {},
+            "metadata": {
+                "Domestic Distributor": "Warner Bros.",
+                "Domestic Opening": "$158,411,483",
+                "Budget": "$185,000,000",
+                "Earliest Release Date": "July 16, 2008\n            (Taiwan)",
+                "MPAA": "PG-13",
+                "Running Time": "2 hr 32 min",
+                "Genres": "Crime\n    \n        Thriller",
+                "IMDbPro": "See more details at IMDbPro"
+            },
+            "overview_tables": [
+                [
+                    {
+                        "Release Group": "Original Release",
+                        "Rollout": "July 16-August 22, 2008",
+                        "Markets": "63 markets",
+                        "Domestic": "$533,345,358",
+                        "International": "$470,500,000",
+                        "Worldwide": "$1,003,845,358"
+                    },
+                    {
+                        "Release Group": "2012 Re-release",
+                        "Rollout": "July 19, 2012",
+                        "Markets": "Domestic",
+                        "Domestic": "$1,513,086",
+                        "International": "–",
+                        "Worldwide": "$1,513,086"
+                    },
+                    {
+                        "Release Group": "2018 Re-release",
+                        "Rollout": "June 11-12, 2020",
+                        "Markets": "APAC, EMEA",
+                        "Domestic": "–",
+                        "International": "$84,589",
+                        "Worldwide": "$84,589"
+                    },
+                    {
+                        "Release Group": "2020 Re-release",
+                        "Rollout": "June 19-July 17, 2020",
+                        "Markets": "APAC, EMEA",
+                        "Domestic": "–",
+                        "International": "$1,330,612",
+                        "Worldwide": "$1,362,290"
+                    },
+                    {
+                        "Release Group": "2022 Re-release",
+                        "Rollout": "September 8-September 15, 2023",
+                        "Markets": "EMEA",
+                        "Domestic": "–",
+                        "International": "$390,479",
+                        "Worldwide": "$390,605"
+                    },
+                    {
+                        "Release Group": "2023 Re-release",
+                        "Rollout": "October 18, 2023",
+                        "Markets": "APAC, EMEA",
+                        "Domestic": "–",
+                        "International": "$372,193",
+                        "Worldwide": "$517,076"
+                    },
+                    {
+                        "Release Group": "2024 Re-release",
+                        "Rollout": "September 20, 2024",
+                        "Markets": "APAC, EMEA",
+                        "Domestic": "–",
+                        "International": "$431,366",
+                        "Worldwide": "$431,366"
+                    },
+                    {
+                        "Release Group": "2026 Re-Release",
+                        "Rollout": "June 5, 2026",
+                        "Markets": "EMEA",
+                        "Domestic": "–",
+                        "International": "$185,571",
+                        "Worldwide": "$185,571"
+                    },
+                    {
+                        "Release Group": "2025 Re-release",
+                        "Rollout": "",
+                        "Markets": "New Zealand",
+                        "Domestic": "–",
+                        "International": "$326",
+                        "Worldwide": "$326"
+                    },
+                    {
+                        "Release Group": "2021 Re-release",
+                        "Rollout": "",
+                        "Markets": "5 markets",
+                        "Domestic": "$128,632",
+                        "International": "$3,651",
+                        "Worldwide": "$150,262"
+                    }
+                ],
+                [
+                    {
+                        "Domestic": "Domestic",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$534,987,076",
+                        "Rank": "21"
+                    }
+                ],
+                [
+                    {
+                        "EMEA": "United Kingdom",
+                        "# Releases": "7",
+                        "Lifetime Gross": "$69,226,517",
+                        "Rank": "69"
+                    },
+                    {
+                        "EMEA": "Germany",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$29,669,980",
+                        "Rank": "167"
+                    },
+                    {
+                        "EMEA": "France",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$27,514,612",
+                        "Rank": "202"
+                    },
+                    {
+                        "EMEA": "Spain",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$16,318,208",
+                        "Rank": "159"
+                    },
+                    {
+                        "EMEA": "Italy",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$13,871,401",
+                        "Rank": "245"
+                    },
+                    {
+                        "EMEA": "Sweden",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$7,332,500",
+                        "Rank": "82"
+                    },
+                    {
+                        "EMEA": "Denmark",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$7,302,163",
+                        "Rank": "53"
+                    },
+                    {
+                        "EMEA": "Netherlands",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$7,249,858",
+                        "Rank": "149"
+                    },
+                    {
+                        "EMEA": "Norway",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$6,647,575",
+                        "Rank": "55"
+                    },
+                    {
+                        "EMEA": "Austria",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$5,108,788",
+                        "Rank": "83"
+                    },
+                    {
+                        "EMEA": "Belgium",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$4,435,611",
+                        "Rank": "158"
+                    },
+                    {
+                        "EMEA": "Switzerland",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$4,070,124",
+                        "Rank": "134"
+                    },
+                    {
+                        "EMEA": "Greece",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,807,925",
+                        "Rank": "45"
+                    },
+                    {
+                        "EMEA": "Poland",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,798,738",
+                        "Rank": "297"
+                    },
+                    {
+                        "EMEA": "Finland",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,541,780",
+                        "Rank": "67"
+                    },
+                    {
+                        "EMEA": "United Arab Emirates",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$2,674,375",
+                        "Rank": "276"
+                    },
+                    {
+                        "EMEA": "Israel",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$2,521,967",
+                        "Rank": "95"
+                    },
+                    {
+                        "EMEA": "Portugal",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$2,163,700",
+                        "Rank": "172"
+                    },
+                    {
+                        "EMEA": "South Africa",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,787,300",
+                        "Rank": "223"
+                    },
+                    {
+                        "EMEA": "Hungary",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,378,010",
+                        "Rank": "188"
+                    },
+                    {
+                        "EMEA": "Czech Republic",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,078,226",
+                        "Rank": "387"
+                    },
+                    {
+                        "EMEA": "Kuwait",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$849,132",
+                        "Rank": "25"
+                    },
+                    {
+                        "EMEA": "Iceland",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$753,692",
+                        "Rank": "16"
+                    },
+                    {
+                        "EMEA": "Egypt",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$709,987",
+                        "Rank": "79"
+                    },
+                    {
+                        "EMEA": "Ukraine",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$561,607",
+                        "Rank": "699"
+                    },
+                    {
+                        "EMEA": "Croatia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$552,373",
+                        "Rank": "113"
+                    },
+                    {
+                        "EMEA": "Romania",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$499,047",
+                        "Rank": "428"
+                    },
+                    {
+                        "EMEA": "Lebanon",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$383,522",
+                        "Rank": "195"
+                    },
+                    {
+                        "EMEA": "Türkiye",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$369,389",
+                        "Rank": "1,827"
+                    },
+                    {
+                        "EMEA": "Bulgaria",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$325,890",
+                        "Rank": "395"
+                    },
+                    {
+                        "EMEA": "Slovenia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$278,100",
+                        "Rank": "230"
+                    },
+                    {
+                        "EMEA": "Slovakia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$260,188",
+                        "Rank": "547"
+                    },
+                    {
+                        "EMEA": "Estonia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$239,130",
+                        "Rank": "153"
+                    },
+                    {
+                        "EMEA": "Latvia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$218,110",
+                        "Rank": "145"
+                    },
+                    {
+                        "EMEA": "East Africa",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$182,196",
+                        "Rank": "28"
+                    },
+                    {
+                        "EMEA": "Serbia and Montenegro",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$171,844",
+                        "Rank": "332"
+                    },
+                    {
+                        "EMEA": "Lithuania",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$160,059",
+                        "Rank": "539"
+                    },
+                    {
+                        "EMEA": "Nigeria",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$50,134",
+                        "Rank": "270"
+                    }
+                ],
+                [
+                    {
+                        "APAC": "Australia",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$39,880,717",
+                        "Rank": "25"
+                    },
+                    {
+                        "APAC": "South Korea",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$25,760,568",
+                        "Rank": "218"
+                    },
+                    {
+                        "APAC": "Japan",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$14,697,309",
+                        "Rank": "756"
+                    },
+                    {
+                        "APAC": "Russia/CIS",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$8,589,052",
+                        "Rank": "536"
+                    },
+                    {
+                        "APAC": "Hong Kong",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$7,624,162",
+                        "Rank": "65"
+                    },
+                    {
+                        "APAC": "Taiwan",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$6,749,386",
+                        "Rank": "123"
+                    },
+                    {
+                        "APAC": "New Zealand",
+                        "# Releases": "6",
+                        "Lifetime Gross": "$4,638,188",
+                        "Rank": "59"
+                    },
+                    {
+                        "APAC": "India",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,650,589",
+                        "Rank": "484"
+                    },
+                    {
+                        "APAC": "Singapore",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,637,103",
+                        "Rank": "129"
+                    },
+                    {
+                        "APAC": "Philippines",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,267,510",
+                        "Rank": "179"
+                    },
+                    {
+                        "APAC": "Indonesia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$2,784,330",
+                        "Rank": "190"
+                    },
+                    {
+                        "APAC": "Malaysia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$2,662,579",
+                        "Rank": "262"
+                    },
+                    {
+                        "APAC": "Thailand",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$2,633,488",
+                        "Rank": "206"
+                    },
+                    {
+                        "APAC": "Vietnam",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$79,401",
+                        "Rank": "1,153"
+                    }
+                ],
+                [
+                    {
+                        "LATAM": "Mexico",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$24,966,893",
+                        "Rank": "107"
+                    },
+                    {
+                        "LATAM": "Brazil",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$20,156,555",
+                        "Rank": "127"
+                    },
+                    {
+                        "LATAM": "Argentina",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$5,480,477",
+                        "Rank": "135"
+                    },
+                    {
+                        "LATAM": "Colombia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,651,300",
+                        "Rank": "192"
+                    },
+                    {
+                        "LATAM": "Venezuela",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,488,816",
+                        "Rank": "140"
+                    },
+                    {
+                        "LATAM": "Chile",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$3,239,830",
+                        "Rank": "145"
+                    },
+                    {
+                        "LATAM": "Central America",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,572,416",
+                        "Rank": "38"
+                    },
+                    {
+                        "LATAM": "Peru",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,451,401",
+                        "Rank": "275"
+                    },
+                    {
+                        "LATAM": "Ecuador",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,175,373",
+                        "Rank": "158"
+                    },
+                    {
+                        "LATAM": "Bolivia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$403,400",
+                        "Rank": "206"
+                    },
+                    {
+                        "LATAM": "Uruguay",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$316,969",
+                        "Rank": "162"
+                    }
+                ]
+            ],
+            "subpages": {
+                "international_breakdown": [],
+                "weekend_breakdown": [],
+                "weekly_breakdown": [],
+                "daily_breakdown": []
+            },
+            "title": "The Dark Knight(2008)"
+        }
+    },
+    {
+        "search_title": "Avatar",
+        "search_year": 2009,
+        "status": "SUCCESS",
+        "data": {
+            "source_url": "https://www.boxofficemojo.com/title/tt0499549/",
+            "financial_summary": {},
+            "metadata": {
+                "Domestic Distributor": "20th Century Fox",
+                "Domestic Opening": "$77,025,481",
+                "Budget": "$237,000,000",
+                "Earliest Release Date": "December 16, 2009\n            (LATAM, EMEA)",
+                "MPAA": "PG-13",
+                "Running Time": "2 hr 42 min",
+                "Genres": "Action\n    \n        Adventure\n    \n        Fantasy\n    \n        Sci-Fi",
+                "IMDbPro": "See more details at IMDbPro"
+            },
+            "overview_tables": [
+                [
+                    {
+                        "Release Group": "Original Release",
+                        "Rollout": "December 16-January 15, 2010",
+                        "Markets": "77 markets",
+                        "Domestic": "$749,766,139",
+                        "International": "$1,993,811,448",
+                        "Worldwide": "$2,743,577,587"
+                    },
+                    {
+                        "Release Group": "2010 Special Edition",
+                        "Rollout": "August 26-October 13, 2011",
+                        "Markets": "50 markets",
+                        "Domestic": "$10,741,486",
+                        "International": "$34,097,062",
+                        "Worldwide": "$44,838,548"
+                    },
+                    {
+                        "Release Group": "2020 Re-release",
+                        "Rollout": "August 20-December 4, 2020",
+                        "Markets": "APAC",
+                        "Domestic": "–",
+                        "International": "$1,281,204",
+                        "Worldwide": "$1,281,204"
+                    },
+                    {
+                        "Release Group": "2021 Re-release",
+                        "Rollout": "March 12, 2021",
+                        "Markets": "China",
+                        "Domestic": "–",
+                        "International": "$57,995,770",
+                        "Worldwide": "$57,995,770"
+                    },
+                    {
+                        "Release Group": "2022  Re-release",
+                        "Rollout": "September 21-30, 2022",
+                        "Markets": "47 markets",
+                        "Domestic": "$24,714,024",
+                        "International": "$51,298,893",
+                        "Worldwide": "$76,012,917"
+                    },
+                    {
+                        "Release Group": "2025 Re-release",
+                        "Rollout": "",
+                        "Markets": "Australia",
+                        "Domestic": "–",
+                        "International": "–",
+                        "Worldwide": "$4,682"
+                    }
+                ],
+                [
+                    {
+                        "Domestic": "Domestic",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$785,221,649",
+                        "Rank": "5"
+                    }
+                ],
+                [
+                    {
+                        "China": "China",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$262,125,748",
+                        "Rank": "49"
+                    }
+                ],
+                [
+                    {
+                        "EMEA": "France",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$181,757,632",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Germany",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$166,725,521",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "United Kingdom",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$153,841,911",
+                        "Rank": "7"
+                    },
+                    {
+                        "EMEA": "Spain",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$112,751,412",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Italy",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$96,634,896",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Poland",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$32,164,753",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Netherlands",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$27,874,635",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "Denmark",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$25,443,329",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Sweden",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$24,700,107",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Switzerland",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$21,025,501",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Türkiye",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$18,056,907",
+                        "Rank": "13"
+                    },
+                    {
+                        "EMEA": "Belgium",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$16,717,407",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "Austria",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$16,550,317",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Norway",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$15,118,546",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Greece",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$14,158,758",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Israel",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$13,488,099",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Czech Republic",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$12,767,733",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Portugal",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$10,496,171",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Hungary",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$9,517,297",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Ukraine",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$8,709,181",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "United Arab Emirates",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$8,161,712",
+                        "Rank": "25"
+                    },
+                    {
+                        "EMEA": "South Africa",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$7,595,181",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "Romania",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$6,723,773",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "Finland",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$6,134,035",
+                        "Rank": "14"
+                    },
+                    {
+                        "EMEA": "Russia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$4,964,889",
+                        "Rank": "32"
+                    },
+                    {
+                        "EMEA": "Bulgaria",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$4,091,161",
+                        "Rank": "2"
+                    },
+                    {
+                        "EMEA": "Slovakia",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$3,045,978",
+                        "Rank": "5"
+                    },
+                    {
+                        "EMEA": "Serbia and Montenegro",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$2,639,603",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "Egypt",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$2,382,647",
+                        "Rank": "8"
+                    },
+                    {
+                        "EMEA": "Croatia",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$2,172,676",
+                        "Rank": "6"
+                    },
+                    {
+                        "EMEA": "Slovenia",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$1,917,323",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Kuwait",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,784,632",
+                        "Rank": "7"
+                    },
+                    {
+                        "EMEA": "Lebanon",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,690,463",
+                        "Rank": "10"
+                    },
+                    {
+                        "EMEA": "Lithuania",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$1,636,819",
+                        "Rank": "7"
+                    },
+                    {
+                        "EMEA": "Latvia",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$1,554,186",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Estonia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,261,587",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Iceland",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$1,172,819",
+                        "Rank": "1"
+                    },
+                    {
+                        "EMEA": "Qatar",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,148,698",
+                        "Rank": "7"
+                    },
+                    {
+                        "EMEA": "Bahrain",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,034,364",
+                        "Rank": "5"
+                    },
+                    {
+                        "EMEA": "Jordan",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$987,790",
+                        "Rank": "3"
+                    },
+                    {
+                        "EMEA": "East Africa",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$808,639",
+                        "Rank": "5"
+                    },
+                    {
+                        "EMEA": "Oman",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$207,809",
+                        "Rank": "39"
+                    },
+                    {
+                        "EMEA": "Nigeria",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$132,847",
+                        "Rank": "90"
+                    },
+                    {
+                        "EMEA": "Ghana",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$59,590",
+                        "Rank": "27"
+                    }
+                ],
+                [
+                    {
+                        "APAC": "Japan",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$174,212,285",
+                        "Rank": "8"
+                    },
+                    {
+                        "APAC": "Russia/CIS",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$117,167,563",
+                        "Rank": "1"
+                    },
+                    {
+                        "APAC": "South Korea",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$112,672,707",
+                        "Rank": "5"
+                    },
+                    {
+                        "APAC": "Australia",
+                        "# Releases": "4",
+                        "Lifetime Gross": "$106,654,050",
+                        "Rank": "1"
+                    },
+                    {
+                        "APAC": "India",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$32,141,722",
+                        "Rank": "32"
+                    },
+                    {
+                        "APAC": "Taiwan",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$28,377,251",
+                        "Rank": "3"
+                    },
+                    {
+                        "APAC": "Hong Kong",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$24,792,334",
+                        "Rank": "2"
+                    },
+                    {
+                        "APAC": "New Zealand",
+                        "# Releases": "4",
+                        "Lifetime Gross": "$12,789,647",
+                        "Rank": "2"
+                    },
+                    {
+                        "APAC": "Thailand",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$9,765,830",
+                        "Rank": "12"
+                    },
+                    {
+                        "APAC": "Singapore",
+                        "# Releases": "4",
+                        "Lifetime Gross": "$8,885,187",
+                        "Rank": "8"
+                    },
+                    {
+                        "APAC": "Malaysia",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$8,098,492",
+                        "Rank": "33"
+                    },
+                    {
+                        "APAC": "Indonesia",
+                        "# Releases": "4",
+                        "Lifetime Gross": "$6,827,483",
+                        "Rank": "73"
+                    },
+                    {
+                        "APAC": "Philippines",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$6,318,126",
+                        "Rank": "60"
+                    },
+                    {
+                        "APAC": "Vietnam",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$2,992,411",
+                        "Rank": "113"
+                    },
+                    {
+                        "APAC": "Pakistan",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$417,493",
+                        "Rank": "27"
+                    },
+                    {
+                        "APAC": "Mongolia",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$188,558",
+                        "Rank": "17"
+                    },
+                    {
+                        "APAC": "Cambodia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$9,794",
+                        "Rank": "32"
+                    }
+                ],
+                [
+                    {
+                        "LATAM": "Brazil",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$59,762,732",
+                        "Rank": "9"
+                    },
+                    {
+                        "LATAM": "Mexico",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$47,455,575",
+                        "Rank": "21"
+                    },
+                    {
+                        "LATAM": "Argentina",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$15,182,709",
+                        "Rank": "25"
+                    },
+                    {
+                        "LATAM": "Colombia",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$14,268,475",
+                        "Rank": "11"
+                    },
+                    {
+                        "LATAM": "Chile",
+                        "# Releases": "3",
+                        "Lifetime Gross": "$11,792,223",
+                        "Rank": "13"
+                    },
+                    {
+                        "LATAM": "Venezuela",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$9,367,200",
+                        "Rank": "29"
+                    },
+                    {
+                        "LATAM": "Central America",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$5,536,710",
+                        "Rank": "15"
+                    },
+                    {
+                        "LATAM": "Peru",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$5,447,854",
+                        "Rank": "29"
+                    },
+                    {
+                        "LATAM": "Ecuador",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$2,712,812",
+                        "Rank": "35"
+                    },
+                    {
+                        "LATAM": "Bolivia",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,454,156",
+                        "Rank": "33"
+                    },
+                    {
+                        "LATAM": "Dominican Republic",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,440,545",
+                        "Rank": "1"
+                    },
+                    {
+                        "LATAM": "Uruguay",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$1,274,650",
+                        "Rank": "11"
+                    },
+                    {
+                        "LATAM": "Trinidad & Tobago",
+                        "# Releases": "2",
+                        "Lifetime Gross": "$771,174",
+                        "Rank": "15"
+                    },
+                    {
+                        "LATAM": "Jamaica",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$491,669",
+                        "Rank": "5"
+                    },
+                    {
+                        "LATAM": "Paraguay",
+                        "# Releases": "1",
+                        "Lifetime Gross": "$120,000",
+                        "Rank": "99"
+                    }
+                ]
+            ],
+            "subpages": {
+                "international_breakdown": [],
+                "weekend_breakdown": [],
+                "weekly_breakdown": [],
+                "daily_breakdown": []
+            },
+            "title": "Avatar(2009)"
+        }
+    },
+    {
+        "search_title": "Dune: Part Two",
+        "search_year": 2024,
+        "status": "SUCCESS",
+        "data": {
+            "source_url": "https://www.boxofficemojo.com/title/tt15239678/",
+            "financial_summary": {},
+            "metadata": {
+                "Domestic Distributor": "Warner Bros.",
+                "Domestic Opening": "$82,505,391",
+                "Budget": "$190,000,000",
+                "Earliest Release Date": "February 28, 2024\n            (APAC, EMEA)",
+                "MPAA": "PG-13",
+                "Running Time": "2 hr 46 min",
+                "Genres": "Action\n    \n        Adventure\n    \n        Drama\n    \n        Sci-Fi",
+                "IMDbPro": "See more details at IMDbPro"
+            },
+            "overview_tables": [
+                [
+                    {
+                        "Area": "Domestic",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$82,505,391",
+                        "Gross": "$282,144,358"
+                    }
+                ],
+                [
+                    {
+                        "Area": "United Kingdom",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$11,742,995",
+                        "Gross": "$49,430,820"
+                    },
+                    {
+                        "Area": "Germany",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$8,116,294",
+                        "Gross": "$40,099,562"
+                    },
+                    {
+                        "Area": "France",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$8,697,100",
+                        "Gross": "$31,429,912"
+                    },
+                    {
+                        "Area": "Spain",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$3,426,307",
+                        "Gross": "$14,924,823"
+                    },
+                    {
+                        "Area": "Netherlands",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$2,224,495",
+                        "Gross": "$11,234,574"
+                    },
+                    {
+                        "Area": "Poland",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$2,034,217",
+                        "Gross": "$11,000,000"
+                    },
+                    {
+                        "Area": "Italy",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$3,280,513",
+                        "Gross": "$10,823,082"
+                    },
+                    {
+                        "Area": "Switzerland",
+                        "Release Date": "Mar 27, 2024",
+                        "Opening": "$7,100,000",
+                        "Gross": "$8,400,000"
+                    },
+                    {
+                        "Area": "Norway",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$1,079,518",
+                        "Gross": "$5,887,019"
+                    },
+                    {
+                        "Area": "Czech Republic",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$1,104,561",
+                        "Gross": "$4,728,295"
+                    },
+                    {
+                        "Area": "United Arab Emirates",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$1,308,799",
+                        "Gross": "$4,205,665"
+                    },
+                    {
+                        "Area": "Türkiye",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$711,803",
+                        "Gross": "$3,501,318"
+                    },
+                    {
+                        "Area": "Ukraine",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "–",
+                        "Gross": "$2,840,564"
+                    },
+                    {
+                        "Area": "Hungary",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$809,394",
+                        "Gross": "$2,651,574"
+                    },
+                    {
+                        "Area": "Romania",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$675,635",
+                        "Gross": "$2,595,433"
+                    },
+                    {
+                        "Area": "Portugal",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$572,760",
+                        "Gross": "$2,541,266"
+                    },
+                    {
+                        "Area": "Sweden",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$2,000,000",
+                        "Gross": "$2,000,000"
+                    },
+                    {
+                        "Area": "Slovakia",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$455,436",
+                        "Gross": "$1,630,657"
+                    },
+                    {
+                        "Area": "Bulgaria",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$246,923",
+                        "Gross": "$1,290,724"
+                    },
+                    {
+                        "Area": "South Africa",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$218,237",
+                        "Gross": "$1,145,970"
+                    },
+                    {
+                        "Area": "Croatia",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$333,606",
+                        "Gross": "$1,030,518"
+                    },
+                    {
+                        "Area": "Serbia and Montenegro",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$285,240",
+                        "Gross": "$910,644"
+                    },
+                    {
+                        "Area": "Lithuania",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$215,304",
+                        "Gross": "$885,920"
+                    },
+                    {
+                        "Area": "Iceland",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$110,244",
+                        "Gross": "$539,682"
+                    },
+                    {
+                        "Area": "Slovenia",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$128,974",
+                        "Gross": "$504,669"
+                    }
+                ],
+                [
+                    {
+                        "Area": "Brazil",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$2,100,000",
+                        "Gross": "$6,500,000"
+                    },
+                    {
+                        "Area": "Mexico",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$3,897,306",
+                        "Gross": "$3,600,142"
+                    },
+                    {
+                        "Area": "Colombia",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$625,778",
+                        "Gross": "$2,101,517"
+                    }
+                ],
+                [
+                    {
+                        "Area": "Australia",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$5,607,631",
+                        "Gross": "$25,767,274"
+                    },
+                    {
+                        "Area": "South Korea",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$4,742,846",
+                        "Gross": "$16,326,147"
+                    },
+                    {
+                        "Area": "Hong Kong",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$1,322,535",
+                        "Gross": "$4,491,390"
+                    },
+                    {
+                        "Area": "Taiwan",
+                        "Release Date": "Feb 28, 2024",
+                        "Opening": "$2,500,000",
+                        "Gross": "$4,300,000"
+                    },
+                    {
+                        "Area": "Japan",
+                        "Release Date": "Mar 15, 2024",
+                        "Opening": "$1,321,529",
+                        "Gross": "$4,170,634"
+                    },
+                    {
+                        "Area": "New Zealand",
+                        "Release Date": "Feb 29, 2024",
+                        "Opening": "$1,028,971",
+                        "Gross": "$3,589,298"
+                    },
+                    {
+                        "Area": "Vietnam",
+                        "Release Date": "Mar 1, 2024",
+                        "Opening": "$388,787",
+                        "Gross": "$1,558,328"
+                    }
+                ],
+                [
+                    {
+                        "Area": "China",
+                        "Release Date": "Mar 8, 2024",
+                        "Opening": "$19,600,000",
+                        "Gross": "$49,000,000"
+                    }
+                ]
+            ],
+            "subpages": {
+                "international_breakdown": [],
+                "weekend_breakdown": [],
+                "weekly_breakdown": [],
+                "daily_breakdown": []
+            },
+            "title": "Dune: Part Two(2024)"
+        }
+    },
+    {
+        "search_title": "Backrooms",
+        "search_year": 2026,
+        "status": "SUCCESS",
+        "data": {
+            "source_url": "https://www.boxofficemojo.com/title/tt26657236/",
+            "financial_summary": {},
+            "metadata": {
+                "Domestic Distributor": "A24",
+                "Domestic Opening": "$81,402,424",
+                "Earliest Release Date": "May 27, 2026\n            (APAC, LATAM)",
+                "MPAA": "R",
+                "Running Time": "2 hr 6 min",
+                "Genres": "Horror\n    \n        Sci-Fi\n    \n        Thriller",
+                "IMDbPro": "See more details at IMDbPro"
+            },
+            "overview_tables": [
+                [
+                    {
+                        "Area": "Domestic",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$81,402,424",
+                        "Gross": "$197,523,513"
+                    }
+                ],
+                [
+                    {
+                        "Area": "United Kingdom",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$5,769,487",
+                        "Gross": "$17,677,716"
+                    },
+                    {
+                        "Area": "France",
+                        "Release Date": "Jun 17, 2026",
+                        "Opening": "$3,475,766",
+                        "Gross": "$12,223,671"
+                    },
+                    {
+                        "Area": "Germany",
+                        "Release Date": "Jun 18, 2026",
+                        "Opening": "$1,884,374",
+                        "Gross": "$8,301,194"
+                    },
+                    {
+                        "Area": "Spain",
+                        "Release Date": "Jun 5, 2026",
+                        "Opening": "$1,972,653",
+                        "Gross": "$7,511,266"
+                    },
+                    {
+                        "Area": "Italy",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$2,076,980",
+                        "Gross": "$5,886,533"
+                    },
+                    {
+                        "Area": "Poland",
+                        "Release Date": "Jun 19, 2026",
+                        "Opening": "$1,529,993",
+                        "Gross": "$5,663,560"
+                    },
+                    {
+                        "Area": "Netherlands",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$717,975",
+                        "Gross": "$3,029,829"
+                    },
+                    {
+                        "Area": "Türkiye",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$626,558",
+                        "Gross": "$2,701,242"
+                    },
+                    {
+                        "Area": "Sweden",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$758,722",
+                        "Gross": "$2,227,533"
+                    },
+                    {
+                        "Area": "Saudi Arabia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$1,090,907",
+                        "Gross": "$2,143,220"
+                    },
+                    {
+                        "Area": "Norway",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$707,980",
+                        "Gross": "$1,853,682"
+                    },
+                    {
+                        "Area": "Belgium",
+                        "Release Date": "Jun 17, 2026",
+                        "Opening": "$400,571",
+                        "Gross": "$1,848,802"
+                    },
+                    {
+                        "Area": "United Arab Emirates",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$813,662",
+                        "Gross": "$1,716,831"
+                    },
+                    {
+                        "Area": "Denmark",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$509,636",
+                        "Gross": "$1,626,496"
+                    },
+                    {
+                        "Area": "Switzerland",
+                        "Release Date": "Jun 18, 2026",
+                        "Opening": "$347,045",
+                        "Gross": "$1,580,764"
+                    },
+                    {
+                        "Area": "Finland",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$321,768",
+                        "Gross": "$1,386,741"
+                    },
+                    {
+                        "Area": "Hungary",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$306,291",
+                        "Gross": "$1,217,606"
+                    },
+                    {
+                        "Area": "Czech Republic",
+                        "Release Date": "Jun 4, 2026",
+                        "Opening": "$192,655",
+                        "Gross": "$1,207,918"
+                    },
+                    {
+                        "Area": "Austria",
+                        "Release Date": "Jun 18, 2026",
+                        "Opening": "$265,575",
+                        "Gross": "$1,177,065"
+                    },
+                    {
+                        "Area": "Romania",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$308,175",
+                        "Gross": "$1,133,280"
+                    },
+                    {
+                        "Area": "Israel",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$299,105",
+                        "Gross": "$976,745"
+                    },
+                    {
+                        "Area": "Portugal",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$193,458",
+                        "Gross": "$831,913"
+                    },
+                    {
+                        "Area": "Ukraine",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$199,229",
+                        "Gross": "$821,303"
+                    },
+                    {
+                        "Area": "Greece",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$235,272",
+                        "Gross": "$802,871"
+                    },
+                    {
+                        "Area": "Croatia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$195,355",
+                        "Gross": "$672,254"
+                    },
+                    {
+                        "Area": "Slovakia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$169,762",
+                        "Gross": "$537,728"
+                    },
+                    {
+                        "Area": "Kuwait",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$207,632",
+                        "Gross": "$504,302"
+                    },
+                    {
+                        "Area": "Bulgaria",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$142,448",
+                        "Gross": "$488,488"
+                    },
+                    {
+                        "Area": "Serbia and Montenegro",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$114,903",
+                        "Gross": "$412,320"
+                    },
+                    {
+                        "Area": "Lithuania",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$108,214",
+                        "Gross": "$363,853"
+                    },
+                    {
+                        "Area": "Qatar",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$172,698",
+                        "Gross": "$325,640"
+                    },
+                    {
+                        "Area": "South Africa",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$62,335",
+                        "Gross": "$274,883"
+                    },
+                    {
+                        "Area": "Estonia",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$69,017",
+                        "Gross": "$273,877"
+                    },
+                    {
+                        "Area": "Latvia",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$78,930",
+                        "Gross": "$259,582"
+                    },
+                    {
+                        "Area": "Iceland",
+                        "Release Date": "May 29, 2026",
+                        "Opening": "$84,054",
+                        "Gross": "$231,482"
+                    },
+                    {
+                        "Area": "Slovenia",
+                        "Release Date": "Jun 4, 2026",
+                        "Opening": "$53,968",
+                        "Gross": "$187,259"
+                    },
+                    {
+                        "Area": "Jordan",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$46,281",
+                        "Gross": "$177,071"
+                    },
+                    {
+                        "Area": "Bahrain",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$82,860",
+                        "Gross": "$154,461"
+                    },
+                    {
+                        "Area": "Lebanon",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$18,987",
+                        "Gross": "$128,276"
+                    },
+                    {
+                        "Area": "Egypt",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$14,778",
+                        "Gross": "$87,433"
+                    },
+                    {
+                        "Area": "Oman",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$31,859",
+                        "Gross": "$77,075"
+                    },
+                    {
+                        "Area": "Iraq",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$6,376",
+                        "Gross": "$61,965"
+                    }
+                ],
+                [
+                    {
+                        "Area": "Mexico",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$6,659,657",
+                        "Gross": "$17,860,719"
+                    },
+                    {
+                        "Area": "Brazil",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$1,910,170",
+                        "Gross": "$5,299,662"
+                    },
+                    {
+                        "Area": "Argentina",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$937,743",
+                        "Gross": "$3,366,551"
+                    },
+                    {
+                        "Area": "Peru",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$942,826",
+                        "Gross": "$2,393,449"
+                    },
+                    {
+                        "Area": "Chile",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$600,729",
+                        "Gross": "$2,266,018"
+                    },
+                    {
+                        "Area": "Central America",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$583,469",
+                        "Gross": "$1,522,414"
+                    },
+                    {
+                        "Area": "Colombia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$447,872",
+                        "Gross": "$1,400,036"
+                    },
+                    {
+                        "Area": "Ecuador",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$264,449",
+                        "Gross": "$687,065"
+                    },
+                    {
+                        "Area": "Bolivia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$122,777",
+                        "Gross": "$445,461"
+                    },
+                    {
+                        "Area": "Venezuela",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$100,986",
+                        "Gross": "$358,677"
+                    },
+                    {
+                        "Area": "Dominican Republic",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$54,531",
+                        "Gross": "$230,739"
+                    },
+                    {
+                        "Area": "Uruguay",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$49,559",
+                        "Gross": "$221,179"
+                    },
+                    {
+                        "Area": "Paraguay",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$51,989",
+                        "Gross": "$147,253"
+                    }
+                ],
+                [
+                    {
+                        "Area": "Australia",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$4,482,533",
+                        "Gross": "$10,933,023"
+                    },
+                    {
+                        "Area": "Russia/CIS",
+                        "Release Date": "Jun 4, 2026",
+                        "Opening": "$2,953,341",
+                        "Gross": "$10,469,211"
+                    },
+                    {
+                        "Area": "Taiwan",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$864,914",
+                        "Gross": "$2,745,725"
+                    },
+                    {
+                        "Area": "New Zealand",
+                        "Release Date": "May 28, 2026",
+                        "Opening": "$527,646",
+                        "Gross": "$1,488,916"
+                    },
+                    {
+                        "Area": "Hong Kong",
+                        "Release Date": "Jun 6, 2026",
+                        "Opening": "$263,336",
+                        "Gross": "$1,258,118"
+                    },
+                    {
+                        "Area": "Malaysia",
+                        "Release Date": "Jun 4, 2026",
+                        "Opening": "$507,472",
+                        "Gross": "$1,060,050"
+                    },
+                    {
+                        "Area": "Indonesia",
+                        "Release Date": "Jun 10, 2026",
+                        "Opening": "–",
+                        "Gross": "$922,448"
+                    },
+                    {
+                        "Area": "Pakistan",
+                        "Release Date": "Jun 12, 2026",
+                        "Opening": "–",
+                        "Gross": "$899,903"
+                    },
+                    {
+                        "Area": "India",
+                        "Release Date": "Jun 12, 2026",
+                        "Opening": "–",
+                        "Gross": "$893,816"
+                    },
+                    {
+                        "Area": "Philippines",
+                        "Release Date": "Jun 3, 2026",
+                        "Opening": "$433,809",
+                        "Gross": "$782,624"
+                    },
+                    {
+                        "Area": "Singapore",
+                        "Release Date": "Jun 18, 2026",
+                        "Opening": "$123,374",
+                        "Gross": "$715,899"
+                    },
+                    {
+                        "Area": "Thailand",
+                        "Release Date": "Jun 11, 2026",
+                        "Opening": "–",
+                        "Gross": "$598,097"
+                    },
+                    {
+                        "Area": "Vietnam",
+                        "Release Date": "Jun 26, 2026",
+                        "Opening": "$125,593",
+                        "Gross": "$313,731"
+                    },
+                    {
+                        "Area": "Mongolia",
+                        "Release Date": "Jun 12, 2026",
+                        "Opening": "–",
+                        "Gross": "$83,092"
+                    },
+                    {
+                        "Area": "South Korea",
+                        "Release Date": "May 27, 2026",
+                        "Opening": "$2,776,238",
+                        "Gross": "$29,126"
+                    }
+                ],
+                [
+                    {
+                        "Area": "China",
+                        "Release Date": "Jun 26, 2026",
+                        "Opening": "$5,200,000",
+                        "Gross": "$27,160,778"
+                    }
+                ]
+            ],
+            "subpages": {
+                "international_breakdown": [],
+                "weekend_breakdown": [],
+                "weekly_breakdown": [],
+                "daily_breakdown": []
+            },
+            "title": "Backrooms(2026)"
+        }
+    }
+]

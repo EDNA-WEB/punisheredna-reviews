@@ -1,0 +1,134 @@
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { redirect, notFound } from 'next/navigation';
+import Link from 'next/link';
+import { IconUser } from '@/components/Icons';
+import MessageForm from '@/components/MessageForm';
+import ChatMessageList from '@/components/ChatMessageList';
+import ConversationConsentBanner from '@/components/ConversationConsentBanner';
+import ChatHeaderActions from '@/components/ChatHeaderActions';
+import ChatPolling from '@/components/ChatPolling';
+import { sortedPair } from '@/lib/conversation';
+import { formatPresence, isOnline } from '@/lib/presence';
+import { tryDecryptMessageBody } from '@/lib/serverCrypto';
+import { deleteImageByUrl } from '@/lib/cloudinary';
+
+export const dynamic = 'force-dynamic';
+
+const IMAGE_GRACE_PERIOD_MS = 60 * 1000; // 1 minúta
+
+export default async function ConversationPage({ params }: { params: { userId: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect('/login');
+  const myId = (session.user as any).id;
+  await prisma.user.update({ where: { id: myId }, data: { lastActiveAt: new Date() } }).catch(() => {});
+
+  const other = await prisma.user.findUnique({
+    where: { id: params.userId },
+    select: { id: true, name: true, avatar: true, lastActiveAt: true }
+  });
+  if (!other) return notFound();
+
+  const iBlockedThem = await prisma.blockedUser.findUnique({
+    where: { blockerId_blockedId: { blockerId: myId, blockedId: other.id } }
+  });
+
+  await prisma.message.updateMany({
+    where: { senderId: other.id, receiverId: myId, read: false },
+    data: { read: true }
+  });
+
+  const myDeletion = await prisma.conversationDeletion.findUnique({
+    where: { userId_otherId: { userId: myId, otherId: other.id } }
+  });
+
+  const rawMessages = await prisma.message.findMany({
+    where: {
+      OR: [
+        { senderId: myId, receiverId: other.id },
+        { senderId: other.id, receiverId: myId }
+      ],
+      ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
+    },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
+  });
+
+  // Fotka sa teraz zobrazuje priamo, bez potreby na ňu klikať. "Hodiny" (1
+  // minúta) sa spustia hneď, ako si ju príjemca prvýkrát otvorí túto
+  // konverzáciu. Po uplynutí tej minúty sa fotka naozaj vymaže — aj z
+  // Cloudinary (nie len z databázy), nech tam nezostáva zabraté miesto navždy.
+  const now = Date.now();
+  for (const m of rawMessages) {
+    if (!m.image) continue;
+
+    if (m.receiverId === myId && !m.imageViewedAt) {
+      const viewedAt = new Date();
+      await prisma.message.update({ where: { id: m.id }, data: { imageViewedAt: viewedAt } });
+      m.imageViewedAt = viewedAt;
+    } else if (m.imageViewedAt && now - m.imageViewedAt.getTime() > IMAGE_GRACE_PERIOD_MS) {
+      await deleteImageByUrl(m.image);
+      await prisma.message.update({ where: { id: m.id }, data: { image: null } });
+      m.image = null;
+    }
+  }
+
+  // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
+  // na to, aké zariadenie si používateľ práve otvoril.
+  const messages = rawMessages.map((m) => ({
+    ...m,
+    body: m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body
+  }));
+
+  const [userAId, userBId] = sortedPair(myId, other.id);
+  const conversation = await prisma.conversation.findUnique({ where: { userAId_userBId: { userAId, userBId } } });
+
+  const isPendingForMe = conversation?.status === 'PENDING' && conversation.initiatorId !== myId;
+  const isPendingWaiting = conversation?.status === 'PENDING' && conversation.initiatorId === myId && messages.length > 0;
+  const isDeclined = conversation?.status === 'DECLINED';
+
+  let disabledReason: string | null = null;
+  if (iBlockedThem) disabledReason = `Zablokoval/-a si ${other.name}. Cez "⋮" hore ho/ju môžeš odblokovať.`;
+  else if (isDeclined) disabledReason = `${other.name} odmietol/-la s tebou komunikovať.`;
+  else if (isPendingForMe) disabledReason = 'Najprv rozhodni o žiadosti o komunikáciu vyššie.';
+  else if (isPendingWaiting) disabledReason = 'Čakáš, kým druhá strana potvrdí, že s tebou chce komunikovať.';
+
+  return (
+    <div className="pt-8 flex flex-col h-[calc(100vh-140px)]">
+      <ChatPolling />
+      <div className="flex items-center gap-3 pb-4 border-b border-line">
+        <Link href="/messages" className="text-muted hover:text-accent">←</Link>
+        <Link href={`/profile/${other.id}`} className="flex items-center gap-3 flex-1 min-w-0">
+          {other.avatar ? (
+            <img src={other.avatar} alt={other.name} className="w-9 h-9 rounded-full object-cover flex-none" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-surface flex items-center justify-center flex-none">
+              <IconUser className="w-4 h-4 text-muted" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="font-display font-bold text-ink truncate">{other.name}</div>
+            <div className={`text-xs truncate ${isOnline(other.lastActiveAt) ? 'text-accent font-medium' : 'text-muted'}`}>
+              {formatPresence(other.lastActiveAt)}
+            </div>
+          </div>
+        </Link>
+        <ChatHeaderActions otherId={other.id} otherName={other.name} initiallyBlocked={!!iBlockedThem} />
+      </div>
+
+      <div
+        className="flex-1 overflow-y-auto py-5 space-y-1"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(128,128,128,0.18) 1px, transparent 0)',
+          backgroundSize: '18px 18px'
+        }}
+      >
+        {isPendingForMe && <ConversationConsentBanner otherId={other.id} otherName={other.name} />}
+        <ChatMessageList messages={messages} myId={myId} otherId={other.id} />
+      </div>
+
+      <MessageForm receiverId={other.id} disabledReason={disabledReason} />
+    </div>
+  );
+}

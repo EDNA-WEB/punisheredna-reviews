@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200">
+  <defs>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F2126"/>
+      <stop offset="100%" stop-color="#0F1013"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Odznak s lebkou -->
+  <g transform="translate(10,10)">
+    <rect x="0" y="0" width="180" height="180" rx="42" fill="url(#badgeGrad)"/>
+    <rect x="1.5" y="1.5" width="177" height="177" rx="41" fill="none" stroke="#E3141F" stroke-width="2" opacity="0.55"/>
+
+    <!-- Lebka - jednoduchá, geometrická silueta -->
+    <g fill="#F4F4F5">
+      <!-- Lebečná klenba -->
+      <path d="M90 26
+               C 128 26, 152 54, 152 88
+               C 152 108, 143 122, 133 132
+               L 133 150
+               C 133 158, 122 158, 121 150
+               L 118 136
+               L 104 136
+               L 103 151
+               C 102.5 159, 90.5 159, 90 151
+               L 90 136
+               L 76 136
+               L 75 151
+               C 74.5 159, 62.5 159, 62 151
+               L 59 136
+               L 47 136
+               L 47 132
+               C 37 122, 28 108, 28 88
+               C 28 54, 52 26, 90 26 Z"/>
+    </g>
+
+    <!-- Oči a nos - vyseknuté (farba odznaku) -->
+    <ellipse cx="66" cy="80" rx="17" ry="21" fill="#0F1013"/>
+    <ellipse cx="114" cy="80" rx="17" ry="21" fill="#0F1013"/>
+    <path d="M90 96 L80 118 C80 124, 100 124, 100 118 Z" fill="#0F1013"/>
+
+    <!-- Zuby - jemné rozdeľovacie čiary -->
+    <line x1="76" y1="136" x2="75.4" y2="151" stroke="#0F1013" stroke-width="2.5"/>
+    <line x1="90" y1="136" x2="90" y2="152" stroke="#0F1013" stroke-width="2.5"/>
+    <line x1="104" y1="136" x2="104.6" y2="151" stroke="#0F1013" stroke-width="2.5"/>
+
+    <!-- Praská - akcentový detail v červenej -->
+    <path d="M112 40 L120 58 L113 64 L122 84" fill="none" stroke="#E3141F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Nápis -->
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="212" y="98" font-size="46" font-weight="800" letter-spacing="0.5" fill="#15171A">PUNISHER<tspan fill="#E3141F">EDNA</tspan></text>
+    <text x="213" y="128" font-size="20" font-weight="600" letter-spacing="6" fill="#6B6F76">REVIEWS</text>
+  </g>
+</svg>
