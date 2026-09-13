@@ -12,6 +12,7 @@ import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import TvModeToggle from '@/components/TvModeToggle';
 
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
@@ -39,9 +40,31 @@ function isSmartTvUserAgent(ua: string): boolean {
   );
 }
 
-export const viewport: Viewport = {
-  themeColor: '#0F1013'
-};
+// Rozpoznávanie podľa User-Agent nie je vždy spoľahlivé — niektoré (najmä
+// lacnejšie/generické) Smart TV prehliadače sa hlásia úplne bežným reťazcom.
+// Preto okrem automatického rozpoznania funguje aj MANUÁLNE vynútenie:
+// adresa s "?tv=1" na konci TV režim zapne a zapamätá si to (cookie na 1
+// rok, nastaví ju TvModeToggle.tsx), "?tv=0" ho naopak vypne.
+function detectTvMode(): boolean {
+  const tvCookie = cookies().get('tv-mode')?.value;
+  if (tvCookie === '1') return true;
+  if (tvCookie === '0') return false;
+  return isSmartTvUserAgent(headers().get('user-agent') || '');
+}
+
+export function generateViewport(): Viewport {
+  const isTv = detectTvMode();
+  // Mnohé Smart TV prehliadače nesprávne vyhodnotia "width=device-width" a
+  // spustia namiesto desktopového rozloženia mobilné (malá "layout" šírka
+  // napriek veľkej fyzickej obrazovke). Pri TV preto vynútime pevnú,
+  // dostatočne širokú šírku pohľadu — web sa tak vždy vykreslí presne v
+  // rovnakom (desktopovom) režime, aký pozná z počítača.
+  return {
+    themeColor: '#0F1013',
+    width: isTv ? 1280 : 'device-width',
+    initialScale: 1
+  };
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,7 +98,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const theme = cookies().get('theme')?.value === 'dark' ? 'dark' : '';
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
-  const isTv = isSmartTvUserAgent(headers().get('user-agent') || '');
+
+  const isTv = detectTvMode();
 
   return (
     <html lang={language} className={`${theme} ${isTv ? 'tv-mode' : ''}`.trim()}>
@@ -103,6 +127,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
         <ServiceWorkerRegister />
+        <TvModeToggle />
         <TranslationProvider dict={dict}>
           <Providers>
             <TvNavigation />
