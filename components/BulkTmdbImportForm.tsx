@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const MAX_MOVIES = 100;
 
 type ResultRow = {
   title: string;
@@ -17,7 +16,6 @@ export default function BulkTmdbImportForm() {
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<ResultRow[]>([]);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
-  const [trimmedNotice, setTrimmedNotice] = useState('');
 
   async function importOne(rawTitle: string): Promise<ResultRow> {
     try {
@@ -78,18 +76,11 @@ export default function BulkTmdbImportForm() {
   }
 
   async function startImport() {
-    let titles = namesText
+    const titles = namesText
       .split('\n')
       .map((t) => t.trim())
       .filter(Boolean);
     if (titles.length === 0) return;
-
-    if (titles.length > MAX_MOVIES) {
-      setTrimmedNotice(`Zoznam mal ${titles.length} filmov — spracujem prvých ${MAX_MOVIES}, zvyšok vlož znova v ďalšej dávke.`);
-      titles = titles.slice(0, MAX_MOVIES);
-    } else {
-      setTrimmedNotice('');
-    }
 
     setRunning(true);
     setResults(titles.map((title) => ({ title, status: 'pending' })));
@@ -115,11 +106,10 @@ export default function BulkTmdbImportForm() {
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
         <h2 className="text-sm font-bold text-ink mb-1">Hromadný import z TMDb</h2>
         <p className="text-xs text-muted mb-3">
-          Napíš názvy filmov/seriálov, každý na nový riadok (max. {MAX_MOVIES} naraz). Pre každý sa použije najlepšia
+          Napíš názvy filmov/seriálov, každý na nový riadok. Pre každý sa použije najlepšia
           zhoda na TMDb a automaticky sa vytvorí film — vrátane trailera a fotiek. Odporúčame potom každý skontrolovať
           v administrácii.
         </p>
-        {trimmedNotice && <p className="text-xs text-amber-600 mb-3">{trimmedNotice}</p>}
         <textarea
           value={namesText}
           onChange={(e) => setNamesText(e.target.value)}
