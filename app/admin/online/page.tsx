@@ -48,14 +48,25 @@ export default async function AdminOnlinePage() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
+  // Slovný prehľad — koľko filmov/seriálov už má nastavené online sledovanie
+  // a koľkým ešte chýba (rovnaká definícia "vyplnené" ako pri triedení vyššie).
+  const filledCount = movies.filter((m) =>
+    m.contentType === 'Seriál' ? m.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!m.watchUrl
+  ).length;
+  const missingCount = movies.length - filledCount;
+
   return (
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Online</h1>
-      <p className="text-sm text-muted mb-6 max-w-2xl">
+      <p className="text-sm text-muted mb-1 max-w-2xl">
         Nastav odkaz, kam sa diváci presmerujú, keď kliknú na náhľad v záložke "Online", a náhľadový obrázok, ktorý sa
         im pri tom zobrazí. Pri seriáloch vieš rozkliknúť aj jednotlivé epizódy a nastaviť to isté pre každú zvlášť.
+      </p>
+      <p className="text-sm mb-6">
+        <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmov má'} nastavené online,{' '}
+        <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} nastavené online.
       </p>
 
       <OnlineAdminList movies={sortedMovies} />
