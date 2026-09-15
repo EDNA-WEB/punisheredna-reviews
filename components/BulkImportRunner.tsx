@@ -5,7 +5,8 @@ import TxtFileImportButton from './TxtFileImportButton';
 
 type ResultRow = { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string };
 
-const LINES_PER_BATCH = 15;
+const LINES_PER_BATCH = 30;
+const BATCH_TIMEOUT_MS = 25000;
 
 // Rozdelí vstup na dávky riadkov, aby sme mohli počas spracovania priebežne
 // zobrazovať progress bar (koľko z celku je hotových). Ak vstup vyzerá ako
@@ -63,21 +64,27 @@ export default function BulkImportRunner({
     setProgress({ done: 0, total: batches.length });
 
     for (let i = 0; i < batches.length; i++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT_MS);
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: batches[i], preview, ...(sharedBatchId ? { batchId: sharedBatchId } : {}) })
+          body: JSON.stringify({ text: batches[i], preview, ...(sharedBatchId ? { batchId: sharedBatchId } : {}) }),
+          signal: controller.signal
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Operácia zlyhala.');
         allResults.push(...(data.results || []));
       } catch (err: any) {
         // Chybu tejto dávky si len zaznamenáme a pokračujeme ďalšou dávkou —
-        // jedno zlyhanie (napr. dočasný výpadok siete) nesmie zastaviť
-        // spracovanie zvyšku dlhého zoznamu.
+        // jedno zlyhanie (napr. dočasný výpadok siete, alebo vypršanie
+        // časového limitu) nesmie zastaviť spracovanie zvyšku zoznamu.
         const firstLine = batches[i].split('\n')[0]?.slice(0, 60) || '';
-        batchErrors.push(`Dávka ${i + 1}/${batches.length} (začína "${firstLine}…") zlyhala: ${err.message || 'neznáma chyba'}`);
+        const message = err.name === 'AbortError' ? `vypršal časový limit (${BATCH_TIMEOUT_MS / 1000}s)` : err.message || 'neznáma chyba';
+        batchErrors.push(`Dávka ${i + 1}/${batches.length} (začína "${firstLine}…") zlyhala: ${message}`);
+      } finally {
+        clearTimeout(timeoutId);
       }
       setProgress({ done: i + 1, total: batches.length });
       setResults([...allResults]);

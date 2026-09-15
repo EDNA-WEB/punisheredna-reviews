@@ -38,17 +38,35 @@ export default function MovieLinksAdmin({
   async function handleBulkImportImdb() {
     setBulkImporting(true);
     setBulkError('');
+    let totalAdded = 0;
+    let totalNotFound = 0;
+    let totalProcessed = 0;
+    setBulkResult({ added: 0, notFound: 0, remainingAfterThisBatch: 0 });
+
     try {
-      const res = await fetch('/api/admin/link-types/bulk-import-imdb', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
-      setBulkResult(data);
-      // Obnovíme stránku, nech katalóg typov aj tabuľka filmov ukazujú nové odkazy hneď.
-      if (data.added > 0) window.location.reload();
+      // Beží samo v slučke, kým nezostane žiadny ďalší film — nie je treba
+      // opakovane klikať. Poistka 500 kôl (≈ 20 000 filmov) chráni pred
+      // nekonečnou slučkou, keby sa niečo pokazilo.
+      for (let round = 0; round < 500; round++) {
+        const res = await fetch('/api/admin/link-types/bulk-import-imdb', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+
+        totalAdded += data.added;
+        totalNotFound += data.notFound;
+        totalProcessed += data.processed;
+        setBulkResult({ added: totalAdded, notFound: totalNotFound, remainingAfterThisBatch: data.remainingAfterThisBatch });
+
+        // Žiadny ďalší film na spracovanie alebo dávka bola prázdna — koniec.
+        if (data.processed === 0 || data.remainingAfterThisBatch === 0) break;
+      }
     } catch (err: any) {
       setBulkError(err.message || 'Import zlyhal.');
     } finally {
       setBulkImporting(false);
+      // Obnovíme stránku až na konci celého behu, nech katalóg aj tabuľka
+      // filmov ukazujú nové odkazy, bez prerušovania priebehu medzitým.
+      if (totalAdded > 0) window.location.reload();
     }
   }
 
@@ -200,8 +218,8 @@ export default function MovieLinksAdmin({
             <div className="text-sm font-semibold text-ink">Hromadne pridať IMDb odkazy</div>
             <div className="text-xs text-muted">
               Prejde všetky filmy prepojené na TMDb, čo ešte nemajú uložený IMDb odkaz, a automaticky ho doplní. Typ odkazu "IMDb" sa
-              pri prvom spustení sám vytvorí, ak ešte neexistuje. Spracúva sa po dávkach — ak filmov je veľa, môže byť potrebné
-              tlačidlo stlačiť viackrát.
+              pri prvom spustení sám vytvorí, ak ešte neexistuje. Spracúva sa po dávkach automaticky za sebou — stačí kliknúť raz,
+              beží to samo, kým nespracuje všetky filmy.
             </div>
           </div>
           <button
@@ -216,10 +234,9 @@ export default function MovieLinksAdmin({
         {bulkError && <p className="text-danger text-xs mt-2">{bulkError}</p>}
         {bulkResult && (
           <p className="text-xs mt-2 font-semibold text-ink">
-            Pridaných {bulkResult.added}, nenájdených {bulkResult.notFound}.{' '}
-            {bulkResult.remainingAfterThisBatch > 0
-              ? `Zostáva ešte približne ${bulkResult.remainingAfterThisBatch} filmov — stlač tlačidlo znova.`
-              : 'Hotovo, žiadne ďalšie filmy nezostávajú.'}
+            {bulkImporting
+              ? `Priebežne: pridaných ${bulkResult.added}, nenájdených ${bulkResult.notFound}…`
+              : `Hotovo — pridaných ${bulkResult.added}, nenájdených ${bulkResult.notFound}.`}
           </p>
         )}
       </div>
