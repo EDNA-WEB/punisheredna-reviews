@@ -14,8 +14,8 @@ export type LoggedChange = {
 // Vytvorí nový "batch" (dávku) a zaznamená doňho všetky zmeny, čo hromadný
 // import naozaj vykonal — vďaka tomu vieme dávku neskôr jedným klikom vrátiť
 // späť na pôvodné hodnoty.
-export async function logBulkImportBatch(importType: string, changes: LoggedChange[]): Promise<string> {
-  const batchId = randomUUID();
+export async function logBulkImportBatch(importType: string, changes: LoggedChange[], existingBatchId?: string): Promise<string> {
+  const batchId = existingBatchId || randomUUID();
   if (changes.length === 0) return batchId;
 
   await prisma.bulkImportChange.createMany({

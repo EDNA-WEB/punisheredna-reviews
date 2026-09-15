@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 
-  const { text, preview } = await req.json();
+  const { text, preview, batchId: clientBatchId } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
     return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
   }
@@ -131,6 +131,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ results, preview: true });
   }
 
-  const batchId = await logBulkImportBatch('trivia', changes);
+  const batchId = await logBulkImportBatch('trivia', changes, clientBatchId);
   return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

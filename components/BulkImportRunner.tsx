@@ -5,6 +5,31 @@ import TxtFileImportButton from './TxtFileImportButton';
 
 type ResultRow = { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string };
 
+const LINES_PER_BATCH = 15;
+
+// Rozdelí vstup na dávky riadkov, aby sme mohli počas spracovania priebežne
+// zobrazovať progress bar (koľko z celku je hotových). Ak vstup vyzerá ako
+// JSON (začína "[" alebo "{"), delenie po riadkoch by ho pokazilo — v tom
+// prípade sa spracuje ako jedna jediná dávka.
+function splitIntoBatches(text: string): string[] {
+  const trimmed = text.trim();
+  if (trimmed.startsWith('[') || trimmed.startsWith('{')) return [text];
+
+  const lines = text.split('\n').filter((l) => l.trim().length > 0);
+  if (lines.length === 0) return [text];
+
+  const batches: string[] = [];
+  for (let i = 0; i < lines.length; i += LINES_PER_BATCH) {
+    batches.push(lines.slice(i, i + LINES_PER_BATCH).join('\n'));
+  }
+  return batches;
+}
+
+function randomId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
 export default function BulkImportRunner({
   endpoint,
   title,
@@ -22,6 +47,7 @@ export default function BulkImportRunner({
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<'idle' | 'previewed' | 'done'>('idle');
   const [results, setResults] = useState<ResultRow[] | null>(null);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [batchId, setBatchId] = useState<string | null>(null);
   const [undoStatus, setUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
   const [error, setError] = useState('');
@@ -29,27 +55,46 @@ export default function BulkImportRunner({
   async function runRequest(preview: boolean) {
     setBusy(true);
     setError('');
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, preview })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Operácia zlyhala.');
-      setResults(data.results);
-      if (preview) {
-        setMode('previewed');
-      } else {
-        setBatchId(data.batchId || null);
-        setUndoStatus('idle');
-        setMode('done');
+
+    const batches = splitIntoBatches(text);
+    const sharedBatchId = preview ? undefined : randomId();
+    const allResults: ResultRow[] = [];
+    const batchErrors: string[] = [];
+    setProgress({ done: 0, total: batches.length });
+
+    for (let i = 0; i < batches.length; i++) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: batches[i], preview, ...(sharedBatchId ? { batchId: sharedBatchId } : {}) })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Operácia zlyhala.');
+        allResults.push(...(data.results || []));
+      } catch (err: any) {
+        // Chybu tejto dávky si len zaznamenáme a pokračujeme ďalšou dávkou —
+        // jedno zlyhanie (napr. dočasný výpadok siete) nesmie zastaviť
+        // spracovanie zvyšku dlhého zoznamu.
+        const firstLine = batches[i].split('\n')[0]?.slice(0, 60) || '';
+        batchErrors.push(`Dávka ${i + 1}/${batches.length} (začína "${firstLine}…") zlyhala: ${err.message || 'neznáma chyba'}`);
       }
-    } catch (err: any) {
-      setError(err.message || 'Operácia zlyhala.');
-    } finally {
-      setBusy(false);
+      setProgress({ done: i + 1, total: batches.length });
+      setResults([...allResults]);
     }
+
+    if (batchErrors.length > 0) {
+      setError(batchErrors.join('\n'));
+    }
+
+    if (preview) {
+      setMode('previewed');
+    } else {
+      setBatchId(sharedBatchId || null);
+      setUndoStatus('idle');
+      setMode('done');
+    }
+    setBusy(false);
   }
 
   async function handleUndo() {
@@ -75,6 +120,7 @@ export default function BulkImportRunner({
     setMode('idle');
     setResults(null);
     setBatchId(null);
+    setProgress({ done: 0, total: 0 });
   }
 
   const changedCount = results?.filter((r) => r.status !== 'BEZ ZMENY' && !['CHYBA', 'NENÁJDENÉ', 'NEJEDNOZNAČNÉ', 'BEZ PREMIÉR'].includes(r.status)).length || 0;
@@ -116,7 +162,24 @@ export default function BulkImportRunner({
         <TxtFileImportButton onText={handleTextChange} />
       </div>
 
-      {error && <p className="text-danger text-xs mt-3">{error}</p>}
+      {busy && progress.total > 1 && (
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-xs text-muted mb-1">
+            <span>Spracúvam…</span>
+            <span>
+              {progress.done} / {progress.total}
+            </span>
+          </div>
+          <div className="h-1.5 bg-line rounded-full overflow-hidden">
+            <div
+              className="h-1.5 bg-accent transition-all duration-300"
+              style={{ width: `${(progress.done / progress.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {error && <p className="text-danger text-xs mt-3 whitespace-pre-line">{error}</p>}
 
       {mode === 'previewed' && results && (
         <div className="mt-4">
