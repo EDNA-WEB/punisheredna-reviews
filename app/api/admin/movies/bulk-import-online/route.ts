@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField, extractTrailingUrl } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -54,12 +54,12 @@ export async function POST(req: Request) {
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    const parts = splitLineParts(line, 2);
-    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj medzery okolo pomlčky)' });
+    const extracted = extractTrailingUrl(line);
+    if (!extracted) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj, či riadok obsahuje platnú http(s) adresu)' });
       continue;
     }
-    const [titlePart, url] = parts;
+    const { rest: titlePart, url } = extracted;
 
     // Rozpoznanie vzoru "S01E01" na konci názvu — určuje, že ide o epizódu.
     const episodeMatch = titlePart.match(/^(.+?)\s+S(\d{1,2})E(\d{1,3})\s*$/i);
@@ -75,7 +75,17 @@ export async function POST(req: Request) {
       rawTitleFull = titlePart.trim();
     }
 
-    const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
+    const { candidates: rawCandidates, title, suggestion } = findCandidates(index, rawTitleFull);
+
+    // Ak je viac kandidátov len preto, že máme film AJ seriál s rovnakým
+    // názvom, vieme to rozlíšiť podľa toho, či riadok používa "S01E01"
+    // (seriál) alebo nie (film) — bez toho, aby bolo treba dopĺňať rok.
+    let candidates = rawCandidates;
+    if (candidates.length > 1) {
+      const wantedType = seasonNumber !== null ? 'Seriál' : 'Film';
+      const narrowed = candidates.filter((c) => c.contentType === wantedType);
+      if (narrowed.length === 1) candidates = narrowed;
+    }
 
     if (candidates.length === 0) {
       results.push({

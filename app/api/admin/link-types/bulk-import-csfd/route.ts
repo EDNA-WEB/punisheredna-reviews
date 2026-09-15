@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField, extractTrailingUrl } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -46,12 +46,12 @@ export async function POST(req: Request) {
   const pendingWrites: { movieId: string; existingLinkId: string | null; url: string; movieTitle: string }[] = [];
 
   for (const line of lines) {
-    const parts = splitLineParts(line, 2);
-    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj medzery okolo pomlčky)' });
+    const extracted = extractTrailingUrl(line);
+    if (!extracted) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj, či riadok obsahuje platnú http(s) adresu)' });
       continue;
     }
-    const [rawTitleFull, url] = parts;
+    const { rest: rawTitleFull, url } = extracted;
     const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
     if (candidates.length === 0) {

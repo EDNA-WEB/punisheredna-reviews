@@ -22,7 +22,11 @@ const DASH_SEPARATOR = /\s+[–—-]\s+/;
 // ("1.", "1)", "1 -") na začiatku riadku, čo ľudia často nechajú pri
 // kopírovaní z poznámok alebo Wordu.
 function stripListPrefix(line: string): string {
-  return line.replace(/^\s*(?:[-*•▪◦]\s+|\d{1,3}[.)]\s+)/, '');
+  // Pôvodne sme tu odstraňovali aj číslované predpony ("1. Kmotr" → "Kmotr"),
+  // ale to sa rozbilo pri filmoch, čo majú číslo priamo v NÁZVE ("9. rota",
+  // "25. hodina", "22. míle") — tie by prišli o svoju prvú časť. Zostáva len
+  // odstraňovanie odrážok, kde k takejto kolízii prakticky nemôže dôjsť.
+  return line.replace(/^\s*[-*•▪◦]\s+/, '');
 }
 
 // Rozdelí celý nahraný text na jednotlivé riadky — zvládne Windows (\r\n),
@@ -75,6 +79,40 @@ function splitAtMost(line: string, separator: RegExp, count: number): string[] {
   parts.push(line.slice(lastIndex));
 
   return parts.map((p) => p.trim());
+}
+
+// Vytiahne URL z KONCA riadku podľa "http(s)://" predpony — spoľahlivé bez
+// ohľadu na to, koľko pomlčiek obsahuje časť pred ňou. Rieši prípad, keď
+// samotný názov filmu má podtitul oddelený pomlčkou (napr. "Pacific Rim -
+// Útok na Zemi - https://...") — počítanie pomlčiek od začiatku by tu
+// odseklo len časť podtitulu, nie celú URL.
+export function extractTrailingUrl(line: string): { rest: string; url: string } | null {
+  const match = line.match(/(https?:\/\/\S+)\s*$/);
+  if (!match) return null;
+  const url = match[1];
+  let rest = line.slice(0, match.index).trim();
+  rest = rest.replace(/[\t|]+\s*$/, '').replace(/\s+[–—-]\s*$/, '').trim();
+  if (!rest) return null;
+  return { rest, url };
+}
+
+// Rozdelí text pri POSLEDNOM výskyte oddeľovača (na rozdiel od
+// splitLineParts, čo delí od začiatku) — použiteľné, keď vieme, že posledná
+// časť je krátka a jednoznačná (napr. názov VOD platformy), aj keby zvyšok
+// (názov filmu s podtitulom) obsahoval vlastné pomlčky.
+export function splitLastOccurrence(text: string): [string, string] | null {
+  for (const separator of [TAB_SEPARATOR, PIPE_SEPARATOR, DASH_SEPARATOR]) {
+    const re = new RegExp(separator.source, 'g');
+    let lastMatch: RegExpExecArray | null = null;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) lastMatch = m;
+    if (lastMatch) {
+      const before = text.slice(0, lastMatch.index).trim();
+      const after = text.slice(lastMatch.index + lastMatch[0].length).trim();
+      if (before && after) return [before, after];
+    }
+  }
+  return null;
 }
 
 export function splitLineParts(line: string, minParts: number): string[] | null {

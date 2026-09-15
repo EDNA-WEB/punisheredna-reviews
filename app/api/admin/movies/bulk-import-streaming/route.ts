@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
-import { buildTitleIndex, findCandidates, splitLineParts, splitLines, normalizeTitle, tryParseJsonInput, pickField } from '@/lib/titleMatch';
+import { buildTitleIndex, findCandidates, splitLineParts, splitLines, normalizeTitle, tryParseJsonInput, pickField, extractTrailingUrl, splitLastOccurrence } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -48,16 +48,21 @@ export async function POST(req: Request) {
   const changes: LoggedChange[] = [];
 
   for (const line of lines) {
-    const parts = splitLineParts(line, 3);
-    if (!parts || !/^https?:\/\//.test(parts[parts.length - 1])) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – Platforma – URL" (skontroluj medzery okolo pomlčiek)' });
+    const extractedUrl = extractTrailingUrl(line);
+    if (!extractedUrl) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – Platforma – URL" (skontroluj, či riadok obsahuje platnú http(s) adresu)' });
       continue;
     }
-    // Ak je v názve filmu pomlčka s medzerami (nezvyčajné, ale pre istotu),
-    // posledné dve časti sú vždy Platforma a URL, zvyšok je názov filmu.
-    const url = parts[parts.length - 1];
-    const rawService = parts[parts.length - 2];
-    const rawTitleFull = parts.slice(0, parts.length - 2).join(' – ');
+    const { url } = extractedUrl;
+    // Platformu vytiahneme z konca zvyšku (za ňou zostane samotný názov
+    // filmu) — funguje spoľahlivo aj vtedy, keď má film v názve vlastný
+    // podtitul oddelený pomlčkou (napr. "Pacific Rim - Útok na Zemi").
+    const split = splitLastOccurrence(extractedUrl.rest);
+    if (!split) {
+      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – Platforma – URL" (chýba oddelenie platformy)' });
+      continue;
+    }
+    const [rawTitleFull, rawService] = split;
 
     const { candidates, title, suggestion } = findCandidates(index, rawTitleFull);
 
