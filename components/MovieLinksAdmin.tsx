@@ -41,24 +41,32 @@ export default function MovieLinksAdmin({
     let totalAdded = 0;
     let totalNotFound = 0;
     let totalProcessed = 0;
+    const excludeIds: string[] = [];
     setBulkResult({ added: 0, notFound: 0, remainingAfterThisBatch: 0 });
 
     try {
-      // Beží samo v slučke, kým nezostane žiadny ďalší film — nie je treba
-      // opakovane klikať. Poistka 500 kôl (≈ 20 000 filmov) chráni pred
-      // nekonečnou slučkou, keby sa niečo pokazilo.
+      // Beží samo v slučke, kým nezostane žiadny ďalší nevyskúšaný film — nie
+      // je treba opakovane klikať. Filmy, čo v tomto behu už boli vyskúšané
+      // (aj neúspešne), sa posielajú v "excludeIds", nech sa slučka vždy
+      // posunie vpred a nezasekne sa na tých istých filmoch bez IMDb odkazu.
+      // Poistka 500 kôl (≈ 20 000 filmov) chráni pred nekonečnou slučkou.
       for (let round = 0; round < 500; round++) {
-        const res = await fetch('/api/admin/link-types/bulk-import-imdb', { method: 'POST' });
+        const res = await fetch('/api/admin/link-types/bulk-import-imdb', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ excludeIds })
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
 
         totalAdded += data.added;
         totalNotFound += data.notFound;
         totalProcessed += data.processed;
+        excludeIds.push(...(data.attemptedIds || []));
         setBulkResult({ added: totalAdded, notFound: totalNotFound, remainingAfterThisBatch: data.remainingAfterThisBatch });
 
-        // Žiadny ďalší film na spracovanie alebo dávka bola prázdna — koniec.
-        if (data.processed === 0 || data.remainingAfterThisBatch === 0) break;
+        // Žiadny ďalší nevyskúšaný film — koniec.
+        if (data.processed === 0) break;
       }
     } catch (err: any) {
       setBulkError(err.message || 'Import zlyhal.');
