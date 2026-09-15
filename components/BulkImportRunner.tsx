@@ -5,8 +5,8 @@ import TxtFileImportButton from './TxtFileImportButton';
 
 type ResultRow = { line: string; status: string; detail?: string; oldValue?: string | null; newValue?: string };
 
-const LINES_PER_BATCH = 30;
-const BATCH_TIMEOUT_MS = 25000;
+const LINES_PER_BATCH = 300;
+const BATCH_TIMEOUT_MS = 45000;
 
 // Rozdelí vstup na dávky riadkov, aby sme mohli počas spracovania priebežne
 // zobrazovať progress bar (koľko z celku je hotových). Ak vstup vyzerá ako

@@ -4,7 +4,6 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
 import { tmdbGetMovieCastCrew, tmdbGetPersonDetails } from '@/lib/tmdb';
-import { uploadImage } from '@/lib/cloudinary';
 
 // Zaistí, že osoba s daným TMDb ID existuje u nás v databáze — ak áno, len
 // vráti jej meno; ak nie, vytvorí nový (schválený) profil s fotkou, životopisom
@@ -16,14 +15,10 @@ async function ensurePersonExists(tmdbId: number, fallbackName: string): Promise
   const details = await tmdbGetPersonDetails(tmdbId);
   const name = details.name || fallbackName;
 
-  let photoUrl: string | null = details.photo;
-  if (photoUrl) {
-    try {
-      photoUrl = await uploadImage(photoUrl, 'people');
-    } catch {
-      // ak sa fotku nepodarí prekopírovať, pokračujeme bez nej
-    }
-  }
+  // TMDb fotky sú už na ich vlastnom trvalom CDN (image.tmdb.org) — netreba
+  // ich zbytočne kopírovať (sťahovať a znova nahrávať) do Cloudinary, to by
+  // len zbytočne plnilo úložisko bez akéhokoľvek úžitku.
+  const photoUrl: string | null = details.photo;
 
   let slug = slugify(name) || 'osoba';
   let uniqueSlug = slug;
