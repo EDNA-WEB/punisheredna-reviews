@@ -13,13 +13,15 @@ export default async function Navbar() {
 
   let avatar: string | null = null;
   let unreadMessages = 0;
+  let hasActiveMembership = false;
   if (userId) {
     const [user, unread] = await Promise.all([
-      prisma.user.findUnique({ where: { id: userId }, select: { avatar: true } }),
+      prisma.user.findUnique({ where: { id: userId }, select: { avatar: true, membershipUntil: true } }),
       prisma.message.count({ where: { receiverId: userId, read: false } })
     ]);
     avatar = user?.avatar || null;
     unreadMessages = unread;
+    hasActiveMembership = !!(user?.membershipUntil && user.membershipUntil > new Date());
   }
 
   return (
@@ -30,7 +32,7 @@ export default async function Navbar() {
       userAvatar={avatar}
       isLoggedIn={!!session}
       unreadMessages={unreadMessages}
-      buyMeACoffeeUrl={settings?.buyMeACoffeeUrl || null}
+      buyMeACoffeeUrl={hasActiveMembership ? null : settings?.buyMeACoffeeUrl || null}
     />
   );
 }

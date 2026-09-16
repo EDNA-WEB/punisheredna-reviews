@@ -209,6 +209,13 @@ export default async function ProfilePage({ params }: { params: { id: string } }
           <div className="text-sm text-muted mt-1">
             registrovaný {new Date(user.createdAt).toLocaleDateString('sk-SK')}
           </div>
+          {isOwn && user.membershipUntil && user.membershipUntil > new Date() && (
+            <div className="text-sm text-accent font-semibold mt-0.5">
+              Golden Ticket členstvo aktívne ešte{' '}
+              {Math.max(1, Math.ceil((user.membershipUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} dní (do{' '}
+              {user.membershipUntil.toLocaleDateString('sk-SK')})
+            </div>
+          )}
           {(user.region || user.country) && (
             <div className="text-sm text-muted mt-0.5">{[user.region, user.country].filter(Boolean).join(', ')}</div>
           )}

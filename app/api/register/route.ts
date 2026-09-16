@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
-import { issueTrialCode } from '@/lib/membership';
 // import { sendEmail } from '@/lib/resend'; // dočasne nepoužívané, pozri komentár nižšie
 
 export async function POST(req: Request) {
@@ -74,7 +73,6 @@ export async function POST(req: Request) {
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
-    await issueTrialCode(user.id).catch((err) => console.error('issueTrialCode', err));
 
     // DOČASNE VYPNUTÉ — spolu s kontrolou v lib/auth.ts. Resend zatiaľ nevie doručiť
     // na ľubovoľnú adresu (chýba vlastná overená doména), takže by sa tento e-mail
