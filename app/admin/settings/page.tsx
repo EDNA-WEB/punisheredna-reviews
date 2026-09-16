@@ -36,8 +36,7 @@ export default async function AdminSettingsPage() {
             facebookUrl: settings?.facebookUrl || null,
             instagramUrl: settings?.instagramUrl || null,
             tiktokUrl: settings?.tiktokUrl || null,
-            youtubeUrl: settings?.youtubeUrl || null,
-            buyMeACoffeeUrl: settings?.buyMeACoffeeUrl || null
+            youtubeUrl: settings?.youtubeUrl || null
           }}
         />
       </div>
