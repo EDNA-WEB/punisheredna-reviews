@@ -25,7 +25,7 @@ const body = Inter({
   weight: ['400', '500', '600', '700']
 });
 
-// Vynúti dynamické (server-side) vykresľovanie pri každej HTTP požiadavke.
+// Vynúti dynamické (server-side, nie statické) vykresľovanie pri každej HTTP požiadavke.
 export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
