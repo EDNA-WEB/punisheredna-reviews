@@ -9,6 +9,8 @@ export default async function Navbar() {
   const userName = session?.user?.name || null;
   const userId = (session?.user as any)?.id || null;
 
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { buyMeACoffeeUrl: true } });
+
   let avatar: string | null = null;
   let unreadMessages = 0;
   if (userId) {
@@ -28,6 +30,7 @@ export default async function Navbar() {
       userAvatar={avatar}
       isLoggedIn={!!session}
       unreadMessages={unreadMessages}
+      buyMeACoffeeUrl={settings?.buyMeACoffeeUrl || null}
     />
   );
 }

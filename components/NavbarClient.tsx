@@ -21,7 +21,8 @@ export default function NavbarClient({
   userId,
   userAvatar,
   isLoggedIn,
-  unreadMessages
+  unreadMessages,
+  buyMeACoffeeUrl
 }: {
   role: string | null;
   userName: string | null;
@@ -29,6 +30,7 @@ export default function NavbarClient({
   userAvatar: string | null;
   isLoggedIn: boolean;
   unreadMessages: number;
+  buyMeACoffeeUrl: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -86,6 +88,19 @@ export default function NavbarClient({
             </div>
 
             <div className="flex items-center gap-0.5 sm:gap-1 flex-none relative">
+              {buyMeACoffeeUrl && (
+                <a
+                  href={buyMeACoffeeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-white bg-[#FFDD00] !text-[#0F1013] px-3 py-2 rounded-full hover:brightness-95 transition-all flex-none mr-1"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                    <path d="M4 3h13a2 2 0 0 1 2 2v2h1a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-.68A6.5 6.5 0 0 1 11 20H8a6.5 6.5 0 0 1-6.5-6.5V5a2 2 0 0 1 2-2h.5Zm15 6v3a2 2 0 0 0 2-2v-1h-2Z" />
+                  </svg>
+                  Kúpiť členstvo
+                </a>
+              )}
               {isLoggedIn ? (
                 <>
                   <MessagesDropdown unreadTotal={unreadMessages} />
@@ -155,6 +170,20 @@ export default function NavbarClient({
               <Link href="/admin" onClick={() => setOpen(false)} className="py-3.5 border-b border-white/10 text-lg font-display font-semibold text-accent">
                 {t('nav.administracia')}
               </Link>
+            )}
+            {buyMeACoffeeUrl && (
+              <a
+                href={buyMeACoffeeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="py-3.5 border-b border-white/10 text-lg font-display font-semibold mt-4 flex items-center gap-3 text-[#FFDD00]"
+              >
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                  <path d="M4 3h13a2 2 0 0 1 2 2v2h1a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-.68A6.5 6.5 0 0 1 11 20H8a6.5 6.5 0 0 1-6.5-6.5V5a2 2 0 0 1 2-2h.5Zm15 6v3a2 2 0 0 0 2-2v-1h-2Z" />
+                </svg>
+                Kúpiť členstvo
+              </a>
             )}
             {isLoggedIn ? (
               <>

@@ -65,7 +65,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role
+          role: user.role,
+          membershipUntil: user.membershipUntil
         } as any;
       }
     })
@@ -75,18 +76,20 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = (user as any).id;
         token.role = (user as any).role;
+        token.membershipUntil = (user as any).membershipUntil || null;
       } else if (token.id) {
-        // Obnov rolu a stav zablokovania z databázy pri každom overení,
-        // nech sa zmena (napr. odobratie admin práv alebo zablokovanie) prejaví okamžite,
-        // nie až po opätovnom prihlásení.
+        // Obnov rolu, stav zablokovania a členstvo z databázy pri každom overení,
+        // nech sa zmena (napr. odobratie admin práv, zablokovanie, alebo uplatnenie
+        // nového kódu členstva) prejaví okamžite, nie až po opätovnom prihlásení.
         const fresh = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true, banned: true }
+          select: { role: true, banned: true, membershipUntil: true }
         });
         if (!fresh || fresh.banned) {
           token.invalid = true;
         } else {
           token.role = fresh.role;
+          token.membershipUntil = fresh.membershipUntil;
           token.invalid = false;
         }
       }
@@ -105,6 +108,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
+        (session.user as any).membershipUntil = token.membershipUntil || null;
       }
       return session;
     }

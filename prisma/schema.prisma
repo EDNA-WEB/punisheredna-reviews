@@ -623,6 +623,7 @@ model Settings {
   privacyPolicyText String? @db.Text
   registrationsEnabled Boolean @default(true)
   onlineFreeForAll Boolean @default(false)
+  buyMeACoffeeUrl String?
 }
 
 model MoviePremiereDate {

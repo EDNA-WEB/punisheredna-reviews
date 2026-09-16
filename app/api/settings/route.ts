@@ -16,6 +16,7 @@ export async function GET() {
     instagramUrl: settings?.instagramUrl || null,
     tiktokUrl: settings?.tiktokUrl || null,
     youtubeUrl: settings?.youtubeUrl || null,
+    buyMeACoffeeUrl: settings?.buyMeACoffeeUrl || null,
     privacyModalText: settings?.privacyModalText || null,
     privacyCategories: settings?.privacyCategories || null,
     cookiesPolicyText: settings?.cookiesPolicyText || null,
@@ -31,9 +32,9 @@ export async function PATCH(req: Request) {
   }
 
   const body = await req.json();
-  const { wallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled, onlineFreeForAll } = body;
+  const { wallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, buyMeACoffeeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled, onlineFreeForAll } = body;
 
-  for (const url of [appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl]) {
+  for (const url of [appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, buyMeACoffeeUrl]) {
     const urlError = validateSafeUrl(url);
     if (urlError) return NextResponse.json({ error: urlError }, { status: 400 });
   }
@@ -72,6 +73,7 @@ export async function PATCH(req: Request) {
   if ('instagramUrl' in body) data.instagramUrl = instagramUrl || null;
   if ('tiktokUrl' in body) data.tiktokUrl = tiktokUrl || null;
   if ('youtubeUrl' in body) data.youtubeUrl = youtubeUrl || null;
+  if ('buyMeACoffeeUrl' in body) data.buyMeACoffeeUrl = buyMeACoffeeUrl || null;
   if ('privacyModalText' in body) data.privacyModalText = privacyModalText || null;
   if ('privacyCategories' in body) data.privacyCategories = privacyCategories || null;
   if ('cookiesPolicyText' in body) data.cookiesPolicyText = cookiesPolicyText || null;

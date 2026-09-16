@@ -10,6 +10,7 @@ type Initial = {
   instagramUrl: string | null;
   tiktokUrl: string | null;
   youtubeUrl: string | null;
+  buyMeACoffeeUrl: string | null;
 };
 
 export default function AppAndSocialLinksForm({ initial }: { initial: Initial }) {
@@ -20,6 +21,7 @@ export default function AppAndSocialLinksForm({ initial }: { initial: Initial })
   const [instagramUrl, setInstagramUrl] = useState(initial.instagramUrl || '');
   const [tiktokUrl, setTiktokUrl] = useState(initial.tiktokUrl || '');
   const [youtubeUrl, setYoutubeUrl] = useState(initial.youtubeUrl || '');
+  const [buyMeACoffeeUrl, setBuyMeACoffeeUrl] = useState(initial.buyMeACoffeeUrl || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -38,7 +40,8 @@ export default function AppAndSocialLinksForm({ initial }: { initial: Initial })
           facebookUrl: facebookUrl || null,
           instagramUrl: instagramUrl || null,
           tiktokUrl: tiktokUrl || null,
-          youtubeUrl: youtubeUrl || null
+          youtubeUrl: youtubeUrl || null,
+          buyMeACoffeeUrl: buyMeACoffeeUrl || null
         })
       });
       const data = await res.json();
@@ -87,6 +90,23 @@ export default function AppAndSocialLinksForm({ initial }: { initial: Initial })
             <label className="block text-sm font-semibold text-ink mb-1.5">YouTube</label>
             <input className="field-input" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="https://youtube.com/..." />
           </div>
+        </div>
+      </div>
+
+      <div>
+        <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2.5">Členstvo</div>
+        <div>
+          <label className="block text-sm font-semibold text-ink mb-1.5">Odkaz na BuyMeACoffee</label>
+          <input
+            className="field-input"
+            value={buyMeACoffeeUrl}
+            onChange={(e) => setBuyMeACoffeeUrl(e.target.value)}
+            placeholder="https://www.buymeacoffee.com/..."
+          />
+          <p className="text-xs text-muted mt-1">
+            Zobrazí sa ako tlačidlo "Kúpiť členstvo" na webe. Po prijatí platby vygeneruj kód v sekcii Administrácia →
+            Členstvo.
+          </p>
         </div>
       </div>
 
