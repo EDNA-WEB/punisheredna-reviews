@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import BoxOfficeStatus from '@/components/BoxOfficeStatus';
 import BoxOfficeSortSelect from '@/components/BoxOfficeSortSelect';
+import BoxOfficeRecalculateButton from '@/components/BoxOfficeRecalculateButton';
 import { formatMoney, computeBoxOffice } from '@/lib/boxOffice';
 import { adjustForInflation } from '@/lib/inflation';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
@@ -12,6 +15,8 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
   const sort = searchParams.sort || 'trzby';
+  const session = await getServerSession(authOptions);
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
   const allMovies = await prisma.movie.findMany({
     where: { approved: true, budget: { not: null } },
@@ -47,6 +52,7 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
   const sorted = [...withStats].sort((a, b) => {
     if (sort === 'inflacia') return b.adjustedEarned - a.adjustedEarned;
     if (sort === 'zisk') return (b.stats?.profit ?? -Infinity) - (a.stats?.profit ?? -Infinity);
+    if (sort === 'prepadaky') return (a.stats?.profit ?? Infinity) - (b.stats?.profit ?? Infinity);
     return (b.stats?.earned ?? 0) - (a.stats?.earned ?? 0);
   });
 
@@ -71,6 +77,7 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
             Porovnať 2 filmy →
           </Link>
           <BoxOfficeSortSelect currentSort={sort} />
+          {isAdmin && <BoxOfficeRecalculateButton />}
         </div>
       </div>
       <p className="text-muted mb-8">{t('boxoffice.popis')}</p>

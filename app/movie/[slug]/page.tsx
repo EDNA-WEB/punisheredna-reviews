@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { computeBoxOffice } from '@/lib/boxOffice';
 import { movieJsonLd } from '@/lib/jsonLd';
 import { publishedNewsFilter } from '@/lib/publishedFilter';
 import type { Metadata } from 'next';
@@ -82,7 +83,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const viewer = viewerId ? await prisma.user.findUnique({ where: { id: viewerId }, select: { membershipUntil: true } }) : null;
-  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true, boxOfficeRankedTotal: true } });
   const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
@@ -152,6 +153,13 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   // office sekcia sa im na profile vôbec nezobrazí.
   const isVodOnly = movie.premiereDates.length > 0 && movie.premiereDates.every((p) => p.type === 'VOD');
   const effectiveBoxOffice = liveBoxOffice?.boxOffice ?? movie.boxOffice;
+
+  // Poradie v Box Office rebríčku sa NEPOČÍTA tu (to by pri každom zobrazení
+  // stránky prehľadávalo celú filmotéku) — číta sa hotové z databázy,
+  // prepočítava sa hromadne cez tlačidlo v administrácii.
+  const boxOfficeRank = movie.boxOfficeRank ?? null;
+  const boxOfficeRankType = movie.boxOfficeRankType as 'profit' | 'flop' | null;
+  const boxOfficeTotalRanked = settings?.boxOfficeRankedTotal ?? 0;
   const myRating = viewerId ? movie.ratings.find((r) => r.userId === viewerId) : null;
   const myNote = viewerId ? await prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : null;
   const isInWatchlist = viewerId
@@ -508,6 +516,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                         internationalBoxOffice={movie.internationalBoxOffice}
                         chinaBoxOffice={movie.chinaBoxOffice}
                         ancillaryRevenue={movie.ancillaryRevenue}
+                        rank={boxOfficeRank}
+                        rankType={boxOfficeRankType}
+                        totalRanked={boxOfficeTotalRanked}
                         compact
                         labels={{
                           ciel: t('boxoffice.ciel'),
@@ -710,6 +721,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   internationalBoxOffice={movie.internationalBoxOffice}
                   chinaBoxOffice={movie.chinaBoxOffice}
                   ancillaryRevenue={movie.ancillaryRevenue}
+                  rank={boxOfficeRank}
+                  rankType={boxOfficeRankType}
+                  totalRanked={boxOfficeTotalRanked}
                   compact
                   labels={{
                     ciel: t('boxoffice.ciel'),

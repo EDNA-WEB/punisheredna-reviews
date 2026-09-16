@@ -13,7 +13,8 @@ export default function BoxOfficeSortSelect({ currentSort }: { currentSort: stri
     >
       <option value="trzby">Najvyššie tržby (aktuálna hodnota $)</option>
       <option value="inflacia">Najvyššie tržby (prepočítané na dnešnú hodnotu peňazí)</option>
-      <option value="zisk">Najvyšší zisk štúdia</option>
+      <option value="zisk">Najväčšie zárobky (najvyšší zisk štúdia)</option>
+      <option value="prepadaky">Najväčšie prepadáky (najväčšia strata štúdia)</option>
     </select>
   );
 }

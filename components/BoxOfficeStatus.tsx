@@ -14,7 +14,10 @@ export default function BoxOfficeStatus({
   chinaBoxOffice,
   ancillaryRevenue,
   compact,
-  labels
+  labels,
+  rank,
+  rankType,
+  totalRanked
 }: {
   budget: number | bigint | null;
   marketingBudget: number | bigint | null;
@@ -35,6 +38,12 @@ export default function BoxOfficeStatus({
     celosvetovo?: string;
     vsetky_uvedenia?: string;
   };
+  // Voliteľné poradie v celkovom rebríčku databázy — zobrazí sa len keď je
+  // film medzi TOP filmami v danom smere (zisk alebo strata), nech to
+  // neplní zbytočne "347. najziskovejší film" bez väčšej výpovednej hodnoty.
+  rank?: number | null;
+  rankType?: 'profit' | 'flop' | null;
+  totalRanked?: number;
 }) {
   const [showInfo, setShowInfo] = useState(false);
 
@@ -88,6 +97,16 @@ export default function BoxOfficeStatus({
 
   return (
     <div className={compact ? 'text-[11px]' : 'text-sm'}>
+      {rank && rankType && (
+        <div
+          className={`inline-flex items-center gap-1.5 font-bold px-2 py-1 rounded-lg mb-2 ${
+            rankType === 'profit' ? 'bg-emerald-500 text-white' : 'bg-danger text-white'
+          }`}
+        >
+          {rankType === 'profit' ? '🏆' : '📉'} #{rank} {rankType === 'profit' ? 'najziskovejší' : 'najväčší prepadák'}
+          {totalRanked ? ` z ${totalRanked}` : ''}
+        </div>
+      )}
       <div className="flex items-center justify-between gap-1.5 mb-1 flex-wrap">
         <span className="text-muted whitespace-nowrap inline-flex items-center gap-1">
           <IconBanknote className="w-3 h-3 text-emerald-600 flex-none" />

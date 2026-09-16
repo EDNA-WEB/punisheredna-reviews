@@ -274,6 +274,11 @@ model Movie {
   internationalBoxOffice BigInt?
   chinaBoxOffice BigInt?
   ancillaryRevenue BigInt?
+  // Uložené (nie priebežne prepočítavané) poradie v Box Office rebríčku —
+  // prepočíta sa hromadne cez admin tlačidlo, nie pri každom zobrazení
+  // stránky filmu, nech to zbytočne nezaťažuje databázu.
+  boxOfficeRank     Int?
+  boxOfficeRankType String?
   createdAt      DateTime @default(now())
   reviews        Review[]
   ratings        Rating[]
@@ -624,6 +629,7 @@ model Settings {
   registrationsEnabled Boolean @default(true)
   onlineFreeForAll Boolean @default(false)
   buyMeACoffeeUrl String?
+  boxOfficeRankedTotal Int?
 }
 
 model MoviePremiereDate {
