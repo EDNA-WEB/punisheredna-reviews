@@ -14,6 +14,64 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
 
+  const [bulkTagsPreview, setBulkTagsPreview] = useState<{ count: number; sample: string[] } | null>(null);
+  const [bulkTagsBusy, setBulkTagsBusy] = useState(false);
+  const [bulkTagsProgress, setBulkTagsProgress] = useState({ done: 0, total: 0 });
+  const [bulkTagsDone, setBulkTagsDone] = useState<{ checked: number; batchId: string | null; results: { title: string; status: string; detail?: string }[] } | null>(null);
+  const [bulkTagsUndoStatus, setBulkTagsUndoStatus] = useState<'idle' | 'undoing' | 'done'>('idle');
+
+  async function previewBulkTags() {
+    setBulkTagsBusy(true);
+    setBulkTagsDone(null);
+    try {
+      const res = await fetch('/api/admin/movies/bulk-tags-from-tmdb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: true })
+      });
+      const data = await res.json();
+      setBulkTagsPreview(data);
+    } finally {
+      setBulkTagsBusy(false);
+    }
+  }
+
+  async function confirmBulkTags() {
+    setBulkTagsBusy(true);
+    setBulkTagsProgress({ done: 0, total: bulkTagsPreview?.count || 0 });
+    try {
+      const res = await fetch('/api/admin/movies/bulk-tags-from-tmdb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preview: false })
+      });
+      const data = await res.json();
+      setBulkTagsDone({ checked: data.checked, batchId: data.batchId || null, results: data.results });
+      setBulkTagsProgress({ done: data.checked, total: data.checked });
+      setBulkTagsPreview(null);
+      setBulkTagsUndoStatus('idle');
+    } finally {
+      setBulkTagsBusy(false);
+    }
+  }
+
+  async function undoBulkTags() {
+    if (!bulkTagsDone?.batchId) return;
+    setBulkTagsUndoStatus('undoing');
+    try {
+      const res = await fetch('/api/admin/bulk-import/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId: bulkTagsDone.batchId })
+      });
+      if (!res.ok) throw new Error();
+      setBulkTagsUndoStatus('done');
+    } catch {
+      setBulkTagsUndoStatus('idle');
+      alert('Vrátenie späť zlyhalo.');
+    }
+  }
+
   function tagsFor(m: MovieItem) {
     return drafts[m.id] ?? m.tags ?? '';
   }
@@ -61,6 +119,92 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
 
   return (
     <div>
+      <div className="border border-line rounded-xl p-4 bg-surface mb-6">
+        <div className="text-sm font-semibold text-ink mb-1">Hromadne doplniť tagy z TMDb</div>
+        <div className="text-xs text-muted mb-3">
+          Automaticky natiahne a rovno uloží tagy z TMDb pre všetky filmy/seriály, čo ešte nemajú žiadne tagy —
+          nemusíš klikať na "Automaticky z TMDb" a "Uložiť" pri každom filme zvlášť. Filmy, čo už tagy majú, sa
+          nedotknú.
+        </div>
+
+        {!bulkTagsPreview && !bulkTagsDone && (
+          <button
+            type="button"
+            onClick={previewBulkTags}
+            disabled={bulkTagsBusy}
+            className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {bulkTagsBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+          </button>
+        )}
+
+        {bulkTagsPreview && !bulkTagsDone && (
+          <div>
+            <div className="text-xs text-ink mb-2">
+              Doplní sa <strong>{bulkTagsPreview.count}</strong> filmov/seriálov. Ukážka prvých {bulkTagsPreview.sample.length}:
+            </div>
+            <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{bulkTagsPreview.sample.join(', ')}</div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={confirmBulkTags}
+                disabled={bulkTagsBusy}
+                className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+              >
+                {bulkTagsBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${bulkTagsPreview.count})`}
+              </button>
+              <button type="button" onClick={() => setBulkTagsPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
+                Zrušiť
+              </button>
+            </div>
+          </div>
+        )}
+
+        {bulkTagsBusy && bulkTagsProgress.total > 0 && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between text-xs text-muted mb-1">
+              <span>Spracúvam…</span>
+              <span>
+                {bulkTagsProgress.done} / {bulkTagsProgress.total}
+              </span>
+            </div>
+            <div className="h-1.5 bg-line rounded-full overflow-hidden">
+              <div
+                className="h-1.5 bg-accent transition-all duration-300"
+                style={{ width: `${(bulkTagsProgress.done / bulkTagsProgress.total) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {bulkTagsDone && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {bulkTagsDone.checked} filmov/seriálov.</div>
+              {bulkTagsDone.batchId && bulkTagsUndoStatus !== 'done' && (
+                <button
+                  type="button"
+                  onClick={undoBulkTags}
+                  disabled={bulkTagsUndoStatus === 'undoing'}
+                  className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
+                >
+                  {bulkTagsUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                </button>
+              )}
+              {bulkTagsUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            </div>
+            <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
+              {bulkTagsDone.results.map((r, i) => (
+                <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
+                  <span className="font-semibold">{r.status}</span> — {r.title}
+                  {r.detail ? `: ${r.detail}` : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-tags"
         title="Hromadne pridať vlastné tagy"
