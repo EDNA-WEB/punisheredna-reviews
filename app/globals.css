@@ -44,6 +44,8 @@ button:focus-visible,
   --color-muted: #6B6F76;
   --color-line: #E8E7E5;
   --color-card: #FFFFFF;
+  --color-accent: #E3141F;
+  --color-accent-dark: #B80F18;
 }
 
 .dark {
@@ -54,6 +56,26 @@ button:focus-visible,
   --color-muted: #9AA0AA;
   --color-line: #2E3138;
   --color-card: #1A1C21;
+  --color-accent: #E3141F;
+  --color-accent-dark: #B80F18;
+}
+
+/* Testovacia téma v štýle Steam — tmavomodré/oceľové pozadie namiesto
+   čierno-sivého, jasnomodrý akcent namiesto červenej. Aktivuje sa cez
+   "?theme=steam" (uloží sa do cookie), nezávisle od bežného
+   tmavého/svetlého prepínača — je to vlastná, ucelená paleta.
+   Zámerne je až za ".dark" v poradí, nech pri kombinácii oboch tried
+   vyhrajú tieto hodnoty. */
+.theme-steam {
+  --color-bg: #1b2838;
+  --color-surface: #171a21;
+  --color-surface2: #2a475e;
+  --color-ink: #c7d5e0;
+  --color-muted: #8f98a0;
+  --color-line: #2a3f5a;
+  --color-card: #16202d;
+  --color-accent: #66c0f4;
+  --color-accent-dark: #4198d0;
 }
 
 body {

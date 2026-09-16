@@ -18,8 +18,8 @@ const config: Config = {
         line: 'var(--color-line)',
         card: 'var(--color-card)',
         night: '#15171A',
-        accent: '#E3141F',
-        'accent-dark': '#B80F18',
+        accent: 'var(--color-accent)',
+        'accent-dark': 'var(--color-accent-dark)',
         danger: '#DC2626',
         'danger-dark': '#B91C1C'
       },

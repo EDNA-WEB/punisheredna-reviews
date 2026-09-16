@@ -13,6 +13,7 @@ import SiteFooter from '@/components/SiteFooter';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import TvModeToggle from '@/components/TvModeToggle';
+import ThemeVariantToggle from '@/components/ThemeVariantToggle';
 
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
@@ -97,13 +98,14 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = cookies().get('theme')?.value === 'dark' ? 'dark' : '';
+  const themeVariant = cookies().get('themeVariant')?.value === 'steam' ? 'theme-steam' : '';
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
 
   const isTv = detectTvMode();
 
   return (
-    <html lang={language} className={`${theme} ${isTv ? 'tv-mode' : ''}`.trim()}>
+    <html lang={language} className={`${theme} ${themeVariant} ${isTv ? 'tv-mode' : ''}`.trim()}>
       <head>
         {/* Next.js generuje z "appleWebApp" v metadata len starší, Apple-špecifický
             tag "apple-mobile-web-app-capable" — moderné prehliadače (aj Chrome)
@@ -129,6 +131,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
         <ServiceWorkerRegister />
         <TvModeToggle />
+        <ThemeVariantToggle />
         <TranslationProvider dict={dict}>
           <Providers>
             <TvNavigation />
