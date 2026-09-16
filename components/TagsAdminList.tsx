@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import BulkImportRunner from './BulkImportRunner';
 import ClientPagination from './ClientPagination';
 
 type MovieItem = { id: string; title: string; slug: string; poster: string | null; year: string | null; tags: string | null; tmdbId: number | null };
 
 export default function TagsAdminList({ initialMovies }: { initialMovies: MovieItem[] }) {
+  const router = useRouter();
   const [movies, setMovies] = useState(initialMovies);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<string | null>(null);
@@ -50,6 +52,21 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       setBulkTagsProgress({ done: data.checked, total: data.checked });
       setBulkTagsPreview(null);
       setBulkTagsUndoStatus('idle');
+
+      // Zoznam filmov nižšie na stránke bol doteraz "zamrznutý" (nabral sa
+      // len raz pri načítaní stránky) — bez tejto aktualizácie by síce tagy
+      // boli správne uložené v databáze, ale v zozname by naďalej vyzerali
+      // prázdne, čo pôsobilo, akoby sa nič nepridalo.
+      const okResults: { id: string; detail?: string }[] = (data.results || []).filter((r: any) => r.status === 'OK');
+      if (okResults.length > 0) {
+        setMovies((prev) =>
+          prev.map((m) => {
+            const match = okResults.find((r) => r.id === m.id);
+            return match ? { ...m, tags: match.detail || m.tags } : m;
+          })
+        );
+      }
+      router.refresh();
     } finally {
       setBulkTagsBusy(false);
     }
@@ -66,6 +83,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       });
       if (!res.ok) throw new Error();
       setBulkTagsUndoStatus('done');
+      router.refresh();
     } catch {
       setBulkTagsUndoStatus('idle');
       alert('Vrátenie späť zlyhalo.');

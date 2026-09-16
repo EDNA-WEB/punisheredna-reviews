@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ count: movies.length, sample: movies.slice(0, 20).map((m) => m.title) });
   }
 
-  const results: { title: string; status: string; detail?: string }[] = [];
+  const results: { id: string; title: string; status: string; detail?: string }[] = [];
   const changes: LoggedChange[] = [];
 
   for (const movie of movies) {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         headers: { Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`, accept: 'application/json' }
       });
       if (!res.ok) {
-        results.push({ title: movie.title, status: 'CHYBA', detail: 'Načítanie kľúčových slov z TMDb zlyhalo' });
+        results.push({ id: movie.id, title: movie.title, status: 'CHYBA', detail: 'Načítanie kľúčových slov z TMDb zlyhalo' });
         continue;
       }
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       const englishTags: string[] = (keywordList || []).slice(0, 10).map((k: any) => k.name);
 
       if (englishTags.length === 0) {
-        results.push({ title: movie.title, status: 'BEZ TAGOV', detail: 'TMDb pre tento film/seriál nemá žiadne kľúčové slová' });
+        results.push({ id: movie.id, title: movie.title, status: 'BEZ TAGOV', detail: 'TMDb pre tento film/seriál nemá žiadne kľúčové slová' });
         continue;
       }
 
@@ -61,9 +61,9 @@ export async function POST(req: Request) {
         newValue: tagsValue
       });
 
-      results.push({ title: movie.title, status: 'OK', detail: tagsValue });
+      results.push({ id: movie.id, title: movie.title, status: 'OK', detail: tagsValue });
     } catch (err: any) {
-      results.push({ title: movie.title, status: 'CHYBA', detail: err.message || 'neznáma chyba' });
+      results.push({ id: movie.id, title: movie.title, status: 'CHYBA', detail: err.message || 'neznáma chyba' });
     }
   }
 
