@@ -56,6 +56,7 @@ model User {
   ratings      Rating[]
   watchedEpisodes WatchedEpisode[]
   membershipUntil DateTime?
+  onlineReports OnlineReport[]
   redeemedTrial   Boolean  @default(false)
   membershipCodesUsed MembershipCode[]
   articleRevisions ArticleRevision[]
@@ -297,6 +298,7 @@ model Movie {
   keywords MovieKeyword[]
   links MovieLink[]
   premiereDates MoviePremiereDate[]
+  onlineReports OnlineReport[]
   tmdbId Int?
   contentSubmissions ContentSubmission[]
   ageRating String?
@@ -630,6 +632,22 @@ model Settings {
   onlineFreeForAll Boolean @default(false)
   buyMeACoffeeUrl String?
   boxOfficeRankedTotal Int?
+}
+
+// Nahlásenie od diváka, že film/seriál chýba online, alebo že jeho odkaz
+// na sledovanie nefunguje — vidí to admin v Administrácia → Online.
+model OnlineReport {
+  id         String   @id @default(cuid())
+  movieId    String
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  reporterId String?
+  reporter   User?    @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  note       String?  @db.Text
+  resolved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([movieId])
+  @@index([resolved])
 }
 
 model MoviePremiereDate {

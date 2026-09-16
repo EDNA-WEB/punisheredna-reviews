@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import OnlineAdminList from '@/components/OnlineAdminList';
+import OnlineReportsList from '@/components/OnlineReportsList';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,33 +12,40 @@ export default async function AdminOnlinePage() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 
-  const movies = await prisma.movie.findMany({
-    where: { approved: true },
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      poster: true,
-      watchUrl: true,
-      isCamVersion: true,
-      onlineImage: true,
-      contentType: true,
-      tmdbId: true,
-      createdAt: true,
-      seasons: {
-        orderBy: { number: 'asc' },
-        select: {
-          id: true,
-          number: true,
-          episodes: {
-            orderBy: { number: 'asc' },
-            select: { id: true, number: true, title: true, onlineImage: true, onlineUrl: true }
+  const [movies, reports] = await Promise.all([
+    prisma.movie.findMany({
+      where: { approved: true },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        poster: true,
+        watchUrl: true,
+        isCamVersion: true,
+        onlineImage: true,
+        contentType: true,
+        tmdbId: true,
+        createdAt: true,
+        seasons: {
+          orderBy: { number: 'asc' },
+          select: {
+            id: true,
+            number: true,
+            episodes: {
+              orderBy: { number: 'asc' },
+              select: { id: true, number: true, title: true, onlineImage: true, onlineUrl: true }
+            }
           }
         }
       }
-    }
-  });
+    }),
+    prisma.onlineReport.findMany({
+      where: { resolved: false },
+      orderBy: { createdAt: 'desc' },
+      include: { movie: { select: { title: true, slug: true } }, reporter: { select: { name: true } } }
+    })
+  ]);
 
   // Filmy/seriály bez online odkazu idú navrch (od najnovšie pridaných), nech
   // sa nestratia v dlhom zozname. Vyplnené nasledujú za nimi, tiež od najnovších.
@@ -68,6 +76,17 @@ export default async function AdminOnlinePage() {
         <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmov má'} nastavené online,{' '}
         <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} nastavené online.
       </p>
+
+      <OnlineReportsList
+        initialReports={reports.map((r) => ({
+          id: r.id,
+          movieTitle: r.movie.title,
+          movieSlug: r.movie.slug,
+          reporterName: r.reporter?.name || null,
+          note: r.note,
+          createdAt: r.createdAt.toISOString()
+        }))}
+      />
 
       <OnlineAdminList movies={sortedMovies} />
     </div>

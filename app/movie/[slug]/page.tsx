@@ -23,6 +23,7 @@ import MovieGoToTabButton from '@/components/MovieGoToTabButton';
 import ReviewSortSelect from '@/components/ReviewSortSelect';
 import MovieVideoTabs from '@/components/MovieVideoTabs';
 import OnlineEpisodeBrowser from '@/components/OnlineEpisodeBrowser';
+import ReportOnlineButton from '@/components/ReportOnlineButton';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import FlagCZ from '@/components/FlagCZ';
 import WhereToWatchBox from '@/components/WhereToWatchBox';
@@ -1011,56 +1012,61 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             key: 'online',
             desktopOnly: true,
             label: t('movie.online'),
-            content: !viewerId && !settings?.onlineFreeForAll ? (
-              <p className="text-sm text-muted">
-                {t('movie.online_prihlasenie')}{' '}
-                <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link>.
-              </p>
-            ) : !isMember ? (
-              <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
-                <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
-                <div>
-                  <p className="text-sm font-semibold text-ink">Online sledovanie je dostupné len pre Golden Ticket členov.</p>
-                  <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-                    Zistiť viac o členstve →
-                  </Link>
-                </div>
-              </div>
-            ) : movie.contentType === 'Seriál' && seasons.length > 0 && (movie.watchUrl || seasons.some((s) => s.episodes.some((e) => e.onlineUrl))) ? (
-              <OnlineEpisodeBrowser
-                seasons={seasons.map((s) => ({
-                  number: s.number,
-                  year: s.year,
-                  released: s.released,
-                  episodes: s.episodes.map((e) => ({
-                    number: e.number,
-                    title: e.title,
-                    onlineImage: e.onlineImage,
-                    onlineUrl: e.onlineUrl,
-                    watched: watchedEpisodeIds.has(e.id)
-                  }))
-                }))}
-                watchUrl={movie.watchUrl || ''}
-              />
-            ) : movie.watchUrl ? (
-              <a
-                href={movie.watchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block max-w-2xl aspect-video rounded-xl overflow-hidden bg-night group"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-[1.03] transition-transform duration-300"
-                  style={movie.onlineImage ? { backgroundImage: `url('${movie.onlineImage}')` } : undefined}
-                />
-                <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
-                  <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <IconPlay className="w-6 h-6 ml-1 text-night" />
-                  </span>
-                </div>
-              </a>
-            ) : (
-              <p className="text-sm text-muted">{t('movie.ziadny_online')}</p>
+            content: (
+              <>
+                {!viewerId && !settings?.onlineFreeForAll ? (
+                  <p className="text-sm text-muted">
+                    {t('movie.online_prihlasenie')}{' '}
+                    <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link>.
+                  </p>
+                ) : !isMember ? (
+                  <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
+                    <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
+                    <div>
+                      <p className="text-sm font-semibold text-ink">Online sledovanie je dostupné len pre Golden Ticket členov.</p>
+                      <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
+                        Zistiť viac o členstve →
+                      </Link>
+                    </div>
+                  </div>
+                ) : movie.contentType === 'Seriál' && seasons.length > 0 && (movie.watchUrl || seasons.some((s) => s.episodes.some((e) => e.onlineUrl))) ? (
+                  <OnlineEpisodeBrowser
+                    seasons={seasons.map((s) => ({
+                      number: s.number,
+                      year: s.year,
+                      released: s.released,
+                      episodes: s.episodes.map((e) => ({
+                        number: e.number,
+                        title: e.title,
+                        onlineImage: e.onlineImage,
+                        onlineUrl: e.onlineUrl,
+                        watched: watchedEpisodeIds.has(e.id)
+                      }))
+                    }))}
+                    watchUrl={movie.watchUrl || ''}
+                  />
+                ) : movie.watchUrl ? (
+                  <a
+                    href={movie.watchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative block max-w-2xl aspect-video rounded-xl overflow-hidden bg-night group"
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-center group-hover:scale-[1.03] transition-transform duration-300"
+                      style={movie.onlineImage ? { backgroundImage: `url('${movie.onlineImage}')` } : undefined}
+                    />
+                    <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                      <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <IconPlay className="w-6 h-6 ml-1 text-night" />
+                      </span>
+                    </div>
+                  </a>
+                ) : (
+                  <p className="text-sm text-muted">{t('movie.ziadny_online')}</p>
+                )}
+                <ReportOnlineButton movieId={movie.id} isLoggedIn={!!viewerId} />
+              </>
             )
           },
         ]}
