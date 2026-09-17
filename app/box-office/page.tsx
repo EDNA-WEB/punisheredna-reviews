@@ -1,38 +1,28 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedBoxOfficeMovies } from '@/lib/cachedMovieData';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import BoxOfficeStatus from '@/components/BoxOfficeStatus';
 import BoxOfficeSortSelect from '@/components/BoxOfficeSortSelect';
 import BoxOfficeRecalculateButton from '@/components/BoxOfficeRecalculateButton';
+import Pagination from '@/components/Pagination';
 import { formatMoney, computeBoxOffice } from '@/lib/boxOffice';
 import { adjustForInflation } from '@/lib/inflation';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
-export default async function BoxOfficePage({ searchParams }: { searchParams: { sort?: string } }) {
+const PAGE_SIZE = 20;
+
+export default async function BoxOfficePage({ searchParams }: { searchParams: { sort?: string; page?: string } }) {
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
   const sort = searchParams.sort || 'trzby';
+  const page = Math.max(1, Number(searchParams.page) || 1);
   const session = await getServerSession(authOptions);
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
-  const allMovies = await prisma.movie.findMany({
-    where: { approved: true, budget: { not: null } },
-    select: {
-      id: true, title: true, slug: true, poster: true, year: true, budget: true, marketingBudget: true, boxOffice: true,
-      domesticBoxOffice: true, internationalBoxOffice: true, chinaBoxOffice: true, ancillaryRevenue: true,
-      premiereDates: { select: { type: true } }
-    }
-  });
-
-  // Filmy, čo vyšli LEN na VOD (žiadna kinová premiéra), do box office nepatria —
-  // nemajú žiadne tržby z kín, box office model na ne jednoducho nesedí.
-  const withoutVod = allMovies.filter((m) => {
-    if (m.premiereDates.length === 0) return true; // premiéry ešte nevyplnené — nechávame tak, ako doteraz
-    return m.premiereDates.some((p) => p.type !== 'VOD');
-  });
+  const withoutVod = await getCachedBoxOfficeMovies();
 
   const withStats = withoutVod.map((m) => {
     const stats = computeBoxOffice(
@@ -55,6 +45,10 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
     if (sort === 'prepadaky') return (a.stats?.profit ?? Infinity) - (b.stats?.profit ?? Infinity);
     return (b.stats?.earned ?? 0) - (a.stats?.earned ?? 0);
   });
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const labels = {
     ciel: t('boxoffice.ciel'),
@@ -88,7 +82,7 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
-          {sorted.map(({ movie: m, stats, adjustedEarned }) => {
+          {paged.map(({ movie: m, stats, adjustedEarned }) => {
             return (
               <Link
                 key={m.id}
@@ -131,6 +125,10 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
           })}
         </div>
       )}
+
+      <div className="mt-6">
+        <Pagination page={currentPage} totalPages={totalPages} basePath={`/box-office?sort=${sort}`} />
+      </div>
     </div>
   );
 }

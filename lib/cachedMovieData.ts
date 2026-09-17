@@ -190,5 +190,28 @@ export const getCachedMovieCatalog = unstable_cache(
     });
   },
   ['movie-catalog'],
-  { revalidate: 60 }
+  { revalidate: 900 }
+);
+
+// Box Office rebríček — rovnaký princíp ako katalóg filmov: dáta sa menia len
+// zriedka (admin ručne dopĺňa rozpočty/tržby), takže dlhšia platnosť cache
+// (15 minút) je tu úplne v poriadku a výrazne odľahčí databázu.
+export const getCachedBoxOfficeMovies = unstable_cache(
+  async () => {
+    const allMovies = await prisma.movie.findMany({
+      where: { approved: true, budget: { not: null } },
+      select: {
+        id: true, title: true, slug: true, poster: true, year: true, budget: true, marketingBudget: true, boxOffice: true,
+        domesticBoxOffice: true, internationalBoxOffice: true, chinaBoxOffice: true, ancillaryRevenue: true,
+        premiereDates: { select: { type: true } }
+      }
+    });
+    // Filmy, čo vyšli LEN na VOD (žiadna kinová premiéra), do box office nepatria.
+    return allMovies.filter((m) => {
+      if (m.premiereDates.length === 0) return true;
+      return m.premiereDates.some((p) => p.type !== 'VOD');
+    });
+  },
+  ['box-office-movies'],
+  { revalidate: 900 }
 );
