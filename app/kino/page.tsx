@@ -63,9 +63,9 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
                 </div>
                 <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line overflow-hidden">
                   {dayMovies.map((m) => {
-                    const director = m.director ? m.director.split(',').map((x) => x.trim()) : [];
-                    const actors = m.cast ? m.cast.split(',').map((x) => x.trim()).slice(0, 3) : [];
-                    const genresList = m.genres ? m.genres.split(',').map((g) => g.trim()) : [];
+                    const director = m.director ? m.director.split(',').map((x: string) => x.trim()) : [];
+                    const actors = m.cast ? m.cast.split(',').map((x: string) => x.trim()).slice(0, 3) : [];
+                    const genresList = m.genres ? m.genres.split(',').map((g: string) => g.trim()) : [];
 
                     return (
                       <div key={m.id} className="flex gap-4 p-4 bg-card hover:bg-surface transition-colors">
