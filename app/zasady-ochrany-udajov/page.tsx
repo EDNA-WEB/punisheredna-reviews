@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { DEFAULT_PRIVACY_POLICY_TEXT } from '@/lib/privacyPolicyDefaults';
 
-export const dynamic = 'force-dynamic';
+// Rovnaký prípad ako pri Pravidlách — žiadna session, žiadne jazykové
+// cookies, bezpečne cachovateľné s hodinovou obnovou.
+export const revalidate = 3600;
 
 function isHeading(line: string): boolean {
   const trimmed = line.trim();

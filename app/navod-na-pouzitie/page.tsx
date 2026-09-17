@@ -1,7 +1,9 @@
 import { DEFAULT_GUIDE_ITEMS } from '@/lib/guideDefaults';
 import GuideBody from '@/components/GuideBody';
 
-export const dynamic = 'force-dynamic';
+// Táto stránka nič nenačítava z databázy ani session — je to čistá statika,
+// môžeme ju cachovať s ešte dlhšou obnovou.
+export const revalidate = 3600;
 
 function slugifyQuestion(q: string): string {
   return q

@@ -1,7 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { DEFAULT_RULES_TEXT } from '@/lib/rulesDefaults';
 
-export const dynamic = 'force-dynamic';
+// Táto stránka nezávisí od prihláseného používateľa ani jazyka (žiadna
+// session, žiadne jazykové cookies) — bezpečne ju teda môžeme cachovať.
+// Znovu sa vygeneruje najviac raz za hodinu, takže úprava pravidiel v
+// administrácii sa môže prejaviť s miernym oneskorením (do 60 minút).
+export const revalidate = 3600;
 
 function isHeading(line: string): boolean {
   const trimmed = line.trim();
