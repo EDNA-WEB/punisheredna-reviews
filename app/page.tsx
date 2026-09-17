@@ -175,11 +175,16 @@ export default async function HomePage() {
         </div>
         <div className="hidden lg:block flex-1 min-w-0 mt-6 lg:mt-0">
           <PremieresList />
-          <Link href="/sutaz/hbo" className="block mt-4">
+          <Link href="/sutaz/hbo" className="block mt-4 relative rounded-xl overflow-hidden group">
             <img
               src="/sutaz-hbo-banner.jpg"
               alt="Súťaž o HBO predplatné na celý rok"
-              className="w-full rounded-xl hover:opacity-90 transition-opacity"
+              className="w-full block"
+            />
+            <img
+              src="/sutaz-hbo-banner-hover.jpg"
+              alt=""
+              className="w-full block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </Link>
         </div>
