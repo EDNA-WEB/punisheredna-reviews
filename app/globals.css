@@ -67,15 +67,15 @@ button:focus-visible,
    Zámerne je až za ".dark" v poradí, nech pri kombinácii oboch tried
    vyhrajú tieto hodnoty. */
 .theme-steam {
-  --color-bg: #1b2838;
-  --color-surface: #171a21;
-  --color-surface2: #2a475e;
-  --color-ink: #c7d5e0;
-  --color-muted: #8f98a0;
-  --color-line: #2a3f5a;
-  --color-card: #16202d;
-  --color-accent: #66c0f4;
-  --color-accent-dark: #4198d0;
+  --color-bg: #212d3c;
+  --color-surface: #1a252f;
+  --color-surface2: #3e5468;
+  --color-ink: #d4dde3;
+  --color-muted: #8ba1b0;
+  --color-line: #3e5468;
+  --color-card: #2a3f52;
+  --color-accent: #67c1f5;
+  --color-accent-dark: #4a9dd4;
 }
 
 body {
