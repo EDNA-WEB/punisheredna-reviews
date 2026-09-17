@@ -98,7 +98,7 @@ export default function NavbarClient({
                   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
                     <path d="M4 3h13a2 2 0 0 1 2 2v2h1a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-.68A6.5 6.5 0 0 1 11 20H8a6.5 6.5 0 0 1-6.5-6.5V5a2 2 0 0 1 2-2h.5Zm15 6v3a2 2 0 0 0 2-2v-1h-2Z" />
                   </svg>
-                  Kúpiť členstvo
+                  {t('membership.kupit_clenstvo')}
                 </a>
               )}
               {isLoggedIn ? (
@@ -182,7 +182,7 @@ export default function NavbarClient({
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
                   <path d="M4 3h13a2 2 0 0 1 2 2v2h1a2 2 0 0 1 2 2v3a4 4 0 0 1-4 4h-.68A6.5 6.5 0 0 1 11 20H8a6.5 6.5 0 0 1-6.5-6.5V5a2 2 0 0 1 2-2h.5Zm15 6v3a2 2 0 0 0 2-2v-1h-2Z" />
                 </svg>
-                Kúpiť členstvo
+                {t('membership.kupit_clenstvo')}
               </a>
             )}
             {isLoggedIn ? (

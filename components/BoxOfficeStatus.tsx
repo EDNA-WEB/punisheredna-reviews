@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { computeBoxOffice, formatMoney } from '@/lib/boxOffice';
 import { IconCheck, IconTrendingDown, IconBanknote, IconInfo } from './Icons';
 import BoxOfficeBreakdown from './BoxOfficeBreakdown';
+import { useT } from './TranslationProvider';
 
 export default function BoxOfficeStatus({
   budget,
@@ -45,6 +46,7 @@ export default function BoxOfficeStatus({
   rankType?: 'profit' | 'flop' | null;
   totalRanked?: number;
 }) {
+  const t = useT();
   const [showInfo, setShowInfo] = useState(false);
 
   const budgetN = budget !== null ? Number(budget) : null;
@@ -103,8 +105,8 @@ export default function BoxOfficeStatus({
             rankType === 'profit' ? 'bg-emerald-500 text-white' : 'bg-danger text-white'
           }`}
         >
-          {rankType === 'profit' ? '🏆' : '📉'} #{rank} {rankType === 'profit' ? 'najziskovejší' : 'najväčší prepadák'}
-          {totalRanked ? ` z ${totalRanked}` : ''}
+          {rankType === 'profit' ? '🏆' : '📉'} #{rank} {rankType === 'profit' ? t('boxoffice.najziskovejsi') : t('boxoffice.najvacsi_prepadak_odznak')}
+          {totalRanked ? ` ${t('boxoffice.z_celkovo')} ${totalRanked}` : ''}
         </div>
       )}
       <div className="flex items-center justify-between gap-1.5 mb-1 flex-wrap">

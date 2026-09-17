@@ -434,5 +434,44 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'person.milestone_most_voted_text', group: 'Profil osoby', sk: '{count} hodnotení na TMDb — najviac zo všetkých jeho filmov.' },
   { key: 'person.milestone_best_rated_text', group: 'Profil osoby', sk: 'Hodnotenie {rating}/10 na TMDb.' },
   { key: 'person.milestone_worst_rated_text', group: 'Profil osoby', sk: 'Hodnotenie len {rating}/10 na TMDb.' },
-  { key: 'person.milestone_latest_text', group: 'Profil osoby', sk: 'Zatiaľ posledný film v kariére, z roku {year}.' }
+  { key: 'person.milestone_latest_text', group: 'Profil osoby', sk: 'Zatiaľ posledný film v kariére, z roku {year}.' },
+
+  // Členstvo (BuyMeACoffee tlačidlo, stránka členstva v nastaveniach)
+  { key: 'membership.kupit_clenstvo', group: 'Členstvo', sk: 'Kúpiť členstvo' },
+  { key: 'membership.golden_ticket', group: 'Členstvo', sk: 'Golden Ticket členstvo' },
+  { key: 'membership.aktivne_do', group: 'Členstvo', sk: 'Tvoje členstvo je aktívne do' },
+  { key: 'membership.nemas_aktivne', group: 'Členstvo', sk: 'Momentálne nemáš aktívne Golden Ticket členstvo.' },
+  { key: 'membership.info_text', group: 'Členstvo', sk: 'Členstvo sa nastavuje ručne po prijatí platby — ak si už zaplatil a členstvo sa tu ešte nezobrazuje, daj nám prosím vedieť.' },
+  { key: 'membership.este_dni', group: 'Členstvo', sk: 'členstvo aktívne ešte' },
+  { key: 'membership.dni', group: 'Členstvo', sk: 'dní' },
+
+  // Nahlásenie chýbajúceho/nefunkčného online odkazu
+  { key: 'report_online.tlacidlo', group: 'Nahlásenie online', sk: 'Nahlásiť chýbajúci film alebo nefunkčný odkaz' },
+  { key: 'report_online.co_je_zle', group: 'Nahlásenie online', sk: 'Čo presne je zle? (voliteľné)' },
+  { key: 'report_online.placeholder', group: 'Nahlásenie online', sk: 'Napr. odkaz nefunguje, film vôbec nie je pridaný…' },
+  { key: 'report_online.odoslat', group: 'Nahlásenie online', sk: 'Odoslať nahlásenie' },
+  { key: 'report_online.odosielam', group: 'Nahlásenie online', sk: 'Odosielam…' },
+  { key: 'report_online.zrusit', group: 'Nahlásenie online', sk: 'Zrušiť' },
+  { key: 'report_online.dakujeme', group: 'Nahlásenie online', sk: 'Ďakujeme, nahlásenie sme prijali.' },
+
+  // Box Office — poradie a triedenie
+  { key: 'boxoffice.najziskovejsi', group: 'Box Office', sk: 'najziskovejší' },
+  { key: 'boxoffice.najvacsi_prepadak_odznak', group: 'Box Office', sk: 'najväčší prepadák' },
+  { key: 'boxoffice.z_celkovo', group: 'Box Office', sk: 'z' },
+  { key: 'boxoffice.trzby_aktualne', group: 'Box Office', sk: 'Najvyššie tržby (aktuálna hodnota $)' },
+  { key: 'boxoffice.trzby_inflacia', group: 'Box Office', sk: 'Najvyššie tržby (prepočítané na dnešnú hodnotu peňazí)' },
+  { key: 'boxoffice.najvacsie_zarobky', group: 'Box Office', sk: 'Najväčšie zárobky (najvyšší zisk štúdia)' },
+  { key: 'boxoffice.najvacsie_prepadaky', group: 'Box Office', sk: 'Najväčšie prepadáky (najväčšia strata štúdia)' },
+
+  // Súťaž o HBO predplatné
+  { key: 'sutaz.hbo_nadpis', group: 'Súťaž', sk: 'Súťaž o HBO predplatné na celý rok' },
+  { key: 'sutaz.co_vyhrat', group: 'Súťaž', sk: 'Čo môžeš vyhrať' },
+  { key: 'sutaz.co_vyhrat_text', group: 'Súťaž', sk: 'Súťaží sa o účet, na ktorom je aktivované predplatné na celý jeden rok.' },
+  { key: 'sutaz.ako_sa_zapojit', group: 'Súťaž', sk: 'Ako sa zapojiť' },
+  { key: 'sutaz.podmienky_uvod', group: 'Súťaž', sk: 'Do súťaže sa môže zapojiť každý registrovaný používateľ, ktorý:' },
+  { key: 'sutaz.podmienka_clenstvo', group: 'Súťaž', sk: 'má aktivované členstvo v hodnote aspoň 2 €,' },
+  { key: 'sutaz.podmienka_registracia', group: 'Súťaž', sk: 'je registrovaný na webe,' },
+  { key: 'sutaz.podmienka_recenzie', group: 'Súťaž', sk: 'pridal aspoň 30 recenzií a hodnotení.' },
+  { key: 'sutaz.termin', group: 'Súťaž', sk: 'Termín súťaže' },
+  { key: 'sutaz.termin_text', group: 'Súťaž', sk: 'Presný termín ukončenia súťaže bude ešte upresnený.' }
 ];

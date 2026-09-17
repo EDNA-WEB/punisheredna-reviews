@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import TranslationEditor from '@/components/TranslationEditor';
+import SeedMembershipTranslationsButton from '@/components/SeedMembershipTranslationsButton';
 import { TRANSLATION_REGISTRY } from '@/lib/translationRegistry';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,7 @@ export default async function AdminTranslationsPage() {
         Základné texty webu (navigácia, tlačidlá, popisky) — nie obsah recenzií ani novinových článkov, ten sa neprekladá.
         Slovenčina je zdroj, doplň k nej anglický a český preklad.
       </p>
+      <SeedMembershipTranslationsButton />
       <TranslationEditor
         initial={rows.map((r) => ({ key: r.key, group: r.group, sk: r.sk, en: r.en, cs: r.cs }))}
       />
