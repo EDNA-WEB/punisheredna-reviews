@@ -175,6 +175,13 @@ export default async function HomePage() {
         </div>
         <div className="hidden lg:block flex-1 min-w-0 mt-6 lg:mt-0">
           <PremieresList />
+          <Link href="/sutaz/hbo" className="block mt-4">
+            <img
+              src="/sutaz-hbo-banner.jpg"
+              alt="Súťaž o HBO predplatné na celý rok"
+              className="w-full rounded-xl hover:opacity-90 transition-opacity"
+            />
+          </Link>
         </div>
       </div>
 
