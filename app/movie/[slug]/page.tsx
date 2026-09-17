@@ -1,7 +1,14 @@
 import { prisma } from '@/lib/prisma';
+import {
+  getCachedMovieBySlug,
+  getCachedMovieTrivia,
+  getCachedMovieSeasons,
+  getCachedMovieVideos,
+  getCachedRelatedNews,
+  getCachedRatersAndWatchlist
+} from '@/lib/cachedMovieData';
 import { computeBoxOffice } from '@/lib/boxOffice';
 import { movieJsonLd } from '@/lib/jsonLd';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
 import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -95,47 +102,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     viewerId ? prisma.user.findUnique({ where: { id: viewerId }, select: { membershipUntil: true } }) : Promise.resolve(null),
     prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true, boxOfficeRankedTotal: true } }),
     getUserLanguage().then((lang) => getDictionary(lang)),
-    prisma.movie.findUnique({
-      where: { slug: params.slug },
-      include: {
-        ratings: { where: { seasonId: null, episodeId: null } },
-        streamingServices: {
-          include: { streamingService: true },
-          orderBy: { streamingService: { order: 'asc' } }
-        },
-        links: {
-          include: { linkType: true },
-          orderBy: { linkType: { order: 'asc' } }
-        },
-        premiereDates: {
-          orderBy: { releaseDate: 'asc' }
-        },
-        photos: {
-          where: { episodeId: null },
-          orderBy: { order: 'asc' },
-          select: { id: true, thumbnail: true }
-        },
-        reviews: {
-          where: { seasonId: null, episodeId: null },
-          include: {
-            author: { select: { id: true, name: true, avatar: true, role: true, membershipUntil: true } },
-            likes: true,
-            comments: {
-              where: { parentId: null },
-              orderBy: { createdAt: 'asc' },
-              include: {
-                user: { select: { name: true, role: true, avatar: true } },
-                likes: true,
-                replies: {
-                  orderBy: { createdAt: 'asc' },
-                  include: { user: { select: { name: true, role: true, avatar: true } }, likes: true }
-                }
-              }
-            }
-          }
-        }
-      }
-    })
+    getCachedMovieBySlug(params.slug)
   ]);
   const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const t = (key: string) => dict[key] || key;
@@ -194,63 +161,26 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     seasons,
     watchedEpisodeRows,
     movieVideos,
-    ratersUsers,
-    wantToWatchUsers
+    ratersAndWatchlist
   ] = await Promise.all([
     viewerId ? prisma.movieNote.findUnique({ where: { movieId_userId: { movieId: movie.id, userId: viewerId } } }) : Promise.resolve(null),
     viewerId ? prisma.watchlistItem.findUnique({ where: { userId_movieId: { userId: viewerId, movieId: movie.id } } }) : Promise.resolve(null),
     viewerId
       ? prisma.movieListItem.findFirst({ where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } } })
       : Promise.resolve(null),
-    searchTerms.length
-      ? prisma.newsPost.findMany({
-          where: { AND: [{ OR: searchTerms.map((term) => ({ title: { contains: term, mode: 'insensitive' } })) }, publishedNewsFilter()] },
-          orderBy: { createdAt: 'desc' },
-          take: 4,
-          select: { id: true, title: true, slug: true, summary: true, coverImage: true, createdAt: true }
-        })
-      : Promise.resolve([]),
-    prisma.movieTrivia.findMany({ where: { movieId: movie.id }, orderBy: { order: 'asc' }, select: { id: true, text: true } }),
-    movie.contentType === 'Seriál'
-      ? prisma.season.findMany({
-          where: { movieId: movie.id },
-          orderBy: { number: 'asc' },
-          include: {
-            ratings: { where: { episodeId: null } },
-            episodes: { orderBy: { number: 'asc' }, include: { ratings: true } }
-          }
-        })
-      : Promise.resolve([]),
+    getCachedRelatedNews(searchTerms),
+    getCachedMovieTrivia(movie.id),
+    movie.contentType === 'Seriál' ? getCachedMovieSeasons(movie.id) : Promise.resolve([]),
     viewerId
       ? prisma.watchedEpisode.findMany({
           where: { userId: viewerId, episode: { season: { movieId: movie.id } } },
           select: { episodeId: true }
         })
       : Promise.resolve([]),
-    prisma.movieVideo.findMany({
-      where: { movieId: movie.id, episodeId: null, seasonId: null },
-      orderBy: { order: 'asc' },
-      select: {
-        id: true,
-        url: true,
-        category: true,
-        title: true,
-        subtitles: { orderBy: { startTime: 'asc' }, select: { startTime: true, endTime: true, text: true } }
-      }
-    }),
-    prisma.rating.findMany({
-      where: { movieId: movie.id, seasonId: null, episodeId: null },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-      select: { value: true, user: { select: { id: true, name: true, banned: true } } }
-    }),
-    prisma.watchlistItem.findMany({
-      where: { movieId: movie.id },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-      select: { user: { select: { id: true, name: true, banned: true } } }
-    })
+    getCachedMovieVideos(movie.id),
+    getCachedRatersAndWatchlist(movie.id)
   ]);
+  const { ratersUsers, wantToWatchUsers } = ratersAndWatchlist;
 
   const isInWatchlist = !!isInWatchlistRaw;
   const isInFavorites = !!isInFavoritesRaw;

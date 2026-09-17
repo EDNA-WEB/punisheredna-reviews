@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { getCachedMovieCatalog } from '@/lib/cachedMovieData';
 import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
 import GenreDropdown from '@/components/GenreDropdown';
@@ -90,34 +91,18 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     actorFilter || directorFilter || screenplayFilter || cinematographyFilter || musicFilter || tagFilter || minLength || maxLength || nowShowingFilter || hasReviewsFilter ||
     hasGalleryFilter || hasVideosFilter || hasTriviaFilter;
 
-  const movies = await prisma.movie.findMany({
-    orderBy: { createdAt: 'desc' },
-    where: {
-      approved: true,
-      ...(actorFilter ? { cast: { contains: actorFilter, mode: 'insensitive' } } : {}),
-      ...(directorFilter ? { director: { contains: directorFilter, mode: 'insensitive' } } : {}),
-      ...(screenplayFilter ? { screenplay: { contains: screenplayFilter, mode: 'insensitive' } } : {}),
-      ...(cinematographyFilter ? { cinematography: { contains: cinematographyFilter, mode: 'insensitive' } } : {}),
-      ...(musicFilter ? { music: { contains: musicFilter, mode: 'insensitive' } } : {}),
-      ...(tagFilter ? { tags: { contains: tagFilter, mode: 'insensitive' } } : {}),
-      ...(countryFilter ? { countries: { contains: countryFilter, mode: 'insensitive' } } : {}),
-      ...(typesFilter.length > 0 ? { contentType: { in: typesFilter } } : {}),
-      ...(nowShowingFilter ? { nowShowing: true } : {}),
-      ...(minLength ? { runtimeMinutes: { gte: minLength } } : {}),
-      ...(maxLength ? { runtimeMinutes: { lte: maxLength } } : {})
-    },
-    include: {
-      ratings: { where: { seasonId: null, episodeId: null } },
-      premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } },
-      _count: {
-        select: {
-          reviews: { where: { seasonId: null, episodeId: null } },
-          photos: { where: { episodeId: null } },
-          videos: { where: { episodeId: null } },
-          trivia: true
-        }
-      }
-    }
+  const movies = await getCachedMovieCatalog({
+    actorFilter,
+    directorFilter,
+    screenplayFilter,
+    cinematographyFilter,
+    musicFilter,
+    tagFilter,
+    countryFilter,
+    typesFilter,
+    nowShowingFilter,
+    minLength,
+    maxLength
   });
 
   const withScore = movies.map((m) => ({
