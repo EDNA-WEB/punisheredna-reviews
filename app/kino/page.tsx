@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getCachedKinoPremieres } from '@/lib/cachedMovieData';
+import { prisma } from '@/lib/prisma';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import KinoFilter from '@/components/KinoFilter';
 import KinoTabs from '@/components/KinoTabs';
@@ -19,7 +19,35 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
   const rangeStart = new Date(year, month - 1, 1);
   const rangeEnd = new Date(year, month, 1);
 
-  const { movies, people } = await getCachedKinoPremieres(rangeStart.toISOString(), rangeEnd.toISOString());
+  const movieRows = await prisma.moviePremiereDate.findMany({
+    where: {
+      type: { not: 'VOD' },
+      releaseDate: { gte: rangeStart, lt: rangeEnd },
+      movie: { approved: true, contentType: 'Film' }
+    },
+    orderBy: { releaseDate: 'asc' },
+    include: { movie: true }
+  });
+
+  // Jeden film môže mať viac kinových premiér (rôzne krajiny) — v tomto prehľade
+  // ho zobrazíme len raz, pri jeho najskoršej kinovej premiére v danom mesiaci.
+  const seenMovieIds = new Set<string>();
+  const movies: (typeof movieRows[number]['movie'] & { releaseDate: Date })[] = [];
+  for (const row of movieRows) {
+    if (seenMovieIds.has(row.movieId)) continue;
+    seenMovieIds.add(row.movieId);
+    movies.push({ ...row.movie, releaseDate: row.releaseDate });
+  }
+
+  const allNames = Array.from(
+    new Set(
+      movies.flatMap((m) => [
+        ...(m.director ? m.director.split(',').map((x) => x.trim()) : []),
+        ...(m.cast ? m.cast.split(',').map((x) => x.trim()).slice(0, 3) : [])
+      ])
+    )
+  );
+  const people = allNames.length ? await prisma.person.findMany({ where: { name: { in: allNames } }, select: { name: true, slug: true } }) : [];
   const slugByName = new Map(people.map((p) => [p.name, p.slug]));
 
   // Zoskupenie podľa presného dátumu premiéry

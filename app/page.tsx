@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { getCachedHomepageData } from '@/lib/cachedMovieData';
+import { publishedNewsFilter } from '@/lib/publishedFilter';
 import { youtubeVideoId } from '@/lib/markdown';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -13,6 +13,7 @@ import PersonMemorialGrid from '@/components/PersonMemorialGrid';
 import { IconCake, IconCandle } from '@/components/Icons';
 import TopVideosList from '@/components/TopVideosList';
 import TopVisitedUsersList from '@/components/TopVisitedUsersList';
+import { getVerifiedCriticIds } from '@/lib/criticStatus';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import { cookies } from 'next/headers';
 import { parseConsentCookie, isConsentGranted } from '@/lib/privacyDefaults';
@@ -29,14 +30,47 @@ export default async function HomePage() {
   const dict = await getDictionary(language);
   const t = (key: string) => dict[key] || key;
 
-  const [homepageData, following] = await Promise.all([
-    getCachedHomepageData(),
-    viewerId ? prisma.follow.findMany({ where: { followerId: viewerId }, select: { followingId: true } }) : Promise.resolve([])
+  const [trailerVideos, news, latestReviews, popularMovies, recentMovies, popularSeries, following] = await Promise.all([
+    prisma.movieVideo.findMany({
+      where: { category: 'trailer', featuredOnHome: true, episodeId: null, seasonId: null, movie: { approved: true } },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+      include: {
+        movie: { select: { title: true, poster: true } },
+        subtitles: { orderBy: { startTime: 'asc' }, select: { startTime: true, endTime: true, text: true } },
+        _count: { select: { subtitles: true } }
+      }
+    }),
+    prisma.newsPost.findMany({ where: publishedNewsFilter(), orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.review.findMany({
+      where: { movie: { approved: true }, seasonId: null, episodeId: null },
+      orderBy: { createdAt: 'desc' },
+      take: 8,
+      include: {
+        movie: { include: { ratings: { where: { seasonId: null, episodeId: null } } } },
+        author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
+      }
+    }),
+    prisma.movie.findMany({
+      where: { approved: true },
+      orderBy: { ratings: { _count: 'desc' } },
+      take: 7,
+      select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
+    }),
+    prisma.movie.findMany({
+      where: { approved: true },
+      orderBy: { createdAt: 'desc' },
+      take: 7,
+      select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
+    }),
+    prisma.movie.findMany({
+      where: { approved: true, contentType: 'Seriál' },
+      orderBy: { ratings: { _count: 'desc' } },
+      take: 5,
+      select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
+    }),
+    viewerId ? prisma.follow.findMany({ where: { followerId: viewerId }, select: { followingId: true } }) : []
   ]);
-  const {
-    trailerVideos, news, latestReviews, popularMovies, recentMovies, popularSeries,
-    topActors, topCreators, birthdaysToday, recentlyDeceased, criticReviews
-  } = homepageData;
 
   const recommendations = viewerId ? await getRecommendationsForUser(viewerId) : { movies: [], topGenres: [] };
 
@@ -45,7 +79,10 @@ export default async function HomePage() {
       const aHas = a._count.subtitles > 0 ? 1 : 0;
       const bHas = b._count.subtitles > 0 ? 1 : 0;
       if (aHas !== bHas) return bHas - aHas;
-      return b.createdAt.getTime() - a.createdAt.getTime();
+      // "new Date(...)" tu funguje bezpečne, aj keď dáta prišli z cachovanej
+      // funkcie (unstable_cache serializuje cez JSON, takže Date objekty sa
+      // zmenia na reťazce — priame ".getTime()" na nich by zlyhalo).
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     })
     .slice(0, 5)
     .map((v) => ({
@@ -80,6 +117,56 @@ export default async function HomePage() {
         }
       })
     : [];
+
+  const verifiedCriticIds = await getVerifiedCriticIds();
+  const criticReviews = verifiedCriticIds.size
+    ? await prisma.review.findMany({
+        where: { authorId: { in: Array.from(verifiedCriticIds) }, movie: { approved: true }, seasonId: null, episodeId: null },
+        orderBy: { createdAt: 'desc' },
+        take: 8,
+        include: {
+          movie: { include: { ratings: { where: { seasonId: null, episodeId: null } } } },
+          author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
+        }
+      })
+    : [];
+
+  const [topActors, topCreators] = await Promise.all([
+    prisma.person.findMany({
+      where: { role: 'ACTOR', approved: true, photo: { not: null } },
+      orderBy: { followers: { _count: 'desc' } },
+      take: 8,
+      select: { id: true, name: true, slug: true, photo: true }
+    }),
+    prisma.person.findMany({
+      where: { role: 'CREATOR', approved: true, photo: { not: null } },
+      orderBy: { followers: { _count: 'desc' } },
+      take: 8,
+      select: { id: true, name: true, slug: true, photo: true }
+    })
+  ]);
+
+  // "Dnes slávia narodeniny" — zhoda mesiaca a dňa narodenia s dneškom, bez
+  // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo. Osoba bez
+  // fotky sa na hlavnej stránke nikdy nezobrazí (photo IS NOT NULL).
+  const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null; birthDate: Date | null; deathDate: Date | null }[]>`
+    SELECT id, name, slug, photo, "birthDate", "deathDate" FROM "Person"
+    WHERE approved = true
+      AND "deathDate" IS NULL
+      AND "birthDate" IS NOT NULL
+      AND photo IS NOT NULL
+      AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
+      AND EXTRACT(DAY FROM "birthDate") = EXTRACT(DAY FROM CURRENT_DATE)
+    ORDER BY name ASC
+    LIMIT 12
+  `;
+
+  const recentlyDeceased = await prisma.person.findMany({
+    where: { approved: true, deathDate: { not: null }, photo: { not: null } },
+    orderBy: { deathDate: 'desc' },
+    take: 12,
+    select: { id: true, name: true, slug: true, photo: true, birthDate: true, deathDate: true }
+  });
 
   const firstGenre = (g: string | null) => (g || '').split(',').map((x) => x.trim()).filter(Boolean)[0] || null;
 
