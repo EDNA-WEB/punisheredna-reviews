@@ -280,6 +280,11 @@ model Movie {
   // stránky filmu, nech to zbytočne nezaťažuje databázu.
   boxOfficeRank     Int?
   boxOfficeRankType String?
+  // Popularita z TMDb (0 = nenatiahnuté/neznáme) — používa sa napr. na
+  // zoradenie filmov bez online odkazu podľa toho, ako veľmi sú známe,
+  // keďže počet hodnotení na vlastnom webe je zatiaľ nízky pre spoľahlivé
+  // porovnanie. Dopĺňa sa hromadne cez admin tlačidlo, nie automaticky.
+  tmdbPopularity Float?
   createdAt      DateTime @default(now())
   reviews        Review[]
   ratings        Rating[]

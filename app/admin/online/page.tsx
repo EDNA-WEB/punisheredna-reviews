@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import OnlineAdminList from '@/components/OnlineAdminList';
 import OnlineReportsList from '@/components/OnlineReportsList';
+import FetchTmdbPopularityButton from '@/components/FetchTmdbPopularityButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,7 @@ export default async function AdminOnlinePage() {
         onlineImage: true,
         contentType: true,
         tmdbId: true,
+        tmdbPopularity: true,
         createdAt: true,
         seasons: {
           orderBy: { number: 'asc' },
@@ -47,12 +49,21 @@ export default async function AdminOnlinePage() {
     })
   ]);
 
-  // Filmy/seriály bez online odkazu idú navrch (od najnovšie pridaných), nech
-  // sa nestratia v dlhom zozname. Vyplnené nasledujú za nimi, tiež od najnovších.
+  // Filmy/seriály bez online odkazu idú navrch, zoradené podľa toho, ako
+  // veľmi sú známe (popularita z TMDb — vyšší = známejší najprv), nech sa
+  // najprv riešia tie, čo diváci hľadajú najčastejšie. Filmy bez natiahnutej
+  // popularity (zatiaľ nikdy sa nenatiahla, alebo film nie je na TMDb) idú
+  // celkom dole v rámci tejto skupiny. Vyplnené filmy nasledujú za nimi,
+  // zoradené od najnovšie pridaných (ako doteraz).
   const sortedMovies = [...movies].sort((a, b) => {
     const aFilled = a.contentType === 'Seriál' ? a.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!a.watchUrl;
     const bFilled = b.contentType === 'Seriál' ? b.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!b.watchUrl;
     if (aFilled !== bFilled) return aFilled ? 1 : -1;
+    if (!aFilled) {
+      const aPop = a.tmdbPopularity ?? -1;
+      const bPop = b.tmdbPopularity ?? -1;
+      if (aPop !== bPop) return bPop - aPop;
+    }
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
@@ -76,6 +87,8 @@ export default async function AdminOnlinePage() {
         <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmov má'} nastavené online,{' '}
         <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} nastavené online.
       </p>
+
+      <FetchTmdbPopularityButton />
 
       <OnlineReportsList
         initialReports={reports.map((r) => ({

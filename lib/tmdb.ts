@@ -221,6 +221,18 @@ export async function tmdbGetPersonPopularity(tmdbId: number): Promise<number | 
   return typeof d.popularity === 'number' ? d.popularity : null;
 }
 
+// Rovnaký princíp ako pri osobách — TMDb má vlastný priebežne počítaný
+// ukazovateľ "popularity" (návštevnosť stránky filmu na TMDb, počet hlasov
+// a pod.), čo je oveľa spoľahlivejší ukazovateľ známosti filmu než počet
+// hodnotení na našom vlastnom webe (ten je zatiaľ nízky u väčšiny filmov).
+export async function tmdbGetMoviePopularity(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<number | null> {
+  const url = `${TMDB_BASE}/${mediaType}/${tmdbId}`;
+  const res = await fetch(url, { headers: tmdbHeaders() });
+  if (!res.ok) return null;
+  const d = await res.json();
+  return typeof d.popularity === 'number' ? d.popularity : null;
+}
+
 // Vráti hlavné obsadenie (podľa poradia v titulkoch) konkrétneho filmu — na
 // zistenie, či popri hercovi hral aj niekto, koho už máme u nás vo vlastnej
 // databáze osôb (rozumný odhad "známeho" spoluherca, bez potreby subjektívne
