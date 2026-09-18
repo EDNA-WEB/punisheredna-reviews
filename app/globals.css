@@ -210,3 +210,37 @@ input[type='number'] {
   outline-offset: 4px;
   box-shadow: 0 0 0 8px rgba(227, 20, 31, 0.25);
 }
+
+/* Fallback pre "aspect-ratio" na starších prehliadačoch (najmä Smart TV
+   pred rokom cca 2021), čo túto CSS vlastnosť vôbec nepoznajú — bez fallbacku
+   sa kontajner zrúti na nulovú výšku a celý obsah (posterky, online
+   prehrávač, karusel) zmizne, aj keď je v poriadku vykreslený v HTML.
+   Použitá klasická technika "padding-bottom percentom" — funguje to len
+   preto, že vnútorný obsah v celom webe už používa "absolute inset-0". */
+@supports not (aspect-ratio: 1 / 1) {
+  .aspect-video {
+    position: relative;
+    height: 0;
+    padding-bottom: 56.25%; /* 9/16 */
+  }
+  .aspect-square {
+    position: relative;
+    height: 0;
+    padding-bottom: 100%;
+  }
+  .aspect-\[16\/10\] {
+    position: relative;
+    height: 0;
+    padding-bottom: 62.5%;
+  }
+  .aspect-\[2\/3\] {
+    position: relative;
+    height: 0;
+    padding-bottom: 150%;
+  }
+  .aspect-\[3\/4\] {
+    position: relative;
+    height: 0;
+    padding-bottom: 133.333%;
+  }
+}
