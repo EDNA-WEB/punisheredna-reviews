@@ -308,8 +308,8 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
           <div className="p-4">
             <div className={`relative flex gap-3 mb-3 w-full min-w-0 overflow-hidden ${!primaryVideo ? 'justify-center' : ''}`}>
-              <div className={`flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
-                {movie.poster && <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />}
+              <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
+                {movie.poster && <img src={movie.poster} alt={movie.title} className="absolute inset-0 w-full h-full object-cover" />}
                 {viewerId && (
                   <div className="absolute top-2 right-2">
                     <WatchedEyeToggle apiBase={`/api/episodes/${episode.id}`} initialWatched={isWatched} />

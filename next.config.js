@@ -22,7 +22,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "img-src 'self' data: https:",
+              "img-src 'self' data: https://image.tmdb.org https://res.cloudinary.com https://i.ytimg.com https://img.youtube.com https://cdn.simpleicons.org https://flagcdn.com",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com",
               "style-src 'self' 'unsafe-inline'",
               "frame-src https://www.youtube.com",
