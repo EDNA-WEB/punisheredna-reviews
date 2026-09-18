@@ -9,11 +9,13 @@ type SeasonItem = { number: number; year: string | null; released: boolean; epis
 export default function OnlineEpisodeBrowser({
   seasons,
   watchUrl,
-  defaultSeasonNumber
+  defaultSeasonNumber,
+  isTv
 }: {
   seasons: SeasonItem[];
   watchUrl: string;
   defaultSeasonNumber?: number;
+  isTv?: boolean;
 }) {
   const [selectedSeason, setSelectedSeason] = useState(defaultSeasonNumber ?? seasons[0]?.number);
   const [open, setOpen] = useState(false);
@@ -74,7 +76,7 @@ export default function OnlineEpisodeBrowser({
           return (
             <Wrapper
               key={e.number}
-              {...(clickable ? { href: episodeUrl, target: '_blank', rel: 'noopener noreferrer' } : {})}
+              {...(clickable ? { href: episodeUrl, ...(isTv ? {} : { target: '_blank', rel: 'noopener noreferrer' }) } : {})}
               className={`block group ${clickable ? '' : 'cursor-default'}`}
             >
               <div className="relative aspect-video rounded-xl overflow-hidden bg-night mb-2">

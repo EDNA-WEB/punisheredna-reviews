@@ -33,5 +33,14 @@
     "tailwindcss": "^3.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "Chrome >= 38",
+    "Safari >= 9",
+    "iOS >= 9",
+    "Android >= 4.4",
+    "Samsung >= 4"
+  ]
 }

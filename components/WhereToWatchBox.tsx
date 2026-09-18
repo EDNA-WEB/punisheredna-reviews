@@ -7,11 +7,13 @@ type Service = { id: string; name: string; icon: string | null; color: string | 
 export default function WhereToWatchBox({
   isInCinemas,
   cinemaHref,
-  services
+  services,
+  isTv
 }: {
   isInCinemas: boolean;
   cinemaHref: string;
   services: Service[];
+  isTv?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   if (!isInCinemas && services.length === 0) return null;
@@ -43,8 +45,7 @@ export default function WhereToWatchBox({
                 <a
                   key={s.id}
                   href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
+                  {...(isTv ? {} : { target: '_blank', rel: 'noopener noreferrer nofollow' })}
                   className={`flex items-center gap-1.5 flex-none ${
                     expanded ? '' : i < MOBILE_LIMIT ? '' : i < DESKTOP_LIMIT ? 'hidden sm:flex' : 'hidden'
                   }`}

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { detectTvMode } from '@/lib/tvMode';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { computePercent, scoreColorStyle } from '@/lib/rating';
@@ -55,6 +56,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
   const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isTv = detectTvMode();
 
   const movie = await prisma.movie.findUnique({
     where: { slug: params.slug },
@@ -681,6 +683,7 @@ export default async function SeasonPage({ params }: { params: { slug: string; n
                     }
                   ]}
                   watchUrl={movie.watchUrl || ''}
+                  isTv={isTv}
                 />
               )
             },

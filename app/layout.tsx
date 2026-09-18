@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Poppins, Inter } from 'next/font/google';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
+import { detectTvMode } from '@/lib/tvMode';
 import './globals.css';
 import Providers from './providers';
 import { TranslationProvider } from '@/components/TranslationProvider';
@@ -30,29 +31,6 @@ const body = Inter({
 export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-
-// Rozpoznanie Smart TV zariadení podľa User-Agent — pokrýva bežné platformy
-// (Samsung Tizen, LG webOS, Android TV/Google TV, Amazon Fire TV, Chromecast,
-// HbbTV vstavané do televízorov, Sony Bravia, Roku, PlayStation/Xbox prehliadače).
-// Nič sa tu nezapisuje do middleware.ts (ten rieši len prihlásenie do admin
-// sekcie) — ide o čisto vizuálny prepínač na úrovni tohto layoutu.
-function isSmartTvUserAgent(ua: string): boolean {
-  return /tizen|webos|smart-tv|smarttv|googletv|appletv|hbbtv|netcast|viera|aftb|aftt|aftm|firetv|crkey|roku|bravia|philipstv|playstation|xbox/i.test(
-    ua
-  );
-}
-
-// Rozpoznávanie podľa User-Agent nie je vždy spoľahlivé — niektoré (najmä
-// lacnejšie/generické) Smart TV prehliadače sa hlásia úplne bežným reťazcom.
-// Preto okrem automatického rozpoznania funguje aj MANUÁLNE vynútenie:
-// adresa s "?tv=1" na konci TV režim zapne a zapamätá si to (cookie na 1
-// rok, nastaví ju TvModeToggle.tsx), "?tv=0" ho naopak vypne.
-function detectTvMode(): boolean {
-  const tvCookie = cookies().get('tv-mode')?.value;
-  if (tvCookie === '1') return true;
-  if (tvCookie === '0') return false;
-  return isSmartTvUserAgent(headers().get('user-agent') || '');
-}
 
 export function generateViewport(): Viewport {
   const isTv = detectTvMode();

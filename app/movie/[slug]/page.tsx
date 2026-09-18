@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { detectTvMode } from '@/lib/tvMode';
 import {
   getCachedMovieBySlug,
   getCachedMovieTrivia,
@@ -91,6 +92,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isTv = detectTvMode();
   const sortMode = ['likes', 'newest', 'oldest', 'rating', 'karma'].includes(searchParams?.sort || '') ? searchParams!.sort! : 'rating';
 
   // Tieto štyri dopyty na sebe navzájom nezávisia (ani jeden nepotrebuje
@@ -682,6 +684,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           <WhereToWatchBox
             isInCinemas={isInCinemas}
             cinemaHref="/kino"
+            isTv={isTv}
             services={movie.streamingServices.map((s) => ({
               id: s.streamingServiceId,
               name: s.streamingService.name,
@@ -981,12 +984,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                       }))
                     }))}
                     watchUrl={movie.watchUrl || ''}
+                    isTv={isTv}
                   />
                 ) : movie.watchUrl ? (
                   <a
                     href={movie.watchUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...(isTv ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                     className="relative block max-w-2xl aspect-video rounded-xl overflow-hidden bg-night group"
                   >
                     <div
