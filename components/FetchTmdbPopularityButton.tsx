@@ -32,7 +32,7 @@ export default function FetchTmdbPopularityButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
       >
-        {loading ? 'Naťahujem z TMDb… (môže to chvíľu trvať)' : '⭐ Natiahnuť popularitu z TMDb (pre triedenie)'}
+        {loading ? 'Naťahujem z TMDb… (môže to chvíľu trvať)' : '⭐ Natiahnuť popularitu a hodnotenie z TMDb'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

@@ -285,6 +285,12 @@ model Movie {
   // keďže počet hodnotení na vlastnom webe je zatiaľ nízky pre spoľahlivé
   // porovnanie. Dopĺňa sa hromadne cez admin tlačidlo, nie automaticky.
   tmdbPopularity Float?
+  // Hodnotenie divákov priamo z TMDb (0-10) a počet hlasov — kombinuje sa s
+  // vlastným hodnotením na webe do jedného zobrazeného percenta, keďže
+  // vlastných hodnotení je zatiaľ na väčšine filmov málo na to, aby boli
+  // samy o sebe vypovedajúce o kvalite.
+  tmdbVoteAverage Float?
+  tmdbVoteCount   Int?
   createdAt      DateTime @default(now())
   reviews        Review[]
   ratings        Rating[]

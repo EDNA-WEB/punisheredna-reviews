@@ -22,9 +22,12 @@ export async function POST() {
   for (const movie of movies) {
     try {
       const mediaType = movie.contentType === 'Seriál' ? 'tv' : 'movie';
-      const popularity = await tmdbGetMoviePopularity(movie.tmdbId!, mediaType);
-      if (popularity !== null) {
-        await prisma.movie.update({ where: { id: movie.id }, data: { tmdbPopularity: popularity } });
+      const { popularity, voteAverage, voteCount } = await tmdbGetMoviePopularity(movie.tmdbId!, mediaType);
+      if (popularity !== null || voteAverage !== null) {
+        await prisma.movie.update({
+          where: { id: movie.id },
+          data: { tmdbPopularity: popularity, tmdbVoteAverage: voteAverage, tmdbVoteCount: voteCount }
+        });
         updated++;
       } else {
         failed++;

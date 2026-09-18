@@ -5,7 +5,7 @@ import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
 import GenreDropdown from '@/components/GenreDropdown';
 import { primaryGenreLabel } from '@/lib/genreLabel';
-import { computePercent } from '@/lib/rating';
+import { computeBlendedPercent } from '@/lib/rating';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
 import { IconChevronRight } from '@/components/Icons';
@@ -107,7 +107,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
 
   const withScore = movies.map((m) => ({
     ...m,
-    percent: computePercent(m.ratings),
+    percent: computeBlendedPercent(m.ratings, m.tmdbVoteAverage, m.tmdbVoteCount),
     genreList: (m.genres || '').split(',').map((g) => g.trim()).filter(Boolean),
     yearNum: m.year ? parseInt(m.year, 10) : null
   }));

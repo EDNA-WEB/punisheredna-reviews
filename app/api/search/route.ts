@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCachedSearchIndex } from '@/lib/cachedMovieData';
-import { computePercent } from '@/lib/rating';
+import { computeBlendedPercent } from '@/lib/rating';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
 
 // Odstráni diakritiku a prevedie na malé písmená — nech "replacement" nájde
@@ -157,7 +157,7 @@ export async function GET(req: Request) {
       slug: m.slug,
       year: m.year,
       poster: m.poster,
-      percent: computePercent(m.ratings),
+      percent: computeBlendedPercent(m.ratings, m.tmdbVoteAverage, m.tmdbVoteCount),
       ratingCount: m.ratings.length,
       score: scoreById.get(m.id) || 0
     }))

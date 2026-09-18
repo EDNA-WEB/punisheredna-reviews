@@ -46,7 +46,7 @@ import ExpandableReviewBody from '@/components/ExpandableReviewBody';
 import MovieRatersLists from '@/components/MovieRatersLists';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
-import { computePercent, scoreColorStyle } from '@/lib/rating';
+import { computePercent, computeBlendedPercent, scoreColorStyle } from '@/lib/rating';
 import { getCastDetails } from '@/lib/castDetails';
 import PersonNameList from '@/components/PersonNameList';
 import StarRating from '@/components/StarRating';
@@ -116,7 +116,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     logActivity(viewerId, `Profil filmu ${movie.title}`, `/movie/${movie.slug}`);
   }
 
-  const percent = computePercent(movie.ratings);
+  const percent = computeBlendedPercent(movie.ratings, movie.tmdbVoteAverage, movie.tmdbVoteCount);
   const isUpcoming = !!(movie.releaseDate && movie.releaseDate > new Date());
   const oneMonthAgoForCinemas = new Date();
   oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
