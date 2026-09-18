@@ -19,6 +19,7 @@ const PROFILE_GROUP = {
 };
 
 const TABS = [
+  { href: '/admin/prehlad', label: '📊 Prehľad' },
   { href: '/admin', label: 'Recenzie' },
   { href: '/admin/movies', label: 'Filmy' },
   { href: '/admin/people', label: 'Osobnosti' },

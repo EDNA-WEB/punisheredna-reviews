@@ -394,3 +394,27 @@ export const getCachedVodPremieres = unstable_cache(
   ['vod-premieres'],
   { revalidate: 600 }
 );
+
+// Verejné štatistiky do bočného panelu (koľko filmov v češtine, koľko je
+// dostupných online) — počíta sa z CELEJ filmotéky, preto cachujeme na
+// dlhšie (30 minút), nech to nezaťažuje databázu pri každom zobrazení
+// akejkoľvek stránky.
+export const getCachedSiteStats = unstable_cache(
+  async () => {
+    const movies = await prisma.movie.findMany({
+      where: { approved: true },
+      select: { synopsis: true, watchUrl: true, seasons: { select: { episodes: { select: { onlineUrl: true } } } } }
+    });
+
+    const czechRegex = /[řěů]/i;
+    const totalMovies = movies.length;
+    const czechCount = movies.filter((m) => m.synopsis && czechRegex.test(m.synopsis)).length;
+    const onlineCount = movies.filter(
+      (m) => m.watchUrl || m.seasons.some((s) => s.episodes.some((e) => e.onlineUrl))
+    ).length;
+
+    return { totalMovies, czechCount, onlineCount };
+  },
+  ['site-stats-panel'],
+  { revalidate: 1800 }
+);

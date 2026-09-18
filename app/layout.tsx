@@ -7,6 +7,7 @@ import Providers from './providers';
 import { TranslationProvider } from '@/components/TranslationProvider';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import SiteWallpaper from '@/components/SiteWallpaper';
+import SiteStatsPanel from '@/components/SiteStatsPanel';
 import TopBar from '@/components/TopBar';
 import Navbar from '@/components/Navbar';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
@@ -114,6 +115,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Providers>
             <TvNavigation />
             <SiteWallpaper />
+            <SiteStatsPanel />
             <TopBar />
             <Navbar />
             <div className="main-content-shell max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
