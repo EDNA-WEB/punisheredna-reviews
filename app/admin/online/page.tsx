@@ -20,6 +20,7 @@ export default async function AdminOnlinePage() {
       select: {
         id: true,
         title: true,
+        originalTitle: true,
         slug: true,
         poster: true,
         watchUrl: true,
@@ -49,13 +50,13 @@ export default async function AdminOnlinePage() {
     })
   ]);
 
-  // Filmy/seriály bez online odkazu idú navrch, zoradené podľa toho, ako
-  // veľmi sú známe (popularita z TMDb — vyšší = známejší najprv), nech sa
-  // najprv riešia tie, čo diváci hľadajú najčastejšie. Filmy bez natiahnutej
-  // popularity (zatiaľ nikdy sa nenatiahla, alebo film nie je na TMDb) idú
-  // celkom dole v rámci tejto skupiny. Vyplnené filmy nasledujú za nimi,
-  // zoradené od najnovšie pridaných (ako doteraz).
+  // Filmy idú vždy PRED seriálmi (hlavné kritérium triedenia). Až v rámci
+  // každej z týchto dvoch skupín platí pôvodná logika: bez online odkazu
+  // navrch, zoradené podľa popularity z TMDb (známejšie najprv, nenatiahnuté
+  // celkom dole v rámci tejto podskupiny), vyplnené za nimi od najnovších.
   const sortedMovies = [...movies].sort((a, b) => {
+    if (a.contentType !== b.contentType) return a.contentType === 'Seriál' ? 1 : -1;
+
     const aFilled = a.contentType === 'Seriál' ? a.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!a.watchUrl;
     const bFilled = b.contentType === 'Seriál' ? b.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !!b.watchUrl;
     if (aFilled !== bFilled) return aFilled ? 1 : -1;

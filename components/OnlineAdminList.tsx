@@ -10,6 +10,7 @@ type SeasonItem = { id: string; number: number; episodes: EpisodeItem[] };
 type MovieItem = {
   id: string;
   title: string;
+  originalTitle: string | null;
   slug: string;
   poster: string | null;
   watchUrl: string | null;
@@ -287,7 +288,11 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
     e.target.value = '';
   }
 
-  const filteredMovies = movies.filter((m) => m.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const filteredMovies = movies.filter(
+    (m) =>
+      m.title.toLowerCase().includes(query.trim().toLowerCase()) ||
+      (m.originalTitle && m.originalTitle.toLowerCase().includes(query.trim().toLowerCase()))
+  );
   const PAGE_SIZE = 50;
   const totalPages = Math.max(1, Math.ceil(filteredMovies.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -404,6 +409,9 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                 <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýba online odkaz" />
               )}
               {m.title}
+              {m.originalTitle && m.originalTitle !== m.title && (
+                <span className="text-muted font-normal text-xs truncate">· {m.originalTitle}</span>
+              )}
             </Link>
             {m.watchUrl && (
               <span className="text-[11px] font-semibold text-emerald-600 flex-none whitespace-nowrap">✓ nastavené</span>
