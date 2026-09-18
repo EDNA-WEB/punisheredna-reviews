@@ -21,6 +21,7 @@ export default async function AdminOnlinePage() {
         id: true,
         title: true,
         originalTitle: true,
+        year: true,
         slug: true,
         poster: true,
         watchUrl: true,

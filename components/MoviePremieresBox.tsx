@@ -30,7 +30,10 @@ export default function MoviePremieresBox({ ageRating, premieres }: { ageRating:
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-ink">{p.type === 'VOD' ? 'Na VOD od' : 'V kinách od'}</div>
                 <div className="text-xs text-muted">
-                  {String(p.releaseDate.getDate()).padStart(2, '0')}.{String(p.releaseDate.getMonth() + 1).padStart(2, '0')}.{p.releaseDate.getFullYear()}
+                  {(() => {
+                    const d = new Date(p.releaseDate);
+                    return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+                  })()}
                   {p.distributor && <> {p.distributor}</>}
                 </div>
               </div>

@@ -193,7 +193,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   // Pri seriáli môžu jednotlivé série vychádzať naprieč viacerými rokmi — namiesto
   // jedného čísla (rok premiéry) preto v hlavičke zobrazíme celý rozsah, napr.
   // "2022–2026", ak seriál stále beží alebo mal série v rôznych rokoch.
-  const seasonYears = seasons.map((s) => s.releaseDate?.getFullYear()).filter((y): y is number => !!y);
+  const seasonYears = seasons.map((s) => (s.releaseDate ? new Date(s.releaseDate).getFullYear() : null)).filter((y): y is number => !!y);
   const displayYear =
     seasonYears.length > 1
       ? Math.min(...seasonYears) === Math.max(...seasonYears)
@@ -254,14 +254,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
       const bLikes = b.likes.filter((l) => l.value === 1).length;
       return bLikes - aLikes;
     }
-    if (sortMode === 'oldest') return a.createdAt.getTime() - b.createdAt.getTime();
+    if (sortMode === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     if (sortMode === 'rating') {
       const aRating = authorRatingByUserId.get(a.authorId) || 0;
       const bRating = authorRatingByUserId.get(b.authorId) || 0;
       return bRating - aRating;
     }
     // newest
-    return b.createdAt.getTime() - a.createdAt.getTime();
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   const genres = (movie.genres || '').split(',').map((g) => g.trim()).filter(Boolean);
@@ -357,8 +357,8 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
             totalCount={review.comments.reduce((n, c) => n + 1 + c.replies.length, 0)}
             comments={review.comments.map((c) => ({
               ...c,
-              createdAt: c.createdAt.toISOString(),
-              replies: c.replies.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))
+              createdAt: new Date(c.createdAt).toISOString(),
+              replies: c.replies.map((r) => ({ ...r, createdAt: new Date(r.createdAt).toISOString() }))
             }))}
             viewerId={viewerId}
             isAdmin={isAdmin}

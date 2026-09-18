@@ -418,3 +418,18 @@ export const getCachedSiteStats = unstable_cache(
   ['site-stats-panel'],
   { revalidate: 1800 }
 );
+
+// Ľahký zoznam VŠETKÝCH schválených filmov (len id + oba názvy) na účely
+// vyhľadávania — vďaka tomu, že je to malé množstvo dát na položku, sa oplatí
+// držať ho celý v pamäti a robiť "fuzzy" porovnávanie (tolerantné na preklepy)
+// priamo v JavaScripte, keďže SQL "obsahuje" si s preklepom nevie poradiť.
+export const getCachedSearchIndex = unstable_cache(
+  async () => {
+    return prisma.movie.findMany({
+      where: { approved: true },
+      select: { id: true, title: true, originalTitle: true }
+    });
+  },
+  ['search-index'],
+  { revalidate: 600 }
+);
