@@ -158,15 +158,27 @@ export default async function HomePage() {
       AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
       AND EXTRACT(DAY FROM "birthDate") = EXTRACT(DAY FROM CURRENT_DATE)
     ORDER BY name ASC
-    LIMIT 12
+    LIMIT 8
   `;
 
-  const recentlyDeceased = await prisma.person.findMany({
+  const recentlyDeceasedRaw = await prisma.person.findMany({
     where: { approved: true, deathDate: { not: null }, photo: { not: null } },
     orderBy: { deathDate: 'desc' },
-    take: 12,
+    take: 20,
     select: { id: true, name: true, slug: true, photo: true, birthDate: true, deathDate: true }
   });
+  // Ochrana proti duplicitným záznamom tej istej osoby v databáze (napr. ak
+  // bola omylom pridaná dvakrát) — v zozname na hlavnej stránke sa ukáže len
+  // raz, podľa najnovšieho úmrtia. Skutočný duplicitný záznam treba nájsť a
+  // odstrániť/zlúčiť v Administrácia → Osobnosti.
+  const seenDeceasedNames = new Set<string>();
+  const recentlyDeceased = recentlyDeceasedRaw
+    .filter((p) => {
+      if (seenDeceasedNames.has(p.name)) return false;
+      seenDeceasedNames.add(p.name);
+      return true;
+    })
+    .slice(0, 8);
 
   const firstGenre = (g: string | null) => (g || '').split(',').map((x) => x.trim()).filter(Boolean)[0] || null;
 
