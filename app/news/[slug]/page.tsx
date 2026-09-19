@@ -213,11 +213,13 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                 comment={{
                   ...c,
                   createdAt: c.createdAt.toISOString(),
-                  replies: c.replies.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))
+                  updatedAt: c.updatedAt?.toISOString() || c.createdAt.toISOString(),
+                  replies: c.replies.map((r) => ({ ...r, createdAt: r.createdAt.toISOString(), updatedAt: r.updatedAt?.toISOString() || r.createdAt.toISOString() }))
                 }}
                 target={{ newsId: news.id }}
                 viewerId={viewerId}
                 isAdmin={isAdmin}
+                isMember={isMember}
               />
             ))
           )}

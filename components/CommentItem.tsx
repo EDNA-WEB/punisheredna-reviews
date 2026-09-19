@@ -14,6 +14,7 @@ type CommentData = {
   id: string;
   body: string;
   createdAt: string;
+  updatedAt?: string;
   userId: string;
   user: { name: string; role: string; avatar?: string | null; membershipUntil?: string | Date | null };
   likes: { userId: string; value: number }[];
@@ -25,20 +26,28 @@ export default function CommentItem({
   target,
   viewerId,
   isAdmin,
+  isMember = false,
   depth = 0
 }: {
   comment: CommentData;
   target: { reviewId?: string; newsId?: string; movieId?: string };
   viewerId?: string;
   isAdmin: boolean;
+  isMember?: boolean;
   depth?: number;
 }) {
   const router = useRouter();
   const t = useT();
   const [loading, setLoading] = useState(false);
   const [replying, setReplying] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editBody, setEditBody] = useState(comment.body);
+  const [currentBody, setCurrentBody] = useState(comment.body);
+  const [editError, setEditError] = useState('');
 
-  const canDelete = isAdmin || comment.userId === viewerId;
+  const isOwner = comment.userId === viewerId;
+  const canDelete = isAdmin || (isOwner && isMember);
+  const wasEdited = comment.updatedAt && new Date(comment.updatedAt).getTime() - new Date(comment.createdAt).getTime() > 60_000;
 
   async function handleDelete() {
     if (!confirm('Naozaj chceš tento komentár zmazať?')) return;
@@ -49,6 +58,32 @@ export default function CommentItem({
       router.refresh();
     } catch {
       alert('Zmazanie zlyhalo. Skús to prosím znova.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSaveEdit() {
+    const trimmed = editBody.trim();
+    if (!trimmed) {
+      setEditError('Komentár nemôže byť prázdny.');
+      return;
+    }
+    setLoading(true);
+    setEditError('');
+    try {
+      const res = await fetch(`/api/comments/${comment.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: trimmed })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Úprava zlyhala.');
+      setCurrentBody(data.body);
+      setEditing(false);
+      router.refresh();
+    } catch (err: any) {
+      setEditError(err.message || 'Úprava zlyhala.');
     } finally {
       setLoading(false);
     }
@@ -74,14 +109,48 @@ export default function CommentItem({
               </Link>
               {comment.user.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
               <span>{new Date(comment.createdAt).toLocaleDateString('sk-SK')}</span>
+              {wasEdited && <span className="italic">(upravené)</span>}
             </div>
-            {canDelete && (
-              <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">
-                Zmazať
-              </button>
+            {canDelete && !editing && (
+              <div className="flex items-center gap-2">
+                <button onClick={() => { setEditing(true); setEditBody(currentBody); }} className="text-xs text-muted hover:text-accent">
+                  Upraviť
+                </button>
+                <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">
+                  Zmazať
+                </button>
+              </div>
             )}
           </div>
-          <p className="text-[15px] text-ink whitespace-pre-wrap mb-2">{comment.body}</p>
+          {editing ? (
+            <div className="mb-2">
+              <textarea
+                value={editBody}
+                onChange={(e) => setEditBody(e.target.value)}
+                rows={3}
+                maxLength={2000}
+                className="w-full border border-line rounded-lg px-3 py-2 text-sm mb-2"
+              />
+              {editError && <p className="text-danger text-xs mb-2">{editError}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={loading}
+                  className="bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
+                >
+                  {loading ? 'Ukladám…' : 'Uložiť'}
+                </button>
+                <button
+                  onClick={() => { setEditing(false); setEditError(''); }}
+                  className="text-xs font-semibold text-muted hover:text-ink"
+                >
+                  Zrušiť
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[15px] text-ink whitespace-pre-wrap mb-2">{currentBody}</p>
+          )}
           <div className="flex items-center gap-3">
             {comment.userId !== viewerId && (
               <ReactionButtons
@@ -113,7 +182,7 @@ export default function CommentItem({
       {comment.replies && comment.replies.length > 0 && (
         <div className="space-y-0 mb-4">
           {comment.replies.map((r) => (
-            <CommentItem key={r.id} comment={r} target={target} viewerId={viewerId} isAdmin={isAdmin} depth={depth + 1} />
+            <CommentItem key={r.id} comment={r} target={target} viewerId={viewerId} isAdmin={isAdmin} isMember={isMember} depth={depth + 1} />
           ))}
         </div>
       )}

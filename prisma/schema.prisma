@@ -920,6 +920,7 @@ model Comment {
   id        String    @id @default(cuid())
   body      String    @db.Text
   createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
   reviewId  String?
   review    Review?   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   newsId    String?

@@ -112,15 +112,22 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   if (!movie) return notFound();
   if (!movie.approved && movie.submittedById !== viewerId && !isAdmin) return notFound();
 
+  // Dáta z cache prešli cez JSON serializáciu, takže "releaseDate" je tu
+  // REŤAZEC, nie skutočný Date objekt — priame porovnávanie (">"/">=") aj
+  // volanie dátumových metód na reťazci by tichou chybou dávalo nesprávny
+  // výsledok (nie pád, čo je zákernejšie). Táto jedna normalizovaná premenná
+  // sa preto používa VŠADE nižšie namiesto priameho "movie.releaseDate".
+  const movieReleaseDate = movie.releaseDate ? new Date(movie.releaseDate) : null;
+
   if (viewerId) {
     logActivity(viewerId, `Profil filmu ${movie.title}`, `/movie/${movie.slug}`);
   }
 
   const percent = computeBlendedPercent(movie.ratings, movie.tmdbVoteAverage, movie.tmdbVoteCount);
-  const isUpcoming = !!(movie.releaseDate && movie.releaseDate > new Date());
+  const isUpcoming = !!(movieReleaseDate && movieReleaseDate > new Date());
   const oneMonthAgoForCinemas = new Date();
   oneMonthAgoForCinemas.setMonth(oneMonthAgoForCinemas.getMonth() - 1);
-  const isInCinemas = !!(movie.nowShowing && (!movie.releaseDate || movie.releaseDate >= oneMonthAgoForCinemas));
+  const isInCinemas = !!(movie.nowShowing && (!movieReleaseDate || movieReleaseDate >= oneMonthAgoForCinemas));
   // Ak je film prepojený s TMDb, rozpočet a tržby naťahujeme VŽDY naživo — sú to
   // hodnoty, čo sa v čase menia (film ešte v kinách zarába), takže sa nikdy neukladajú
   // do našej databázy, len sa zobrazí aktuálny stav priamo z TMDb.
@@ -546,12 +553,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
               {isUpcoming && (
                 <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
-                  {t('movie.premiera')} {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('movie.premiera')} {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
               {!isUpcoming && movie.releaseDate && movie.contentType === 'Seriál' && (
                 <div className="text-xs text-muted mb-3">
-                  {t('movie.na_vod_od')} {movie.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('movie.na_vod_od')} {new Date(movie.releaseDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
 
@@ -605,7 +612,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               {isUpcoming ? (
                 <p className="text-xs text-muted">
                   {t('movie.este_nemal_premieru')}{' '}
-                  {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                  {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
                 </p>
               ) : viewerId ? (
                 <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
@@ -875,7 +882,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                               {!s.released && (
                                 <span className="text-xs text-muted ml-auto truncate min-w-0">
                                   {s.releaseDate
-                                    ? `${t('movie.vyjde')} ${s.releaseDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                                    ? `${t('movie.vyjde')} ${new Date(s.releaseDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}`
                                     : t('movie.este_nevysla')}
                                 </span>
                               )}
@@ -1123,7 +1130,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               {isUpcoming ? (
                 <p className="text-xs text-muted">
                   {t('movie.este_nemal_premieru')}{' '}
-                  {movie.releaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                  {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
                 </p>
               ) : viewerId ? (
                 <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
