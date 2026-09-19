@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedAllPeople } from '@/lib/cachedGeneralData';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,16 +20,17 @@ export default async function PeopleResultsPage({ searchParams }: { searchParams
   const deathPlace = searchParams?.deathPlace || null;
   const hasBio = searchParams?.hasBio === '1';
 
-  const people = await prisma.person.findMany({
-    where: {
-      ...(types.length > 0 ? { subRole: { in: types } } : {}),
-      ...(birthPlace ? { birthPlace } : {}),
-      ...(deathPlace ? { deathPlace } : {}),
-      ...(hasBio ? { bio: { not: null } } : {})
-    },
-    orderBy: { name: 'asc' },
-    include: { _count: { select: { followers: true } } }
-  });
+  // Filtrovanie (typ, miesto, roky, bio) sa rieši celé v pamäti nad
+  // cachovaným zoznamom VŠETKÝCH osôb — kombinácií filtrov na tejto stránke
+  // je príliš veľa na to, aby dávalo zmysel cachovať každú zvlášť.
+  const allPeople = await getCachedAllPeople();
+  const people = allPeople.filter(
+    (p) =>
+      (types.length === 0 || (p.subRole && types.includes(p.subRole))) &&
+      (!birthPlace || p.birthPlace === birthPlace) &&
+      (!deathPlace || p.deathPlace === deathPlace) &&
+      (!hasBio || p.bio !== null)
+  );
 
   const byYear = (p: (typeof people)[number]) => {
     if (searchParams?.birthYearFrom || searchParams?.birthYearTo) {

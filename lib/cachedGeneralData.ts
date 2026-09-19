@@ -48,3 +48,83 @@ export const getCachedShopProducts = unstable_cache(
   ['shop-products'],
   { revalidate: 900 }
 );
+
+// Zoznamy hercov/tvorcov zoradené podľa sledovateľov — žiadne osobné dáta,
+// žiadne parametre. Zmena poradia (nový sledovateľ) sa prejaví do 15 minút,
+// čo je pri takomto rebríčku bezpečný kompromis.
+export const getCachedActors = unstable_cache(
+  async () => {
+    return prisma.person.findMany({
+      where: { role: 'ACTOR', approved: true },
+      orderBy: { followers: { _count: 'desc' } },
+      include: { _count: { select: { followers: true } } }
+    });
+  },
+  ['actors-list'],
+  { revalidate: 900 }
+);
+
+export const getCachedCreators = unstable_cache(
+  async () => {
+    return prisma.person.findMany({
+      where: { role: 'CREATOR', approved: true },
+      orderBy: { followers: { _count: 'desc' } },
+      include: { _count: { select: { followers: true } } }
+    });
+  },
+  ['creators-list'],
+  { revalidate: 900 }
+);
+
+// Zoznam osôb na pokročilé vyhľadávanie — cachujeme CELÝ zoznam (bez filtrov),
+// filtrovanie (typ, miesto narodenia/úmrtia, roky, bio) sa rieši až v pamäti
+// nad týmto zoznamom, keďže kombinácií filtrov by mohlo byť príliš veľa na
+// to, aby malo zmysel cachovať každú zvlášť.
+export const getCachedAllPeople = unstable_cache(
+  async () => {
+    return prisma.person.findMany({
+      orderBy: { name: 'asc' },
+      include: { _count: { select: { followers: true } } }
+    });
+  },
+  ['all-people'],
+  { revalidate: 900 }
+);
+
+// Rebríček používateľov (podľa aktivity/karmy) — jedna z výpočtovo
+// najnáročnejších stránok webu (5 dopytov vrátane počítania karmy naprieč
+// celým webom). Triedenie (aktivita/karma) sa rieši až v pamäti nad týmito
+// dátami, takže obe varianty zdieľajú ten istý cache záznam.
+export const getCachedUserRankings = unstable_cache(
+  async () => {
+    const users = await prisma.user.findMany({
+      where: { banned: false, deleted: false, email: { not: 'system@internal.punisheredna' } },
+      include: { _count: { select: { comments: true, posts: true, threads: true, reviews: true } } }
+    });
+
+    const [reviewLikes, commentLikes, postLikes, newsLikes] = await Promise.all([
+      prisma.like.findMany({ where: { reviewId: { not: null } }, select: { value: true, review: { select: { authorId: true } } } }),
+      prisma.like.findMany({ where: { commentId: { not: null } }, select: { value: true, comment: { select: { userId: true } } } }),
+      prisma.like.findMany({ where: { postId: { not: null } }, select: { value: true, post: { select: { authorId: true } } } }),
+      prisma.like.findMany({ where: { newsId: { not: null } }, select: { value: true, news: { select: { authorId: true } } } })
+    ]);
+
+    const karmaByUserId = new Map<string, number>();
+    const addKarma = (userId: string | undefined, value: number) => {
+      if (!userId) return;
+      karmaByUserId.set(userId, (karmaByUserId.get(userId) || 0) + value);
+    };
+    reviewLikes.forEach((l) => addKarma(l.review?.authorId, l.value));
+    commentLikes.forEach((l) => addKarma(l.comment?.userId, l.value));
+    postLikes.forEach((l) => addKarma(l.post?.authorId, l.value));
+    newsLikes.forEach((l) => addKarma(l.news?.authorId, l.value));
+
+    return users.map((u) => {
+      const karma = karmaByUserId.get(u.id) || 0;
+      const total = u._count.comments + u._count.posts + u._count.threads + u._count.reviews;
+      return { ...u, karma, total };
+    });
+  },
+  ['user-rankings'],
+  { revalidate: 900 }
+);

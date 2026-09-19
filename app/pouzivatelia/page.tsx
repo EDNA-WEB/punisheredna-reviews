@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedUserRankings } from '@/lib/cachedGeneralData';
 import { IconUser, IconHeart } from '@/components/Icons';
 import CriticBadge from '@/components/CriticBadge';
 
@@ -8,36 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function UsersPage({ searchParams }: { searchParams: { sort?: string } }) {
   const sortMode = searchParams?.sort === 'karma' ? 'karma' : 'activity';
 
-  const users = await prisma.user.findMany({
-    where: { banned: false, deleted: false, email: { not: 'system@internal.punisheredna' } },
-    include: { _count: { select: { comments: true, posts: true, threads: true, reviews: true } } }
-  });
-
-  // Karma = súčet lajkov na všetkom, čo daný používateľ napísal. Namiesto samostatného
-  // dopytu PRE KAŽDÉHO POUŽÍVATEĽA (pri 500 používateľoch 500 dopytov) to spočítame
-  // v presne 4 dopytoch celkovo (jeden na typ obsahu) a zvyšok spočítame v pamäti.
-  const [reviewLikes, commentLikes, postLikes, newsLikes] = await Promise.all([
-    prisma.like.findMany({ where: { reviewId: { not: null } }, select: { value: true, review: { select: { authorId: true } } } }),
-    prisma.like.findMany({ where: { commentId: { not: null } }, select: { value: true, comment: { select: { userId: true } } } }),
-    prisma.like.findMany({ where: { postId: { not: null } }, select: { value: true, post: { select: { authorId: true } } } }),
-    prisma.like.findMany({ where: { newsId: { not: null } }, select: { value: true, news: { select: { authorId: true } } } })
-  ]);
-
-  const karmaByUserId = new Map<string, number>();
-  const addKarma = (userId: string | undefined, value: number) => {
-    if (!userId) return;
-    karmaByUserId.set(userId, (karmaByUserId.get(userId) || 0) + value);
-  };
-  reviewLikes.forEach((l) => addKarma(l.review?.authorId, l.value));
-  commentLikes.forEach((l) => addKarma(l.comment?.userId, l.value));
-  postLikes.forEach((l) => addKarma(l.post?.authorId, l.value));
-  newsLikes.forEach((l) => addKarma(l.news?.authorId, l.value));
-
-  const withStats = users.map((u) => {
-    const karma = karmaByUserId.get(u.id) || 0;
-    const total = u._count.comments + u._count.posts + u._count.threads + u._count.reviews;
-    return { ...u, karma, total };
-  });
+  const withStats = await getCachedUserRankings();
 
   const ranked = withStats
     .filter((u) => u.total > 0 || u.karma > 0)

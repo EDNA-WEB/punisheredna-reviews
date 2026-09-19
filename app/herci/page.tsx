@@ -1,14 +1,10 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedActors } from '@/lib/cachedGeneralData';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ActorsPage() {
-  const actors = await prisma.person.findMany({
-    where: { role: 'ACTOR', approved: true },
-    orderBy: { followers: { _count: 'desc' } },
-    include: { _count: { select: { followers: true } } }
-  });
+  const actors = await getCachedActors();
 
   return (
     <div className="pt-8">
