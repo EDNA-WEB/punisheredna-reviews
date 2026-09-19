@@ -8,8 +8,6 @@ import { getOrCreateSystemAccount } from './recoveryCode';
 // "onlineFreeForAll" v nastaveniach (dočasné sprístupnenie všetkým).
 export async function isActiveMember(userId: string | null | undefined): Promise<boolean> {
   if (!userId) return false;
-  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
-  if (settings?.onlineFreeForAll) return true;
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { membershipUntil: true } });
   return !!(user?.membershipUntil && user.membershipUntil > new Date());
 }
