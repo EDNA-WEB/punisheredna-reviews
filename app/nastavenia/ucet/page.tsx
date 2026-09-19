@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import SettingsTabs from '@/components/SettingsTabs';
 import AccountSettingsForm from '@/components/AccountSettingsForm';
 import DeleteAccountSection from '@/components/DeleteAccountSection';
+import ExportDataButton from '@/components/ExportDataButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,10 @@ export default async function AccountSettingsPage() {
           region: user.region
         }}
       />
+      <div className="mt-8">
+        <ExportDataButton />
+      </div>
+
       <DeleteAccountSection />
     </div>
   );
