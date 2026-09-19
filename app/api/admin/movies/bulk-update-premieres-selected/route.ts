@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { tmdbGetPremieresAndRating } from '@/lib/tmdb';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
+import { logBulkAction } from '@/lib/auditLog';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -102,5 +103,14 @@ export async function POST(req: Request) {
   }
 
   const batchId = await logBulkImportBatch('premieres-selected-refresh', changes);
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadné prepísanie premiér z TMDb (vybrané filmy)',
+    updated: results.filter((r) => r.status === 'OK').length,
+    failed: results.filter((r) => r.status === 'CHYBA').length,
+    total: movies.length,
+    extraDetails: 'pôvodné premiéry boli zmazané a nahradené'
+  });
   return NextResponse.json({ results, batchId, checked: movies.length });
 }

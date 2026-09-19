@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
+import { logBulkAction } from '@/lib/auditLog';
 import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField, extractTrailingUrl } from '@/lib/titleMatch';
 
 export async function POST(req: Request) {
@@ -122,5 +123,12 @@ export async function POST(req: Request) {
   }
 
   const batchId = await logBulkImportBatch('csfd-links', changes, clientBatchId);
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadný import ČSFD odkazov',
+    updated: changes.length,
+    total: results.length
+  });
   return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

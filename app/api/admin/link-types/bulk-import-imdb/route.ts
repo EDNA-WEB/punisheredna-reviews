@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { tmdbGetMovieExternalIds } from '@/lib/tmdb';
+import { logBulkAction } from '@/lib/auditLog';
 
 const BATCH_SIZE = 40; // rozumná dávka na jedno spustenie, nech to nenarazí na časový limit servera
 
@@ -70,6 +71,15 @@ export async function POST(req: Request) {
       notFound++;
     }
   }
+
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadný import IMDb odkazov',
+    updated: added,
+    failed: notFound,
+    total: candidates.length
+  });
 
   return NextResponse.json({
     processed: candidates.length,

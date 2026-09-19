@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
 import { tmdbSearchPerson, tmdbGetPersonDetails } from '@/lib/tmdb';
+import { logBulkAction } from '@/lib/auditLog';
 
 const MAX_NAMES = 25;
 
@@ -81,6 +82,15 @@ export async function POST(req: Request) {
       results.push({ name, status: 'error' });
     }
   }
+
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadné pridanie osôb',
+    updated: results.filter((r) => r.status === 'added').length,
+    failed: results.filter((r) => r.status === 'error').length,
+    total: names.length
+  });
 
   return NextResponse.json({ results });
 }

@@ -3,8 +3,8 @@ import { prisma } from './prisma';
 type LogParams = {
   userId: string;
   userName: string;
-  action: 'created' | 'updated' | 'published' | 'unpublished' | 'deleted' | 'reverted';
-  targetType: 'news' | 'blog';
+  action: 'created' | 'updated' | 'published' | 'unpublished' | 'deleted' | 'reverted' | 'bulk-import';
+  targetType: 'news' | 'blog' | 'bulk-import';
   targetId: string;
   targetTitle: string;
   details?: string;
@@ -14,6 +14,36 @@ type LogParams = {
 // (audit log je "sekundárna" informácia, hlavná akcia musí prejsť aj bez neho).
 export async function logAudit(params: LogParams) {
   await prisma.auditLog.create({ data: params }).catch(() => {});
+}
+
+// Jednotný zápis pre všetky hromadné nástroje (import trivia, distribútorov,
+// TMDb dát a pod.) — vždy zaznamená KTO, KOĽKO záznamov to postihlo, a AKÝ
+// presne nástroj to bol. Bez tohto by pri hromadnej úprave stoviek filmov
+// nebolo možné spätne zistiť, čo presne sa zmenilo a kedy.
+export async function logBulkAction(params: {
+  userId: string;
+  userName: string;
+  toolName: string;
+  updated: number;
+  failed?: number;
+  total?: number;
+  extraDetails?: string;
+}) {
+  const { userId, userName, toolName, updated, failed, total, extraDetails } = params;
+  const parts = [`${updated} upravených`];
+  if (failed) parts.push(`${failed} zlyhalo`);
+  if (total !== undefined) parts.push(`z ${total} celkovo`);
+  if (extraDetails) parts.push(extraDetails);
+
+  await logAudit({
+    userId,
+    userName,
+    action: 'bulk-import',
+    targetType: 'bulk-import',
+    targetId: toolName,
+    targetTitle: toolName,
+    details: parts.join(' · ')
+  });
 }
 
 // Porovná starý a nový stav článku a vráti čitateľné zhrnutie zmien,

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { tmdbGetPremieresAndRating } from '@/lib/tmdb';
+import { logBulkAction } from '@/lib/auditLog';
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -66,6 +67,15 @@ export async function POST() {
       results.push({ title: movie.title, status: 'CHYBA', detail: err.message });
     }
   }
+
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadné doplnenie nedávnych premiér z TMDb',
+    updated: results.filter((r) => r.status === 'OK').length,
+    failed: results.filter((r) => r.status === 'CHYBA').length,
+    total: movies.length
+  });
 
   return NextResponse.json({ results, checked: movies.length });
 }

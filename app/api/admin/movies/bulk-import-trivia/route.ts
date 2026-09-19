@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
+import { logBulkAction } from '@/lib/auditLog';
 import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJsonInput, pickField } from '@/lib/titleMatch';
 
 const MAX_TRIVIA_PER_MOVIE = 50;
@@ -132,5 +133,13 @@ export async function POST(req: Request) {
   }
 
   const batchId = await logBulkImportBatch('trivia', changes, clientBatchId);
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadný import Zaujímavostí',
+    updated: changes.length,
+    total: results.length,
+    extraDetails: 'existujúce zaujímavosti pri dotknutých filmoch boli nahradené novými'
+  });
   return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { undoBulkImportBatch } from '@/lib/bulkImportLog';
+import { logBulkAction } from '@/lib/auditLog';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -15,5 +16,12 @@ export async function POST(req: Request) {
   }
 
   const result = await undoBulkImportBatch(batchId);
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Vrátenie hromadného importu',
+    updated: result.reverted,
+    failed: result.errors.length
+  });
   return NextResponse.json(result);
 }

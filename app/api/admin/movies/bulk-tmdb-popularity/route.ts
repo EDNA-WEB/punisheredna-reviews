@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { tmdbGetMoviePopularity } from '@/lib/tmdb';
+import { logBulkAction } from '@/lib/auditLog';
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -36,6 +37,15 @@ export async function POST() {
       failed++;
     }
   }
+
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadné natiahnutie popularity/hodnotenia z TMDb',
+    updated,
+    failed,
+    total: movies.length
+  });
 
   return NextResponse.json({ ok: true, total: movies.length, updated, failed });
 }

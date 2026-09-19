@@ -13,7 +13,8 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   published: { label: 'zverejnil(a)', color: 'text-emerald-600' },
   unpublished: { label: 'skryl(a)', color: 'text-muted' },
   deleted: { label: 'zmazal(a)', color: 'text-danger' },
-  reverted: { label: 'obnovil(a) staršiu verziu', color: 'text-accent' }
+  reverted: { label: 'obnovil(a) staršiu verziu', color: 'text-accent' },
+  'bulk-import': { label: 'spustil(a) hromadný nástroj', color: 'text-accent' }
 };
 
 export default async function AuditLogPage({ searchParams }: { searchParams: { page?: string } }) {
@@ -40,8 +41,9 @@ export default async function AuditLogPage({ searchParams }: { searchParams: { p
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia · Viditeľné iba tebe</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Audit log</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
-        Podrobný záznam o tom, kto a čo urobil pri vytváraní a úprave novinky/blog článkov — kto článok vytvoril,
-        čo pri úprave zmenil, a kto ho zmazal.
+        Podrobný záznam o tom, kto a čo urobil pri vytváraní a úprave novinky/blog článkov, aj pri spustení
+        hromadných nástrojov (import trivia, odkazov, TMDb dát a pod.) — kto akciu spustil, koľko záznamov to
+        postihlo, a kedy.
       </p>
 
       {entries.length === 0 ? (

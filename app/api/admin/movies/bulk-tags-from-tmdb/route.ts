@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { freeTranslateMany } from '@/lib/freeTranslate';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
+import { logBulkAction } from '@/lib/auditLog';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -68,5 +69,12 @@ export async function POST(req: Request) {
   }
 
   const batchId = await logBulkImportBatch('tags-from-tmdb', changes);
+  await logBulkAction({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    toolName: 'Hromadné doplnenie tagov z TMDb',
+    updated: changes.length,
+    total: movies.length
+  });
   return NextResponse.json({ results, batchId, checked: movies.length });
 }
