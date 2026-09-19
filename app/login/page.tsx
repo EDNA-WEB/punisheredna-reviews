@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useT } from '@/components/TranslationProvider';
-import { IconEye, IconEyeOff } from '@/components/Icons';
+import { IconEye, IconEyeOff, IconLock } from '@/components/Icons';
 
 export default function LoginPage() {
   const t = useT();
+  const searchParams = useSearchParams();
+  const wasRedirectedHere = !!searchParams.get('callbackUrl');
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -59,6 +62,21 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto pt-10">
+      {wasRedirectedHere && (
+        <div className="flex items-start gap-3 bg-surface border border-line rounded-xl p-4 mb-6">
+          <IconLock className="w-5 h-5 text-accent flex-none mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-ink">Prezeranie webu je určené len pre registrovaných používateľov.</p>
+            <p className="text-sm text-muted mt-1">
+              Prihlás sa, alebo si{' '}
+              <Link href="/register" className="text-accent font-semibold hover:underline">
+                vytvor účet
+              </Link>{' '}
+              — je to rýchle a zadarmo.
+            </p>
+          </div>
+        </div>
+      )}
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">{t('auth.prihlasit')}</h1>
       <form onSubmit={submit} className="space-y-5">
         <div>
