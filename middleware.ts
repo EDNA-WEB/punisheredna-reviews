@@ -30,12 +30,18 @@ export default withAuth(
 );
 
 export const config = {
-  // Vynechané: API (vlastné overenia), statické súbory Next.js, PWA
-  // ikony/manifest/service worker, a stránky potrebné PRED prihlásením
-  // (prihlásenie, registrácia, overenie e-mailu, zabudnuté heslo) — a tiež
-  // právne/kontaktné stránky (súkromie, cookies, napíš nám), sitemap a feed
-  // pre vyhľadávače a čítačky RSS. Úplne všetko ostatné vyžaduje prihlásenie.
+  // Vynechané: API (vlastné overenia), statické súbory Next.js, KAŽDÝ súbor
+  // v /public priečinku (podľa prípony — obrázky, ikony, manifest, sw.js,
+  // atď.), a stránky potrebné PRED prihlásením (prihlásenie, registrácia,
+  // overenie e-mailu, zabudnuté heslo) — a tiež právne/kontaktné stránky
+  // (súkromie, cookies, napíš nám), sitemap a feed pre vyhľadávače a
+  // čítačky RSS. Úplne všetko ostatné vyžaduje prihlásenie.
+  //
+  // Vzor podľa prípony je zámerne VŠEOBECNÝ (nie zoznam konkrétnych názvov
+  // súborov) — presne toto bol problém pri prvom nasadení: nový obrázok v
+  // /public (appstore-badge.png a pod.) by inak sám o sebe skončil za
+  // prihlasovacou stenou, kým by si na to niekto nemusel prísť ručne.
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login|register|overit-email|zabudnute-heslo|zasady-ochrany-udajov|cookies|napis-nam|robots.txt|sitemap.xml|feed.xml|manifest.json|sw.js|offline.html|icon-192.png|icon-512.png|icon-maskable-512.png|apple-touch-icon.png|logo.svg).*)'
+    '/((?!api|_next/static|_next/image|login|register|overit-email|zabudnute-heslo|zasady-ochrany-udajov|cookies|napis-nam|.*\\.(?:png|jpg|jpeg|svg|ico|webp|gif|json|txt|xml|js|html)$).*)'
   ]
 };
