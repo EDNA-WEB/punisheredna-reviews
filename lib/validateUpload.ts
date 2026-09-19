@@ -15,7 +15,7 @@ export function validateImageDataUrl(value: unknown): string | null {
   if (typeof value !== 'string') return 'Neplatný formát obrázka.';
   if (!value.startsWith('data:image/')) return null; // externá URL a pod. — necháme prejsť
 
-  const mimeMatch = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/s);
+  const mimeMatch = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]+)$/);
   if (!mimeMatch || !ALLOWED_IMAGE_TYPES.includes(mimeMatch[1].toLowerCase())) {
     return 'Nepodporovaný formát obrázka — povolené sú len JPEG, PNG, GIF a WebP.';
   }
