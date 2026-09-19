@@ -3,15 +3,19 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 import { logAudit } from '@/lib/auditLog';
 import { uploadImage } from '@/lib/cloudinary';
+import { isActiveMember } from '@/lib/membership';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const limit = Number(searchParams.get('limit')) || 20;
+  const session = await getServerSession(authOptions);
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember((session?.user as any)?.id));
   const news = await prisma.newsPost.findMany({
-    where: publishedNewsFilter(),
+    where: publishedNewsFilterForMember(isMember),
     orderBy: { createdAt: 'desc' },
     take: limit,
     include: { author: { select: { name: true } } }

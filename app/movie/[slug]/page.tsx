@@ -170,7 +170,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
     viewerId
       ? prisma.movieListItem.findFirst({ where: { movieId: movie.id, list: { authorId: viewerId, title: 'Obľúbené' } } })
       : Promise.resolve(null),
-    getCachedRelatedNews(searchTerms),
+    getCachedRelatedNews(searchTerms, isMember),
     getCachedMovieTrivia(movie.id),
     movie.contentType === 'Seriál' ? getCachedMovieSeasons(movie.id) : Promise.resolve([]),
     viewerId

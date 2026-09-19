@@ -1,6 +1,9 @@
 import Pagination from '@/components/Pagination';
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { isActiveMember } from '@/lib/membership';
 import NewsCard from '@/components/NewsCard';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
@@ -12,15 +15,20 @@ export default async function AllNewsPage({ searchParams }: { searchParams: { pa
   const page = Math.max(1, Number(searchParams?.page) || 1);
   const dict = await getDictionary(await getUserLanguage());
 
+  const session = await getServerSession(authOptions);
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember((session?.user as any)?.id));
+  const filter = publishedNewsFilterForMember(isMember);
+
   const [news, total] = await Promise.all([
     prisma.newsPost.findMany({
-      where: publishedNewsFilter(),
+      where: filter,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       include: { _count: { select: { comments: true } } }
     }),
-    prisma.newsPost.count({ where: publishedNewsFilter() })
+    prisma.newsPost.count({ where: filter })
   ]);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

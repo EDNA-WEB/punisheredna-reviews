@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 import { excerpt } from '@/lib/markdown';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
@@ -10,7 +10,7 @@ function escapeXml(s: string) {
 
 export async function GET() {
   const news = await prisma.newsPost.findMany({
-    where: publishedNewsFilter(),
+    where: publishedNewsFilterForMember(false),
     orderBy: { createdAt: 'desc' },
     take: 30,
     include: { author: { select: { name: true } } }

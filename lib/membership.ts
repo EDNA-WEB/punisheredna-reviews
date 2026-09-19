@@ -1,6 +1,19 @@
 import { prisma } from './prisma';
 import { getOrCreateSystemAccount } from './recoveryCode';
 
+// Zdieľaná funkcia na overenie, či má používateľ aktívne (zaplatené) členstvo
+// — používa sa všade, kde je nejaká funkcia dostupná len pre platiacich
+// (Box Office, časová os v profile osoby, úprava/mazanie vlastných príspevkov,
+// vytváranie zoznamov, skoré zobrazenie noviniek). Zohľadňuje aj prepínač
+// "onlineFreeForAll" v nastaveniach (dočasné sprístupnenie všetkým).
+export async function isActiveMember(userId: string | null | undefined): Promise<boolean> {
+  if (!userId) return false;
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
+  if (settings?.onlineFreeForAll) return true;
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { membershipUntil: true } });
+  return !!(user?.membershipUntil && user.membershipUntil > new Date());
+}
+
 // Vynechané zámerne mätúce znaky (0/O, 1/I/L) — rovnaký princíp ako pri
 // bezpečnostných kódoch, aby sa kód dal ľahko odpísať/prepísať bez omylu.
 const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

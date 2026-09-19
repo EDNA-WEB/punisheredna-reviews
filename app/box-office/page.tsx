@@ -9,6 +9,7 @@ import Pagination from '@/components/Pagination';
 import { formatMoney, computeBoxOffice } from '@/lib/boxOffice';
 import { adjustForInflation } from '@/lib/inflation';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
+import { isActiveMember } from '@/lib/membership';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +22,24 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const session = await getServerSession(authOptions);
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember((session?.user as any)?.id));
+
+  if (!isMember) {
+    return (
+      <div className="pt-8 max-w-lg">
+        <h1 className="font-display font-extrabold text-3xl text-ink mb-4">{t('boxoffice.nadpis')}</h1>
+        <div className="border border-line rounded-xl p-6 bg-card flex items-start gap-4">
+          <img src="/golden-ticket-badge.svg" alt="" width={40} height={40} className="flex-none" />
+          <div>
+            <p className="text-sm font-semibold text-ink mb-1">Box Office rebríček je dostupný len pre Golden Ticket členov.</p>
+            <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
+              Zistiť viac o členstve →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const withoutVod = await getCachedBoxOfficeMovies();
 

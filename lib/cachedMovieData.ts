@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { prisma } from './prisma';
-import { publishedNewsFilter } from './publishedFilter';
+import { publishedNewsFilterForMember } from './publishedFilter';
 import { getVerifiedCriticIds } from './criticStatus';
 
 // Tieto dáta sú rovnaké pre KAŽDÉHO návštevníka daného filmu — nefiltrujú sa
@@ -98,10 +98,10 @@ export const getCachedMovieVideos = unstable_cache(
 );
 
 export const getCachedRelatedNews = unstable_cache(
-  async (searchTerms: string[]) => {
+  async (searchTerms: string[], isMember: boolean) => {
     if (searchTerms.length === 0) return [];
     return prisma.newsPost.findMany({
-      where: { AND: [{ OR: searchTerms.map((term) => ({ title: { contains: term, mode: 'insensitive' as const } })) }, publishedNewsFilter()] },
+      where: { AND: [{ OR: searchTerms.map((term) => ({ title: { contains: term, mode: 'insensitive' as const } })) }, publishedNewsFilterForMember(isMember)] },
       orderBy: { createdAt: 'desc' },
       take: 4,
       select: { id: true, title: true, slug: true, summary: true, coverImage: true, createdAt: true }
@@ -237,7 +237,7 @@ export const getCachedHomepageData = unstable_cache(
             _count: { select: { subtitles: true } }
           }
         }),
-        prisma.newsPost.findMany({ where: publishedNewsFilter(), orderBy: { createdAt: 'desc' }, take: 5 }),
+        prisma.newsPost.findMany({ where: publishedNewsFilterForMember(false), orderBy: { createdAt: 'desc' }, take: 5 }),
         prisma.review.findMany({
           where: { movie: { approved: true }, seasonId: null, episodeId: null },
           orderBy: { createdAt: 'desc' },

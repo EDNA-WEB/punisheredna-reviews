@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 import { personJsonLd } from '@/lib/jsonLd';
 import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
@@ -17,6 +17,7 @@ import { IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { findFrequentCollaborators } from '@/lib/collaborators';
 import { buildCareerMilestones } from '@/lib/careerMilestones';
+import { isActiveMember } from '@/lib/membership';
 import CareerTimelineModal from '@/components/CareerTimelineModal';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
@@ -38,6 +39,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function PersonPage({ params }: { params: { slug: string } }) {
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember(viewerId));
 
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string, fallback?: string) => dict[key] || fallback || key;
@@ -47,7 +50,6 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     include: { followers: true }
   });
   if (!person) return notFound();
-  const isAdmin = (session?.user as any)?.role === 'ADMIN';
   if (!person.approved && person.submittedById !== viewerId && !isAdmin) return notFound();
 
   const isFollowing = viewerId ? person.followers.some((f) => f.userId === viewerId) : false;
@@ -76,7 +78,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
   const [relatedNews, filmographyCategories, photos, popularity, externalLinks, frequentCollaborators, careerMilestones] = await Promise.all([
     movieIds.length
       ? prisma.newsPost.findMany({
-          where: { movieId: { in: movieIds }, ...publishedNewsFilter() },
+          where: { movieId: { in: movieIds }, ...publishedNewsFilterForMember(isMember) },
           orderBy: { createdAt: 'desc' },
           take: 6,
           select: { title: true, slug: true, coverImage: true, movie: { select: { title: true } } }
@@ -185,7 +187,16 @@ export default async function PersonPage({ params }: { params: { slug: string } 
                   <Link href="/login" className="text-accent font-semibold hover:underline">{t('person.prihlas_sa')}</Link> {t('person.a_sleduj')}
                 </p>
               )}
-              {careerMilestones.length > 0 && <CareerTimelineModal personName={person.name} milestones={careerMilestones} />}
+              {careerMilestones.length > 0 && (
+                isMember ? (
+                  <CareerTimelineModal personName={person.name} milestones={careerMilestones} />
+                ) : (
+                  <Link href="/nastavenia/clenstvo" className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline">
+                    <img src="/golden-ticket-badge.svg" alt="" width={14} height={14} />
+                    Časová os kariéry — len pre členov
+                  </Link>
+                )
+              )}
               {externalLinks && (externalLinks.imdbUrl || externalLinks.instagramUrl || externalLinks.twitterUrl || externalLinks.facebookUrl) && (
                 <div className="flex items-center gap-1.5">
                   {externalLinks.imdbUrl && (

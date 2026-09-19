@@ -55,6 +55,30 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
   if (news.publishAt && news.publishAt > new Date() && !isAdmin) return notFound();
   if (news.isDraft && !isAdmin && !isMember) return notFound();
 
+  // Golden Ticket členovia vidia novinku hneď po zverejnení, ostatní
+  // registrovaní až o 10 hodín neskôr — namiesto matúcej "404" im ukážeme
+  // peknú obrazovku s vysvetlením a odkazom na členstvo.
+  if (!isAdmin && !isMember) {
+    const effectivePublish = news.publishAt || news.createdAt;
+    const availableAt = new Date(effectivePublish.getTime() + 10 * 60 * 60 * 1000);
+    if (availableAt > new Date()) {
+      const hoursLeft = Math.max(1, Math.ceil((availableAt.getTime() - Date.now()) / (60 * 60 * 1000)));
+      return (
+        <div className="pt-10 max-w-lg mx-auto text-center">
+          <img src="/golden-ticket-badge.svg" alt="" width={48} height={48} className="mx-auto mb-4" />
+          <h1 className="font-display font-bold text-xl text-ink mb-2">Táto novinka bude dostupná čoskoro</h1>
+          <p className="text-sm text-muted mb-1">
+            Golden Ticket členovia ju už čítajú — ostatným bude dostupná približne o {hoursLeft}{' '}
+            {hoursLeft === 1 ? 'hodinu' : hoursLeft < 5 ? 'hodiny' : 'hodín'}.
+          </p>
+          <Link href="/nastavenia/clenstvo" className="inline-block mt-4 text-accent text-sm font-semibold hover:underline">
+            Zistiť viac o členstve →
+          </Link>
+        </div>
+      );
+    }
+  }
+
   await trackArticleView('news', news.id);
 
   const relatedByTags = news.tags.length

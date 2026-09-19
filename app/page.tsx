@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { isActiveMember } from '@/lib/membership';
 import { youtubeVideoId } from '@/lib/markdown';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -29,6 +30,9 @@ export default async function HomePage() {
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
   const t = (key: string) => dict[key] || key;
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember(viewerId));
+  const newsFilter = publishedNewsFilterForMember(isMember);
 
   const [trailerVideos, news, latestReviews, popularMovies, recentMovies, popularSeries, following] = await Promise.all([
     prisma.movieVideo.findMany({
@@ -41,7 +45,7 @@ export default async function HomePage() {
         _count: { select: { subtitles: true } }
       }
     }),
-    prisma.newsPost.findMany({ where: publishedNewsFilter(), orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.newsPost.findMany({ where: newsFilter, orderBy: { createdAt: 'desc' }, take: 5 }),
     prisma.review.findMany({
       where: { movie: { approved: true }, seasonId: null, episodeId: null },
       orderBy: { createdAt: 'desc' },
