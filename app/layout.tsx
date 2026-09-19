@@ -15,7 +15,9 @@ import SiteFooter from '@/components/SiteFooter';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import TvModeToggle from '@/components/TvModeToggle';
-import ThemeVariantToggle from '@/components/ThemeVariantToggle';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { isActiveMember } from '@/lib/membership';
 
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
@@ -77,7 +79,16 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = cookies().get('theme')?.value === 'dark' ? 'dark' : '';
-  const themeVariant = cookies().get('themeVariant')?.value === 'steam' ? 'theme-steam' : '';
+
+  // Steam téma už nie je manuálne prepínateľná cez "?theme=steam" (to by
+  // obchádzalo exkluzivitu) — je to teraz automaticky nová podoba TMAVÉHO
+  // režimu pre Golden Ticket členov. Neplatiaci v tmavom režime vidia
+  // pôvodnú, jednoduchú čiernu tému.
+  const session = await getServerSession(authOptions);
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = theme === 'dark' && (isAdmin || (await isActiveMember((session?.user as any)?.id)));
+  const themeVariant = isMember ? 'theme-steam' : '';
+
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
 
@@ -110,7 +121,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${display.variable} ${body.variable} font-body text-ink overflow-x-hidden`}>
         <ServiceWorkerRegister />
         <TvModeToggle />
-        <ThemeVariantToggle />
         <TranslationProvider dict={dict}>
           <Providers>
             <TvNavigation />

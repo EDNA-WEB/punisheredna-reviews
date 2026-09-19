@@ -15,3 +15,11 @@ export function publishedNewsFilterForMember(isMember: boolean) {
     OR: [{ publishAt: { lte: cutoff } }, { AND: [{ publishAt: null }, { createdAt: { lte: cutoff } }] }]
   };
 }
+
+// Rovnaký princíp, ale pre novo pridané filmy/seriály — Golden Ticket členovia
+// vidia nový titul v katalógu hneď, ostatní registrovaní až o 2 hodiny neskôr.
+export function movieVisibleFilter(isMember: boolean) {
+  if (isMember) return {};
+  const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  return { createdAt: { lte: cutoff } };
+}

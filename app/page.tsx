@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember, movieVisibleFilter } from '@/lib/publishedFilter';
 import { isActiveMember } from '@/lib/membership';
 import { youtubeVideoId } from '@/lib/markdown';
 import { getServerSession } from 'next-auth';
@@ -56,19 +56,19 @@ export default async function HomePage() {
       }
     }),
     prisma.movie.findMany({
-      where: { approved: true },
+      where: { approved: true, ...movieVisibleFilter(isMember) },
       orderBy: { ratings: { _count: 'desc' } },
       take: 7,
       select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
     }),
     prisma.movie.findMany({
-      where: { approved: true },
+      where: { approved: true, ...movieVisibleFilter(isMember) },
       orderBy: { createdAt: 'desc' },
       take: 7,
       select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
     }),
     prisma.movie.findMany({
-      where: { approved: true, contentType: 'Seriál' },
+      where: { approved: true, contentType: 'Seriál', ...movieVisibleFilter(isMember) },
       orderBy: { ratings: { _count: 'desc' } },
       take: 5,
       select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }

@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { prisma } from './prisma';
-import { publishedNewsFilterForMember } from './publishedFilter';
+import { publishedNewsFilterForMember, movieVisibleFilter } from './publishedFilter';
 import { getVerifiedCriticIds } from './criticStatus';
 
 // Tieto dáta sú rovnaké pre KAŽDÉHO návštevníka daného filmu — nefiltrujú sa
@@ -154,16 +154,18 @@ export const getCachedMovieCatalog = unstable_cache(
     nowShowingFilter: boolean;
     minLength: number | null;
     maxLength: number | null;
+    isMember: boolean;
   }) => {
     const {
       actorFilter, directorFilter, screenplayFilter, cinematographyFilter, musicFilter,
-      tagFilter, countryFilter, typesFilter, nowShowingFilter, minLength, maxLength
+      tagFilter, countryFilter, typesFilter, nowShowingFilter, minLength, maxLength, isMember
     } = dbFilters;
 
     return prisma.movie.findMany({
       orderBy: { createdAt: 'desc' },
       where: {
         approved: true,
+        ...movieVisibleFilter(isMember),
         ...(actorFilter ? { cast: { contains: actorFilter, mode: 'insensitive' } } : {}),
         ...(directorFilter ? { director: { contains: directorFilter, mode: 'insensitive' } } : {}),
         ...(screenplayFilter ? { screenplay: { contains: screenplayFilter, mode: 'insensitive' } } : {}),

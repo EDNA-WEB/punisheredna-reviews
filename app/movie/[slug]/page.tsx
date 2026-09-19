@@ -47,6 +47,7 @@ import MovieRatersLists from '@/components/MovieRatersLists';
 import RatingDistributionChart from '@/components/RatingDistributionChart';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import { computePercent, computeBlendedPercent, scoreColorStyle } from '@/lib/rating';
+import { isActiveMember } from '@/lib/membership';
 import { getCastDetails } from '@/lib/castDetails';
 import PersonNameList from '@/components/PersonNameList';
 import StarRating from '@/components/StarRating';
@@ -111,6 +112,32 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
   if (!movie) return notFound();
   if (!movie.approved && movie.submittedById !== viewerId && !isAdmin) return notFound();
+
+  // Golden Ticket členovia vidia novo pridaný film hneď, ostatní registrovaní
+  // až o 2 hodiny neskôr — samostatná kontrola od "isMember" vyššie (tá je
+  // špecificky pre online sledovanie, nie pre celkovú viditeľnosť filmu).
+  if (!isAdmin) {
+    const isVisibilityMember = await isActiveMember(viewerId);
+    if (!isVisibilityMember) {
+      const visibleAt = new Date(new Date(movie.createdAt).getTime() + 2 * 60 * 60 * 1000);
+      if (visibleAt > new Date()) {
+        const minutesLeft = Math.max(1, Math.ceil((visibleAt.getTime() - Date.now()) / (60 * 1000)));
+        return (
+          <div className="pt-10 max-w-lg mx-auto text-center">
+            <img src="/golden-ticket-badge.svg" alt="" width={48} height={48} className="mx-auto mb-4" />
+            <h1 className="font-display font-bold text-xl text-ink mb-2">Tento titul bude dostupný čoskoro</h1>
+            <p className="text-sm text-muted mb-1">
+              Golden Ticket členovia ho už môžu vidieť — ostatným bude dostupný približne o {minutesLeft}{' '}
+              {minutesLeft === 1 ? 'minútu' : minutesLeft < 5 ? 'minúty' : 'minút'}.
+            </p>
+            <Link href="/nastavenia/clenstvo" className="inline-block mt-4 text-accent text-sm font-semibold hover:underline">
+              Zistiť viac o členstve →
+            </Link>
+          </div>
+        );
+      }
+    }
+  }
 
   // Dáta z cache prešli cez JSON serializáciu, takže "releaseDate" je tu
   // REŤAZEC, nie skutočný Date objekt — priame porovnávanie (">"/">=") aj

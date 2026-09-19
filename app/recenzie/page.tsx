@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getCachedMovieCatalog } from '@/lib/cachedMovieData';
+import { isActiveMember } from '@/lib/membership';
 import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
 import GenreDropdown from '@/components/GenreDropdown';
@@ -49,6 +50,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
 
   const session = await getServerSession(authOptions);
   const userId = (session?.user as any)?.id || null;
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isMember = isAdmin || (await isActiveMember(userId));
 
   // Filmy, čo prihlásený používateľ už ohodnotil alebo k nim napísal recenziu
   // (na hlavnej úrovni filmu, nie pri konkrétnej sezóne/epizóde) — tie sa na
@@ -102,7 +105,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     typesFilter,
     nowShowingFilter,
     minLength,
-    maxLength
+    maxLength,
+    isMember
   });
 
   const withScore = movies.map((m) => ({
