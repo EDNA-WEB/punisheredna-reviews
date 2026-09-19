@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedGenreCounts } from '@/lib/cachedGeneralData';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
@@ -8,15 +8,7 @@ export default async function GenresPage() {
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
 
-  const movies = await prisma.movie.findMany({ select: { genres: true } });
-
-  const counts = new Map<string, number>();
-  for (const m of movies) {
-    (m.genres || '').split(',').map((g) => g.trim()).filter(Boolean).forEach((g) => {
-      counts.set(g, (counts.get(g) || 0) + 1);
-    });
-  }
-  const genres = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  const genres = await getCachedGenreCounts();
 
   return (
     <div className="pt-8">

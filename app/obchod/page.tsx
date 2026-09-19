@@ -1,31 +1,27 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { getCachedShopCategories, getCachedShopProducts } from '@/lib/cachedGeneralData';
 import ShopSortSelect from '@/components/ShopSortSelect';
 import { formatPrice } from '@/lib/formatCurrency';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopPage({ searchParams }: { searchParams: { kategoria?: string; from?: string; to?: string; sort?: string } }) {
-  const categories = await prisma.shopCategory.findMany({
-    orderBy: { order: 'asc' },
-    include: { _count: { select: { products: { where: { approved: true } } } } }
-  });
+  const categories = await getCachedShopCategories();
 
   const activeCategory = searchParams.kategoria ? categories.find((c) => c.slug === searchParams.kategoria) : null;
 
   const priceFrom = searchParams.from ? Number(searchParams.from) : undefined;
   const priceTo = searchParams.to ? Number(searchParams.to) : undefined;
 
-  const products = await prisma.shopProduct.findMany({
-    where: {
-      approved: true,
-      ...(activeCategory ? { categoryId: activeCategory.id } : {}),
-      ...(priceFrom !== undefined || priceTo !== undefined
-        ? { variants: { some: { price: { gte: priceFrom ?? 0, lte: priceTo ?? 999999 } } } }
-        : {})
-    },
-    include: { variants: { orderBy: { price: 'asc' }, take: 1 }, category: { select: { name: true } } },
-    orderBy: searchParams.sort === 'najlacnejsie' ? undefined : { createdAt: 'desc' }
+  // Cenový filter sa aplikuje AŽ TU, v pamäti, nad cachovaným zoznamom
+  // produktov danej kategórie — nie priamo v databázovom dopyte (viď
+  // poznámka pri getCachedShopProducts).
+  const categoryProducts = await getCachedShopProducts(activeCategory?.id || null);
+  const products = categoryProducts.filter((p) => {
+    const price = p.variants[0]?.price;
+    if (priceFrom !== undefined && (price === undefined || price < priceFrom)) return false;
+    if (priceTo !== undefined && (price === undefined || price > priceTo)) return false;
+    return true;
   });
 
   const sorted =
