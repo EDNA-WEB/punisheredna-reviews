@@ -33,6 +33,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
       bio: true,
       membershipUntil: true,
       role: true,
+      isEditor: true,
       banned: true,
       reviewsDisabled: true,
       ratingsDisabled: true,
@@ -197,6 +198,11 @@ export default async function ProfilePage({ params }: { params: { id: string } }
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="font-display font-extrabold text-2xl text-ink">{user.name}</h1>
             {user.role === 'ADMIN' && <CriticBadge size="w-4 h-4" />}
+            {user.role !== 'ADMIN' && user.isEditor && (
+              <span className="text-[11px] font-semibold text-accent border border-accent/40 rounded-full px-2 py-0.5">
+                Redaktor
+              </span>
+            )}
             {user.membershipUntil && user.membershipUntil > new Date() && <GoldenTicketBadge size={20} />}
             {user.banned && (
               <Badge tone="danger">Zablokovaný</Badge>

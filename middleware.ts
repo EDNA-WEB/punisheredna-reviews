@@ -6,10 +6,14 @@ export default withAuth(
     const token = req.nextauth.token as any;
     const path = req.nextUrl.pathname;
 
-    // Admin sekcia — nezmenené, vyžaduje navyše rolu ADMIN (rovnaké ako
-    // doteraz, len teraz je to jedna z dvoch vetiev namiesto celého middleware).
-    if (path.startsWith('/admin') && token?.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/login', req.url));
+    // Admin sekcia — vyžaduje rolu ADMIN, s JEDNOU výnimkou: "Redaktor"
+    // (isEditor) smie navyše len na stránku pridania novej novinky, nikam
+    // inam v administrácii.
+    if (path.startsWith('/admin')) {
+      const isEditorException = token?.isEditor && path.startsWith('/admin/news/new');
+      if (token?.role !== 'ADMIN' && !isEditorException) {
+        return NextResponse.redirect(new URL('/login', req.url));
+      }
     }
 
     // Zvyšok webu — stačí byť prihlásený (žiadna kontrola členstva, len

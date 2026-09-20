@@ -17,6 +17,7 @@ import { IconUser, IconShoppingCart } from './Icons';
 
 export default function NavbarClient({
   role,
+  isEditor,
   userName,
   userId,
   userAvatar,
@@ -25,6 +26,7 @@ export default function NavbarClient({
   buyMeACoffeeUrl
 }: {
   role: string | null;
+  isEditor: boolean;
   userName: string | null;
   userId: string | null;
   userAvatar: string | null;
@@ -142,9 +144,9 @@ export default function NavbarClient({
                 </Link>
               ))}
           </div>
-          {role === 'ADMIN' && (
+          {(role === 'ADMIN' || isEditor) && (
             <Link
-              href="/admin"
+              href={role === 'ADMIN' ? "/admin" : "/admin/news/new"}
               className="flex-none text-[12px] font-semibold px-3 py-1.5 rounded-full bg-night text-white hover:bg-night/85 transition-colors my-1.5"
             >
               {t('nav.administracia')}
@@ -166,8 +168,8 @@ export default function NavbarClient({
                 {l.label}
               </Link>
             ))}
-            {role === 'ADMIN' && (
-              <Link href="/admin" onClick={() => setOpen(false)} className="py-3.5 border-b border-white/10 text-lg font-display font-semibold text-accent">
+            {(role === 'ADMIN' || isEditor) && (
+              <Link href={role === 'ADMIN' ? "/admin" : "/admin/news/new"} onClick={() => setOpen(false)} className="py-3.5 border-b border-white/10 text-lg font-display font-semibold text-accent">
                 {t('nav.administracia')}
               </Link>
             )}

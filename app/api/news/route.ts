@@ -25,7 +25,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== 'ADMIN') {
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  const isEditor = (session?.user as any)?.isEditor;
+  if (!session || (!isAdmin && !isEditor)) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 

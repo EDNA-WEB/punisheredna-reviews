@@ -35,6 +35,7 @@ const TABS = [
   { href: '/admin/users', label: 'Čitatelia' },
   { href: '/admin/settings', label: 'Vzhľad' },
   { href: '/admin/preklad', label: 'Preklad' },
+  { href: '/admin/prava', label: 'Práva' },
   { href: '/admin/system', label: 'Systém' }
 ];
 

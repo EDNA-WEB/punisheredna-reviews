@@ -56,6 +56,11 @@ model User {
   ratings      Rating[]
   watchedEpisodes WatchedEpisode[]
   membershipUntil DateTime?
+  // Obmedzené admin právo — momentálne jediné dostupné je "Redaktor":
+  // vidí tlačidlo Administrácia, ale smie v nej len pridávať novinky,
+  // nič iné. Systém je pripravený na pridanie ďalších obmedzených práv
+  // v budúcnosti (zatiaľ len toto jedno).
+  isEditor Boolean @default(false)
   commentReactions CommentReaction[]
   onlineReports OnlineReport[]
   redeemedTrial   Boolean  @default(false)
