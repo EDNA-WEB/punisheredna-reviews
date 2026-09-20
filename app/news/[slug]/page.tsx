@@ -24,6 +24,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
+// Zoskupí surové riadky reakcií (jeden riadok na osobu) na počty podľa
+// jednotlivých emoji, na zobrazenie pri komentári.
+function summarizeReactions(reactions: { emoji: string }[]): { emoji: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const r of reactions) counts.set(r.emoji, (counts.get(r.emoji) || 0) + 1);
+  return Array.from(counts.entries()).map(([emoji, count]) => ({ emoji, count }));
+}
+
 export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
@@ -42,9 +50,10 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         include: {
           user: { select: { name: true, role: true, avatar: true, membershipUntil: true } },
           likes: true,
+          reactions: true,
           replies: {
             orderBy: { createdAt: 'asc' },
-            include: { user: { select: { name: true, role: true, avatar: true, membershipUntil: true } }, likes: true }
+            include: { user: { select: { name: true, role: true, avatar: true, membershipUntil: true } }, likes: true, reactions: true }
           }
         }
       }
@@ -214,7 +223,15 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                   ...c,
                   createdAt: c.createdAt.toISOString(),
                   updatedAt: c.updatedAt?.toISOString() || c.createdAt.toISOString(),
-                  replies: c.replies.map((r) => ({ ...r, createdAt: r.createdAt.toISOString(), updatedAt: r.updatedAt?.toISOString() || r.createdAt.toISOString() }))
+                  reactions: summarizeReactions(c.reactions),
+                  myReaction: c.reactions.find((r) => r.userId === viewerId)?.emoji || null,
+                  replies: c.replies.map((r) => ({
+                    ...r,
+                    createdAt: r.createdAt.toISOString(),
+                    updatedAt: r.updatedAt?.toISOString() || r.createdAt.toISOString(),
+                    reactions: summarizeReactions(r.reactions),
+                    myReaction: r.reactions.find((rr) => rr.userId === viewerId)?.emoji || null
+                  }))
                 }}
                 target={{ newsId: news.id }}
                 viewerId={viewerId}

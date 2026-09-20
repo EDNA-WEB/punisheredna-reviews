@@ -56,6 +56,7 @@ model User {
   ratings      Rating[]
   watchedEpisodes WatchedEpisode[]
   membershipUntil DateTime?
+  commentReactions CommentReaction[]
   onlineReports OnlineReport[]
   redeemedTrial   Boolean  @default(false)
   membershipCodesUsed MembershipCode[]
@@ -916,6 +917,22 @@ model Notification {
   @@index([userId])
 }
 
+// Reakcie na komentáre (podobne ako WhatsApp) — dostupné len pre Golden
+// Ticket členov. Jeden používateľ môže mať na jeden komentár len JEDNU
+// reakciu naraz (zmena reakcie prepíše predošlú, presne ako vo WhatsApp).
+model CommentReaction {
+  id        String   @id @default(cuid())
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+}
+
 model Comment {
   id        String    @id @default(cuid())
   body      String    @db.Text
@@ -930,6 +947,7 @@ model Comment {
   userId    String
   user      User      @relation(fields: [userId], references: [id])
   likes     Like[]
+  reactions CommentReaction[]
   parentId  String?
   parent    Comment?  @relation("replies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("replies")

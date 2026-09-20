@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CriticBadge from './CriticBadge';
 import ReactionButtons from './ReactionButtons';
+import CommentReactions from './CommentReactions';
 import CommentForm from './CommentForm';
 import { IconUser, IconReply } from './Icons';
 import { useT } from './TranslationProvider';
@@ -18,6 +19,8 @@ type CommentData = {
   userId: string;
   user: { name: string; role: string; avatar?: string | null; membershipUntil?: string | Date | null };
   likes: { userId: string; value: number }[];
+  reactions?: { emoji: string; count: number }[];
+  myReaction?: string | null;
   replies?: CommentData[];
 };
 
@@ -170,6 +173,12 @@ export default function CommentItem({
               </button>
             )}
           </div>
+          <CommentReactions
+            commentId={comment.id}
+            initialReactions={comment.reactions || []}
+            myReaction={comment.myReaction || null}
+            isMember={isMember}
+          />
 
           {replying && (
             <div className="mt-3">

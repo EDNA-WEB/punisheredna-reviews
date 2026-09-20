@@ -142,7 +142,16 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Neplatiaci sa dostanú maximálne na 5. stránku — ďalšie stránkovanie je
+  // len pre Golden Ticket členov. Priame zadanie vyššieho čísla stránky v
+  // adrese sa tichoo obmedzí na stránku 5, nech sa to nedá obísť.
+  const MAX_FREE_PAGE = 5;
+  const effectivePage = isMember ? page : Math.min(page, MAX_FREE_PAGE);
+  const visibleTotalPages = isMember ? totalPages : Math.min(totalPages, MAX_FREE_PAGE);
+  const hitFreeLimit = !isMember && totalPages > MAX_FREE_PAGE && effectivePage >= MAX_FREE_PAGE;
+
+  const paged = filtered.slice((effectivePage - 1) * PAGE_SIZE, effectivePage * PAGE_SIZE);
 
   const qs = new URLSearchParams();
   Object.entries(searchParams || {}).forEach(([k, v]) => {
@@ -215,9 +224,20 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
               />
             ))}
           </div>
-          {totalPages > 1 && (
+          {visibleTotalPages > 1 && (
             <div className="mt-10">
-              <Pagination page={page} totalPages={totalPages} basePath={basePath} />
+              <Pagination page={effectivePage} totalPages={visibleTotalPages} basePath={basePath} />
+            </div>
+          )}
+          {hitFreeLimit && (
+            <div className="mt-6 border border-line rounded-xl p-5 bg-card flex items-start gap-4">
+              <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
+              <div>
+                <p className="text-sm font-semibold text-ink mb-1">Ďalšie stránky sú dostupné len pre Golden Ticket členov.</p>
+                <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
+                  Zistiť viac o členstve →
+                </Link>
+              </div>
             </div>
           )}
         </>
