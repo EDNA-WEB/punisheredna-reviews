@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
         <img src={post.coverImage} alt={post.title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />
       )}
 
-      <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{post.title}</h1>
+      <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-ink leading-tight mb-3">{post.title}</h1>
 
       <div className="flex items-center gap-3 mb-6">
         <Link href={`/profile/${post.author.id}`} className="flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent">
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
       )}
 
       <div
-        className="article-body text-lg leading-relaxed text-ink font-body mb-6"
+        className="article-body text-lg leading-[1.75] text-ink font-body mb-6"
         dangerouslySetInnerHTML={{ __html: mdToHtml(post.body) }}
       />
 

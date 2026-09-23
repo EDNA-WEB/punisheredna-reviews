@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ArticleEditor from './ArticleEditor';
 import TagInput from './TagInput';
 import { mdToHtml, readingTime } from '@/lib/markdown';
 import { IconUser, IconClock, IconBook } from './Icons';
 
-type Initial = { id?: string; title?: string; summary?: string; coverImage?: string | null; body?: string; movieId?: string | null; publishAt?: string | null; isDraft?: boolean; tags?: string[] };
+type Initial = { id?: string; title?: string; summary?: string; coverImage?: string | null; body?: string; movieId?: string | null; movieTitle?: string | null; publishAt?: string | null; isDraft?: boolean; tags?: string[] };
 type MovieOption = { id: string; title: string; year: string | null };
 
 export default function NewsForm({ initial }: { initial?: Initial }) {
@@ -20,6 +20,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
   const [cover, setCover] = useState(initial?.coverImage || '');
   const [body, setBody] = useState(initial?.body || '');
   const [movieId, setMovieId] = useState(initial?.movieId || '');
+  const [movieLabel, setMovieLabel] = useState(initial?.movieTitle || '');
   const [tags, setTags] = useState<string[]>(initial?.tags || []);
   const [publishAt, setPublishAt] = useState(() => {
     if (!initial?.publishAt) return '';
@@ -27,14 +28,43 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   });
-  const [movies, setMovies] = useState<MovieOption[]>([]);
+  // Filmov je na webe tisíce — namiesto natiahnutia celého zoznamu (ktorý by
+  // aj tak orezal len na pár stovák najnovších) sa teraz vyhľadáva za behu,
+  // rovnako ako pri vkladaní odkazov priamo do textu článku.
+  const [movieQuery, setMovieQuery] = useState('');
+  const [movieResults, setMovieResults] = useState<MovieOption[]>([]);
+  const [movieSearching, setMovieSearching] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState<'draft' | 'publish' | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/movies').then((r) => r.json()).then(setMovies).catch(() => {});
-  }, []);
+  async function searchMovies(q: string) {
+    setMovieQuery(q);
+    if (q.trim().length < 2) {
+      setMovieResults([]);
+      return;
+    }
+    setMovieSearching(true);
+    try {
+      const res = await fetch(`/api/editor-search?q=${encodeURIComponent(q.trim())}&type=movie`);
+      const data = await res.json();
+      setMovieResults(data.movies || []);
+    } finally {
+      setMovieSearching(false);
+    }
+  }
+
+  function pickMovie(m: MovieOption) {
+    setMovieId(m.id);
+    setMovieLabel(`${m.title}${m.year ? ` (${m.year})` : ''}`);
+    setMovieQuery('');
+    setMovieResults([]);
+  }
+
+  function clearMovie() {
+    setMovieId('');
+    setMovieLabel('');
+  }
 
   function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -252,13 +282,42 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
               <div className="bg-surface px-4 py-2.5 border-b border-line">
                 <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Súvisiaci film</h3>
               </div>
-              <div className="p-4">
-                <select className="field-input-sm w-full" value={movieId} onChange={(e) => setMovieId(e.target.value)}>
-                  <option value="">— Žiadny konkrétny film —</option>
-                  {movies.map((m) => (
-                    <option key={m.id} value={m.id}>{m.title}{m.year ? ` (${m.year})` : ''}</option>
-                  ))}
-                </select>
+              <div className="p-4 relative">
+                {movieLabel ? (
+                  <div className="flex items-center gap-2 bg-surface border border-line rounded-lg px-3 py-2">
+                    <span className="text-sm text-ink flex-1 truncate">{movieLabel}</span>
+                    <button type="button" onClick={clearMovie} className="text-xs font-semibold text-muted hover:text-danger flex-none">
+                      Odobrať
+                    </button>
+                  </div>
+                ) : (
+                  <input
+                    className="field-input-sm w-full"
+                    value={movieQuery}
+                    onChange={(e) => searchMovies(e.target.value)}
+                    placeholder="Píš názov filmu alebo seriálu…"
+                  />
+                )}
+                {movieQuery.trim().length >= 2 && !movieLabel && (
+                  <div className="absolute left-4 right-4 mt-1 bg-card border border-line rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
+                    {movieSearching ? (
+                      <p className="text-xs text-muted p-3">Hľadám…</p>
+                    ) : movieResults.length === 0 ? (
+                      <p className="text-xs text-muted p-3">Nič sa nenašlo.</p>
+                    ) : (
+                      movieResults.map((m) => (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => pickMovie(m)}
+                          className="block w-full text-left text-sm text-ink px-3 py-2 hover:bg-surface"
+                        >
+                          {m.title}{m.year ? ` (${m.year})` : ''}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
                 <p className="text-[11px] text-muted mt-1.5">Zobrazí sa aj v profiloch hercov, ktorí v ňom hrali.</p>
               </div>
             </div>

@@ -12,6 +12,11 @@ export default async function EditNewsPage({ params }: { params: { id: string } 
   const news = await prisma.newsPost.findUnique({ where: { id: params.id } });
   if (!news) return notFound();
 
+  const relatedMovie = news.movieId
+    ? await prisma.movie.findUnique({ where: { id: news.movieId }, select: { title: true, year: true } })
+    : null;
+  const movieTitle = relatedMovie ? `${relatedMovie.title}${relatedMovie.year ? ` (${relatedMovie.year})` : ''}` : null;
+
   return (
     <div className="pt-8">
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
@@ -19,7 +24,7 @@ export default async function EditNewsPage({ params }: { params: { id: string } 
       <div className="mb-6 max-w-2xl">
         <RevisionHistory apiBase={`/api/news/${news.id}`} />
       </div>
-      <NewsForm initial={{ ...news, publishAt: news.publishAt ? news.publishAt.toISOString() : null }} />
+      <NewsForm initial={{ ...news, publishAt: news.publishAt ? news.publishAt.toISOString() : null, movieTitle }} />
     </div>
   );
 }

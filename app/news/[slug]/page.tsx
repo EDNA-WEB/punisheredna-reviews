@@ -156,7 +156,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
       )}
 
       <div
-        className="article-body text-lg leading-relaxed text-ink font-body mb-6"
+        className="article-body text-lg leading-[1.75] text-ink font-body mb-6"
         dangerouslySetInnerHTML={{ __html: mdToHtml(news.body) }}
       />
 

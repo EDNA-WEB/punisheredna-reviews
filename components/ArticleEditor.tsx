@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { mdToHtml } from '@/lib/markdown';
+import { cloudinaryWithSourceWatermark } from '@/lib/cloudinaryUrl';
 
 type MovieOption = { id: string; title: string; slug: string; year: string | null; poster: string | null };
 type PersonOption = { id: string; name: string; slug: string; photo: string | null };
@@ -191,7 +192,13 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      insertText(`\n\n![${file.name}](${data.url})\n\n`);
+      // Voliteľný zdroj fotky (napr. "Prima", "Instagram") — ak sa zadá,
+      // pridá sa do obrázka trvalý textový vodoznak "Zdroj: ..." v rohu.
+      // Nič sa pritom znova nenahráva — Cloudinary text dokreslí sama.
+      const source = window.prompt('Zdroj fotky (nepovinné, napr. "Prima") — necháš prázdne, ak žiadny netreba:', '');
+      const finalUrl = source && source.trim() ? cloudinaryWithSourceWatermark(data.url, source) : data.url;
+
+      insertText(`\n\n![${file.name}](${finalUrl})\n\n`);
     } catch {
       alert('Nahratie obrázka zlyhalo. Skús to prosím znova.');
     } finally {
