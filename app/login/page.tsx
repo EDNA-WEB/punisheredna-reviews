@@ -12,7 +12,7 @@ import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride'
 export default function LoginPage() {
   const t = useT();
   const searchParams = useSearchParams();
-  const rawCallbackUrl = searchParams.get('callbackUrl');
+  const rawCallbackUrl = searchParams?.get('callbackUrl');
   // Bezpečnostná poistka: "callbackUrl" je hodnota z adresy, čo si vie ktokoľvek
   // sám zostaviť — povolíme presmerovanie len na cestu v RÁMCI tohto webu
   // (začína "/"), nikdy na cudziu doménu (napr. "https://podvodny-web.sk").
