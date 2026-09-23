@@ -56,11 +56,11 @@ export default function NavbarClient({
   function isActive(href: string) {
     const [hrefPath, hrefQuery] = href.split('?');
     if (hrefPath === '/') return pathname === '/';
-    if (!pathname.startsWith(hrefPath)) return false;
+    if (!pathname?.startsWith(hrefPath)) return false;
     if (!hrefQuery) return true;
     const hrefParams = new URLSearchParams(hrefQuery);
     for (const [key, value] of hrefParams.entries()) {
-      if (searchParams.get(key) !== value) return false;
+      if (searchParams?.get(key) !== value) return false;
     }
     return true;
   }

@@ -44,7 +44,7 @@ export default function AdminTabs() {
   const [groupOpen, setGroupOpen] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
 
-  const groupIsActive = PROFILE_GROUP.items.some((i) => pathname.startsWith(i.href));
+  const groupIsActive = PROFILE_GROUP.items.some((i) => pathname?.startsWith(i.href));
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -71,7 +71,7 @@ export default function AdminTabs() {
         {groupOpen && (
           <div className="absolute z-30 mt-2 w-48 bg-card border border-line rounded-xl shadow-lg py-1.5">
             {PROFILE_GROUP.items.map((item) => {
-              const active = pathname.startsWith(item.href);
+              const active = pathname?.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
@@ -90,7 +90,7 @@ export default function AdminTabs() {
       </div>
 
       {TABS.map((t) => {
-        const active = t.href === '/admin' ? pathname === '/admin' : pathname.startsWith(t.href);
+        const active = t.href === '/admin' ? pathname === '/admin' : pathname?.startsWith(t.href);
         return (
           <Link
             key={t.href}

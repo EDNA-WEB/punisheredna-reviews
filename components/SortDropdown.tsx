@@ -13,10 +13,10 @@ const OPTIONS = [
 export default function SortDropdown() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const current = searchParams.get('sort') || 'najnovsie';
+  const current = searchParams?.get('sort') || 'najnovsie';
 
   function handleChange(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     params.set('sort', value);
     params.delete('page');
     router.push(`/recenzie?${params.toString()}`);
