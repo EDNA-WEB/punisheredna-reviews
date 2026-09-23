@@ -12,7 +12,12 @@ import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride'
 export default function LoginPage() {
   const t = useT();
   const searchParams = useSearchParams();
-  const wasRedirectedHere = !!searchParams.get('callbackUrl');
+  const rawCallbackUrl = searchParams.get('callbackUrl');
+  // Bezpečnostná poistka: "callbackUrl" je hodnota z adresy, čo si vie ktokoľvek
+  // sám zostaviť — povolíme presmerovanie len na cestu v RÁMCI tohto webu
+  // (začína "/"), nikdy na cudziu doménu (napr. "https://podvodny-web.sk").
+  const callbackUrl = rawCallbackUrl && rawCallbackUrl.startsWith('/') && !rawCallbackUrl.startsWith('//') ? rawCallbackUrl : null;
+  const wasRedirectedHere = !!callbackUrl;
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -46,7 +51,7 @@ export default function LoginPage() {
       setError(t('auth.chyba_nespravne_udaje'));
       return;
     }
-    window.location.href = '/';
+    window.location.href = callbackUrl || '/';
   }
 
   async function resendVerification() {

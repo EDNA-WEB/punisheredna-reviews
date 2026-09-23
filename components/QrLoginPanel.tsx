@@ -75,8 +75,13 @@ export default function QrLoginPanel() {
   }
 
   if (!qrSvg) {
-    return <div className="w-32 h-32 rounded-lg bg-white/10 animate-pulse" />;
+    return <div className="w-full h-full rounded-lg bg-white/10 animate-pulse" />;
   }
 
-  return <div className="w-32 h-32 rounded-lg overflow-hidden bg-white p-2" dangerouslySetInnerHTML={{ __html: qrSvg }} />;
+  return (
+    <div
+      className="w-full h-full rounded-lg overflow-hidden bg-white p-2 [&>svg]:w-full [&>svg]:h-full"
+      dangerouslySetInnerHTML={{ __html: qrSvg }}
+    />
+  );
 }
