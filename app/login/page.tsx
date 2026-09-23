@@ -5,7 +5,8 @@ import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useT } from '@/components/TranslationProvider';
-import { IconEye, IconEyeOff, IconLock, IconQrcode } from '@/components/Icons';
+import { IconEye, IconEyeOff, IconLock } from '@/components/Icons';
+import QrLoginPanel from '@/components/QrLoginPanel';
 import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride';
 
 export default function LoginPage() {
@@ -170,8 +171,8 @@ export default function LoginPage() {
           </div>
 
           <div className="border-t sm:border-t-0 sm:border-l border-white/10 p-8 flex flex-col items-center justify-center text-center gap-3.5">
-            <div className="w-32 h-32 rounded-lg flex items-center justify-center bg-white/95">
-              <IconQrcode className="w-16 h-16 text-night" />
+            <div className="w-32 h-32 flex items-center justify-center">
+              <QrLoginPanel />
             </div>
             <p className="text-sm font-semibold text-white">{t('auth.qr_nadpis')}</p>
             <p className="text-xs text-white/55 leading-relaxed">{t('auth.qr_popis')}</p>

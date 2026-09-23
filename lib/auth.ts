@@ -14,9 +14,30 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         nickname: { label: 'Prezývka', type: 'text' },
         password: { label: 'Heslo', type: 'password' },
-        rememberMe: { label: 'Zapamätať si ma', type: 'text' }
+        rememberMe: { label: 'Zapamätať si ma', type: 'text' },
+        qrToken: { label: 'QR prihlásenie', type: 'text' }
       },
       async authorize(credentials) {
+        // Prihlásenie cez QR kód — namiesto prezývky/hesla len id už POTVRDENEJ
+        // QR relácie (potvrdenie prebehlo na mobile, viď /api/qr-login/approve).
+        if (credentials?.qrToken) {
+          const qrSession = await prisma.qrLoginSession.findUnique({ where: { id: credentials.qrToken } });
+          if (!qrSession || qrSession.status !== 'approved' || !qrSession.userId) return null;
+          const user = await prisma.user.findUnique({ where: { id: qrSession.userId } });
+          if (!user || user.banned) return null;
+          // Jednorazové použitie — po prihlásení sa už tento QR kód nedá znova použiť.
+          await prisma.qrLoginSession.update({ where: { id: qrSession.id }, data: { status: 'expired' } });
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            membershipUntil: user.membershipUntil,
+            isEditor: user.isEditor,
+            rememberMe: true
+          } as any;
+        }
+
         if (!credentials?.nickname || !credentials?.password) return null;
 
         const user = await prisma.user.findFirst({

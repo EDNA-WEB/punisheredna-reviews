@@ -62,6 +62,7 @@ model User {
   // v budúcnosti (zatiaľ len toto jedno).
   isEditor Boolean @default(false)
   commentReactions CommentReaction[]
+  qrLoginSessions QrLoginSession[]
   onlineReports OnlineReport[]
   redeemedTrial   Boolean  @default(false)
   membershipCodesUsed MembershipCode[]
@@ -925,6 +926,22 @@ model Notification {
 // Reakcie na komentáre (podobne ako WhatsApp) — dostupné len pre Golden
 // Ticket členov. Jeden používateľ môže mať na jeden komentár len JEDNU
 // reakciu naraz (zmena reakcie prepíše predošlú, presne ako vo WhatsApp).
+// Prihlásenie pomocou QR kódu — prehliadač si vytvorí jeden takýto záznam a
+// zobrazí jeho "token" ako QR kód. Používateľ ho naskenuje MOBILOM, na
+// ktorom je už prihlásený, potvrdí tam prihlásenie, a pôvodný prehliadač
+// (čo priebežne kontroluje stav cez "status") sa automaticky prihlási.
+// Krátka platnosť (pár minút) — nepoužitý/nepotvrdený záznam rýchlo vyprší.
+model QrLoginSession {
+  id        String   @id @default(cuid())
+  status    String   @default("pending") // pending | approved | expired
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([status, expiresAt])
+}
+
 model CommentReaction {
   id        String   @id @default(cuid())
   commentId String

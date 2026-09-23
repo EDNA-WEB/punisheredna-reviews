@@ -10,8 +10,8 @@ const SEED: Record<string, { en: string; cs: string }> = {
   'auth.pomozte_mi': { en: "Need help logging in?", cs: 'Potřebujete pomoc s přihlášením?' },
   'auth.qr_nadpis': { en: 'Log in with a QR code', cs: 'Přihlášení pomocí QR kódu' },
   'auth.qr_popis': {
-    en: "This feature is coming soon — you'll be able to scan the code with the mobile app and log in without entering a password.",
-    cs: 'Tato funkce bude brzy dostupná — kód naskenujete mobilní aplikací a přihlásíte se bez zadávání hesla.'
+    en: 'Scan the code with your phone where you are already logged in, and confirm the login there — no password needed.',
+    cs: 'Naskenujte kód telefonem, kde jste již přihlášeni, a potvrďte tam přihlášení — bez zadávání hesla.'
   },
   'auth.vytvorte_si_ucet': { en: 'Create an account', cs: 'Vytvořte si účet' },
   'auth.zopakujte_heslo': { en: 'Confirm password', cs: 'Zopakujte heslo' }

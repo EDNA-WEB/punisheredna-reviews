@@ -502,7 +502,7 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'auth.zapamatat_si_ma', group: 'Prihlásenie a registrácia', sk: 'Zapamätať si ma' },
   { key: 'auth.pomozte_mi', group: 'Prihlásenie a registrácia', sk: 'Potrebuješ pomoc s prihlásením?' },
   { key: 'auth.qr_nadpis', group: 'Prihlásenie a registrácia', sk: 'Prihlásenie pomocou QR kódu' },
-  { key: 'auth.qr_popis', group: 'Prihlásenie a registrácia', sk: 'Táto funkcia bude čoskoro dostupná — naskenuješ kód mobilnou aplikáciou a prihlásiš sa bez zadávania hesla.' },
+  { key: 'auth.qr_popis', group: 'Prihlásenie a registrácia', sk: 'Naskenuj kód telefónom, kde si už prihlásený, a potvrď tam prihlásenie — bez zadávania hesla.' },
   { key: 'auth.vytvorte_si_ucet', group: 'Prihlásenie a registrácia', sk: 'Vytvorte si účet' },
   { key: 'auth.zopakujte_heslo', group: 'Prihlásenie a registrácia', sk: 'Zopakujte heslo' }
 ];
