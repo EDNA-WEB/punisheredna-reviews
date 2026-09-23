@@ -54,5 +54,5 @@ export async function GET(req: Request) {
   const orderById = new Map(scored.map((s, i) => [s.id, i]));
   movies.sort((a, b) => (orderById.get(a.id) ?? 0) - (orderById.get(b.id) ?? 0));
 
-  return NextResponse.json({ movies, people });
+  return NextResponse.json({ movies, people }, { headers: { 'Cache-Control': 'no-store' } });
 }
