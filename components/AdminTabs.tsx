@@ -71,7 +71,7 @@ export default function AdminTabs() {
         {groupOpen && (
           <div className="absolute z-30 mt-2 w-48 bg-card border border-line rounded-xl shadow-lg py-1.5">
             {PROFILE_GROUP.items.map((item) => {
-              const active = pathname.startsWith(item.href);
+              const active = pathname?.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
