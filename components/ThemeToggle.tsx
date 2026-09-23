@@ -19,6 +19,11 @@ export default function ThemeToggle({ variant = 'default' }: { variant?: 'defaul
     const next = !isDark;
     setIsDark(next);
     document.documentElement.classList.toggle('dark', next);
+    // Ak je používateľ oprávnený na Steam tému (Golden Ticket člen alebo
+    // admin), prepneme ju SÚČASNE s tmavým režimom, nie až po obnovení zo
+    // servera — inak by na krátky okamih bliklo obyčajné čierne pozadie.
+    const steamEligible = document.documentElement.dataset.steamEligible === 'true';
+    document.documentElement.classList.toggle('theme-steam', next && steamEligible);
     // Ak používateľ vypol "Uloženie preferencií", téma sa použije len pre
     // túto reláciu (do zatvorenia prehliadača), ale neuloží sa natrvalo.
     if (hasClientConsent('preferences')) {

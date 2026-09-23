@@ -86,7 +86,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // pôvodnú, jednoduchú čiernu tému.
   const session = await getServerSession(authOptions);
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
-  const isMember = theme === 'dark' && (isAdmin || (await isActiveMember((session?.user as any)?.id)));
+  // Vypočítané NEZÁVISLE od aktuálneho theme cookie — potrebné aj v svetlom
+  // režime, aby prepínacie tlačidlo na klientovi vedelo OKAMŽITE (bez čakania
+  // na obnovenie zo servera), či má pri prepnutí na tmavý režim rovno pridať
+  // aj Steam paletu, namiesto krátkeho bliknutia obyčajnej čiernej.
+  const hasSteamEligibility = isAdmin || (await isActiveMember((session?.user as any)?.id));
+  const isMember = theme === 'dark' && hasSteamEligibility;
   const themeVariant = isMember ? 'theme-steam' : '';
 
   const language = await getUserLanguage();
@@ -95,7 +100,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isTv = detectTvMode();
 
   return (
-    <html lang={language} className={`${theme} ${themeVariant} ${isTv ? 'tv-mode' : ''}`.trim()}>
+    <html
+      lang={language}
+      className={`${theme} ${themeVariant} ${isTv ? 'tv-mode' : ''}`.trim()}
+      data-steam-eligible={hasSteamEligibility ? 'true' : 'false'}
+    >
       <head>
         {/* Next.js generuje z "appleWebApp" v metadata len starší, Apple-špecifický
             tag "apple-mobile-web-app-capable" — moderné prehliadače (aj Chrome)
