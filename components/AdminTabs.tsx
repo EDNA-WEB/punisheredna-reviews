@@ -44,7 +44,7 @@ export default function AdminTabs() {
   const [groupOpen, setGroupOpen] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
 
-  const groupIsActive = PROFILE_GROUP.items.some((i) => pathname.startsWith(i.href));
+  const groupIsActive = PROFILE_GROUP.items.some((i) => pathname?.startsWith(i.href));
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
