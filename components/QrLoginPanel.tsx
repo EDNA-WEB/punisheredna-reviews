@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useT } from './TranslationProvider';
 
 export default function QrLoginPanel() {
+  const t = useT();
   const [qrSvg, setQrSvg] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [expired, setExpired] = useState(false);
@@ -60,15 +62,15 @@ export default function QrLoginPanel() {
   }, [sessionId]);
 
   if (signingIn) {
-    return <p className="text-sm text-white/70">Prihlasujem…</p>;
+    return <p className="text-sm text-white/70">{t('auth.prihlasujem')}</p>;
   }
 
   if (expired) {
     return (
       <div className="text-center">
-        <p className="text-sm text-white/60 mb-3">Platnosť QR kódu vypršala.</p>
+        <p className="text-sm text-white/60 mb-3">{t('auth.qr_vyprsal')}</p>
         <button type="button" onClick={createSession} className="text-accent text-sm font-semibold hover:underline">
-          Načítať nový kód
+          {t('auth.qr_novy_kod')}
         </button>
       </div>
     );

@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import QrLoginConfirmButton from '@/components/QrLoginConfirmButton';
 import { IconQrcode } from '@/components/Icons';
 
@@ -15,6 +16,9 @@ export default async function QrLoginConfirmPage({ params }: { params: { id: str
   const session = await getServerSession(authOptions);
   if (!session) redirect(`/login?callbackUrl=/qr-prihlasenie/${params.id}`);
 
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (key: string) => dict[key] || key;
+
   const qrSession = await prisma.qrLoginSession.findUnique({ where: { id: params.id } });
   const isValid = qrSession && qrSession.status === 'pending' && qrSession.expiresAt > new Date();
 
@@ -25,15 +29,15 @@ export default async function QrLoginConfirmPage({ params }: { params: { id: str
       </div>
       {!isValid ? (
         <>
-          <h1 className="font-display font-bold text-xl text-ink mb-2">Tento QR kód už neplatí</h1>
-          <p className="text-sm text-muted">Vráť sa na prihlasovaciu stránku v druhom zariadení a naskenuj nový kód.</p>
+          <h1 className="font-display font-bold text-xl text-ink mb-2">{t('auth.qr_uz_neplati')}</h1>
+          <p className="text-sm text-muted">{t('auth.qr_vrat_sa')}</p>
         </>
       ) : (
         <>
-          <h1 className="font-display font-bold text-xl text-ink mb-2">Prihlásiť sa v druhom zariadení?</h1>
+          <h1 className="font-display font-bold text-xl text-ink mb-2">{t('auth.qr_prihlasit_v_druhom')}</h1>
           <p className="text-sm text-muted mb-6">
-            Potvrdíš prihlásenie na účet <strong className="text-ink">{(session.user as any).name}</strong> na zariadení,
-            čo naskenovalo tento kód.
+            {t('auth.qr_potvrdis_pred')} <strong className="text-ink">{(session.user as any).name}</strong>{' '}
+            {t('auth.qr_potvrdis_po')}
           </p>
           <QrLoginConfirmButton id={params.id} />
         </>

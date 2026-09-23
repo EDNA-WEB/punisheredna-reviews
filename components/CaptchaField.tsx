@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { IconRefresh } from './Icons';
+import { useT } from './TranslationProvider';
 
 export default function CaptchaField({
   answer,
@@ -12,6 +13,7 @@ export default function CaptchaField({
   onAnswerChange: (v: string) => void;
   onTokenChange: (token: string) => void;
 }) {
+  const t = useT();
   const [svg, setSvg] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -40,13 +42,13 @@ export default function CaptchaField({
 
   return (
     <div>
-      <label className="block text-sm text-white/70 mb-2">Overovací kód z obrázka</label>
+      <label className="block text-sm text-white/70 mb-2">{t('auth.captcha_label')}</label>
       <div className="flex items-center gap-2 mb-2">
         <div className="border border-white/15 rounded overflow-hidden bg-white flex-none w-[200px] h-[70px] flex items-center justify-center">
           {loading ? (
-            <span className="text-xs text-muted">Načítavam…</span>
+            <span className="text-xs text-muted">{t('auth.captcha_nacitavam')}</span>
           ) : error ? (
-            <span className="text-xs text-red-500 px-2 text-center">Nepodarilo sa načítať</span>
+            <span className="text-xs text-red-500 px-2 text-center">{t('auth.captcha_chyba')}</span>
           ) : (
             <div dangerouslySetInnerHTML={{ __html: svg }} />
           )}

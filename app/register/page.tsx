@@ -81,8 +81,8 @@ export default function RegisterPage() {
 
         {!registrationsEnabled ? (
           <div className="border border-white/10 rounded-lg bg-white/10 p-5 text-sm text-white/70">
-            Registrácie sú momentálne pozastavené. Skús to prosím neskôr. Ak už účet máš, môžeš sa{' '}
-            <Link href="/login" className="text-accent font-semibold hover:underline">prihlásiť</Link>.
+            {t('auth.registracie_pozastavene')}{' '}
+            <Link href="/login" className="text-accent font-semibold hover:underline">{t('auth.prihlasit_odkaz')}</Link>.
           </div>
         ) : (
         <form onSubmit={submit} className="space-y-3">
@@ -106,7 +106,7 @@ export default function RegisterPage() {
               placeholder="napr. FilmovyFanusik"
               required
             />
-            <p className="text-xs text-white/45 mt-1.5">Touto prezývkou sa budeš prihlasovať — nie e-mailom.</p>
+            <p className="text-xs text-white/45 mt-1.5">{t('auth.prezyvka_pomocny_text')}</p>
           </div>
           <div>
             <label className="block text-sm text-white/70 mb-2">{t('auth.email')}</label>
@@ -158,7 +158,7 @@ export default function RegisterPage() {
         )}
         <p className="text-white/60 text-sm mt-5">
           {t('auth.uz_mas_ucet')}{' '}
-          <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>
+          <Link href="/login" className="text-accent font-semibold hover:underline">{t('auth.prihlas_sa_odkaz')}</Link>
         </p>
       </div>
     </div>

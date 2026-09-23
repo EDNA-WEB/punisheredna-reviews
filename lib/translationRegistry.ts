@@ -504,5 +504,24 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'auth.qr_nadpis', group: 'Prihlásenie a registrácia', sk: 'Prihlásenie pomocou QR kódu' },
   { key: 'auth.qr_popis', group: 'Prihlásenie a registrácia', sk: 'Naskenuj kód telefónom, kde si už prihlásený, a potvrď tam prihlásenie — bez zadávania hesla.' },
   { key: 'auth.vytvorte_si_ucet', group: 'Prihlásenie a registrácia', sk: 'Vytvorte si účet' },
-  { key: 'auth.zopakujte_heslo', group: 'Prihlásenie a registrácia', sk: 'Zopakujte heslo' }
+  { key: 'auth.zopakujte_heslo', group: 'Prihlásenie a registrácia', sk: 'Zopakujte heslo' },
+
+  { key: 'auth.qr_vyprsal', group: 'Prihlásenie a registrácia', sk: 'Platnosť QR kódu vypršala.' },
+  { key: 'auth.qr_novy_kod', group: 'Prihlásenie a registrácia', sk: 'Načítať nový kód' },
+  { key: 'auth.qr_potvrdenie_zlyhalo', group: 'Prihlásenie a registrácia', sk: 'Potvrdenie zlyhalo.' },
+  { key: 'auth.qr_hotovo', group: 'Prihlásenie a registrácia', sk: 'Hotovo — druhé zariadenie sa teraz prihlási.' },
+  { key: 'auth.qr_potvrdzujem', group: 'Prihlásenie a registrácia', sk: 'Potvrdzujem…' },
+  { key: 'auth.qr_potvrdit_prihlasenie', group: 'Prihlásenie a registrácia', sk: 'Potvrdiť prihlásenie' },
+  { key: 'auth.qr_uz_neplati', group: 'Prihlásenie a registrácia', sk: 'Tento QR kód už neplatí' },
+  { key: 'auth.qr_vrat_sa', group: 'Prihlásenie a registrácia', sk: 'Vráť sa na prihlasovaciu stránku v druhom zariadení a naskenuj nový kód.' },
+  { key: 'auth.qr_prihlasit_v_druhom', group: 'Prihlásenie a registrácia', sk: 'Prihlásiť sa v druhom zariadení?' },
+  { key: 'auth.qr_potvrdis_pred', group: 'Prihlásenie a registrácia', sk: 'Potvrdíš prihlásenie na účet' },
+  { key: 'auth.qr_potvrdis_po', group: 'Prihlásenie a registrácia', sk: 'na zariadení, čo naskenovalo tento kód.' },
+
+  { key: 'auth.captcha_nacitavam', group: 'Prihlásenie a registrácia', sk: 'Načítavam…' },
+  { key: 'auth.captcha_chyba', group: 'Prihlásenie a registrácia', sk: 'Nepodarilo sa načítať' },
+  { key: 'auth.registracie_pozastavene', group: 'Prihlásenie a registrácia', sk: 'Registrácie sú momentálne pozastavené. Skús to prosím neskôr. Ak už účet máš, môžeš sa' },
+  { key: 'auth.prihlasit_odkaz', group: 'Prihlásenie a registrácia', sk: 'prihlásiť' },
+  { key: 'auth.prezyvka_pomocny_text', group: 'Prihlásenie a registrácia', sk: 'Touto prezývkou sa budeš prihlasovať — nie e-mailom.' },
+  { key: 'auth.prihlas_sa_odkaz', group: 'Prihlásenie a registrácia', sk: 'Prihlás sa' }
 ];
