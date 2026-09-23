@@ -29,7 +29,22 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
           text nad ním vždy čitateľný bez ohľadu na to, aký svetlý plagát je. */}
       <div className="relative min-h-[320px]">
         {movie.poster ? (
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${movie.poster}')` }} />
+          <>
+            {/* Rozmazaná, zväčšená kópia posteru na vyplnenie pozadia — nech
+                box vyzerá plný, aj keď sa pomer strán plagátu a boxíku líši. */}
+            <div
+              className="absolute inset-0 bg-cover bg-center scale-110 blur-xl opacity-70"
+              style={{ backgroundImage: `url('${movie.poster}')` }}
+            />
+            <div className="absolute inset-0 bg-night/40" />
+            {/* Skutočný poster — CELÝ, bez orezania (object-contain), len
+                jemne zarovnaný v hornej časti boxíku. */}
+            <img
+              src={movie.poster}
+              alt={movie.title}
+              className="absolute inset-x-0 top-0 w-full h-[220px] object-contain object-top drop-shadow-2xl"
+            />
+          </>
         ) : (
           <div className="absolute inset-0 bg-night" />
         )}
