@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import TranslationEditor from '@/components/TranslationEditor';
 import SeedMembershipTranslationsButton from '@/components/SeedMembershipTranslationsButton';
+import SeedLoginTranslationsButton from '@/components/SeedLoginTranslationsButton';
 import { TRANSLATION_REGISTRY } from '@/lib/translationRegistry';
 
 export const dynamic = 'force-dynamic';
@@ -36,6 +37,7 @@ export default async function AdminTranslationsPage() {
         Slovenčina je zdroj, doplň k nej anglický a český preklad.
       </p>
       <SeedMembershipTranslationsButton />
+      <SeedLoginTranslationsButton />
       <TranslationEditor
         initial={rows.map((r) => ({ key: r.key, group: r.group, sk: r.sk, en: r.en, cs: r.cs }))}
       />

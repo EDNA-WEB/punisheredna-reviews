@@ -28,11 +28,11 @@ export default function LoginPage() {
     const res = await signIn('credentials', { redirect: false, nickname, password });
     setLoading(false);
     if (res?.error === 'BANNED') {
-      setError('Tento účet bol zablokovaný administrátorom.');
+      setError(t('auth.chyba_zablokovany'));
       return;
     }
     if (res?.error === 'LOCKED') {
-      setError('Príliš veľa nesprávnych pokusov o prihlásenie. Účet je dočasne uzamknutý — skús to znova o 15 minút.');
+      setError(t('auth.chyba_zamknuty'));
       return;
     }
     if (res?.error === 'UNVERIFIED') {
@@ -40,7 +40,7 @@ export default function LoginPage() {
       return;
     }
     if (res?.error) {
-      setError('Nesprávna prezývka alebo heslo.');
+      setError(t('auth.chyba_nespravne_udaje'));
       return;
     }
     window.location.href = '/';
@@ -66,13 +66,13 @@ export default function LoginPage() {
         <div className="flex items-start gap-3 bg-surface border border-line rounded-xl p-4 mb-6">
           <IconLock className="w-5 h-5 text-accent flex-none mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-ink">Prezeranie webu je určené len pre registrovaných používateľov.</p>
+            <p className="text-sm font-semibold text-ink">{t('auth.iba_pre_registrovanych')}</p>
             <p className="text-sm text-muted mt-1">
-              Prihlás sa, alebo si{' '}
+              {t('auth.prihlas_sa_alebo')}{' '}
               <Link href="/register" className="text-accent font-semibold hover:underline">
-                vytvor účet
+                {t('auth.vytvor_ucet_odkaz')}
               </Link>{' '}
-              — je to rýchle a zadarmo.
+              {t('auth.rychle_a_zadarmo')}
             </p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
-              aria-label={showPassword ? 'Skryť heslo' : 'Zobraziť heslo'}
+              aria-label={showPassword ? t('auth.skryt_heslo') : t('auth.zobrazit_heslo')}
               tabIndex={-1}
             >
               {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
@@ -106,9 +106,9 @@ export default function LoginPage() {
         </div>
         {error === 'UNVERIFIED' ? (
           <div className="text-sm bg-surface border border-line rounded-xl p-3">
-            <p className="text-ink mb-2">Tvoj e-mail ešte nie je overený. Skontroluj si prosím schránku (aj spam) a klikni na odkaz z e-mailu.</p>
+            <p className="text-ink mb-2">{t('auth.email_neovereny')}</p>
             {resent ? (
-              <p className="text-emerald-600 font-semibold">Overovací e-mail bol znova odoslaný.</p>
+              <p className="text-emerald-600 font-semibold">{t('auth.email_znova_odoslany')}</p>
             ) : (
               <button
                 type="button"
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 disabled={resending}
                 className="text-accent font-semibold hover:underline disabled:opacity-50"
               >
-                {resending ? 'Odosielam…' : 'Poslať overovací e-mail znova'}
+                {resending ? t('auth.odosielam_email') : t('auth.poslat_znova')}
               </button>
             )}
           </div>
@@ -128,12 +128,12 @@ export default function LoginPage() {
           disabled={loading}
           className="w-full bg-accent text-white py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Prihlasujem…' : t('auth.prihlasit')}
+          {loading ? t('auth.prihlasujem') : t('auth.prihlasit')}
         </button>
       </form>
       <p className="text-muted text-sm mt-6">
         {t('auth.nemas_ucet')}{' '}
-        <Link href="/register" className="text-accent font-semibold hover:underline">Zaregistruj sa</Link>
+        <Link href="/register" className="text-accent font-semibold hover:underline">{t('auth.zaregistrovat')}</Link>
       </p>
     </div>
   );
