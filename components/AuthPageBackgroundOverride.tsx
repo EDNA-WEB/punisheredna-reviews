@@ -12,23 +12,31 @@ export default function AuthPageBackgroundOverride() {
   useEffect(() => {
     const shell = document.querySelector<HTMLElement>('.main-content-shell');
     if (!shell) return;
-    const previous = shell.style.backgroundColor;
+    const previousBg = shell.style.backgroundColor;
+    const previousImage = shell.style.backgroundImage;
 
-    // Priehľadnosť na cca 25 % — nie úplne priehľadné (to pôsobilo nerovnomerne
-    // oproti hornej lište, čo si ponecháva vlastné plné pozadie). Zistíme
-    // SKUTOČNÚ farbu pozadia (rieši aj tmavý/svetlý režim a Steam tému) a len
-    // znížime jej krytie, namiesto úplného vymazania farby.
+    // Namiesto plochej, rovnomerne priehľadnej farby (to pôsobilo fádne a
+    // "zamazane" bez ohľadu na percento) použijeme PLYNULÝ PRECHOD: úplne
+    // solídne pri hornej lište a pri pätičke (žiadny ostrý švík), a citeľne
+    // priehľadnejšie presne v STREDE — tam, kde sedí prihlasovacia karta —
+    // nech tapeta vystúpi práve tam, kde má najväčší efekt.
     const computed = getComputedStyle(shell).backgroundColor;
     const rgbMatch = computed.match(/\d+(\.\d+)?/g);
     if (rgbMatch && rgbMatch.length >= 3) {
       const [r, g, b] = rgbMatch;
-      shell.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.75)`;
+      shell.style.backgroundColor = 'transparent';
+      shell.style.backgroundImage = `linear-gradient(to bottom,
+        rgba(${r}, ${g}, ${b}, 1) 0%,
+        rgba(${r}, ${g}, ${b}, 0.35) 30%,
+        rgba(${r}, ${g}, ${b}, 0.35) 70%,
+        rgba(${r}, ${g}, ${b}, 1) 100%)`;
     } else {
       shell.style.backgroundColor = 'transparent';
     }
 
     return () => {
-      shell.style.backgroundColor = previous;
+      shell.style.backgroundColor = previousBg;
+      shell.style.backgroundImage = previousImage;
     };
   }, []);
 

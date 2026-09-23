@@ -16,10 +16,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Tento QR kód už vypršal alebo bol už použitý.' }, { status: 400 });
   }
 
-  await prisma.qrLoginSession.update({
-    where: { id },
+  // Atomická zmena "pending" → "approved" (WHERE sa vyhodnotí na úrovni
+  // databázy) — vylučuje, aby dve súbežné požiadavky obe uspeli.
+  const { count } = await prisma.qrLoginSession.updateMany({
+    where: { id, status: 'pending' },
     data: { status: 'approved', userId: (session.user as any).id }
   });
+  if (count === 0) {
+    return NextResponse.json({ error: 'Tento QR kód už vypršal alebo bol už použitý.' }, { status: 400 });
+  }
 
   return NextResponse.json({ ok: true });
 }

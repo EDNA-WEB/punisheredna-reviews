@@ -21,12 +21,20 @@ export const authOptions: NextAuthOptions = {
         // Prihlásenie cez QR kód — namiesto prezývky/hesla len id už POTVRDENEJ
         // QR relácie (potvrdenie prebehlo na mobile, viď /api/qr-login/approve).
         if (credentials?.qrToken) {
+          // Atomická zmena "approved" → "expired" — ak by (v nepravdepodobnom
+          // prípade) prišli dva pokusy o prihlásenie tým istým QR kódom takmer
+          // súčasne, len JEDEN z nich uspeje (WHERE nižšie sa vyhodnotí na
+          // úrovni databázy, nie v dvoch oddelených krokoch).
+          const { count } = await prisma.qrLoginSession.updateMany({
+            where: { id: credentials.qrToken, status: 'approved' },
+            data: { status: 'expired' }
+          });
+          if (count === 0) return null;
+
           const qrSession = await prisma.qrLoginSession.findUnique({ where: { id: credentials.qrToken } });
-          if (!qrSession || qrSession.status !== 'approved' || !qrSession.userId) return null;
+          if (!qrSession?.userId) return null;
           const user = await prisma.user.findUnique({ where: { id: qrSession.userId } });
           if (!user || user.banned) return null;
-          // Jednorazové použitie — po prihlásení sa už tento QR kód nedá znova použiť.
-          await prisma.qrLoginSession.update({ where: { id: qrSession.id }, data: { status: 'expired' } });
           return {
             id: user.id,
             email: user.email,
