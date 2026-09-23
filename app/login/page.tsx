@@ -5,7 +5,8 @@ import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useT } from '@/components/TranslationProvider';
-import { IconEye, IconEyeOff, IconLock } from '@/components/Icons';
+import { IconEye, IconEyeOff, IconLock, IconQrcode } from '@/components/Icons';
+import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride';
 
 export default function LoginPage() {
   const t = useT();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const wasRedirectedHere = !!searchParams.get('callbackUrl');
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     setResent(false);
-    const res = await signIn('credentials', { redirect: false, nickname, password });
+    const res = await signIn('credentials', { redirect: false, nickname, password, rememberMe: rememberMe ? 'true' : 'false' });
     setLoading(false);
     if (res?.error === 'BANNED') {
       setError(t('auth.chyba_zablokovany'));
@@ -62,12 +64,14 @@ export default function LoginPage() {
 
   return (
     // Steam-štýl: karta je len ČIASTOČNE priehľadná (tmavé pozadie + rozmazanie),
-    // nech vlastná tapeta webu (nastavená v Administrácia → Nastavenia) presvitá
-    // spoza formulára, namiesto plnej neprehľadnej karty ako inde na webe.
+    // nech vlastná tapeta webu (Administrácia → Nastavenia) presvitá spoza
+    // formulára. Vľavo klasické prihlásenie, vpravo QR kód (zatiaľ len vizuálny
+    // náhľad — samotná funkcia prihlásenia cez QR príde v ďalšom kroku).
     <div className="min-h-[80vh] flex items-center justify-center py-10 px-4">
-      <div className="w-full max-w-md bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-8">
+      <AuthPageBackgroundOverride />
+      <div className="w-full max-w-2xl bg-black/55 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl overflow-hidden">
         {wasRedirectedHere && (
-          <div className="flex items-start gap-3 bg-white/10 border border-white/10 rounded-xl p-4 mb-6">
+          <div className="flex items-start gap-3 bg-white/10 border-b border-white/10 p-4">
             <IconLock className="w-5 h-5 text-accent flex-none mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-white">{t('auth.iba_pre_registrovanych')}</p>
@@ -81,69 +85,98 @@ export default function LoginPage() {
             </div>
           </div>
         )}
-        <h1 className="font-display font-extrabold text-3xl text-white mb-8">{t('auth.prihlasit')}</h1>
-        <form onSubmit={submit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-white/90 mb-2">{t('auth.prezyvka')}</label>
-            <input
-              className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-accent transition-colors"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-white/90 mb-2">{t('auth.heslo')}</label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:border-accent transition-colors"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
-                aria-label={showPassword ? t('auth.skryt_heslo') : t('auth.zobrazit_heslo')}
-                tabIndex={-1}
-              >
-                {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-          {error === 'UNVERIFIED' ? (
-            <div className="text-sm bg-white/10 border border-white/10 rounded-xl p-3">
-              <p className="text-white/90 mb-2">{t('auth.email_neovereny')}</p>
-              {resent ? (
-                <p className="text-emerald-400 font-semibold">{t('auth.email_znova_odoslany')}</p>
+
+        <div className="grid sm:grid-cols-[1.15fr_1fr]">
+          <div className="p-8 flex flex-col justify-center gap-3">
+            <form onSubmit={submit} className="space-y-3">
+              <div>
+                <label className="block text-sm text-white/70 mb-2">{t('auth.prihlaste_sa_pomocou')}</label>
+                <input
+                  className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-white/70 mb-2 mt-2">{t('auth.heslo')}</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 pr-10 text-white focus:outline-none focus:border-accent transition-colors"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+                    aria-label={showPassword ? t('auth.skryt_heslo') : t('auth.zobrazit_heslo')}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <label className="flex items-center gap-2 text-sm text-white/75 mt-1 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 accent-accent"
+                />
+                {t('auth.zapamatat_si_ma')}
+              </label>
+
+              {error === 'UNVERIFIED' ? (
+                <div className="text-sm bg-white/10 border border-white/10 rounded-lg p-3">
+                  <p className="text-white/90 mb-2">{t('auth.email_neovereny')}</p>
+                  {resent ? (
+                    <p className="text-emerald-400 font-semibold">{t('auth.email_znova_odoslany')}</p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={resendVerification}
+                      disabled={resending}
+                      className="text-accent font-semibold hover:underline disabled:opacity-50"
+                    >
+                      {resending ? t('auth.odosielam_email') : t('auth.poslat_znova')}
+                    </button>
+                  )}
+                </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={resendVerification}
-                  disabled={resending}
-                  className="text-accent font-semibold hover:underline disabled:opacity-50"
-                >
-                  {resending ? t('auth.odosielam_email') : t('auth.poslat_znova')}
-                </button>
+                error && <div className="text-red-400 text-sm">{error}</div>
               )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent text-white py-2.5 rounded text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 transition-colors mt-1"
+              >
+                {loading ? t('auth.prihlasujem') : t('auth.prihlasit')}
+              </button>
+
+              <Link href="/zabudnute-heslo" className="block text-xs text-accent hover:underline mt-1">
+                {t('auth.pomozte_mi')}
+              </Link>
+            </form>
+
+            <p className="text-white/60 text-sm mt-2">
+              {t('auth.nemas_ucet')}{' '}
+              <Link href="/register" className="text-accent font-semibold hover:underline">{t('auth.zaregistrovat')}</Link>
+            </p>
+          </div>
+
+          <div className="border-t sm:border-t-0 sm:border-l border-white/10 p-8 flex flex-col items-center justify-center text-center gap-3.5">
+            <div className="w-32 h-32 rounded-lg flex items-center justify-center bg-white/95">
+              <IconQrcode className="w-16 h-16 text-night" />
             </div>
-          ) : (
-            error && <div className="text-red-400 text-sm">{error}</div>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-accent text-white py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 transition-colors"
-          >
-            {loading ? t('auth.prihlasujem') : t('auth.prihlasit')}
-          </button>
-        </form>
-        <p className="text-white/60 text-sm mt-6">
-          {t('auth.nemas_ucet')}{' '}
-          <Link href="/register" className="text-accent font-semibold hover:underline">{t('auth.zaregistrovat')}</Link>
-        </p>
+            <p className="text-sm font-semibold text-white">{t('auth.qr_nadpis')}</p>
+            <p className="text-xs text-white/55 leading-relaxed">{t('auth.qr_popis')}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

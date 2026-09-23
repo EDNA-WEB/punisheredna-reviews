@@ -496,5 +496,13 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'statspanel.profilov_cestina', group: 'Štatistický panel', sk: 'profilov filmov v češtine' },
   { key: 'statspanel.dostupnych_online', group: 'Štatistický panel', sk: 'filmov a seriálov dostupných online' },
   { key: 'statspanel.z_celkovo', group: 'Štatistický panel', sk: 'z celkovo' },
-  { key: 'statspanel.titulov', group: 'Štatistický panel', sk: 'titulov' }
+  { key: 'statspanel.titulov', group: 'Štatistický panel', sk: 'titulov' },
+
+  { key: 'auth.prihlaste_sa_pomocou', group: 'Prihlásenie a registrácia', sk: 'Prihláste sa pomocou názvu účtu' },
+  { key: 'auth.zapamatat_si_ma', group: 'Prihlásenie a registrácia', sk: 'Zapamätať si ma' },
+  { key: 'auth.pomozte_mi', group: 'Prihlásenie a registrácia', sk: 'Potrebuješ pomoc s prihlásením?' },
+  { key: 'auth.qr_nadpis', group: 'Prihlásenie a registrácia', sk: 'Prihlásenie pomocou QR kódu' },
+  { key: 'auth.qr_popis', group: 'Prihlásenie a registrácia', sk: 'Táto funkcia bude čoskoro dostupná — naskenuješ kód mobilnou aplikáciou a prihlásiš sa bez zadávania hesla.' },
+  { key: 'auth.vytvorte_si_ucet', group: 'Prihlásenie a registrácia', sk: 'Vytvorte si účet' },
+  { key: 'auth.zopakujte_heslo', group: 'Prihlásenie a registrácia', sk: 'Zopakujte heslo' }
 ];

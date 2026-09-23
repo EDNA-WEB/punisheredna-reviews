@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import CaptchaField from '@/components/CaptchaField';
 import { useT } from '@/components/TranslationProvider';
+import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride';
 
 export default function RegisterPage() {
   const t = useT();
@@ -71,84 +72,95 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto pt-10">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">{t('auth.vytvorit_ucet')}</h1>
+    // Rovnaký Steam-štýl ako prihlásenie — tmavá, čiastočne priehľadná karta,
+    // cez ktorú presvitá vlastná tapeta webu.
+    <div className="min-h-[80vh] flex items-center justify-center py-10 px-4">
+      <AuthPageBackgroundOverride />
+      <div className="w-full max-w-md bg-black/55 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl p-8">
+        <label className="block text-sm text-white/70 mb-5">{t('auth.vytvorte_si_ucet')}</label>
 
-      {!registrationsEnabled ? (
-        <div className="border border-line rounded-xl bg-surface p-5 text-sm text-muted">
-          Registrácie sú momentálne pozastavené. Skús to prosím neskôr. Ak už účet máš, môžeš sa{' '}
-          <Link href="/login" className="text-accent font-semibold hover:underline">prihlásiť</Link>.
-        </div>
-      ) : (
-      <form onSubmit={submit} className="space-y-5">
-        {/* Honeypot proti botom — pre ľudí neviditeľné, nevypĺňať */}
-        <input
-          type="text"
-          name="website"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          tabIndex={-1}
-          autoComplete="off"
-          className="absolute left-[-9999px] w-px h-px opacity-0"
-          aria-hidden="true"
-        />
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">{t('auth.prezyvka')}</label>
+        {!registrationsEnabled ? (
+          <div className="border border-white/10 rounded-lg bg-white/10 p-5 text-sm text-white/70">
+            Registrácie sú momentálne pozastavené. Skús to prosím neskôr. Ak už účet máš, môžeš sa{' '}
+            <Link href="/login" className="text-accent font-semibold hover:underline">prihlásiť</Link>.
+          </div>
+        ) : (
+        <form onSubmit={submit} className="space-y-3">
+          {/* Honeypot proti botom — pre ľudí neviditeľné, nevypĺňať */}
           <input
-            className="field-input"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="napr. FilmovyFanusik"
-            required
+            type="text"
+            name="website"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            className="absolute left-[-9999px] w-px h-px opacity-0"
+            aria-hidden="true"
           />
-          <p className="text-xs text-muted mt-1.5">Touto prezývkou sa budeš prihlasovať — nie e-mailom.</p>
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">{t('auth.email')}</label>
-          <input type="email" className="field-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">{t('auth.heslo')}</label>
-          <input
-            type="password"
-            className="field-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <ul className="mt-2 space-y-0.5">
-            {passwordChecks.map((c) => (
-              <li key={c.label} className={`text-xs flex items-center gap-1.5 ${c.valid ? 'text-emerald-600' : 'text-muted'}`}>
-                <span>{c.valid ? '✓' : '·'}</span> {c.label}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink mb-2">{t('auth.zopakuj_heslo')}</label>
-          <input
-            type="password"
-            className="field-input"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            required
-          />
-        </div>
-        <CaptchaField key={captchaKey} answer={captchaAnswer} onAnswerChange={setCaptchaAnswer} onTokenChange={setCaptchaToken} />
-        {error && <div className="text-danger text-sm">{error}</div>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-accent text-white py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
-        >
-          {loading ? 'Vytváram účet…' : t('auth.zaregistrovat')}
-        </button>
-      </form>
-      )}
-      <p className="text-muted text-sm mt-6">
-        {t('auth.uz_mas_ucet')}{' '}
-        <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>
-      </p>
+          <div>
+            <label className="block text-sm text-white/70 mb-2">{t('auth.prezyvka')}</label>
+            <input
+              className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="napr. FilmovyFanusik"
+              required
+            />
+            <p className="text-xs text-white/45 mt-1.5">Touto prezývkou sa budeš prihlasovať — nie e-mailom.</p>
+          </div>
+          <div>
+            <label className="block text-sm text-white/70 mb-2">{t('auth.email')}</label>
+            <input
+              type="email"
+              className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-white/70 mb-2">{t('auth.heslo')}</label>
+            <input
+              type="password"
+              className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <ul className="mt-2 space-y-0.5">
+              {passwordChecks.map((c) => (
+                <li key={c.label} className={`text-xs flex items-center gap-1.5 ${c.valid ? 'text-emerald-400' : 'text-white/45'}`}>
+                  <span>{c.valid ? '✓' : '·'}</span> {c.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <label className="block text-sm text-white/70 mb-2">{t('auth.zopakujte_heslo')}</label>
+            <input
+              type="password"
+              className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              required
+            />
+          </div>
+          <CaptchaField key={captchaKey} answer={captchaAnswer} onAnswerChange={setCaptchaAnswer} onTokenChange={setCaptchaToken} />
+          {error && <div className="text-red-400 text-sm">{error}</div>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-accent text-white py-2.5 rounded text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 transition-colors mt-1"
+          >
+            {loading ? 'Vytváram účet…' : t('auth.zaregistrovat')}
+          </button>
+        </form>
+        )}
+        <p className="text-white/60 text-sm mt-5">
+          {t('auth.uz_mas_ucet')}{' '}
+          <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>
+        </p>
+      </div>
     </div>
   );
 }

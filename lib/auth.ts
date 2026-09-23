@@ -13,7 +13,8 @@ export const authOptions: NextAuthOptions = {
       name: 'Prihlásenie',
       credentials: {
         nickname: { label: 'Prezývka', type: 'text' },
-        password: { label: 'Heslo', type: 'password' }
+        password: { label: 'Heslo', type: 'password' },
+        rememberMe: { label: 'Zapamätať si ma', type: 'text' }
       },
       async authorize(credentials) {
         if (!credentials?.nickname || !credentials?.password) return null;
@@ -67,7 +68,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           membershipUntil: user.membershipUntil,
-          isEditor: user.isEditor
+          isEditor: user.isEditor,
+          rememberMe: credentials.rememberMe === 'true'
         } as any;
       }
     })
@@ -79,6 +81,10 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role;
         token.membershipUntil = (user as any).membershipUntil || null;
         token.isEditor = (user as any).isEditor || false;
+        // "Zapamätať si ma" — zaškrtnuté: prihlásenie vydrží 10 dní, aj keď
+        // používateľ medzitým zavrie prehliadač. Nezaškrtnuté: len 1 deň.
+        const rememberDays = (user as any).rememberMe ? 10 : 1;
+        token.exp = Math.floor(Date.now() / 1000) + rememberDays * 24 * 60 * 60;
       } else if (token.id) {
         // Obnov rolu, stav zablokovania a členstvo z databázy pri každom overení,
         // nech sa zmena (napr. odobratie admin práv, zablokovanie, alebo uplatnenie
