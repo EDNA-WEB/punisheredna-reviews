@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    // Ignoruje TypeScript chyby pri builde na Verceli
-    ignoreBuildErrors: true,
-  },
   experimental: {
     serverActions: { bodySizeLimit: '8mb' }
   },
@@ -39,5 +35,4 @@ const nextConfig = {
     ];
   }
 };
-
 module.exports = nextConfig;

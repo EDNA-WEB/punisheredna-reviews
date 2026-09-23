@@ -936,6 +936,10 @@ model QrLoginSession {
   status    String   @default("pending") // pending | approved | expired
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // Prehliadač/systém zariadenia, čo QR kód VYTVORILO (t.j. zariadenie, na
+  // ktoré sa niekto snaží prihlásiť) — zobrazuje sa na potvrdzovacej stránke,
+  // nech si to používateľ vie overiť pred potvrdením.
+  requestingDevice String?
   createdAt DateTime @default(now())
   expiresAt DateTime
 

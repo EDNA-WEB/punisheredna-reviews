@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
-  const token = searchParams?.get('token');
+  const token = searchParams.get('token');
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading');
   const [message, setMessage] = useState('');
 

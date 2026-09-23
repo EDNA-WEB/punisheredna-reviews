@@ -3,8 +3,8 @@ import { prisma } from './prisma';
 type LogParams = {
   userId: string;
   userName: string;
-  action: 'created' | 'updated' | 'published' | 'unpublished' | 'deleted' | 'reverted' | 'bulk-import';
-  targetType: 'news' | 'blog' | 'bulk-import';
+  action: 'created' | 'updated' | 'published' | 'unpublished' | 'deleted' | 'reverted' | 'bulk-import' | 'qr-login';
+  targetType: 'news' | 'blog' | 'bulk-import' | 'qr-login';
   targetId: string;
   targetTitle: string;
   details?: string;
