@@ -22,6 +22,8 @@ export default async function SiteFooter() {
   return (
     <div className="mt-10">
       <AppAndSocialSection
+        mobilnaAplikaciaLabel={dict['footer.mobilna_aplikacia'] || 'Mobilná aplikácia'}
+        socialneSieteLabel={dict['footer.socialne_siete'] || 'Sociálne siete'}
         appStoreUrl={settings?.appStoreUrl || null}
         googlePlayUrl={settings?.googlePlayUrl || null}
         facebookUrl={settings?.facebookUrl || null}

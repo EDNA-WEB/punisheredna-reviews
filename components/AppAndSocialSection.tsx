@@ -1,6 +1,8 @@
 import { IconFacebook, IconInstagram, IconTiktok, IconYoutube } from './Icons';
 
 type Props = {
+  mobilnaAplikaciaLabel: string;
+  socialneSieteLabel: string;
   appStoreUrl: string | null;
   googlePlayUrl: string | null;
   facebookUrl: string | null;
@@ -9,7 +11,7 @@ type Props = {
   youtubeUrl: string | null;
 };
 
-export default function AppAndSocialSection({ appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl }: Props) {
+export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSieteLabel, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl }: Props) {
   const socials = [
     { url: facebookUrl, icon: IconFacebook, label: 'Facebook' },
     { url: instagramUrl, icon: IconInstagram, label: 'Instagram' },
@@ -20,7 +22,7 @@ export default function AppAndSocialSection({ appStoreUrl, googlePlayUrl, facebo
   return (
     <div className="mt-8 grid sm:grid-cols-2 gap-4">
       <div className="border border-line rounded-xl p-4 bg-card">
-        <h3 className="font-display font-bold text-sm text-ink mb-3">Mobilná aplikácia</h3>
+        <h3 className="font-display font-bold text-sm text-ink mb-3">{mobilnaAplikaciaLabel}</h3>
         <div className="flex items-center gap-3 flex-wrap">
           <a
             href={appStoreUrl || '#'}
@@ -47,7 +49,7 @@ export default function AppAndSocialSection({ appStoreUrl, googlePlayUrl, facebo
       </div>
 
       <div className="border border-line rounded-xl p-4 bg-card">
-        <h3 className="font-display font-bold text-sm text-ink mb-3">Sociálne siete</h3>
+        <h3 className="font-display font-bold text-sm text-ink mb-3">{socialneSieteLabel}</h3>
         <div className="flex items-center gap-2.5">
           {socials.map(({ url, icon: Icon, label }) => (
             <a

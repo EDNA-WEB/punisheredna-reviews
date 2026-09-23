@@ -487,5 +487,14 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'sutaz.podmienka_registracia', group: 'Súťaž', sk: 'je registrovaný na webe,' },
   { key: 'sutaz.podmienka_recenzie', group: 'Súťaž', sk: 'pridal aspoň 30 recenzií a hodnotení.' },
   { key: 'sutaz.termin', group: 'Súťaž', sk: 'Termín súťaže' },
-  { key: 'sutaz.termin_text', group: 'Súťaž', sk: 'Presný termín ukončenia súťaže bude ešte upresnený.' }
+  { key: 'sutaz.termin_text', group: 'Súťaž', sk: 'Presný termín ukončenia súťaže bude ešte upresnený.' },
+
+  { key: 'footer.mobilna_aplikacia', group: 'Pätička', sk: 'Mobilná aplikácia' },
+  { key: 'footer.socialne_siete', group: 'Pätička', sk: 'Sociálne siete' },
+
+  { key: 'statspanel.na_webe_mame', group: 'Štatistický panel', sk: 'Na webe máme' },
+  { key: 'statspanel.profilov_cestina', group: 'Štatistický panel', sk: 'profilov filmov v češtine' },
+  { key: 'statspanel.dostupnych_online', group: 'Štatistický panel', sk: 'filmov a seriálov dostupných online' },
+  { key: 'statspanel.z_celkovo', group: 'Štatistický panel', sk: 'z celkovo' },
+  { key: 'statspanel.titulov', group: 'Štatistický panel', sk: 'titulov' }
 ];
