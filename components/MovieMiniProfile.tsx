@@ -14,7 +14,7 @@ type MovieMiniProfileData = {
   tmdbVoteCount: number | null;
   ratings: { value: number }[];
   seasons: { id: string }[];
-  streamingServices: { streamingService: { name: string; icon: string | null } }[];
+  streamingServices: { url: string; streamingService: { name: string; icon: string | null } }[];
 };
 
 export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileData }) {
@@ -24,54 +24,69 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
   const isSeries = movie.contentType === 'Seriál';
 
   return (
-    <div className="border border-line rounded-xl overflow-hidden mb-8">
-      <Link href={`/movie/${movie.slug}`} className="flex gap-3.5 p-4 hover:bg-surface transition-colors">
-        <div className="relative w-20 h-28 rounded-lg overflow-hidden bg-surface flex-none">
-          {movie.poster && (
-            <img src={movie.poster} alt={movie.title} className="absolute inset-0 w-full h-full object-cover" />
-          )}
-        </div>
-        <div className="min-w-0">
-          <div className="text-[11px] font-bold text-accent uppercase tracking-wider mb-1">
+    <div className="relative rounded-2xl overflow-hidden mb-8 shadow-lg">
+      {/* Poster ako pozadie celého boxíku — s tmavým prechodom zdola, nech je
+          text nad ním vždy čitateľný bez ohľadu na to, aký svetlý plagát je. */}
+      <div className="relative min-h-[320px]">
+        {movie.poster ? (
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${movie.poster}')` }} />
+        ) : (
+          <div className="absolute inset-0 bg-night" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/10" />
+
+        <Link href={`/movie/${movie.slug}`} className="relative flex flex-col justify-end min-h-[320px] p-5">
+          <span className="inline-block w-fit text-[10px] font-bold uppercase tracking-wider text-white bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1 mb-2.5">
             {isSeries ? 'Seriál' : 'Film'}
-          </div>
-          <div className="font-display font-bold text-[15px] text-ink leading-snug mb-1.5">{movie.title}</div>
+          </span>
+          <h3 className="font-display font-extrabold text-xl text-white leading-tight mb-2 drop-shadow-lg hover:underline">
+            {movie.title}
+          </h3>
           {percent !== null && (
-            <div className="flex items-center gap-1.5 mb-1">
-              <StarRating rating={percent / 20} size="w-3.5 h-3.5" />
-              <span className="text-xs text-muted">{percent}%</span>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <StarRating rating={percent / 20} size="w-4 h-4" />
+              <span className="text-sm font-semibold text-white/90">{percent}%</span>
             </div>
           )}
-          <div className="text-xs text-muted">
+          <div className="text-sm text-white/80">
             {[movie.year, countryList[0]].filter(Boolean).join(' · ')}
-            {isSeries && movie.seasons.length > 0 && ` · ${movie.seasons.length} ${movie.seasons.length === 1 ? 'séria' : movie.seasons.length < 5 ? 'série' : 'sérií'}`}
+            {isSeries && movie.seasons.length > 0 &&
+              ` · ${movie.seasons.length} ${movie.seasons.length === 1 ? 'séria' : movie.seasons.length < 5 ? 'série' : 'sérií'}`}
           </div>
-        </div>
-      </Link>
+        </Link>
+      </div>
 
-      {genreList.length > 0 && (
-        <div className="px-4 pb-3 flex flex-wrap gap-1.5">
-          {genreList.map((g) => (
-            <span key={g} className="text-[11px] font-semibold text-muted bg-surface border border-line rounded-full px-2 py-0.5">
-              {g}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {movie.streamingServices.length > 0 && (
-        <div className="border-t border-line px-4 py-3">
-          <div className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">Kde sledovať</div>
-          <div className="flex flex-wrap gap-2">
-            {movie.streamingServices.slice(0, 5).map((s, i) => (
-              <span key={i} className="flex items-center gap-1.5 text-xs font-semibold text-ink bg-surface border border-line rounded-full px-2.5 py-1">
-                {s.streamingService.icon && <img src={s.streamingService.icon} alt="" className="w-3.5 h-3.5" />}
-                {s.streamingService.name}
+      <div className="bg-card border border-t-0 border-line rounded-b-2xl">
+        {genreList.length > 0 && (
+          <div className="px-5 py-3.5 flex flex-wrap gap-1.5 border-b border-line">
+            {genreList.map((g) => (
+              <span key={g} className="text-[11px] font-semibold text-muted bg-surface border border-line rounded-full px-2.5 py-1">
+                {g}
               </span>
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {movie.streamingServices.length > 0 && (
+          <div className="px-5 py-3.5">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2.5">Kde sledovať</div>
+            <div className="flex flex-wrap gap-2">
+              {movie.streamingServices.slice(0, 5).map((s, i) => (
+                <a
+                  key={i}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-ink bg-surface border border-line rounded-full px-2.5 py-1.5 hover:border-accent hover:text-accent transition-colors"
+                >
+                  {s.streamingService.icon && <img src={s.streamingService.icon} alt="" className="w-3.5 h-3.5" />}
+                  {s.streamingService.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
