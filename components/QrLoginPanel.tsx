@@ -10,18 +10,24 @@ export default function QrLoginPanel() {
   const [sessionId, setSessionId] = useState('');
   const [expired, setExpired] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
+  const [createError, setCreateError] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function createSession() {
     setExpired(false);
+    setCreateError('');
     setQrSvg('');
     try {
       const res = await fetch('/api/qr-login/create', { method: 'POST' });
       const data = await res.json();
+      if (!res.ok || !data.id || !data.qrSvg) {
+        setCreateError(data.error || 'Vytvorenie QR kódu zlyhalo.');
+        return;
+      }
       setSessionId(data.id);
       setQrSvg(data.qrSvg);
     } catch {
-      setExpired(true);
+      setCreateError('Nepodarilo sa pripojiť k serveru.');
     }
   }
 
@@ -63,6 +69,17 @@ export default function QrLoginPanel() {
 
   if (signingIn) {
     return <p className="text-sm text-white/70">{t('auth.prihlasujem')}</p>;
+  }
+
+  if (createError) {
+    return (
+      <div className="text-center">
+        <p className="text-xs text-red-400 mb-3">{createError}</p>
+        <button type="button" onClick={createSession} className="text-accent text-sm font-semibold hover:underline">
+          {t('auth.qr_novy_kod')}
+        </button>
+      </div>
+    );
   }
 
   if (expired) {
