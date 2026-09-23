@@ -17,6 +17,6 @@ export function cloudinaryWithSourceWatermark(url: string, sourceText: string): 
   const trimmed = sourceText.trim();
   if (!trimmed) return url;
   const encoded = encodeURIComponent(`Zdroj: ${trimmed}`);
-  const transformation = `l_text:Arial_36_bold:${encoded},co_white,g_south_east,x_20,y_18,b_rgb:000000a5,co_rgb:FFFFFF,r_6`;
+  const transformation = `l_text:Arial_27_bold:${encoded},co_white,g_south_east,x_15,y_14,b_rgb:000000a5,co_rgb:FFFFFF,r_5`;
   return url.replace('/upload/', `/upload/${transformation}/`);
 }
