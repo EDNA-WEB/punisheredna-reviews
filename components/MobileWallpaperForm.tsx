@@ -19,14 +19,17 @@ export default function MobileWallpaperForm({ initial }: { initial: string | nul
     reader.onload = (ev) => {
       const img = new Image();
       img.onload = () => {
-        const maxW = 1600;
+        // Vyššia šírka a kvalita ako pri tapete webu — táto tapeta sa
+        // zobrazuje cez celú výšku telefónu zblízka, takže je citlivejšia
+        // na akékoľvek stratové stláčanie.
+        const maxW = 2400;
         const scale = Math.min(1, maxW / img.width);
         const canvas = document.createElement('canvas');
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        setWallpaper(canvas.toDataURL('image/webp', 0.85));
+        setWallpaper(canvas.toDataURL('image/webp', 0.95));
       };
       img.src = ev.target?.result as string;
     };
