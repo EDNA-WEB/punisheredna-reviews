@@ -12,8 +12,11 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const settings = await prisma.settings.findUnique({
     where: { id: 'singleton' },
-    select: { mobileWallpaper: true }
+    select: { mobileWallpaper: true, mobileLogo: true }
   });
 
-  return NextResponse.json({ wallpaperUrl: settings?.mobileWallpaper || null });
+  return NextResponse.json({
+    wallpaperUrl: settings?.mobileWallpaper || null,
+    logoUrl: settings?.mobileLogo || null
+  });
 }

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import WallpaperForm from '@/components/WallpaperForm';
 import MobileWallpaperForm from '@/components/MobileWallpaperForm';
+import MobileLogoForm from '@/components/MobileLogoForm';
 import AppAndSocialLinksForm from '@/components/AppAndSocialLinksForm';
 import PrivacyModalTextForm from '@/components/PrivacyModalTextForm';
 import CookiesPolicyForm from '@/components/CookiesPolicyForm';
@@ -32,6 +33,13 @@ export default async function AdminSettingsPage() {
         </p>
         <MobileWallpaperForm initial={settings?.mobileWallpaper || null} />
       </div>
+
+      <div className="mt-12 pt-8 border-t border-line">
+        <h2 className="font-display font-bold text-xl text-ink mb-2">Logo mobilnej appky</h2>
+        <p className="text-muted mb-8">
+          Zobrazí sa na uvítacej obrazovke appky po prihlásení. Bez nahratého loga sa zobrazí jednoduchý kruh s písmenom.
+        </p>
+        <MobileLogoForm initial={settings?.mobileLogo || null} />
 
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Aplikácia a sociálne siete</h2>

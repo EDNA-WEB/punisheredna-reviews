@@ -636,6 +636,7 @@ model Settings {
   id            String  @id @default("singleton")
   wallpaper     String? @db.Text
   mobileWallpaper String? @db.Text
+  mobileLogo    String? @db.Text
   appStoreUrl   String?
   googlePlayUrl String?
   facebookUrl   String?
