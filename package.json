@@ -18,6 +18,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "qrcode": "^1.5.4",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.15",
     "next-auth": "^4.24.8",
     "react": "^18.3.1",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/qrcode": "^1.5.5",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
