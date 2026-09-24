@@ -40,6 +40,7 @@ export default async function AdminSettingsPage() {
           Zobrazí sa na uvítacej obrazovke appky po prihlásení. Bez nahratého loga sa zobrazí jednoduchý kruh s písmenom.
         </p>
         <MobileLogoForm initial={settings?.mobileLogo || null} />
+      </div>
 
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Aplikácia a sociálne siete</h2>
