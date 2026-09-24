@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import WallpaperForm from '@/components/WallpaperForm';
+import MobileWallpaperForm from '@/components/MobileWallpaperForm';
 import AppAndSocialLinksForm from '@/components/AppAndSocialLinksForm';
 import PrivacyModalTextForm from '@/components/PrivacyModalTextForm';
 import CookiesPolicyForm from '@/components/CookiesPolicyForm';
@@ -23,6 +24,14 @@ export default async function AdminSettingsPage() {
         priestor na reklamu.
       </p>
       <WallpaperForm initial={settings?.wallpaper || null} />
+
+      <div className="mt-12 pt-8 border-t border-line">
+        <h2 className="font-display font-bold text-xl text-ink mb-2">Tapeta mobilnej appky</h2>
+        <p className="text-muted mb-8">
+          Samostatný obrázok len pre uvítaciu obrazovku mobilnej appky — nezávislý od tapety webu vyššie.
+        </p>
+        <MobileWallpaperForm initial={settings?.mobileWallpaper || null} />
+      </div>
 
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Aplikácia a sociálne siete</h2>

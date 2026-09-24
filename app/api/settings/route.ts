@@ -10,6 +10,7 @@ export async function GET() {
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
   return NextResponse.json({
     wallpaper: settings?.wallpaper || null,
+    mobileWallpaper: settings?.mobileWallpaper || null,
     appStoreUrl: settings?.appStoreUrl || null,
     googlePlayUrl: settings?.googlePlayUrl || null,
     facebookUrl: settings?.facebookUrl || null,
@@ -32,7 +33,7 @@ export async function PATCH(req: Request) {
   }
 
   const body = await req.json();
-  const { wallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, buyMeACoffeeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled, onlineFreeForAll } = body;
+  const { wallpaper, mobileWallpaper, appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, buyMeACoffeeUrl, privacyModalText, privacyCategories, cookiesPolicyText, registrationsEnabled, onlineFreeForAll } = body;
 
   for (const url of [appStoreUrl, googlePlayUrl, facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, buyMeACoffeeUrl]) {
     const urlError = validateSafeUrl(url);
@@ -67,6 +68,16 @@ export async function PATCH(req: Request) {
     }
     data.wallpaper = wallpaperUrl;
   }
+  let oldMobileWallpaper: string | null = null;
+  if ('mobileWallpaper' in body) {
+    let mobileWallpaperUrl = mobileWallpaper || null;
+    if (mobileWallpaperUrl && mobileWallpaperUrl.startsWith('data:image')) {
+      const current = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { mobileWallpaper: true } });
+      oldMobileWallpaper = current?.mobileWallpaper || null;
+      mobileWallpaperUrl = await uploadImage(mobileWallpaperUrl, 'settings');
+    }
+    data.mobileWallpaper = mobileWallpaperUrl;
+  }
   if ('appStoreUrl' in body) data.appStoreUrl = appStoreUrl || null;
   if ('googlePlayUrl' in body) data.googlePlayUrl = googlePlayUrl || null;
   if ('facebookUrl' in body) data.facebookUrl = facebookUrl || null;
@@ -87,6 +98,7 @@ export async function PATCH(req: Request) {
   });
 
   if (oldWallpaper && oldWallpaper !== settings.wallpaper) await deleteImageByUrl(oldWallpaper);
+  if (oldMobileWallpaper && oldMobileWallpaper !== settings.mobileWallpaper) await deleteImageByUrl(oldMobileWallpaper);
 
   return NextResponse.json(settings);
 }
