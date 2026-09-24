@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
+import { describeUserAgent } from '@/lib/userAgent';
 import QrLoginConfirmButton from '@/components/QrLoginConfirmButton';
 import { IconQrcode } from '@/components/Icons';
 
@@ -35,9 +36,12 @@ export default async function QrLoginConfirmPage({ params }: { params: { id: str
       ) : (
         <>
           <h1 className="font-display font-bold text-xl text-ink mb-2">{t('auth.qr_prihlasit_v_druhom')}</h1>
-          <p className="text-sm text-muted mb-6">
+          <p className="text-sm text-muted mb-2">
             {t('auth.qr_potvrdis_pred')} <strong className="text-ink">{(session.user as any).name}</strong>{' '}
             {t('auth.qr_potvrdis_po')}
+          </p>
+          <p className="text-xs text-muted bg-surface border border-line rounded-full inline-block px-3 py-1 mb-6">
+            {describeUserAgent(qrSession?.requestingDevice)}
           </p>
           <QrLoginConfirmButton id={params.id} />
         </>

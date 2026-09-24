@@ -14,7 +14,8 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   unpublished: { label: 'skryl(a)', color: 'text-muted' },
   deleted: { label: 'zmazal(a)', color: 'text-danger' },
   reverted: { label: 'obnovil(a) staršiu verziu', color: 'text-accent' },
-  'bulk-import': { label: 'spustil(a) hromadný nástroj', color: 'text-accent' }
+  'bulk-import': { label: 'spustil(a) hromadný nástroj', color: 'text-accent' },
+  'qr-login': { label: 'sa prihlásil(a) cez QR kód', color: 'text-emerald-600' }
 };
 
 export default async function AuditLogPage({ searchParams }: { searchParams: { page?: string } }) {

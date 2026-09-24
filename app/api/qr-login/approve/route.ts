@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logAudit } from '@/lib/auditLog';
+import { describeUserAgent } from '@/lib/userAgent';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -25,6 +27,16 @@ export async function POST(req: Request) {
   if (count === 0) {
     return NextResponse.json({ error: 'Tento QR kód už vypršal alebo bol už použitý.' }, { status: 400 });
   }
+
+  await logAudit({
+    userId: (session.user as any).id,
+    userName: (session.user as any).name || 'neznámy',
+    action: 'qr-login',
+    targetType: 'qr-login',
+    targetId: id,
+    targetTitle: 'Prihlásenie cez QR kód',
+    details: `Potvrdené zo zariadenia: ${describeUserAgent(req.headers.get('user-agent'))}`
+  });
 
   return NextResponse.json({ ok: true });
 }
