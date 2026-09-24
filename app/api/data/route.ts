@@ -18,7 +18,8 @@ export async function GET() {
         poster: true,
         synopsis: true,
         year: true,
-        genres: true
+        genres: true,
+        trailerUrl: true
       }
     });
 
