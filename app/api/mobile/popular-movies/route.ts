@@ -12,10 +12,14 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const page = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
+    const contentType = searchParams.get('contentType');
+
+    const where: any = { approved: true };
+    if (contentType) where.contentType = contentType;
 
     const [movies, total] = await Promise.all([
       prisma.movie.findMany({
-        where: { approved: true },
+        where,
         orderBy: { ratings: { _count: 'desc' } },
         skip: page * PAGE_SIZE,
         take: PAGE_SIZE,
@@ -30,7 +34,7 @@ export async function GET(req: Request) {
           ratings: { select: { value: true } }
         }
       }),
-      prisma.movie.count({ where: { approved: true } })
+      prisma.movie.count({ where })
     ]);
 
     const result = movies.map((m) => {
