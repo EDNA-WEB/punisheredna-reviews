@@ -29,13 +29,13 @@ type RateLimitTable = 'comment' | 'review' | 'post' | 'thread' | 'message' | 'li
 
 const LIMITS: Record<RateLimitTable, { windowSec: number; max: number; newAccountMax: number }> = {
   comment: { windowSec: 60, max: 6, newAccountMax: 2 },
-  review: { windowSec: 300, max: 4, newAccountMax: 1 },
+  review: { windowSec: 60, max: 5, newAccountMax: 5 },
   post: { windowSec: 60, max: 6, newAccountMax: 2 },
   thread: { windowSec: 300, max: 3, newAccountMax: 1 },
   message: { windowSec: 60, max: 10, newAccountMax: 3 },
   like: { windowSec: 30, max: 20, newAccountMax: 8 },
   follow: { windowSec: 60, max: 15, newAccountMax: 5 },
-  rating: { windowSec: 60, max: 30, newAccountMax: 15 }
+  rating: { windowSec: 60, max: 5, newAccountMax: 5 }
 };
 
 // Vráti chybovú hlášku, ak používateľ prekročil limit počtu akcií za časové okno; inak null.

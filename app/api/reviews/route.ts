@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logActivity } from '@/lib/logActivity';
+import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 
 export async function POST(req: Request) {
@@ -10,6 +11,9 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Na napísanie recenzie sa musíš prihlásiť.' }, { status: 401 });
+    }
+    if (!checkIpRateLimit(req, 'reviews-create', 60_000, 5)) {
+      return NextResponse.json({ error: 'Príliš veľa recenzií za krátky čas. Skús to prosím o chvíľu znova.' }, { status: 429 });
     }
     const authorId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: authorId } });
