@@ -11,12 +11,18 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const types = searchParams.get('types')?.split(',').filter(Boolean) || [];
     const genres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
+    const countries = searchParams.get('countries')?.split(',').filter(Boolean) || [];
+    const tags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
     const yearFrom = searchParams.get('yearFrom');
     const yearTo = searchParams.get('yearTo');
 
     const where: any = { approved: true };
     if (types.length > 0) where.type = { in: types };
-    if (genres.length > 0) where.AND = genres.map((g) => ({ genres: { contains: g } }));
+    const andConditions: any[] = [];
+    genres.forEach((g) => andConditions.push({ genres: { contains: g } }));
+    countries.forEach((c) => andConditions.push({ countries: { contains: c } }));
+    tags.forEach((t) => andConditions.push({ tags: { contains: t } }));
+    if (andConditions.length > 0) where.AND = andConditions;
     if (yearFrom || yearTo) {
       where.year = {};
       if (yearFrom) where.year.gte = yearFrom;
