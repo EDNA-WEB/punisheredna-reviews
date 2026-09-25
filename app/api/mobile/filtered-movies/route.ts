@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const yearTo = searchParams.get('yearTo');
 
     const where: any = { approved: true };
-    if (types.length > 0) where.type = { in: types };
+    if (types.length > 0) where.contentType = { in: types };
     const andConditions: any[] = [];
     genres.forEach((g) => andConditions.push({ genres: { contains: g } }));
     countries.forEach((c) => andConditions.push({ countries: { contains: c } }));
