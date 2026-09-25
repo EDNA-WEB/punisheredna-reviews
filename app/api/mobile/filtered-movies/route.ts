@@ -19,9 +19,9 @@ export async function GET(req: Request) {
     const where: any = { approved: true };
     if (types.length > 0) where.contentType = { in: types };
     const andConditions: any[] = [];
-    genres.forEach((g) => andConditions.push({ genres: { contains: g } }));
-    countries.forEach((c) => andConditions.push({ countries: { contains: c } }));
-    tags.forEach((t) => andConditions.push({ tags: { contains: t } }));
+    genres.forEach((g) => andConditions.push({ genres: { contains: g, mode: 'insensitive' } }));
+    countries.forEach((c) => andConditions.push({ countries: { contains: c, mode: 'insensitive' } }));
+    tags.forEach((t) => andConditions.push({ tags: { contains: t, mode: 'insensitive' } }));
     if (andConditions.length > 0) where.AND = andConditions;
     if (yearFrom || yearTo) {
       where.year = {};
