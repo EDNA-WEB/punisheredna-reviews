@@ -112,7 +112,7 @@ export async function GET(req: Request) {
         flagUrl: flag?.url ?? null,
         flagCountryName: flag?.countryName ?? user.country,
         followersPreview: followersPreview.map((f) => f.follower.avatar),
-        karma: karma._sum.value || 0,
+        karma: user.role === 'ADMIN' ? '∞' : karma._sum.value || 0,
         topGenres,
         reviews: reviewsWithTitle,
         ratings: ratingsWithTitle
