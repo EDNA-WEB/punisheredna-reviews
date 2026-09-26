@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
+import { getCountryFlagUrl } from '@/lib/countryFlags';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +32,7 @@ export async function GET(req: Request) {
     });
     if (!user) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
 
-    const [reviews, ratings] = await Promise.all([
+    const [reviews, ratings, followersPreview] = await Promise.all([
       prisma.review.findMany({
         where: { authorId: user.id },
         orderBy: { createdAt: 'desc' },
@@ -43,10 +44,21 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' },
         take: 5,
         select: { id: true, value: true, createdAt: true, movie: { select: { title: true, slug: true, poster: true } } }
+      }),
+      prisma.follow.findMany({
+        where: { followingId: user.id },
+        orderBy: { createdAt: 'desc' },
+        take: 2,
+        select: { follower: { select: { avatar: true } } }
       })
     ]);
 
-    return NextResponse.json({ ...user, reviews, ratings }, { status: 200 });
+    const flag = user.country ? getCountryFlagUrl(user.country) : null;
+
+    return NextResponse.json(
+      { ...user, flagUrl: flag?.url ?? null, flagCountryName: flag?.countryName ?? user.country, followersPreview: followersPreview.map((f) => f.follower.avatar), reviews, ratings },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[api/mobile/profile]', error);
     return NextResponse.json({ error: 'Chyba při načítání profilu.' }, { status: 500 });

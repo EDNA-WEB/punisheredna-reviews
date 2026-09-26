@@ -14,11 +14,12 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const onlyEditors = searchParams.get('onlyEditors') === 'true';
+    const authorId = searchParams.get('authorId');
     const cursor = searchParams.get('cursor');
     const limit = parseInt(searchParams.get('limit') || '10', 10);
 
     const reviews = await prisma.review.findMany({
-      where: onlyEditors ? { author: { isEditor: true } } : {},
+      where: authorId ? { authorId } : onlyEditors ? { author: { isEditor: true } } : {},
       orderBy: { createdAt: 'desc' },
       take: limit,
       ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
