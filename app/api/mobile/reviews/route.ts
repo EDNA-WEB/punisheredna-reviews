@@ -16,25 +16,30 @@ export async function GET(req: Request) {
     const onlyEditors = searchParams.get('onlyEditors') === 'true';
     const authorId = searchParams.get('authorId');
     const cursor = searchParams.get('cursor');
+    const page = searchParams.get('page');
     const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const where = authorId ? { authorId } : onlyEditors ? { author: { isEditor: true } } : {};
 
-    const reviews = await prisma.review.findMany({
-      where: authorId ? { authorId } : onlyEditors ? { author: { isEditor: true } } : {},
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-      select: {
-        id: true,
-        body: true,
-        createdAt: true,
-        movieId: true,
-        seasonId: true,
-        episodeId: true,
-        authorId: true,
-        movie: { select: { title: true, slug: true, poster: true } },
-        author: { select: { name: true, avatar: true, isEditor: true } }
-      }
-    });
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        ...(page ? { skip: parseInt(page, 10) * limit } : cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+        select: {
+          id: true,
+          body: true,
+          createdAt: true,
+          movieId: true,
+          seasonId: true,
+          episodeId: true,
+          authorId: true,
+          movie: { select: { title: true, slug: true, poster: true } },
+          author: { select: { name: true, avatar: true, isEditor: true } }
+        }
+      }),
+      page ? prisma.review.count({ where }) : Promise.resolve(0)
+    ]);
 
     // Jedno dodatočné volanie namiesto opytovania sa na hodnotenie pre
     // každú recenziu zvlášť (N+1) — natiahneme všetky naraz a spárujeme.
@@ -64,7 +69,14 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json({ reviews: result, nextCursor: reviews.length === limit ? reviews[reviews.length - 1].id : null }, { status: 200 });
+    return NextResponse.json(
+      {
+        reviews: result,
+        nextCursor: !page && reviews.length === limit ? reviews[reviews.length - 1].id : null,
+        totalPages: page ? Math.ceil(total / limit) : undefined
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[api/mobile/reviews]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní recenzí.' }, { status: 500 });
