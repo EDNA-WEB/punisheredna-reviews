@@ -4,6 +4,19 @@ import { getMobileUser } from '@/lib/mobileAuth';
 
 export const dynamic = 'force-dynamic';
 
+// Zostaví názov na zobrazenie — pri hodnotení/recenzii celého filmu/seriálu
+// len jeho názov, pri konkrétnej sezóne "Název - Sezóna N", pri konkrétnej
+// epizóde "Název - S{sezóna}E{epizóda}: Název epizody" (alebo bez názvu
+// epizódy, ak ju autor nevyplnil).
+function buildDisplayTitle(movieTitle: string, season: { number: number } | null, episode: { number: number; title: string | null } | null) {
+  if (episode && season) {
+    const epLabel = episode.title ? `: ${episode.title}` : '';
+    return `${movieTitle} - S${season.number}E${episode.number}${epLabel}`;
+  }
+  if (season) return `${movieTitle} - Sezóna ${season.number}`;
+  return movieTitle;
+}
+
 // Vráti recenzie/hodnotenia od používateľov, čo prihlásený používateľ
 // sleduje ("obľúbení"). ?type=all|reviews|ratings, ?page=0,1,2... (10 na
 // stránku pri "all"/"reviews"/"ratings" v plnom zozname; appka pre náhľad
@@ -46,6 +59,8 @@ export async function GET(req: Request) {
               episodeId: true,
               authorId: true,
               movie: { select: { title: true, slug: true, poster: true, year: true } },
+              season: { select: { number: true } },
+              episode: { select: { number: true, title: true } },
               author: { select: { name: true, avatar: true } }
             }
           })
@@ -64,6 +79,8 @@ export async function GET(req: Request) {
               episodeId: true,
               userId: true,
               movie: { select: { title: true, slug: true, poster: true, year: true } },
+              season: { select: { number: true } },
+              episode: { select: { number: true, title: true } },
               user: { select: { name: true, avatar: true } }
             }
           })
@@ -87,7 +104,7 @@ export async function GET(req: Request) {
         createdAt: r.createdAt,
         body: r.body,
         rating: rating?.value ?? null,
-        movie: r.movie,
+        movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) },
         author: r.author
       };
     });
@@ -97,7 +114,7 @@ export async function GET(req: Request) {
       id: r.id,
       createdAt: r.createdAt,
       rating: r.value,
-      movie: r.movie,
+      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) },
       author: r.user
     }));
 
