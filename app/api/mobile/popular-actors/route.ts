@@ -11,16 +11,17 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const page = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
+    const role = searchParams.get('role') === 'CREATOR' ? 'CREATOR' : 'ACTOR';
 
     const [people, total] = await Promise.all([
       prisma.person.findMany({
-        where: { approved: true, role: 'ACTOR' },
+        where: { approved: true, role },
         orderBy: { followers: { _count: 'desc' } },
         skip: page * PAGE_SIZE,
         take: PAGE_SIZE,
         select: { id: true, name: true, slug: true, photo: true, birthPlace: true }
       }),
-      prisma.person.count({ where: { approved: true, role: 'ACTOR' } })
+      prisma.person.count({ where: { approved: true, role } })
     ]);
 
     return NextResponse.json({ people, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200 });
