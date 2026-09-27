@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // Vyhradený názov zoznamu, čo slúži ako "obľúbené filmy" — appka aj web
 // (keby sa táto appková funkcia raz preniesla aj tam) ho poznajú podľa
 // tohto presného textu, nezobrazuje sa používateľovi.
-const FAVORITES_LIST_TITLE = '__oblibene_filmy__';
+const FAVORITES_LIST_TITLE = 'Obľúbené';
 const MAX_FAVORITES = 10;
 
 async function getOrCreateFavoritesList(userId: string) {
@@ -47,7 +47,14 @@ export async function GET(req: Request) {
       myReviewId: myReviews.find((r) => r.movieId === i.movie.id)?.id ?? null
     }));
 
-    return NextResponse.json({ movies, max: MAX_FAVORITES }, { status: 200 });
+    return NextResponse.json(
+      {
+        movies: movies.filter((m) => m.contentType !== 'Seriál'),
+        series: movies.filter((m) => m.contentType === 'Seriál'),
+        max: MAX_FAVORITES
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[api/mobile/favorite-movies GET]', error);
     return NextResponse.json({ error: 'Chyba při načítání.' }, { status: 500 });
@@ -62,13 +69,21 @@ export async function POST(req: Request) {
     const { movieId } = await req.json();
     if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
 
+    const targetMovie = await prisma.movie.findUnique({ where: { id: movieId }, select: { contentType: true } });
+    if (!targetMovie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
+
     const list = await getOrCreateFavoritesList(me.id);
-    const count = await prisma.movieListItem.count({ where: { listId: list.id } });
-    if (count >= MAX_FAVORITES) {
-      return NextResponse.json({ error: `Můžeš mít maximálně ${MAX_FAVORITES} oblíbených filmů.` }, { status: 400 });
+    const existingItems = await prisma.movieListItem.findMany({
+      where: { listId: list.id },
+      include: { movie: { select: { contentType: true } } }
+    });
+    const sameTypeCount = existingItems.filter((i) => i.movie.contentType === targetMovie.contentType).length;
+    if (sameTypeCount >= MAX_FAVORITES) {
+      const label = targetMovie.contentType === 'Seriál' ? 'seriálů' : 'filmů';
+      return NextResponse.json({ error: `Můžeš mít maximálně ${MAX_FAVORITES} oblíbených ${label}.` }, { status: 400 });
     }
 
-    await prisma.movieListItem.create({ data: { listId: list.id, movieId, order: count } });
+    await prisma.movieListItem.create({ data: { listId: list.id, movieId, order: existingItems.length } });
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error: any) {
     if (error?.code === 'P2002') {
