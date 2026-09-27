@@ -25,6 +25,11 @@ export async function GET(req: Request) {
         isEditor: true,
         country: true,
         region: true,
+        firstName: true,
+        lastName: true,
+        gender: true,
+        birthDate: true,
+        email: true,
         _count: { select: { comments: true, reviews: true, followedBy: true, following: true, ratings: true } }
       }
     });

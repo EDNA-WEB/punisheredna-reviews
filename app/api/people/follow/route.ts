@@ -19,9 +19,13 @@ export async function POST(req: Request) {
     await prisma.personFollow.delete({ where: { id: existing.id } });
     return NextResponse.json({ following: false });
   } else {
-    const count = await prisma.personFollow.count({ where: { userId } });
-    if (count >= 10) {
-      return NextResponse.json({ error: 'Môžeš mať maximálne 10 obľúbených hercov.' }, { status: 400 });
+    const targetPerson = await prisma.person.findUnique({ where: { id: personId }, select: { role: true } });
+    if (!targetPerson) return NextResponse.json({ error: 'Osoba sa nenašla.' }, { status: 404 });
+    const currentFollows = await prisma.personFollow.findMany({ where: { userId }, select: { person: { select: { role: true } } } });
+    const sameRoleCount = currentFollows.filter((f) => f.person.role === targetPerson.role).length;
+    if (sameRoleCount >= 10) {
+      const label = targetPerson.role === 'CREATOR' ? 'tvorcov' : 'hercov';
+      return NextResponse.json({ error: `Môžeš mať maximálne 10 obľúbených ${label}.` }, { status: 400 });
     }
     await prisma.personFollow.create({ data: { userId, personId } });
     return NextResponse.json({ following: true });

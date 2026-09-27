@@ -16,10 +16,18 @@ export async function GET(req: Request) {
     const follows = await prisma.personFollow.findMany({
       where: { userId: me.id },
       orderBy: { createdAt: 'desc' },
-      select: { person: { select: { id: true, name: true, slug: true, photo: true, birthPlace: true } } }
+      select: { person: { select: { id: true, name: true, slug: true, photo: true, birthPlace: true, role: true } } }
     });
 
-    return NextResponse.json({ actors: follows.map((f) => f.person), max: MAX_FAVORITE_ACTORS }, { status: 200 });
+    const people = follows.map((f) => f.person);
+    return NextResponse.json(
+      {
+        actors: people.filter((p) => p.role !== 'CREATOR'),
+        creators: people.filter((p) => p.role === 'CREATOR'),
+        max: MAX_FAVORITE_ACTORS
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[api/mobile/favorite-actors GET]', error);
     return NextResponse.json({ error: 'Chyba při načítání.' }, { status: 500 });
@@ -40,9 +48,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ following: false }, { status: 200 });
     }
 
-    const count = await prisma.personFollow.count({ where: { userId: me.id } });
-    if (count >= MAX_FAVORITE_ACTORS) {
-      return NextResponse.json({ error: `Můžeš mít maximálně ${MAX_FAVORITE_ACTORS} oblíbených herců.` }, { status: 400 });
+    const targetPerson = await prisma.person.findUnique({ where: { id: personId }, select: { role: true } });
+    if (!targetPerson) return NextResponse.json({ error: 'Osoba se nenašla.' }, { status: 404 });
+
+    const currentFollows = await prisma.personFollow.findMany({
+      where: { userId: me.id },
+      select: { person: { select: { role: true } } }
+    });
+    const sameRoleCount = currentFollows.filter((f) => f.person.role === targetPerson.role).length;
+    if (sameRoleCount >= MAX_FAVORITE_ACTORS) {
+      const label = targetPerson.role === 'CREATOR' ? 'tvůrců' : 'herců';
+      return NextResponse.json({ error: `Můžeš mít maximálně ${MAX_FAVORITE_ACTORS} oblíbených ${label}.` }, { status: 400 });
     }
 
     await prisma.personFollow.create({ data: { userId: me.id, personId } });
