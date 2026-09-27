@@ -12,11 +12,15 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const settings = await prisma.settings.findUnique({
     where: { id: 'singleton' },
-    select: { mobileWallpaper: true, mobileLogo: true }
+    select: { mobileWallpaper: true, mobileLogo: true, facebookUrl: true, instagramUrl: true, tiktokUrl: true, youtubeUrl: true }
   });
 
   return NextResponse.json({
     wallpaperUrl: settings?.mobileWallpaper || null,
-    logoUrl: settings?.mobileLogo || null
+    logoUrl: settings?.mobileLogo || null,
+    facebookUrl: settings?.facebookUrl || null,
+    instagramUrl: settings?.instagramUrl || null,
+    tiktokUrl: settings?.tiktokUrl || null,
+    youtubeUrl: settings?.youtubeUrl || null
   });
 }
