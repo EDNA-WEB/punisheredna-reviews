@@ -35,4 +35,5 @@ const nextConfig = {
     ];
   }
 };
+// deploy-marker: 2026-09-27
 module.exports = nextConfig;
