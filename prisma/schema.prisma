@@ -17,6 +17,7 @@ model User {
   email        String    @unique
   lastActiveAt DateTime  @default(now())
   favoritesVisibility String @default("EVERYONE")
+  reviewLanguages String @default("cs")
   emailVerified       Boolean  @default(false)
   verificationToken   String?  @unique
   passwordHash String
