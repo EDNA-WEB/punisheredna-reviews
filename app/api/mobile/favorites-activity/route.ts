@@ -61,7 +61,7 @@ export async function GET(req: Request) {
               movie: { select: { title: true, slug: true, poster: true, year: true } },
               season: { select: { number: true } },
               episode: { select: { number: true, title: true } },
-              author: { select: { name: true, avatar: true } }
+              author: { select: { id: true, name: true, avatar: true } }
             }
           })
         : Promise.resolve([]),
@@ -81,7 +81,7 @@ export async function GET(req: Request) {
               movie: { select: { title: true, slug: true, poster: true, year: true } },
               season: { select: { number: true } },
               episode: { select: { number: true, title: true } },
-              user: { select: { name: true, avatar: true } }
+              user: { select: { id: true, name: true, avatar: true } }
             }
           })
         : Promise.resolve([])

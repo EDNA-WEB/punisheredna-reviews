@@ -35,7 +35,7 @@ export async function GET(req: Request) {
           episodeId: true,
           authorId: true,
           movie: { select: { title: true, slug: true, poster: true } },
-          author: { select: { name: true, avatar: true, isEditor: true } }
+          author: { select: { id: true, name: true, avatar: true, isEditor: true } }
         }
       }),
       page ? prisma.review.count({ where }) : Promise.resolve(0)
