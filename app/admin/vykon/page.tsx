@@ -169,7 +169,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
   for (const s of sources) {
     const perHour = s.count / Math.max(1, s.hours);
     const avg = s.totalMs / Math.max(1, s.count);
-    if (perHour > 120) {
+    if (perHour > 120 && s.hours >= 2) {
       tips.push({
         severity: perHour > 600 ? 'critical' : 'warning',
         title: `${s.source} — ${fmtNum(perHour)} dopytov za hodinu`,
@@ -332,7 +332,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
                 <tr key={s.source} className="bg-card">
                   <td className="px-3 py-2 font-mono text-xs text-ink">
                     {s.source}
-                    {perHour > 120 && <span className="ml-2 text-[10px] font-sans font-bold bg-red-100 text-red-700 rounded-full px-2 py-0.5">častý</span>}
+                    {perHour > 120 && s.hours >= 2 && <span className="ml-2 text-[10px] font-sans font-bold bg-red-100 text-red-700 rounded-full px-2 py-0.5">častý</span>}
                     {avg > 150 && <span className="ml-2 text-[10px] font-sans font-bold bg-amber-100 text-amber-700 rounded-full px-2 py-0.5">pomalý</span>}
                   </td>
                   <td className="px-3 py-2 text-right">{fmtNum(s.count)}</td>
@@ -344,7 +344,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
                       {((s.count / Math.max(1, totalQueries)) * 100).toFixed(1)} %
                     </div>
                   </td>
-                  <td className={`px-3 py-2 text-right ${perHour > 120 ? 'text-red-600 font-bold' : ''}`}>{fmtNum(perHour)}</td>
+                  <td className={`px-3 py-2 text-right ${perHour > 120 && s.hours >= 2 ? 'text-red-600 font-bold' : ''}`}>{fmtNum(perHour)}</td>
                   <td className={`px-3 py-2 text-right ${avg > 150 ? 'text-amber-600 font-bold' : ''}`}>{fmtMs(avg)}</td>
                   <td className="px-3 py-2 text-right">{fmtMs(s.maxMs)}</td>
                   <td className="px-3 py-2 text-right">{fmtMs(s.totalMs)}</td>

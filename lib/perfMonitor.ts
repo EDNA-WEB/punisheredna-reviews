@@ -39,6 +39,69 @@ export function sourceFromStack(stack: string | undefined): string {
   return 'neznámy';
 }
 
+// ---------------------------------------------------------------------------
+// Záložné určenie zdroja: serverové stránky (React Server Components) a
+// cachované funkcie sa vykresľujú mimo pôvodného zásobníka volaní, preto ich
+// zásobník neprezradí. Next.js však počas každej požiadavky drží cestu URL vo
+// svojom internom úložisku — odtiaľ ju len prečítame (bez vedľajších účinkov,
+// stránka kvôli tomu nezmení spôsob vykresľovania). Ak by sa vnútro Next.js
+// v budúcnosti zmenilo, jednoducho sa vráti null a použije sa "neznámy".
+// ---------------------------------------------------------------------------
+let nextStorage: any = undefined;
+function getNextStore(): any {
+  if (nextStorage === null) return null;
+  try {
+    if (nextStorage === undefined) {
+      // eslint-disable-next-line no-eval
+      const req = eval('require');
+      try {
+        nextStorage = req('next/dist/client/components/static-generation-async-storage.external.js').staticGenerationAsyncStorage;
+      } catch {
+        nextStorage = req('next/dist/server/app-render/work-async-storage.external.js').workAsyncStorage; // Next 15+
+      }
+    }
+    return nextStorage?.getStore?.() || null;
+  } catch {
+    nextStorage = null;
+    return null;
+  }
+}
+
+// Dynamické časti URL zlúčime, aby sa /movie/duna a /movie/vetrelec-zeme
+// počítali spolu ako /movie/[slug].
+const DYNAMIC_AFTER: Record<string, string> = {
+  movie: '[slug]',
+  news: '[slug]',
+  osobnost: '[slug]',
+  profile: '[id]',
+  messages: '[userId]',
+  diskusie: '[id]',
+  'qr-prihlasenie': '[id]',
+  sezona: '[n]',
+  epizoda: '[n]'
+};
+export function normalizePath(path: string) {
+  const parts = path.split('?')[0].split('/').filter(Boolean);
+  const out: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const seg = parts[i];
+    const prev = parts[i - 1];
+    if (prev && DYNAMIC_AFTER[prev]) out.push(DYNAMIC_AFTER[prev]);
+    else if (/^\d+$/.test(seg) || /^c[a-z0-9]{20,}$/.test(seg) || /^[0-9a-f-]{32,36}$/i.test(seg)) out.push('[id]');
+    else out.push(seg);
+  }
+  return '/' + out.join('/');
+}
+
+export function sourceFromNext(): string | null {
+  const store = getNextStore();
+  if (!store) return null;
+  const route: string | undefined = store.route || store.urlPathname;
+  if (!route) return null;
+  const path = store.route ? route : normalizePath(route);
+  return `${path}${store.isUnstableCacheCallback ? ' (cache)' : ' (stránka)'}`;
+}
+
 export function recordQuery(source: string, model: string, action: string, ms: number) {
   if (IGNORED_SOURCES.some((s) => source.startsWith(s))) return;
   const now = Date.now();

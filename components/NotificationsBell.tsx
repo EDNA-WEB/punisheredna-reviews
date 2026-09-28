@@ -36,10 +36,22 @@ export default function NotificationsBell() {
     setLoaded(true);
   }
 
+  // Výkon: kontrola každých 90 s a LEN keď je karta viditeľná. Zabudnutá
+  // karta na pozadí tak nedrží databázu prebudenú (Neon účtuje čas, kedy je
+  // hore). Po návrate na kartu sa notifikácie načítajú hneď.
   useEffect(() => {
     load();
-    const interval = setInterval(load, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') load();
+    }, 90000);
+    function onVisible() {
+      if (document.visibilityState === 'visible') load();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   async function handleOpen() {

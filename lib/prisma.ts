@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { PERF_ENABLED, sourceFromStack, recordQuery, shouldFlush, flushPerf } from './perfMonitor';
+import { PERF_ENABLED, sourceFromStack, sourceFromNext, recordQuery, shouldFlush, flushPerf } from './perfMonitor';
 
 const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createPrismaClient> };
 
@@ -22,7 +22,9 @@ function createPrismaClient() {
           const stack = new Error().stack;
           const started = performance.now();
           const result = await query(args);
-          recordQuery(sourceFromStack(stack), model, operation, performance.now() - started);
+          const fromStack = sourceFromStack(stack);
+          const source = fromStack === 'neznámy' || fromStack.startsWith('lib/') ? sourceFromNext() || fromStack : fromStack;
+          recordQuery(source, model, operation, performance.now() - started);
           if (shouldFlush()) await flushPerf(base);
           return convertBigInts(result);
         }

@@ -15,6 +15,28 @@ export default function QrLoginPanel() {
   const [createError, setCreateError] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Koľkokrát sa už kód obnovil sám. Po 3 obnoveniach (~9 minút bez
+  // naskenovania) prestane a ukáže tlačidlo — otvorená, zabudnutá karta
+  // s prihlásením tak nebude donekonečna zaťažovať databázu.
+  const autoRenewals = useRef(0);
+  const MAX_AUTO_RENEWALS = 3;
+
+  function renewAutomatically() {
+    if (autoRenewals.current >= MAX_AUTO_RENEWALS || document.visibilityState !== 'visible') {
+      setExpired(true);
+      setQrSvg('');
+      setSessionId('');
+      setExpiresAt(null);
+      return;
+    }
+    autoRenewals.current += 1;
+    createSession();
+  }
+
+  function renewManually() {
+    autoRenewals.current = 0;
+    createSession();
+  }
 
   async function createSession() {
     setExpired(false);
@@ -29,7 +51,8 @@ export default function QrLoginPanel() {
       }
       setSessionId(data.id);
       setQrSvg(data.qrSvg);
-      setExpiresAt(new Date(data.expiresAt).getTime());
+      // Podľa hodín prehliadača, nie servera (rozdiel času by spôsobil nekonečné obnovovanie).
+      setExpiresAt(Date.now() + (Number(data.ttlSeconds) || 180) * 1000);
     } catch {
       setCreateError('Nepodarilo sa pripojiť k serveru.');
     }
@@ -59,7 +82,7 @@ export default function QrLoginPanel() {
       setSecondsLeft(remaining);
       if (remaining <= 0) {
         if (tickRef.current) clearInterval(tickRef.current);
-        createSession();
+        renewAutomatically();
       }
     };
     tick();
@@ -76,6 +99,8 @@ export default function QrLoginPanel() {
     if (pollRef.current) clearInterval(pollRef.current);
 
     pollRef.current = setInterval(async () => {
+      // Karta na pozadí sa nepýta — skontroluje sa hneď po návrate.
+      if (document.visibilityState !== 'visible') return;
       try {
         const res = await fetch(`/api/qr-login/status/${sessionId}`);
         const data = await res.json();
@@ -87,8 +112,9 @@ export default function QrLoginPanel() {
           window.location.href = '/';
         } else if (data.status === 'expired') {
           if (pollRef.current) clearInterval(pollRef.current);
-          // Ak už automatický odpočet medzitým nespustil nový kód, urobíme to tu.
-          createSession();
+          // Obnovu kódu rieši odpočet (renewAutomatically) — tu už nie, inak by
+          // vznikali dva nové kódy naraz.
+          setSecondsLeft(0);
         }
       } catch {
         // Dočasný výpadok siete pri jednom pokuse nie je dôvod prestať skúšať —
@@ -106,11 +132,22 @@ export default function QrLoginPanel() {
     return <p className="text-sm text-white/70">{t('auth.prihlasujem')}</p>;
   }
 
+  if (expired && !qrSvg) {
+    return (
+      <div className="text-center">
+        <p className="text-xs text-white/60 mb-3">{t('auth.qr_vyprsal')}</p>
+        <button type="button" onClick={renewManually} className="text-accent text-sm font-semibold hover:underline">
+          {t('auth.qr_novy_kod')}
+        </button>
+      </div>
+    );
+  }
+
   if (createError) {
     return (
       <div className="text-center">
         <p className="text-xs text-red-400 mb-3">{createError}</p>
-        <button type="button" onClick={createSession} className="text-accent text-sm font-semibold hover:underline">
+        <button type="button" onClick={renewManually} className="text-accent text-sm font-semibold hover:underline">
           {t('auth.qr_novy_kod')}
         </button>
       </div>

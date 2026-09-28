@@ -3,6 +3,23 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 
+type FreshUserState = { role: any; banned: boolean; membershipUntil: Date | null; isEditor: boolean } | null;
+const FRESH_TTL_MS = 30_000;
+const freshCache: Map<string, { at: number; value: FreshUserState }> =
+  (globalThis as any).__authFreshCache || ((globalThis as any).__authFreshCache = new Map());
+
+async function getFreshUserState(userId: string): Promise<FreshUserState> {
+  const hit = freshCache.get(userId);
+  if (hit && Date.now() - hit.at < FRESH_TTL_MS) return hit.value;
+  const value = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true, banned: true, membershipUntil: true, isEditor: true }
+  });
+  freshCache.set(userId, { at: Date.now(), value });
+  if (freshCache.size > 5000) freshCache.clear(); // poistka proti rastu pamäte
+  return value;
+}
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   pages: {
@@ -118,10 +135,12 @@ export const authOptions: NextAuthOptions = {
         // Obnov rolu, stav zablokovania a členstvo z databázy pri každom overení,
         // nech sa zmena (napr. odobratie admin práv, zablokovanie, alebo uplatnenie
         // nového kódu členstva) prejaví okamžite, nie až po opätovnom prihlásení.
-        const fresh = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true, banned: true, membershipUntil: true, isEditor: true }
-        });
+        //
+        // Výkon: toto sa volá pri KAŽDOM overení prihlásenia (každá stránka aj
+        // API), takže bez cache to bol jeden dopyt do databázy navyše pri
+        // každej požiadavke. Výsledok si preto pamätáme 30 s — zablokovanie či
+        // zmena práv sa prejaví najneskôr do pol minúty.
+        const fresh = await getFreshUserState(token.id as string);
         if (!fresh || fresh.banned) {
           token.invalid = true;
         } else {
