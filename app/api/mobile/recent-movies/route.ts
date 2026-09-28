@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getMoviePercents } from '@/lib/moviePercents';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,11 @@ export async function GET(req: Request) {
       prisma.movie.count({ where: { approved: true } })
     ]);
 
-    return NextResponse.json({ movies, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200 });
+    // Percento hodnotenia do rohu plagátu.
+    const percents = await getMoviePercents(movies.map((m) => m.id));
+    const withRating = movies.map((m) => ({ ...m, ...(percents[m.id] || { percent: null, percentColor: null }) }));
+
+    return NextResponse.json({ movies: withRating, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200 });
   } catch (error) {
     console.error('[api/mobile/recent-movies]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní filmov.' }, { status: 500 });
