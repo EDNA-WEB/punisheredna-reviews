@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
+import { readingTime } from '@/lib/markdown';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,8 +57,17 @@ export async function GET(req: Request) {
         coverImage: news.coverImage,
         createdAt: news.createdAt,
         author: news.author,
-        likesCount: news.likes.length,
-        likedByMe: me ? news.likes.some((l) => l.userId === me.id) : false,
+        slug: news.slug,
+        tags: news.tags,
+        readingMinutes: readingTime(news.body),
+        // Páči sa / nepáči sa — rovnako ako web (ReactionButtons).
+        likeCount: news.likes.filter((l) => l.value === 1).length,
+        dislikeCount: news.likes.filter((l) => l.value === -1).length,
+        myReaction: me ? news.likes.find((l) => l.userId === me.id)?.value || 0 : 0,
+        isMine: !!me && news.authorId === me.id,
+        // Staré polia ponechané pre spätnú kompatibilitu so staršou verziou appky.
+        likesCount: news.likes.filter((l) => l.value === 1).length,
+        likedByMe: me ? news.likes.some((l) => l.userId === me.id && l.value === 1) : false,
         commentsCount: news.comments.reduce((sum, c) => sum + 1 + c.replies.length, 0),
         comments: news.comments.map(mapComment)
       },
