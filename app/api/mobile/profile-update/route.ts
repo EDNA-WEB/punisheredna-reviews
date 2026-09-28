@@ -4,6 +4,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 import { validateImageDataUrl } from '@/lib/validateUpload';
 import { uploadImage } from '@/lib/cloudinary';
 import { deleteImageByUrl } from '@/lib/cloudinary';
+import { recordProfileChanges } from '@/lib/activityFeed';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,8 @@ export async function POST(req: Request) {
     }
 
     const updated = await prisma.user.update({ where: { id: authUser.id }, data });
+    // getMobileUser vracia celý záznam používateľa pred úpravou — slúži ako "pred".
+    await recordProfileChanges(authUser.id, authUser, updated);
     if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar);
 
     return NextResponse.json({ ok: true }, { status: 200 });

@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { IconUser, IconActivity } from '@/components/Icons';
+import FavoritesFeed from '@/components/FavoritesFeed';
+import { getFavoritesFeed, FeedType } from '@/lib/activityFeed';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,10 +19,25 @@ function timeAgo(date: Date) {
   return date.toLocaleDateString('sk-SK');
 }
 
-export default async function ActivityPage() {
+export default async function ActivityPage({ searchParams }: { searchParams?: { feed?: string; strana?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
   const viewerId = (session.user as any).id;
+
+  // Aktivita obľúbených (zdieľaná logika s appkou — lib/activityFeed.ts).
+  const feedType = (['all', 'reviews', 'ratings', 'other'].includes(searchParams?.feed || '') ? searchParams!.feed : 'all') as FeedType;
+  const feedPages = Math.min(10, Math.max(1, parseInt(searchParams?.strana || '1', 10) || 1));
+  const [dict, feed] = await Promise.all([
+    getUserLanguage().then((lang) => getDictionary(lang)),
+    getFavoritesFeed(viewerId, { type: feedType, page: 0, pageSize: feedPages * 20 })
+  ]);
+  const t = (key: string) => dict[key] || key;
+  const feedTabs: { key: FeedType; label: string }[] = [
+    { key: 'all', label: t('feed.vsetko') },
+    { key: 'reviews', label: t('feed.recenzie') },
+    { key: 'ratings', label: t('feed.hodnotenia') },
+    { key: 'other', label: t('feed.ostatne') }
+  ];
 
   const following = await prisma.follow.findMany({ where: { followerId: viewerId }, select: { followingId: true } });
   const relevantIds = [viewerId, ...following.map((f) => f.followingId)];
@@ -65,6 +83,38 @@ export default async function ActivityPage() {
   return (
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Aktivita</h1>
+
+      <div className="mb-10">
+        <h2 className="font-display font-bold text-lg text-ink mb-3">{t('feed.nadpis')}</h2>
+        <div className="flex gap-2 mb-3 overflow-x-auto">
+          {feedTabs.map((tab) => (
+            <Link
+              key={tab.key}
+              href={`/aktivita?feed=${tab.key}`}
+              className={`text-sm font-semibold px-3.5 py-1.5 rounded-full border flex-none ${
+                feedType === tab.key ? 'bg-accent text-white border-accent' : 'border-line text-ink hover:border-accent'
+              }`}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
+        {feed.items.length === 0 ? (
+          <p className="text-sm text-muted p-4 flex items-center gap-2 border border-line rounded-xl bg-card">
+            <IconActivity className="w-4 h-4 flex-none" />
+            {t('feed.prazdne')}
+          </p>
+        ) : (
+          <FavoritesFeed items={feed.items} t={t} />
+        )}
+        {feed.hasMore && feedPages < 10 && (
+          <div className="text-center mt-4">
+            <Link href={`/aktivita?feed=${feedType}&strana=${feedPages + 1}`} className="text-accent text-sm font-semibold hover:underline" scroll={false}>
+              {t('feed.nacitat_viac')}
+            </Link>
+          </div>
+        )}
+      </div>
 
       <div className="mb-8">
         <h2 className="font-display font-bold text-lg text-ink mb-3">Ja a moji obľúbení používatelia</h2>

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { validateSafeUrl } from '@/lib/validateUpload';
 import { checkKeyRateLimit } from '@/lib/ipRateLimit';
+import { recordProfileChanges } from '@/lib/activityFeed';
 
 const URL_FIELDS = ['homepage', 'facebookUrl', 'instagramUrl', 'tiktokUrl', 'xUrl', 'youtubeUrl', 'spotifyUrl', 'linkedinUrl', 'snapchatUrl', 'blueskyUrl'] as const;
 const TEXT_FIELDS = ['firstName', 'lastName', 'gender', 'tagline', 'country', 'region'] as const;
@@ -49,6 +50,8 @@ export async function PATCH(req: Request) {
     data.birthDate = body.birthDate ? new Date(body.birthDate) : null;
   }
 
+  const before = await prisma.user.findUnique({ where: { id: userId } });
   const updated = await prisma.user.update({ where: { id: userId }, data });
+  await recordProfileChanges(userId, before, updated);
   return NextResponse.json({ ok: true, updated });
 }

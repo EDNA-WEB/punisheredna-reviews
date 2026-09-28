@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { validateImageDataUrl } from '@/lib/validateUpload';
 import { checkKeyRateLimit } from '@/lib/ipRateLimit';
 import { uploadImage, deleteImageByUrl } from '@/lib/cloudinary';
+import { recordProfileChanges } from '@/lib/activityFeed';
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -42,7 +43,9 @@ export async function PATCH(req: Request) {
     data.avatar = avatarUrl;
   }
 
+  const before = await prisma.user.findUnique({ where: { id: userId } });
   const updated = await prisma.user.update({ where: { id: userId }, data });
+  await recordProfileChanges(userId, before, updated);
   if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar);
   return NextResponse.json({ id: updated.id, name: updated.name, avatar: updated.avatar });
 }
