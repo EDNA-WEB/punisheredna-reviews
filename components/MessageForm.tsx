@@ -15,6 +15,31 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  // "Píše…" pre druhú stranu — ping najviac raz za 2,5 s počas písania.
+  const lastTypingPing = useRef(0);
+  const stopTypingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function sendTyping(typing: boolean) {
+    fetch('/api/messages/typing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ receiverId, typing })
+    }).catch(() => {});
+  }
+
+  function onTextChange(value: string) {
+    setText(value);
+    const now = Date.now();
+    if (value.trim() && now - lastTypingPing.current > 2500) {
+      lastTypingPing.current = now;
+      sendTyping(true);
+    }
+    if (stopTypingTimer.current) clearTimeout(stopTypingTimer.current);
+    stopTypingTimer.current = setTimeout(() => {
+      lastTypingPing.current = 0;
+      sendTyping(false);
+    }, 4000);
+  }
 
   function processImageFile(file: File) {
     const reader = new FileReader();
@@ -61,6 +86,8 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
       }
       if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));
       setText('');
+      if (stopTypingTimer.current) clearTimeout(stopTypingTimer.current);
+      lastTypingPing.current = 0;
       setImage('');
       if (fileRef.current) fileRef.current.value = '';
       if (cameraRef.current) cameraRef.current.value = '';
@@ -116,7 +143,7 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
 
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => onTextChange(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();

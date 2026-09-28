@@ -7,6 +7,8 @@ import { uploadImage } from '@/lib/cloudinary';
 import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
 
+import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,6 +106,16 @@ export async function POST(req: Request) {
         image: imageUrl
       }
     });
+
+    // Ukončí "píše…" a pošle adresátovi push notifikáciu do appky (ak ju má).
+    await Promise.all([
+      setTyping(senderId, receiverId, false).catch(() => {}),
+      sendMessagePush(
+        receiverId,
+        { id: sender.id, name: sender.name, avatar: sender.avatar },
+        body && String(body).trim() ? String(body).trim() : '📷 Fotka'
+      )
+    ]);
 
     return NextResponse.json({ ...message, body: body ? String(body).trim() : null, conversationStatus: conversation.status }, { status: 201 });
   } catch (err: any) {

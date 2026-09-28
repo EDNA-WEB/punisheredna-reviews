@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
+import { typersTo } from '@/lib/chatRealtime';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +36,10 @@ export async function GET(req: Request) {
       }
     }
 
-    return NextResponse.json(Array.from(map.values()), { status: 200 });
+    // "píše…" v zozname konverzácií (ako WhatsApp).
+    const typing = await typersTo(myId);
+    const list = Array.from(map.values()).map((c) => ({ ...c, isTyping: typing.has(c.userId) }));
+    return NextResponse.json(list, { status: 200 });
   } catch (error) {
     console.error('[api/mobile/messages/conversations]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní konverzácií.' }, { status: 500 });

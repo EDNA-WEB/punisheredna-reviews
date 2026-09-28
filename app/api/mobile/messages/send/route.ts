@@ -4,6 +4,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
+import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +70,12 @@ export async function POST(req: Request) {
     const message = await prisma.message.create({
       data: { senderId, receiverId, body: encrypted.ciphertext, iv: encrypted.iv }
     });
+
+    // Odoslaním sa "píše…" okamžite ukončí a adresát dostane push notifikáciu.
+    await Promise.all([
+      setTyping(senderId, receiverId, false).catch(() => {}),
+      sendMessagePush(receiverId, { id: sender.id, name: sender.name, avatar: sender.avatar }, String(body).trim())
+    ]);
 
     return NextResponse.json({ id: message.id, body: String(body).trim(), createdAt: message.createdAt, conversationStatus: conversation.status }, { status: 201 });
   } catch (error: any) {

@@ -554,5 +554,8 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'feed.profil', group: 'Aktivita obľúbených', sk: 'aktualizoval(a) informácie vo svojom profile' },
   { key: 'feed.prave_teraz', group: 'Aktivita obľúbených', sk: 'práve teraz' },
   { key: 'feed.pred_min', group: 'Aktivita obľúbených', sk: 'pred {n} min' },
-  { key: 'feed.pred_h', group: 'Aktivita obľúbených', sk: 'pred {n} h' }
+  { key: 'feed.pred_h', group: 'Aktivita obľúbených', sk: 'pred {n} h' },
+
+  // Správy — indikátor písania
+  { key: 'spravy.pise', group: 'Správy', sk: 'píše…' }
 ];

@@ -19,7 +19,9 @@ export async function GET(req: Request) {
     const otherId = searchParams.get('userId');
     if (!otherId) return NextResponse.json({ error: 'Chýba userId.' }, { status: 400 });
 
-    const other = await prisma.user.findUnique({ where: { id: otherId }, select: { id: true, name: true, avatar: true } });
+    const other = await prisma.user.findUnique({ where: { id: otherId }, select: { id: true, name: true, avatar: true, lastActiveAt: true } });
+    // Otvorený chat v appke = som aktívny (rovnako ako web pri otvorení konverzácie).
+    prisma.user.update({ where: { id: myId }, data: { lastActiveAt: new Date() } }).catch(() => {});
     if (!other) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
 
     await prisma.message.updateMany({ where: { senderId: other.id, receiverId: myId, read: false }, data: { read: true } });

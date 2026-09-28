@@ -84,6 +84,7 @@ model User {
   profileVisitsReceived ProfileVisit[] @relation("visitedBy")
   activities       UserActivity[]
   feedEvents       FeedEvent[]
+  pushTokens       PushToken[]
   movieNotes       MovieNote[]
   watchlist        WatchlistItem[]
   discussionFollows MovieDiscussionFollow[]
@@ -149,6 +150,33 @@ model FeedEvent {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// "Píše…" v chate — kto (userId) práve píše komu (otherId). Záznam starší
+// ako pár sekúnd sa považuje za ukončené písanie (bez websocketov).
+model TypingStatus {
+  userId    String
+  otherId   String
+  updatedAt DateTime @default(now())
+
+  @@id([userId, otherId])
+  @@index([otherId, updatedAt])
+}
+
+// Push notifikácie do mobilnej appky (Expo). Jedno zariadenie = jeden token,
+// s vlastným nastavením upozornení a zvuku z Nastavení appky.
+model PushToken {
+  id             String   @id @default(cuid())
+  token          String   @unique
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform       String?
+  notifyMessages Boolean  @default(true)
+  sound          Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model UserActivity {

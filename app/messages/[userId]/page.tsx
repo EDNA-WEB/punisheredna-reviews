@@ -9,6 +9,7 @@ import ChatMessageList from '@/components/ChatMessageList';
 import ConversationConsentBanner from '@/components/ConversationConsentBanner';
 import ChatHeaderActions from '@/components/ChatHeaderActions';
 import ChatPolling from '@/components/ChatPolling';
+import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
@@ -126,6 +127,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
       >
         {isPendingForMe && <ConversationConsentBanner otherId={other.id} otherName={other.name} />}
         <ChatMessageList messages={messages} myId={myId} otherId={other.id} />
+        <ChatTypingIndicator otherId={other.id} />
       </div>
 
       <MessageForm receiverId={other.id} disabledReason={disabledReason} />
