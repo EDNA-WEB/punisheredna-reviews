@@ -179,6 +179,30 @@ model PushToken {
   @@index([userId])
 }
 
+// Monitoring záťaže databázy (Administrácia → Výkon). Súhrn za hodinu podľa
+// toho, odkiaľ dopyt prišiel (stránka/API) a nad čím (model + operácia).
+model PerfStat {
+  id      String   @id
+  hour    DateTime
+  source  String
+  model   String
+  action  String
+  count   Int      @default(0)
+  totalMs Float    @default(0)
+  maxMs   Float    @default(0)
+
+  @@unique([hour, source, model, action])
+  @@index([hour])
+}
+
+// Počet dopytov za každú minútu — z toho sa odhaduje, koľko času bola
+// databáza prebudená (Neon sa uspí až 5 minút po poslednom dopyte).
+model PerfMinute {
+  minute  DateTime @id
+  queries Int      @default(0)
+  totalMs Float    @default(0)
+}
+
 model UserActivity {
   id        String   @id @default(cuid())
   userId    String   @unique

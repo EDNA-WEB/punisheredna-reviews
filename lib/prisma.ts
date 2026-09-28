@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PERF_ENABLED, sourceFromStack, recordQuery, shouldFlush, flushPerf } from './perfMonitor';
 
 const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createPrismaClient> };
 
@@ -7,12 +8,22 @@ const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof cre
 // bez explicitnej konverzie. Toto rozšírenie automaticky prevedie KAŽDÉ BigInt pole vrátené
 // z databázy na bežné číslo (number) — reálne hodnoty rozpočtov/tržieb sú vždy hlboko pod
 // bezpečnou hranicou pre number (Number.MAX_SAFE_INTEGER), takže sa tým nič nestratí.
+//
+// Zároveň tu beží monitoring záťaže databázy (lib/perfMonitor.ts) — meria
+// každý dopyt a raz za minútu uloží súhrn pre dashboard Administrácia → Výkon.
 function createPrismaClient() {
-  return new PrismaClient().$extends({
+  const base = new PrismaClient();
+  return base.$extends({
     query: {
       $allModels: {
-        async $allOperations({ args, query }) {
+        async $allOperations({ model, operation, args, query }) {
+          if (!PERF_ENABLED) return convertBigInts(await query(args));
+          // Zásobník treba zachytiť PRED "await", inak sa stratí, kto dopyt volal.
+          const stack = new Error().stack;
+          const started = performance.now();
           const result = await query(args);
+          recordQuery(sourceFromStack(stack), model, operation, performance.now() - started);
+          if (shouldFlush()) await flushPerf(base);
           return convertBigInts(result);
         }
       }

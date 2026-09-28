@@ -32,6 +32,7 @@ const TABS = [
   { href: '/admin/clenstvo', label: '🎫 Členstvo' },
   { href: '/admin/audit-log', label: 'Audit log' },
   { href: '/admin/analytics', label: 'Analytics' },
+  { href: '/admin/vykon', label: '⚡ Výkon' },
   { href: '/admin/users', label: 'Čitatelia' },
   { href: '/admin/settings', label: 'Vzhľad' },
   { href: '/admin/preklad', label: 'Preklad' },
