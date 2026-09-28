@@ -42,7 +42,10 @@ export async function GET(req: Request) {
           ? `${r.movie.title} - S${r.season.number}E${r.episode.number}${r.episode.title ? `: ${r.episode.title}` : ''}`
           : r.season
           ? `${r.movie.title} - Sezóna ${r.season.number}`
-          : r.movie.title
+          : r.movie.title,
+        // Pre preklik v appke (epizóda/séria → presná stránka, inak profil filmu).
+        seasonNumber: r.season?.number ?? null,
+        episodeNumber: r.episode?.number ?? null
       }
     }));
 

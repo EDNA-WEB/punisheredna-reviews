@@ -100,13 +100,13 @@ export async function GET(req: Request) {
       id: r.id,
       body: r.body,
       createdAt: r.createdAt,
-      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) }
+      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null }
     }));
     const ratingsWithTitle = ratings.map((r) => ({
       id: r.id,
       value: r.value,
       createdAt: r.createdAt,
-      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) }
+      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null }
     }));
 
     const flag = user.country ? getCountryFlagUrl(user.country) : null;

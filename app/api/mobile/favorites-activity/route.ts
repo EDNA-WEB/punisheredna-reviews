@@ -104,7 +104,7 @@ export async function GET(req: Request) {
         createdAt: r.createdAt,
         body: r.body,
         rating: rating?.value ?? null,
-        movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) },
+        movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null },
         author: r.author
       };
     });
@@ -114,7 +114,7 @@ export async function GET(req: Request) {
       id: r.id,
       createdAt: r.createdAt,
       rating: r.value,
-      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) },
+      movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null },
       author: r.user
     }));
 

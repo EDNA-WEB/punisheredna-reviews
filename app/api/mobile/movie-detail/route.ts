@@ -179,6 +179,11 @@ export async function GET(req: Request) {
           ? `https://img.youtube.com/vi/${heroVideoId}/hqdefault.jpg`
           : movie.photos[0]?.thumbnail || movie.poster || null,
         heroVideoId,
+        // Tlačidlo "Přehrát online" — samotný odkaz sa sem NEposiela (dostane
+        // ho len člen cez /api/mobile/movie-online), len informácia, že existuje.
+        hasOnline: !!movie.watchUrl || (seasons as any[]).some((s) => (s.episodes || []).some((e: any) => e.onlineUrl)),
+        hasSubtitles: movie.hasSubtitles,
+        hasDubbing: movie.hasDubbing,
 
         percent,
         percentColor: scoreColorStyle(percent).backgroundColor,

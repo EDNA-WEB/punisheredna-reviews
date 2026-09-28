@@ -109,8 +109,8 @@ export async function GET(req: Request) {
         topGenres,
         isFollowing,
         canSeeFavorites,
-        reviews: reviews.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) } })),
-        ratings: ratings.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode) } }))
+        reviews: reviews.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null } })),
+        ratings: ratings.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null } }))
       },
       { status: 200 }
     );
