@@ -583,5 +583,9 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'home.rotator_zomreli', group: 'Hlavná stránka', sk: 'Zomreli' },
   { key: 'home.dnes_slavia_narodeniny', group: 'Hlavná stránka', sk: 'Dnes slávia narodeniny' },
   { key: 'home.naposledy_zomreli', group: 'Hlavná stránka', sk: 'Naposledy zomreli' },
-  { key: 'home.viac', group: 'Hlavná stránka', sk: 'viac' }
+  { key: 'home.viac', group: 'Hlavná stránka', sk: 'viac' },
+
+  // Neprihlásený návštevník (pod prihlasovacím formulárom)
+  { key: 'guest.na_webe_mame', group: 'Prihlásenie a registrácia', sk: 'Na webe máme' },
+  { key: 'guest.filmov_a_serialov', group: 'Prihlásenie a registrácia', sk: 'filmov a seriálov' }
 ];

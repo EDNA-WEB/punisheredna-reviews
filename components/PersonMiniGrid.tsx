@@ -7,13 +7,15 @@ export default function PersonMiniGrid({
   items,
   moreHref,
   noWrapper,
-  hideHeader
+  hideHeader,
+  animateIn
 }: {
   title: string;
   items: Item[];
   moreHref?: string;
   noWrapper?: boolean;
   hideHeader?: boolean; // v striedajúcom sa boxe (PeopleRotator) má nadpis box sám
+  animateIn?: boolean; // postupný nábeh fotiek pri prepnutí skupiny
 }) {
   if (items.length === 0) return null;
 
@@ -33,6 +35,7 @@ export default function PersonMiniGrid({
             key={p.id}
             href={`/osobnost/${p.slug}`}
             className={`flex-none snap-start flex-col items-center text-center w-20 group ${i < 5 ? 'flex' : 'hidden sm:flex'}`}
+            style={animateIn ? { animation: `prTileIn .75s cubic-bezier(.16,1,.3,1) ${i * 70}ms both` } : undefined}
           >
             <div className="relative mb-1.5">
               <div

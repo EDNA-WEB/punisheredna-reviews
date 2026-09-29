@@ -12,6 +12,7 @@ import TopBar from '@/components/TopBar';
 import Navbar from '@/components/Navbar';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
+import GuestSiteCount from '@/components/GuestSiteCount';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import TvModeToggle from '@/components/TvModeToggle';
@@ -132,15 +133,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <TvModeToggle />
         <TranslationProvider dict={dict}>
           <Providers>
-            <TvNavigation />
-            <SiteWallpaper />
-            <SiteStatsPanel />
-            <TopBar />
-            <Navbar />
-            <div className="main-content-shell max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
-              {children}
-              <SiteFooter />
-            </div>
+            {session ? (
+              <>
+                <TvNavigation />
+                <SiteWallpaper />
+                <SiteStatsPanel />
+                <TopBar />
+                <Navbar />
+                <div className="main-content-shell max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
+                  {children}
+                  <SiteFooter />
+                </div>
+              </>
+            ) : (
+              // Neprihlásený: len formulár v strede + počet filmov. Žiadna navigácia,
+              // panely ani pätička — obsah webu je skrytý (middleware.ts ho aj tak
+              // presmeruje sem z akejkoľvek inej adresy).
+              <>
+                <SiteWallpaper />
+                <main className="min-h-screen flex flex-col justify-center max-w-lg mx-auto px-5">
+                  {children}
+                  <GuestSiteCount />
+                </main>
+              </>
+            )}
             <CookieConsentBanner />
           </Providers>
         </TranslationProvider>

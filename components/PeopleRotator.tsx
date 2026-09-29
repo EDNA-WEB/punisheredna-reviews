@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import PersonMiniGrid from './PersonMiniGrid';
 import PersonMemorialGrid from './PersonMemorialGrid';
@@ -8,54 +8,125 @@ import { IconCake, IconCandle } from './Icons';
 
 // Jeden box na hlavnej stránke namiesto štyroch: Najsledovanejší herci →
 // tvorcovia → Dnes slávia narodeniny → Naposledy zomreli. Každých 30 s sa
-// sám prepne na ďalšiu skupinu (tenký pásik dole ukazuje, kedy). Pri prejdení
-// myšou sa striedanie pozastaví; kliknutím na záložku sa dá prepnúť ručne.
-// Časovač je CSS animácia pásika — prehliadač ju sám zastaví na skrytej karte.
+// sám prepne. Prepínanie ako "stories": tenké pásiky hore (aktívny sa
+// postupne plní, klik na pásik = skok na skupinu), bez tlačidiel s textom.
+// Prechod: staré fotky odplávajú doľava s rozostrením, cez box prebehne
+// jemný svetelný záblesk a nové fotky nabehnú jedna po druhej.
+// Pri prejdení myšou sa striedanie pozastaví.
 
 type Person = { id: string; name: string; slug: string; photo: string | null; birthDate?: Date | string | null; deathDate?: Date | string | null };
 export type RotatorTab = {
   key: 'actors' | 'creators' | 'birthdays' | 'deceased';
-  label: string; // krátky názov záložky
-  title: string; // plný nadpis
+  label: string;
+  title: string;
   moreHref?: string;
   items: Person[];
 };
 
 const INTERVAL_S = 30;
+const OUT_MS = 450;
+
+function Content({ tab, animateIn }: { tab: RotatorTab; animateIn: boolean }) {
+  return tab.key === 'actors' || tab.key === 'creators' ? (
+    <PersonMiniGrid title={tab.title} items={tab.items} noWrapper hideHeader animateIn={animateIn} />
+  ) : (
+    <PersonMemorialGrid title={tab.title} items={tab.items as any} mode={tab.key === 'birthdays' ? 'birthday' : 'death'} hideHeader animateIn={animateIn} />
+  );
+}
 
 export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[]; moreLabel: string }) {
   const visible = tabs.filter((t) => t.items.length > 0);
   const [active, setActive] = useState(0);
-  const [cycle, setCycle] = useState(0); // reštart pásika pri ručnom prepnutí
+  const [prev, setPrev] = useState<number | null>(null);
+  const [cycle, setCycle] = useState(0);
   const [paused, setPaused] = useState(false);
-  if (visible.length === 0) return null;
+  const outTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => () => {
+    if (outTimer.current) clearTimeout(outTimer.current);
+  }, []);
+
+  if (visible.length === 0) return null;
   const idx = active % visible.length;
   const tab = visible[idx];
-  const go = (i: number) => {
-    setActive(i);
+
+  function go(next: number) {
+    const n = ((next % visible.length) + visible.length) % visible.length;
+    if (n === idx) return;
+    setPrev(idx);
+    setActive(n);
     setCycle((c) => c + 1);
-  };
+    if (outTimer.current) clearTimeout(outTimer.current);
+    outTimer.current = setTimeout(() => setPrev(null), OUT_MS);
+  }
+
   const icon =
     tab.key === 'birthdays' ? <IconCake className="w-4 h-4 text-accent" /> : tab.key === 'deceased' ? <IconCandle className="w-4 h-4 text-muted" /> : null;
 
   return (
     <div
-      className="mt-8 border border-line rounded-xl bg-card min-w-0 overflow-hidden"
+      className="mt-8 border border-line rounded-xl bg-card min-w-0 overflow-hidden relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
       <style>{`
-        @keyframes prFade { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
-        @keyframes prProgress { from { width: 0% } to { width: 100% } }
+        @keyframes prTileIn { from { opacity: 0; transform: translateY(14px) scale(.9); filter: blur(6px) } to { opacity: 1; transform: none; filter: none } }
+        @keyframes prOut { to { opacity: 0; transform: translateX(-32px) scale(.97); filter: blur(5px) } }
+        @keyframes prTitleIn { from { opacity: 0; transform: translateY(10px); filter: blur(3px) } to { opacity: 1; transform: none; filter: none } }
+        @keyframes prSweep { from { transform: translateX(-120%) } to { transform: translateX(120%) } }
+        @keyframes prBar { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+        @media (prefers-reduced-motion: reduce) { .pr-motion { animation: none !important } }
       `}</style>
 
-      <div className="p-4 pb-3">
+      {/* Svetelný záblesk pri zmene skupiny */}
+      {cycle > 0 && (
+        <div
+          key={`sweep-${cycle}`}
+          aria-hidden
+          className="pr-motion pointer-events-none absolute inset-y-0 left-0 w-full z-10"
+          style={{
+            background: 'linear-gradient(100deg, transparent 20%, rgba(120, 160, 255, 0.14) 50%, transparent 80%)',
+            animation: 'prSweep 1s cubic-bezier(.4,0,.2,1) both'
+          }}
+        />
+      )}
+
+      <div className="p-4 pt-3">
+        {/* Pásiky ("stories") — aktívny sa plní, klik = skok na skupinu */}
+        {visible.length > 1 && (
+          <div className="flex gap-1.5 mb-3" role="tablist">
+            {visible.map((t, i) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={i === idx}
+                aria-label={t.title}
+                title={t.title}
+                onClick={() => go(i)}
+                className="flex-1 py-1.5 group"
+              >
+                <span className="block h-[3px] rounded-full bg-line overflow-hidden group-hover:bg-muted/40 transition-colors">
+                  {i < idx && <span className="block h-full w-full bg-accent/60 rounded-full" />}
+                  {i === idx && (
+                    <span
+                      key={`bar-${cycle}`}
+                      className="block h-full w-full bg-accent rounded-full origin-left"
+                      style={{ animation: `prBar ${INTERVAL_S}s linear both`, animationPlayState: paused ? 'paused' : 'running' }}
+                      onAnimationEnd={() => go(idx + 1)}
+                    />
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Nadpis aktívnej skupiny + "viac" */}
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <h3 className="font-display font-bold text-sm text-ink flex items-center gap-2 min-w-0">
+        <div className="flex items-center justify-between gap-3 mb-3 min-h-[24px]">
+          <h3 key={`t-${cycle}`} className="pr-motion font-display font-bold text-sm text-ink flex items-center gap-2 min-w-0" style={{ animation: 'prTitleIn .6s cubic-bezier(.16,1,.3,1) both' }}>
             {icon}
             <span className="truncate">{tab.title}</span>
           </h3>
@@ -66,47 +137,18 @@ export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[];
           )}
         </div>
 
-        {/* Obsah — s jemným prelínaním pri zmene */}
-        <div key={`${tab.key}-${cycle}`} style={{ animation: 'prFade .35s ease' }}>
-          {tab.key === 'actors' || tab.key === 'creators' ? (
-            <PersonMiniGrid title={tab.title} items={tab.items} noWrapper hideHeader />
-          ) : (
-            <PersonMemorialGrid title={tab.title} items={tab.items as any} mode={tab.key === 'birthdays' ? 'birthday' : 'death'} hideHeader />
+        {/* Obsah — stará skupina odchádza, nová nabieha */}
+        <div className="relative">
+          {prev !== null && visible[prev] && (
+            <div aria-hidden className="pr-motion absolute inset-0 pointer-events-none" style={{ animation: `prOut ${OUT_MS}ms cubic-bezier(.4,0,1,1) both` }}>
+              <Content tab={visible[prev]} animateIn={false} />
+            </div>
           )}
-        </div>
-
-        {/* Záložky */}
-        {visible.length > 1 && (
-          <div className="flex gap-1.5 mt-3 overflow-x-auto" role="tablist">
-            {visible.map((t, i) => (
-              <button
-                key={t.key}
-                type="button"
-                role="tab"
-                aria-selected={i === idx}
-                onClick={() => go(i)}
-                className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border flex-none transition-colors ${
-                  i === idx ? 'bg-accent text-white border-accent' : 'border-line text-muted hover:text-ink hover:border-accent'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
+          <div key={`c-${idx}-${cycle}`}>
+            <Content tab={tab} animateIn={cycle > 0} />
           </div>
-        )}
-      </div>
-
-      {/* Pásik času do ďalšieho prepnutia */}
-      {visible.length > 1 && (
-        <div className="h-0.5 bg-line">
-          <div
-            key={`p-${idx}-${cycle}`}
-            className="h-full bg-accent/70"
-            style={{ animation: `prProgress ${INTERVAL_S}s linear forwards`, animationPlayState: paused ? 'paused' : 'running' }}
-            onAnimationEnd={() => setActive((a) => (a + 1) % visible.length)}
-          />
         </div>
-      )}
+      </div>
     </div>
   );
 }
