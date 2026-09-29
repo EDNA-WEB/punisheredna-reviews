@@ -1013,6 +1013,8 @@ model QrLoginSession {
   expiresAt DateTime
 
   @@index([status, expiresAt])
+  // Čistenie starých QR kódov maže podľa expiresAt — bez tohto indexu to trvalo aj minúty.
+  @@index([expiresAt])
 }
 
 model CommentReaction {

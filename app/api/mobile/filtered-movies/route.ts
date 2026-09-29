@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 import { getMoviePercents } from '@/lib/moviePercents';
 
@@ -50,7 +51,7 @@ export async function GET(req: Request) {
       result = result.filter((m) => m.percent !== null && m.percent >= minRating).sort((a, b) => (b.percent || 0) - (a.percent || 0));
     }
 
-    return NextResponse.json(result.slice(0, 40), { status: 200 });
+    return NextResponse.json(result.slice(0, 40), { status: 200, headers: cdnHeaders(60) });
   } catch (error) {
     console.error('[api/mobile/filtered-movies]', error);
     return NextResponse.json({ error: 'Chyba pri filtrovaní filmov.' }, { status: 500 });

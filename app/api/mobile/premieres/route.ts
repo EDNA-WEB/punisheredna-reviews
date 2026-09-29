@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 import { getCzCinemaDates, getMoviePercents } from '@/lib/moviePercents';
 
@@ -33,7 +34,7 @@ export async function GET() {
       p.movie = { ...p.movie, ...(percents[p.movie.id] || { percent: null, percentColor: null }) };
     }
 
-    return NextResponse.json(premieres, { status: 200 });
+    return NextResponse.json(premieres, { status: 200, headers: cdnHeaders(600) });
   } catch (error) {
     console.error('[api/mobile/premieres]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní premiér.' }, { status: 500 });

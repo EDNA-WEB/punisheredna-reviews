@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getMobileUser } from '@/lib/mobileAuth';
+import { getMobileUser, touchLastActive } from '@/lib/mobileAuth';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { sortedPair } from '@/lib/conversation';
 
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
 
     const other = await prisma.user.findUnique({ where: { id: otherId }, select: { id: true, name: true, avatar: true, lastActiveAt: true } });
     // Otvorený chat v appke = som aktívny (rovnako ako web pri otvorení konverzácie).
-    prisma.user.update({ where: { id: myId }, data: { lastActiveAt: new Date() } }).catch(() => {});
+    touchLastActive(myId);
     if (!other) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
 
     await prisma.message.updateMany({ where: { senderId: other.id, receiverId: myId, read: false }, data: { read: true } });

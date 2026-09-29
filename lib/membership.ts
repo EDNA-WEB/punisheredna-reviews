@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { memo } from './memoCache';
 import { getOrCreateSystemAccount } from './recoveryCode';
 
 // Zdieľaná funkcia na overenie, či má používateľ aktívne (zaplatené) členstvo
@@ -8,8 +9,12 @@ import { getOrCreateSystemAccount } from './recoveryCode';
 // "onlineFreeForAll" v nastaveniach (dočasné sprístupnenie všetkým).
 export async function isActiveMember(userId: string | null | undefined): Promise<boolean> {
   if (!userId) return false;
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { membershipUntil: true } });
-  return !!(user?.membershipUntil && user.membershipUntil > new Date());
+  // Výkon: volá sa pri každom zobrazení stránky (layout) — výsledok platí 60 s.
+  const until = await memo(`member:${userId}`, 60_000, async () => {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { membershipUntil: true } });
+    return user?.membershipUntil ? user.membershipUntil.toISOString() : null;
+  });
+  return !!(until && new Date(until) > new Date());
 }
 
 // Vynechané zámerne mätúce znaky (0/O, 1/I/L) — rovnaký princíp ako pri

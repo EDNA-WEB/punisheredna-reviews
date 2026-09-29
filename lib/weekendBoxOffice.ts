@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { memo } from './memoCache';
 import { prisma } from './prisma';
 import { normalizeTitle, pickField } from './titleMatch';
 import { getMoviePercents } from './moviePercents';
@@ -333,7 +334,7 @@ const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend
 
 export async function getWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   try {
-    return await getCachedWeekendBoxOffice();
+    return await memo('weekend-box-office', 30 * 60 * 1000, () => getCachedWeekendBoxOffice());
   } catch (e) {
     console.error('[weekendBoxOffice]', (e as any)?.message || e);
     return null;

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { getCachedKinoPremieres, getCachedVodPremieres } from '@/lib/cachedMovieData';
 import { getMoviePercents } from '@/lib/moviePercents';
 
@@ -51,7 +52,7 @@ export async function GET(req: Request) {
       .sort()
       .map((date) => ({ date, movies: groups.get(date) }));
 
-    return NextResponse.json({ type, month, year, days, total: (movies as any[]).length }, { status: 200 });
+    return NextResponse.json({ type, month, year, days, total: (movies as any[]).length }, { status: 200, headers: cdnHeaders(600) });
   } catch (error) {
     console.error('[api/mobile/guide]', error);
     return NextResponse.json({ error: 'Chyba při načítání průvodce.' }, { status: 500 });

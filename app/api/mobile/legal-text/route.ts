@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 import { DEFAULT_RULES_TEXT } from '@/lib/rulesDefaults';
 import { DEFAULT_PRIVACY_POLICY_TEXT } from '@/lib/privacyPolicyDefaults';
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
     const text = type === 'rules' ? settings?.rulesText || DEFAULT_RULES_TEXT : settings?.privacyPolicyText || DEFAULT_PRIVACY_POLICY_TEXT;
 
-    return NextResponse.json({ text }, { status: 200 });
+    return NextResponse.json({ text }, { status: 200, headers: cdnHeaders(3600) });
   } catch (error) {
     console.error('[api/mobile/legal-text]', error);
     return NextResponse.json({ error: 'Chyba při načítání.' }, { status: 500 });

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const data = await getWeekendBoxOffice();
-    return NextResponse.json(data || { entries: [] }, { status: 200 });
+    return NextResponse.json(data || { entries: [] }, { status: 200, headers: cdnHeaders(1800) });
   } catch (error) {
     console.error('[api/mobile/box-office-weekend]', error);
     return NextResponse.json({ entries: [] }, { status: 200 });

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 import { publishedNewsFilter } from '@/lib/publishedFilter';
 
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
       }
     });
 
-    return NextResponse.json({ news, hasMore: news.length === PAGE_SIZE }, { status: 200 });
+    return NextResponse.json({ news, hasMore: news.length === PAGE_SIZE }, { status: 200, headers: cdnHeaders(120) });
   } catch (error) {
     console.error('[api/mobile/news-list]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní noviniek.' }, { status: 500 });

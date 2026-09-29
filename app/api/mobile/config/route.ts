@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 
 // DÔLEŽITÉ: bez tohto riadku by Next.js mohol túto cestu považovať za
@@ -22,5 +23,5 @@ export async function GET() {
     instagramUrl: settings?.instagramUrl || null,
     tiktokUrl: settings?.tiktokUrl || null,
     youtubeUrl: settings?.youtubeUrl || null
-  });
+  }, { headers: cdnHeaders(3600) });
 }

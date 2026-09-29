@@ -97,7 +97,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
 
   return (
     <div className="pt-8 flex flex-col h-[calc(100vh-140px)]">
-      <ChatPolling />
+      <ChatPolling otherId={other.id} />
       <div className="flex items-center gap-3 pb-4 border-b border-line">
         <Link href="/messages" className="text-muted hover:text-accent">←</Link>
         <Link href={`/profile/${other.id}`} className="flex items-center gap-3 flex-1 min-w-0">

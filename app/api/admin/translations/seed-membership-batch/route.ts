@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -47,6 +48,7 @@ const SEED: Record<string, { en: string; cs: string }> = {
 export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
+    revalidateTag('translations');
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
 
@@ -73,6 +75,8 @@ export async function POST() {
       created++;
     }
   }
+
+  revalidateTag('translations');
 
   return NextResponse.json({ ok: true, created, updated, total: Object.keys(SEED).length });
 }

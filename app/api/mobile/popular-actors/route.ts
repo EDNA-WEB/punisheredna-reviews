@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,7 @@ export async function GET(req: Request) {
       prisma.person.count({ where: { approved: true, role } })
     ]);
 
-    return NextResponse.json({ people, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200 });
+    return NextResponse.json({ people, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(600) });
   } catch (error) {
     console.error('[api/mobile/popular-actors]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní hercov.' }, { status: 500 });

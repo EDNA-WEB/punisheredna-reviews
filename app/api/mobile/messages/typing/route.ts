@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getMobileUser } from '@/lib/mobileAuth';
+import { getMobileUser, touchLastActive } from '@/lib/mobileAuth';
 import { isTypingTo, setTyping } from '@/lib/chatRealtime';
 
 export const dynamic = 'force-dynamic';
@@ -13,11 +13,21 @@ export async function GET(req: Request) {
     const otherId = new URL(req.url).searchParams.get('userId');
     if (!otherId) return NextResponse.json({ error: 'Chýba userId.' }, { status: 400 });
 
-    const [typing, other] = await Promise.all([
+    // "version" = posledná správa v konverzácii + či je prečítaná. Appka podľa
+    // nej načíta celé vlákno LEN keď sa niečo zmenilo (namiesto každé 4 s).
+    const [typing, other, last] = await Promise.all([
       isTypingTo(otherId, me.id),
-      prisma.user.findUnique({ where: { id: otherId }, select: { lastActiveAt: true } })
+      prisma.user.findUnique({ where: { id: otherId }, select: { lastActiveAt: true } }),
+      prisma.message.findFirst({
+        where: { OR: [{ senderId: me.id, receiverId: otherId }, { senderId: otherId, receiverId: me.id }] },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, read: true }
+      })
     ]);
-    return NextResponse.json({ typing, lastActiveAt: other?.lastActiveAt || null }, { status: 200 });
+    return NextResponse.json(
+      { typing, lastActiveAt: other?.lastActiveAt || null, version: last ? `${last.id}:${last.read ? 1 : 0}` : 'none' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[api/mobile/messages/typing GET]', error);
     return NextResponse.json({ typing: false }, { status: 200 });
@@ -34,7 +44,7 @@ export async function POST(req: Request) {
 
     await Promise.all([
       setTyping(me.id, userId, !!typing),
-      prisma.user.update({ where: { id: me.id }, data: { lastActiveAt: new Date() } }).catch(() => {})
+      touchLastActive(me.id)
     ]);
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {

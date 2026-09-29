@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getMoviePercents } from '@/lib/moviePercents';
@@ -57,7 +58,7 @@ export async function GET(req: Request) {
     const percents = await getMoviePercents(movies.map((m) => m.id));
     const withRating = movies.map((m) => ({ ...m, ...(percents[m.id] || { percent: null, percentColor: null }) }));
 
-    return NextResponse.json({ movies: withRating, totalPages }, { status: 200 });
+    return NextResponse.json({ movies: withRating, totalPages }, { status: 200, headers: cdnHeaders(120) });
   } catch (error) {
     console.error('[api/mobile/online-movies]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní filmov.' }, { status: 500 });

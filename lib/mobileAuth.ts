@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
+import { memo } from './memoCache';
 
 // Samostatný autentifikačný systém pre mobilnú appku — NextAuth (na webe) je
 // postavený na cookies, čo appka nemá k dispozícii rovnako ako prehliadač.
@@ -30,10 +31,22 @@ export async function getMobileUser(req: Request) {
 
   try {
     const decoded = jwt.verify(token, SECRET) as MobileTokenPayload;
-    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    // Výkon: rovnaký používateľ posiela veľa požiadaviek za sebou (hlavná
+    // obrazovka ich má ~15) — záznam si pamätáme 20 s namiesto dopytu pri každej.
+    const user = await memo(`mobile-user:${decoded.userId}`, 20_000, async () => prisma.user.findUnique({ where: { id: decoded.userId } }));
     if (!user || user.banned) return null;
     return user;
   } catch {
     return null;
   }
+}
+
+// "Naposledy aktívny" stačí zapísať raz za 2 minúty — nie pri každej požiadavke.
+const lastTouch: Map<string, number> = (globalThis as any).__lastActiveTouch || ((globalThis as any).__lastActiveTouch = new Map());
+export async function touchLastActive(userId: string) {
+  const now = Date.now();
+  if (now - (lastTouch.get(userId) || 0) < 120_000) return;
+  lastTouch.set(userId, now);
+  if (lastTouch.size > 5000) lastTouch.clear();
+  await prisma.user.update({ where: { id: userId }, data: { lastActiveAt: new Date(now) } }).catch(() => {});
 }

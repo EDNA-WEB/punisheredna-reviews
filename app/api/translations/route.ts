@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
+import { memoForget } from '@/lib/memoCache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -27,6 +29,8 @@ export async function GET() {
   );
 
   const all = await prisma.translationString.findMany({ orderBy: [{ group: 'asc' }, { key: 'asc' }] });
+  revalidateTag('translations');
+  memoForget('dict:');
   return NextResponse.json(all);
 }
 
@@ -45,6 +49,10 @@ export async function PATCH(req: Request) {
       }).catch(() => null)
     )
   );
+
+  revalidateTag('translations');
+
+  memoForget('dict:');
 
   return NextResponse.json({ ok: true });
 }

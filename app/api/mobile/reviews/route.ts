@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -74,9 +75,7 @@ export async function GET(req: Request) {
         reviews: result,
         nextCursor: !page && reviews.length === limit ? reviews[reviews.length - 1].id : null,
         totalPages: page ? Math.ceil(total / limit) : undefined
-      },
-      { status: 200 }
-    );
+      }, { status: 200, headers: cdnHeaders(60) });
   } catch (error) {
     console.error('[api/mobile/reviews]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní recenzí.' }, { status: 500 });

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -43,7 +44,7 @@ export async function GET(req: Request) {
       return { ...rest, averageRating: avg };
     });
 
-    return NextResponse.json({ movies: result, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200 });
+    return NextResponse.json({ movies: result, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(300) });
   } catch (error) {
     console.error('[api/mobile/popular-movies]', error);
     return NextResponse.json({ error: 'Chyba pri načítaní filmov.' }, { status: 500 });

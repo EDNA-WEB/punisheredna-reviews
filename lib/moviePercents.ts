@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { memo } from './memoCache';
 import { prisma } from './prisma';
 import { computeBlendedPercent, scoreColorStyle } from './rating';
 
@@ -29,7 +30,9 @@ async function computePercents(ids: string[]) {
 export async function getMoviePercents(ids: string[]) {
   const unique = Array.from(new Set(ids)).sort();
   if (unique.length === 0) return {} as Record<string, { percent: number | null; percentColor: string }>;
-  return unstable_cache(() => computePercents(unique), ['movie-percents', unique.join(',')], { revalidate: 300 })();
+  return memo(`percents:${unique.join(',')}`, 5 * 60 * 1000, () =>
+    unstable_cache(() => computePercents(unique), ['movie-percents', unique.join(',')], { revalidate: 300 })()
+  );
 }
 
 // Najbližší (alebo posledný) český kinový dátum premiéry pre viac filmov.
