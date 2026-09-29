@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { WeekendBoxOffice as Data } from '@/lib/weekendBoxOffice';
+import type { WeekendBoxOffice as Data, BoxOfficeEntry } from '@/lib/weekendBoxOffice';
 
 // Box "Top box office (USA)" na hlavnej stránke — na počítači zvýraznený
 // film č. 1 vľavo a rebríček s pruhmi vpravo, na mobile číslovaný zoznam.
@@ -45,7 +45,7 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
   const top = data.entries[0];
   const max = Math.max(1, ...data.entries.map((e) => e.grossValue || 0));
 
-  const titleNode = (e: (typeof data.entries)[number], className: string) =>
+  const titleNode = (e: BoxOfficeEntry, className: string) =>
     e.movie ? (
       <Link href={`/movie/${e.movie.slug}`} className={`${className} hover:text-accent transition-colors`}>
         {e.title}
@@ -127,9 +127,11 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
                 </span>
                 <span className={`flex-none tabular-nums ${i === 0 ? 'font-bold text-ink' : 'text-muted'}`}>{e.grossLabel}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-line mt-1 overflow-hidden">
-                <div className={`h-full rounded-full ${i === 0 ? 'bg-ink' : 'bg-muted/60'}`} style={{ width: `${Math.max(2, ((e.grossValue || 0) / max) * 100)}%` }} />
-              </div>
+              {e.grossValue ? (
+                <div className="h-1.5 rounded-full bg-line mt-1 overflow-hidden">
+                  <div className={`h-full rounded-full ${i === 0 ? 'bg-ink' : 'bg-muted/60'}`} style={{ width: `${Math.max(2, (e.grossValue / max) * 100)}%` }} />
+                </div>
+              ) : null}
             </li>
           ))}
         </ol>

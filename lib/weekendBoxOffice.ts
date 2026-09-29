@@ -79,23 +79,27 @@ const splitNames = (v: string | null, n: number) => (v || '').split(',').map((x)
 async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   // Časová pečiatka v URL obíde medzipamäť GitHubu/CDN — vždy čerstvý súbor.
   const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-  if (!res.ok) return null;
+  if (!res.ok) throw new Error(`GitHub vrátil ${res.status}`);
   const raw = await res.json();
 
-  // Podporí aj rozšírený tvar { weekend: {...}, items: [...] }, ak ho bot neskôr začne posielať.
-  const list: any[] = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : Array.isArray(raw?.data) ? raw.data : [];
+  // Podporí viac tvarov: [ {...} ], { items|data|movies|results|boxOffice: [...] },
+  // prípadne pole obyčajných textov [ "Resident Evil", ... ].
+  const list: any[] = Array.isArray(raw)
+    ? raw
+    : (['items', 'data', 'movies', 'results', 'boxOffice', 'box_office', 'list'].map((k) => raw?.[k]).find(Array.isArray) as any[]) || [];
   const items = list
     .map((it, i) => {
-      const title = String(pickField(it, ['title', 'name', 'titleText']) || '').trim();
-      const gross = parseMoney(pickField(it, ['weekendGross', 'gross', 'weekend', 'amount', 'revenue']));
-      const total = parseMoney(pickField(it, ['totalGross', 'total', 'lifetimeGross', 'cumulative']));
-      const rank = Number(pickField(it, ['rank', 'position'])) || i + 1;
+      if (typeof it === 'string') return { title: it.trim(), gross: null, total: null, rank: i + 1 };
+      const title = String(pickField(it, ['title', 'Title', 'name', 'Name', 'titleText', 'movie', 'film']) || '').trim();
+      const gross = parseMoney(pickField(it, ['weekendGross', 'weekend_gross', 'gross', 'Gross', 'weekend', 'amount', 'revenue', 'earnings']));
+      const total = parseMoney(pickField(it, ['totalGross', 'total_gross', 'total', 'Total', 'lifetimeGross', 'cumulative']));
+      const rank = Number(pickField(it, ['rank', 'Rank', 'position'])) || i + 1;
       return { title, gross, total, rank };
     })
     .filter((it) => it.title)
     .sort((a, b) => a.rank - b.rank)
     .slice(0, LIMIT);
-  if (items.length === 0) return null;
+  if (items.length === 0) throw new Error('data.json neobsahuje žiadne filmy');
 
   // Spárovanie s filmami v databáze — jeden dopyt pre celý zoznam.
   const or = items.flatMap((it) =>
@@ -109,10 +113,22 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
     }
   });
 
+  // Box office = filmy, ktoré sú PRÁVE v kinách. Spárujeme preto len s filmom
+  // z tohto alebo minulého roka — inak by sa napr. "Daniel" alebo "Odysea"
+  // prepojil so starým filmom rovnakého mena (iný plagát, iný odkaz).
+  // Ak aktuálny film v databáze nie je, zobrazí sa len názov bez odkazu.
+  const minYear = new Date().getFullYear() - 1;
+  const isCurrent = (c: { year: string | null; createdAt: Date }) => {
+    const y = parseInt(String(c.year || ''), 10);
+    if (y) return y >= minYear;
+    return Date.now() - c.createdAt.getTime() < 540 * 24 * 60 * 60 * 1000; // bez roku: pridaný za posledných ~18 mesiacov
+  };
   const pick = (title: string) => {
     const n = normalizeTitle(title);
-    const matches = candidates.filter((c) => normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n));
-    // Pri viacerých zhodách (remake, rovnaký názov) ber najnovší film.
+    const matches = candidates.filter(
+      (c) => isCurrent(c) && (normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n))
+    );
+    // Pri viacerých zhodách ber najnovší film.
     return matches.sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime())[0] || null;
   };
   const matched = items.map((it) => ({ it, movie: pick(it.title) }));
@@ -124,7 +140,7 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   const top = matched[0]?.movie;
   const topNames = top ? [...splitNames(top.director, 2), ...splitNames(top.cast, 3)] : [];
   const people = topNames.length ? await prisma.person.findMany({ where: { name: { in: topNames } }, select: { name: true, slug: true } }) : [];
-  const slugOf = new Map(people.map((p) => [p.name, p.slug]));
+  const slugOf = new Map<string, string>(people.map((p: { name: string; slug: string }) => [p.name, p.slug] as [string, string]));
 
   const weekend = raw?.weekend?.start && raw?.weekend?.end ? { start: raw.weekend.start, end: raw.weekend.end } : lastWeekend();
 
@@ -155,15 +171,41 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   };
 }
 
-export const getWeekendBoxOffice = unstable_cache(
-  async () => {
-    try {
-      return await loadWeekendBoxOffice();
-    } catch (e) {
-      console.error('[weekendBoxOffice]', e);
-      return null; // box sa jednoducho neukáže, stránka funguje ďalej
-    }
-  },
-  ['weekend-box-office-v1'],
-  { revalidate: REFRESH_SECONDS, tags: ['weekend-box-office'] }
-);
+// Do cache sa ukladá LEN úspešný výsledok. Pri chybe (GitHub nedostupný,
+// prázdny súbor…) sa nič neuloží a ďalšie zobrazenie to skúsi znova —
+// inak by sa "nič" držalo v pamäti celých 10 hodín.
+const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v3'], {
+  revalidate: REFRESH_SECONDS,
+  tags: ['weekend-box-office']
+});
+
+export async function getWeekendBoxOffice(): Promise<WeekendBoxOffice> {
+  try {
+    return await getCachedWeekendBoxOffice();
+  } catch (e) {
+    console.error('[weekendBoxOffice]', (e as any)?.message || e);
+    return null; // box sa jednoducho neukáže, stránka funguje ďalej
+  }
+}
+
+// Diagnostika pre admina — surový pohľad, čo prišlo z GitHubu (bez cache).
+export async function debugWeekendBoxOffice() {
+  const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+  const text = await res.text();
+  let parsed: WeekendBoxOffice = null;
+  let error: string | null = null;
+  try {
+    parsed = await loadWeekendBoxOffice();
+  } catch (e: any) {
+    error = e?.message || String(e);
+  }
+  return {
+    status: res.status,
+    sample: text.slice(0, 1500),
+    parsedCount: parsed?.entries.length || 0,
+    matched: parsed?.entries.filter((x) => x.movie).length || 0,
+    // Každý riadok: poradie, názov z bota → film v databáze (alebo "nespárované")
+    pairs: (parsed?.entries || []).map((x) => `${x.rank}. ${x.title} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : 'nespárované'}`),
+    error
+  };
+}
