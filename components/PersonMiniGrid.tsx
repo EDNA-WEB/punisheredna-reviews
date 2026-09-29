@@ -6,18 +6,20 @@ export default function PersonMiniGrid({
   title,
   items,
   moreHref,
-  noWrapper
+  noWrapper,
+  hideHeader
 }: {
   title: string;
   items: Item[];
   moreHref?: string;
   noWrapper?: boolean;
+  hideHeader?: boolean; // v striedajúcom sa boxe (PeopleRotator) má nadpis box sám
 }) {
   if (items.length === 0) return null;
 
   const content = (
     <>
-      <div className="flex items-center justify-between mb-3">
+      <div className={`flex items-center justify-between mb-3 ${hideHeader ? 'hidden' : ''}`}>
         <h3 className="font-display font-bold text-sm text-ink">{title}</h3>
         {moreHref && (
           <Link href={moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">

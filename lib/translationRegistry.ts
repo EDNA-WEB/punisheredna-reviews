@@ -574,5 +574,14 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'boxoffice_usa.zdroj', group: 'Box Office', sk: 'Zdroj' },
   { key: 'boxoffice_usa.aktualizovane', group: 'Box Office', sk: 'aktualizované' },
   { key: 'boxoffice_usa.ziadne_data', group: 'Box Office', sk: 'Dáta zatiaľ nie sú k dispozícii.' },
-  { key: 'boxoffice_usa.box_office_link', group: 'Box Office', sk: 'Všetky box office rebríčky' }
+  { key: 'boxoffice_usa.box_office_link', group: 'Box Office', sk: 'Všetky box office rebríčky' },
+
+  // Striedajúci sa box osobností na hlavnej stránke
+  { key: 'home.rotator_herci', group: 'Hlavná stránka', sk: 'Herci' },
+  { key: 'home.rotator_tvorcovia', group: 'Hlavná stránka', sk: 'Tvorcovia' },
+  { key: 'home.rotator_narodeniny', group: 'Hlavná stránka', sk: 'Narodeniny' },
+  { key: 'home.rotator_zomreli', group: 'Hlavná stránka', sk: 'Zomreli' },
+  { key: 'home.dnes_slavia_narodeniny', group: 'Hlavná stránka', sk: 'Dnes slávia narodeniny' },
+  { key: 'home.naposledy_zomreli', group: 'Hlavná stránka', sk: 'Naposledy zomreli' },
+  { key: 'home.viac', group: 'Hlavná stránka', sk: 'viac' }
 ];

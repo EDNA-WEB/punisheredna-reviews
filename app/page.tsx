@@ -9,9 +9,8 @@ import TrailerCarousel from '@/components/TrailerCarousel';
 import PremieresList from '@/components/PremieresList';
 import MovieMiniList from '@/components/MovieMiniList';
 import ReviewPreviewCard from '@/components/ReviewPreviewCard';
-import PersonMiniGrid from '@/components/PersonMiniGrid';
-import PersonMemorialGrid from '@/components/PersonMemorialGrid';
-import { IconCake, IconCandle } from '@/components/Icons';
+import PeopleRotator from '@/components/PeopleRotator';
+import { getBirthdaysToday } from '@/lib/peopleToday';
 import TopVideosList from '@/components/TopVideosList';
 import TopVisitedUsersList from '@/components/TopVisitedUsersList';
 import { getVerifiedCriticIds } from '@/lib/criticStatus';
@@ -152,20 +151,8 @@ export default async function HomePage() {
     })
   ]);
 
-  // "Dnes slávia narodeniny" — zhoda mesiaca a dňa narodenia s dneškom, bez
-  // ohľadu na rok. Prisma toto priamo nevie, preto SQL dopyt priamo. Osoba bez
-  // fotky sa na hlavnej stránke nikdy nezobrazí (photo IS NOT NULL).
-  const birthdaysToday = await prisma.$queryRaw<{ id: string; name: string; slug: string; photo: string | null; birthDate: Date | null; deathDate: Date | null }[]>`
-    SELECT id, name, slug, photo, "birthDate", "deathDate" FROM "Person"
-    WHERE approved = true
-      AND "deathDate" IS NULL
-      AND "birthDate" IS NOT NULL
-      AND photo IS NOT NULL
-      AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
-      AND EXTRACT(DAY FROM "birthDate") = EXTRACT(DAY FROM CURRENT_DATE)
-    ORDER BY name ASC
-    LIMIT 8
-  `;
+  // "Dnes slávia narodeniny" — zdieľané s appkou (lib/peopleToday.ts, cache 1 h).
+  const birthdaysToday = await getBirthdaysToday(8);
 
   // Víkendový box office z GitHub bota — cachované 10 h (lib/weekendBoxOffice.ts).
   const weekendBoxOffice = await getWeekendBoxOffice();
@@ -389,47 +376,18 @@ export default async function HomePage() {
         </div>
       )}
 
-      {(topActors.length > 0 || topCreators.length > 0) && (
-        <div className="mt-8 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
-          {topActors.length > 0 && (
-            <div className="p-4">
-              <PersonMiniGrid title={t('home.najsledovanejsi_herci')} items={topActors} moreHref="/herci" noWrapper />
-            </div>
-          )}
-          {topCreators.length > 0 && (
-            <div className="p-4">
-              <PersonMiniGrid title={t('home.najsledovanejsi_tvorcovia')} items={topCreators} moreHref="/tvorcovia" noWrapper />
-            </div>
-          )}
-        </div>
-      )}
+      {/* Herci / tvorcovia / narodeniny / zosnulí — jeden box, strieda sa každých 30 s */}
+      <PeopleRotator
+        moreLabel={t('home.viac')}
+        tabs={[
+          { key: 'actors', label: t('home.rotator_herci'), title: t('home.najsledovanejsi_herci'), moreHref: '/herci', items: topActors },
+          { key: 'creators', label: t('home.rotator_tvorcovia'), title: t('home.najsledovanejsi_tvorcovia'), moreHref: '/tvorcovia', items: topCreators },
+          { key: 'birthdays', label: t('home.rotator_narodeniny'), title: t('home.dnes_slavia_narodeniny'), items: birthdaysToday },
+          { key: 'deceased', label: t('home.rotator_zomreli'), title: t('home.naposledy_zomreli'), items: recentlyDeceased }
+        ]}
+      />
 
       <WeekendBoxOffice data={weekendBoxOffice} t={t} />
-
-      {(birthdaysToday.length > 0 || recentlyDeceased.length > 0) && (
-        <div className="mt-6 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
-          {birthdaysToday.length > 0 && (
-            <div className="p-4">
-              <PersonMemorialGrid
-                title="Dnes slávia narodeniny"
-                icon={<IconCake className="w-4 h-4 text-accent" />}
-                items={birthdaysToday}
-                mode="birthday"
-              />
-            </div>
-          )}
-          {recentlyDeceased.length > 0 && (
-            <div className="p-4">
-              <PersonMemorialGrid
-                title="Naposledy zomreli"
-                icon={<IconCandle className="w-4 h-4 text-muted" />}
-                items={recentlyDeceased}
-                mode="death"
-              />
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="mt-8 grid sm:grid-cols-2 gap-4">
         <TopVideosList />

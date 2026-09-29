@@ -17,19 +17,21 @@ export default function PersonMemorialGrid({
   title,
   icon,
   items,
-  mode
+  mode,
+  hideHeader
 }: {
   title: string;
   icon?: React.ReactNode;
   items: Item[];
   mode: 'birthday' | 'death';
+  hideHeader?: boolean; // v striedajúcom sa boxe (PeopleRotator) má nadpis box sám
 }) {
   if (items.length === 0) return null;
   const today = new Date();
 
   return (
     <div className="min-w-0">
-      <div className="flex items-center gap-2 mb-3">
+      <div className={`flex items-center gap-2 mb-3 ${hideHeader ? 'hidden' : ''}`}>
         {icon}
         <h3 className="font-display font-bold text-sm text-ink">{title}</h3>
       </div>
