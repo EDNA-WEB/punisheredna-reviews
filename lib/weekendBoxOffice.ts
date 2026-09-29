@@ -197,7 +197,13 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
       .filter((c) => yearOk(c, it))
       .sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime())[0] || null;
 
-  const matched: { it: (typeof items)[number]; movie: Candidate | null; tmdb: { title: string; poster: string | null } | null }[] = items.map((it) => {
+  type Match = {
+    it: (typeof items)[number];
+    movie: Candidate | null;
+    tmdb: { title: string; poster: string | null } | null;
+    sameName: Candidate[]; // filmy v našej DB s rovnakým názvom, ale iným rokom
+  };
+  const matched: Match[] = items.map((it) => {
     const n = normalizeTitle(it.title);
     const byName = candidates.filter((c) => normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n));
     let movie = pickFrom(byName, it);
@@ -218,37 +224,60 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
         it.isReRelease = true;
       }
     }
-    return { it, movie, tmdb: null };
+    return { it, movie, tmdb: null, sameName: movie ? [] : byName };
   });
 
-  // 2) Nespárované → TMDB (český názov + plagát), a cez TMDB ID ešte raz naša databáza.
+  // 2) Nespárované → TMDB. Rozhodnutie "znovuuvedenie vs. nový film":
+  //    IMDb pri znovuuvedení často uvádza rok NOVÉHO uvedenia (Endgame → 2026).
+  //    Ak TMDB pozná film s rovnakým názvom a rokom okolo roku z IMDb, je to
+  //    nový film / remake (nesmie sa spojiť so starým). Ak taký neexistuje,
+  //    je to znovuuvedenie starého filmu → spojíme ho s ním.
+  const newestFirst = (list: Candidate[]) =>
+    [...list].sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime());
   const unmatched = matched.filter((m) => !m.movie);
-  if (unmatched.length && process.env.TMDB_READ_ACCESS_TOKEN) {
-    const found = await Promise.all(
+  if (unmatched.length) {
+    const hasTmdb = !!process.env.TMDB_READ_ACCESS_TOKEN;
+    const decisions = await Promise.all(
       unmatched.map(async (m) => {
-        try {
-          const results = (await tmdbSearchMovie(m.it.title)).filter((r: any) => r.mediaType === 'movie');
-          const n = normalizeTitle(m.it.title);
-          const good = results.filter((r: any) => normalizeTitle(r.originalTitle || '') === n || normalizeTitle(r.title || '') === n);
-          const byYear = good.filter((r: any) => {
-            const y = parseInt(r.year, 10);
-            if (m.it.isReRelease) return true;
-            if (m.it.year) return !!y && Math.abs(y - m.it.year) <= 1;
-            return !!y && y >= minYear;
-          });
-          return byYear[0] || null;
-        } catch {
-          return null;
+        let good: any[] = [];
+        if (hasTmdb) {
+          try {
+            const n = normalizeTitle(m.it.title);
+            good = (await tmdbSearchMovie(m.it.title)).filter(
+              (r: any) => r.mediaType === 'movie' && (normalizeTitle(r.originalTitle || '') === n || normalizeTitle(r.title || '') === n)
+            );
+          } catch {
+            good = [];
+          }
         }
+        const aroundYear = (r: any) => {
+          const y = parseInt(r.year, 10);
+          if (!y) return false;
+          if (m.it.year) return Math.abs(y - m.it.year) <= 1;
+          return y >= minYear;
+        };
+        const recent = m.it.isReRelease ? [] : good.filter(aroundYear);
+        if (recent.length) return { kind: 'new' as const, tmdb: recent[0] };
+        // Žiadny nový film toho mena → znovuuvedenie staršieho.
+        if (m.sameName.length) return { kind: 'rerelease-db' as const, movie: newestFirst(m.sameName)[0] };
+        if (good.length) return { kind: 'rerelease-tmdb' as const, tmdb: good[0] };
+        return { kind: 'none' as const };
       })
     );
-    const tmdbIds = found.filter(Boolean).map((r: any) => r.id as number);
+
+    const tmdbIds = decisions.map((d: any) => d.tmdb?.id).filter((x: any) => typeof x === 'number') as number[];
     const byTmdb: Candidate[] = tmdbIds.length ? await prisma.movie.findMany({ where: { approved: true, tmdbId: { in: tmdbIds } }, select: movieSelect }) : [];
+
     unmatched.forEach((m, i) => {
-      const r: any = found[i];
-      if (!r) return;
-      m.movie = byTmdb.find((c) => c.tmdbId === r.id) || null;
-      if (!m.movie) m.tmdb = { title: r.title || m.it.title, poster: r.poster || null };
+      const d: any = decisions[i];
+      if (d.kind === 'rerelease-db') {
+        m.movie = d.movie;
+        m.it.isReRelease = true;
+      } else if (d.kind === 'new' || d.kind === 'rerelease-tmdb') {
+        if (d.kind === 'rerelease-tmdb') m.it.isReRelease = true;
+        m.movie = byTmdb.find((c) => c.tmdbId === d.tmdb.id) || null;
+        if (!m.movie) m.tmdb = { title: d.tmdb.title || m.it.title, poster: d.tmdb.poster || null };
+      }
     });
   }
 
@@ -297,7 +326,7 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
 }
 
 // Do cache sa ukladá LEN úspešný výsledok — pri chybe to ďalšie zobrazenie skúsi znova.
-const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v6'], {
+const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v7'], {
   revalidate: REFRESH_SECONDS,
   tags: ['weekend-box-office']
 });
@@ -329,7 +358,7 @@ export async function debugWeekendBoxOffice() {
     matched: parsed?.entries.filter((x) => x.movie).length || 0,
     pairs: (parsed?.entries || []).map(
       (x) =>
-        `${x.rank}. ${x.originalTitle}${x.isReRelease ? ' [znovuuvedenie]' : ''} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : x.title !== x.originalTitle ? `${x.title} (z TMDB, nie je v databáze)` : 'nespárované'}`
+        `${x.rank}. ${x.originalTitle}${x.isReRelease ? ' [znovuuvedenie]' : ''} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : x.poster ? `${x.title} (z TMDB, nie je v databáze)` : 'nespárované'}`
     ),
     error
   };
