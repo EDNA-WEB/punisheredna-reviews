@@ -89,12 +89,13 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
     : (['items', 'data', 'movies', 'results', 'boxOffice', 'box_office', 'list'].map((k) => raw?.[k]).find(Array.isArray) as any[]) || [];
   const items = list
     .map((it, i) => {
-      if (typeof it === 'string') return { title: it.trim(), gross: null, total: null, rank: i + 1 };
+      if (typeof it === 'string') return { title: it.trim(), gross: null, total: null, rank: i + 1, year: null as number | null };
       const title = String(pickField(it, ['title', 'Title', 'name', 'Name', 'titleText', 'movie', 'film']) || '').trim();
       const gross = parseMoney(pickField(it, ['weekendGross', 'weekend_gross', 'gross', 'Gross', 'weekend', 'amount', 'revenue', 'earnings']));
       const total = parseMoney(pickField(it, ['totalGross', 'total_gross', 'total', 'Total', 'lifetimeGross', 'cumulative']));
       const rank = Number(pickField(it, ['rank', 'Rank', 'position'])) || i + 1;
-      return { title, gross, total, rank };
+      const year = parseInt(String(pickField(it, ['year', 'releaseYear']) || ''), 10) || null;
+      return { title, gross, total, rank, year };
     })
     .filter((it) => it.title)
     .sort((a, b) => a.rank - b.rank)
@@ -123,15 +124,23 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
     if (y) return y >= minYear;
     return Date.now() - c.createdAt.getTime() < 540 * 24 * 60 * 60 * 1000; // bez roku: pridaný za posledných ~18 mesiacov
   };
-  const pick = (title: string) => {
+  // Ak bot pošle rok filmu, páruje sa presne podľa neho (±1 rok kvôli
+  // rozdielom v dátumoch premiér) — funguje tak aj reedícia starého filmu
+  // (napr. Avengers: Endgame 2019). Bez roku platí pravidlo "aktuálny film".
+  const pick = (title: string, year: number | null) => {
     const n = normalizeTitle(title);
-    const matches = candidates.filter(
-      (c) => isCurrent(c) && (normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n))
-    );
+    const matches = candidates.filter((c) => {
+      if (!(normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n))) return false;
+      if (year) {
+        const y = parseInt(String(c.year || ''), 10);
+        return !!y && Math.abs(y - year) <= 1;
+      }
+      return isCurrent(c);
+    });
     // Pri viacerých zhodách ber najnovší film.
     return matches.sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime())[0] || null;
   };
-  const matched = items.map((it) => ({ it, movie: pick(it.title) }));
+  const matched = items.map((it) => ({ it, movie: pick(it.title, it.year) }));
 
   const ids = matched.map((m) => m.movie?.id).filter(Boolean) as string[];
   const percents = await getMoviePercents(ids);
@@ -174,7 +183,7 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
 // Do cache sa ukladá LEN úspešný výsledok. Pri chybe (GitHub nedostupný,
 // prázdny súbor…) sa nič neuloží a ďalšie zobrazenie to skúsi znova —
 // inak by sa "nič" držalo v pamäti celých 10 hodín.
-const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v3'], {
+const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v4'], {
   revalidate: REFRESH_SECONDS,
   tags: ['weekend-box-office']
 });
