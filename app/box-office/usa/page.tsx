@@ -33,17 +33,18 @@ export default async function UsaBoxOfficePage() {
 
   return (
     <div className="pt-8 max-w-4xl">
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Box Office</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink flex items-center gap-3">
-        <span className="w-1.5 h-8 rounded-full bg-amber-400 inline-block" />
-        {t('boxoffice_usa.nadpis')}
-      </h1>
+      <div className="flex items-end justify-between gap-4 mb-2">
+        <h1 className="font-display font-extrabold text-3xl text-ink">{t('boxoffice_usa.nadpis')}</h1>
+        <Link href="/box-office" className="text-xs font-semibold text-accent hover:underline whitespace-nowrap">
+          {t('boxoffice_usa.box_office_link')} →
+        </Link>
+      </div>
+      <p className="text-muted mb-1">{t('boxoffice_usa.popis')}</p>
       {data && (
-        <p className="text-sm text-muted mt-1 ml-5">
+        <p className="text-sm font-semibold text-ink mb-6">
           {t('boxoffice_vikend.vikend')} {weekendLabel(data.weekendStart, data.weekendEnd)}
         </p>
       )}
-      <p className="text-sm text-muted mt-3 max-w-2xl">{t('boxoffice_usa.popis')}</p>
 
       {entries.length === 0 ? (
         <p className="mt-8 text-muted border border-line rounded-xl p-6 bg-card">{t('boxoffice_usa.ziadne_data')}</p>
@@ -57,7 +58,7 @@ export default async function UsaBoxOfficePage() {
               <div className="w-12 h-[72px] sm:w-14 sm:h-20 rounded-md bg-surface" />
             );
             return (
-              <li key={`${e.rank}-${e.originalTitle}`} className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 ${i === 0 ? 'bg-amber-50/40' : ''}`}>
+              <li key={`${e.rank}-${e.originalTitle}`} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-surface/60 transition-colors">
                 <span className={`w-7 text-center font-display font-extrabold flex-none ${i < 3 ? 'text-2xl text-ink' : 'text-lg text-muted'}`}>{e.rank}</span>
                 {href ? (
                   <Link href={href} className="flex-none">
@@ -76,8 +77,8 @@ export default async function UsaBoxOfficePage() {
                       <span className="font-display font-bold text-ink truncate">{e.title}</span>
                     )}
                     {e.isReRelease && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-700 bg-amber-100 rounded px-1.5 py-0.5">
-                        {t('boxoffice_vikend.reedicia')}
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                        {t('boxoffice_vikend.znovuuvedenie')}
                       </span>
                     )}
                     {e.movie?.percent !== null && e.movie?.percent !== undefined && (
@@ -87,7 +88,7 @@ export default async function UsaBoxOfficePage() {
                   {e.originalTitle !== e.title && <div className="text-xs text-muted truncate">{e.originalTitle}</div>}
                   {e.grossValue ? (
                     <div className="h-1.5 rounded-full bg-line mt-2 overflow-hidden max-w-md">
-                      <div className={`h-full rounded-full ${i === 0 ? 'bg-ink' : 'bg-muted/60'}`} style={{ width: `${Math.max(2, (e.grossValue / max) * 100)}%` }} />
+                      <div className="h-full rounded-full bg-accent" style={{ width: `${Math.max(2, (e.grossValue / max) * 100)}%` }} />
                     </div>
                   ) : null}
                   {/* Na mobile sú čísla pod názvom */}
@@ -138,7 +139,7 @@ export default async function UsaBoxOfficePage() {
         </ol>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 mt-4 text-xs text-muted">
+      <div className="mt-4 text-xs text-muted">
         <span>
           {t('boxoffice_usa.zdroj')}: {data?.source === 'boxofficemojo' ? 'Box Office Mojo' : 'IMDb'}
           {data?.updatedAt && (
@@ -148,9 +149,6 @@ export default async function UsaBoxOfficePage() {
             </>
           )}
         </span>
-        <Link href="/box-office" className="text-accent font-semibold hover:underline">
-          {t('boxoffice_usa.box_office_link')} →
-        </Link>
       </div>
     </div>
   );

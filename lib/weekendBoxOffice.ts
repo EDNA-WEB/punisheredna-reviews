@@ -13,8 +13,8 @@ import { tmdbSearchMovie } from './tmdb';
 //
 // Názvy: prednostne český názov z našej databázy; ak film u nás nie je,
 // český názov a plagát z TMDB; až potom originálny anglický názov.
-// Reedície (napr. predĺžená verzia Avengers: Endgame) sa spárujú s pôvodným
-// filmom a dostanú štítok "reedícia".
+// Znovuuvedenia (napr. predĺžená verzia Avengers: Endgame) sa spárujú
+// s pôvodným filmom a dostanú štítok "znovuuvedenie".
 // ---------------------------------------------------------------------------
 
 const DATA_URL = 'https://raw.githubusercontent.com/EDNA-WEB/bot/main/data.json';
@@ -84,20 +84,44 @@ function lastWeekend(now = new Date()) {
   return { start: friday.toISOString(), end: sunday.toISOString() };
 }
 
-// Prípony reedícií v názve ("Re-release", "Extended Cut", "IMAX", "(2026)"…).
-const RERELEASE_RE =
-  /\s*[([]?\s*(?:\d{4}\s+)?(?:re-?release|re-?issue|extended(?:\s+(?:cut|edition|version))?|director'?s\s+cut|imax(?:\s+re-?release)?|remastered|\d{1,2}(?:st|nd|rd|th)\s+anniversary(?:\s+re-?release)?)\s*[)\]]?\s*$/i;
+// Slová, ktoré v názve znamenajú len inú verziu toho istého filmu
+// (znovuuvedenie, predĺžená verzia, IMAX…). Pokračovanie ("2", "II", "Part")
+// medzi nimi zámerne NIE JE — to je iný film.
+const RERELEASE_WORDS = new Set([
+  're-release', 'rerelease', 're-issue', 'reissue', 'release', 'extended', 'cut', 'edition', 'version', 'directors', "director's",
+  'imax', '3d', '4k', 'anniversary', 'remastered', 'special', 'uncut', 'redux', 'final', 'theatrical', 'ultimate', 'collectors',
+  "collector's", 'restored', 'restoration', 're-edit', 'the', 'and', '&'
+]);
+const CURRENT_YEAR = new Date().getFullYear();
+function isReReleaseToken(tok: string) {
+  const t = tok.toLowerCase().replace(/^[([\-–—:,]+|[)\]\-–—:,.]+$/g, '');
+  if (!t) return true;
+  if (RERELEASE_WORDS.has(t)) return true;
+  if (/^\d{1,2}(st|nd|rd|th)$/.test(t)) return true; // 25th (anniversary)
+  const y = parseInt(t, 10);
+  return /^\d{4}$/.test(t) && Math.abs(y - CURRENT_YEAR) <= 1; // rok znovuuvedenia, nie "2049"
+}
+// Obsahuje zvyšok názvu len slová reedície? (a aspoň jedno "skutočné" — nie len rok)
+function isReReleaseRemainder(rest: string) {
+  const toks = rest.trim().split(/\s+/).filter(Boolean);
+  if (toks.length === 0) return false;
+  if (!toks.every(isReReleaseToken)) return false;
+  // Aspoň jedno "silné" slovo — samotné "Cut" či "Final" (film "Final Cut") nestačí.
+  const strong = /^(re-?release|re-?issue|extended|imax|3d|4k|anniversary|remastered|director'?s|edition|version|restored|restoration|uncut|redux|\d{1,2}(st|nd|rd|th))$/;
+  return toks.some((tk) => strong.test(tk.toLowerCase().replace(/^[([\-–—:,]+|[)\]\-–—:,.]+$/g, '')));
+}
+// Z názvu odstráni koncovú časť typu "(Extended Cut)", "- Re-Release 2026", "IMAX 3D".
 function cleanTitle(t: string) {
-  let s = t.trim();
-  let marker = false;
-  for (let i = 0; i < 3; i++) {
-    const next = s.replace(RERELEASE_RE, '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
-    if (next !== s) marker = marker || RERELEASE_RE.test(s);
-    if (next === s) break;
-    s = next;
+  const original = t.trim();
+  const words = original.split(/\s+/);
+  for (let cut = 1; cut < words.length; cut++) {
+    const head = words.slice(0, cut).join(' ').replace(/[\s\-–—:,(]+$/, '').trim();
+    const tail = words.slice(cut).join(' ');
+    if (head && isReReleaseRemainder(tail)) return { title: head, marker: true };
   }
-  // Názov, ktorý by po očistení zmizol úplne (film sa naozaj volá napr. "Extended"), ponecháme.
-  return s ? { title: s, marker } : { title: t.trim(), marker: false };
+  // samotný rok v zátvorke na konci, napr. "Titanic (1997)"
+  const noYear = original.replace(/\s*\(\d{4}\)\s*$/, '').trim();
+  return { title: noYear || original, marker: false };
 }
 
 // Varianty názvu pre dopyt do databázy (dvojbodka ↔ pomlčka, rovnako ako titleMatch).
@@ -135,9 +159,11 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
       const weeks = parseInt(String(pickField(base, ['weeks', 'weeksReleased', 'Weeks']) || ''), 10) || null;
       const rank = Number(pickField(base, ['rank', 'Rank', 'position'])) || i + 1;
       const year = parseInt(String(pickField(base, ['year', 'releaseYear']) || ''), 10) || null;
-      // Reedícia: značka v názve, alebo film je v kinách len krátko, no celkové
-      // tržby sú mnohonásobne vyššie (zahŕňajú pôvodné uvedenie).
-      const isReRelease = marker || (!!weeks && weeks <= 3 && !!gross && !!total && total > gross * 6);
+      // Znovuuvedenie: značka v názve, film je podľa IMDb starý (napr. Endgame 2019),
+      // alebo je v kinách PRVÝ týždeň, no celkové tržby sú už mnohonásobne vyššie
+      // (zahŕňajú pôvodné uvedenie). Pokračovanie ("… 2") za znovuuvedenie NEPOVAŽUJEME —
+      // bežný film v 3. týždni má prirodzene celkové tržby vyššie ako víkendové.
+      const isReRelease = marker || (!!year && year <= CURRENT_YEAR - 2) || (weeks === 1 && !!gross && !!total && total > gross * 3);
       return { title, rawTitle, gross, total, weeks, rank, year, isReRelease };
     })
     .filter((it) => it.title)
@@ -146,9 +172,16 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   if (items.length === 0) throw new Error('data.json neobsahuje žiadne filmy');
 
   // 1) Spárovanie s našou databázou podľa názvu / originálneho názvu.
-  const or = items.flatMap((it) =>
+  const or: any[] = items.flatMap((it) =>
     titleVariants(it.title).flatMap((v) => [{ title: { equals: v, mode: 'insensitive' as const } }, { originalTitle: { equals: v, mode: 'insensitive' as const } }])
   );
+  // Začiatok názvu (prvé 2 slová) — na spárovanie "Avengers: Endgame <dovetok>" s filmom "Avengers: Endgame".
+  for (const it of items) {
+    const head = it.rawTitle.split(/\s+/).slice(0, 2).join(' ').replace(/[:\-–—,]+$/, '');
+    if (head.length >= 4) {
+      or.push({ title: { startsWith: head, mode: 'insensitive' as const } }, { originalTitle: { startsWith: head, mode: 'insensitive' as const } });
+    }
+  }
   const candidates: Candidate[] = await prisma.movie.findMany({ where: { approved: true, OR: or }, select: movieSelect });
 
   const minYear = new Date().getFullYear() - 1;
@@ -167,7 +200,25 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   const matched: { it: (typeof items)[number]; movie: Candidate | null; tmdb: { title: string; poster: string | null } | null }[] = items.map((it) => {
     const n = normalizeTitle(it.title);
     const byName = candidates.filter((c) => normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n));
-    return { it, movie: pickFrom(byName, it), tmdb: null };
+    let movie = pickFrom(byName, it);
+    if (!movie) {
+      // Náš film je začiatkom názvu z IMDb a zvyšok sú len slová verzie
+      // ("Avengers: Endgame" ⊂ "Avengers: Endgame Extended Re-Release") → ten istý film.
+      const rawN = normalizeTitle(it.rawTitle);
+      const prefixed = candidates
+        .map((c) => {
+          const names = [c.title, c.originalTitle].filter(Boolean).map((x) => normalizeTitle(x as string));
+          const hit = names.find((nm) => rawN.startsWith(nm + ' ') && isReReleaseRemainder(rawN.slice(nm.length)));
+          return hit ? { c, len: hit.length } : null;
+        })
+        .filter(Boolean) as { c: Candidate; len: number }[];
+      prefixed.sort((a, b) => b.len - a.len);
+      if (prefixed[0]) {
+        movie = prefixed[0].c;
+        it.isReRelease = true;
+      }
+    }
+    return { it, movie, tmdb: null };
   });
 
   // 2) Nespárované → TMDB (český názov + plagát), a cez TMDB ID ešte raz naša databáza.
@@ -246,7 +297,7 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
 }
 
 // Do cache sa ukladá LEN úspešný výsledok — pri chybe to ďalšie zobrazenie skúsi znova.
-const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v5'], {
+const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v6'], {
   revalidate: REFRESH_SECONDS,
   tags: ['weekend-box-office']
 });
@@ -278,7 +329,7 @@ export async function debugWeekendBoxOffice() {
     matched: parsed?.entries.filter((x) => x.movie).length || 0,
     pairs: (parsed?.entries || []).map(
       (x) =>
-        `${x.rank}. ${x.originalTitle}${x.isReRelease ? ' [reedícia]' : ''} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : x.title !== x.originalTitle ? `${x.title} (z TMDB, nie je v databáze)` : 'nespárované'}`
+        `${x.rank}. ${x.originalTitle}${x.isReRelease ? ' [znovuuvedenie]' : ''} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : x.title !== x.originalTitle ? `${x.title} (z TMDB, nie je v databáze)` : 'nespárované'}`
     ),
     error
   };
