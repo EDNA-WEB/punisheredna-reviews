@@ -40,19 +40,32 @@ function PeopleLinks({ people }: { people: { name: string; slug: string | null }
   );
 }
 
+// Mobil a tablet ukazujú len prvých 6 priečok, počítač celú desiatku.
+const MOBILE_LIMIT = 6;
+
 export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
   if (!data || data.entries.length === 0) return null;
   const top = data.entries[0];
   const max = Math.max(1, ...data.entries.map((e) => e.grossValue || 0));
 
-  const titleNode = (e: BoxOfficeEntry, className: string) =>
-    e.movie ? (
-      <Link href={`/movie/${e.movie.slug}`} className={`${className} hover:text-accent transition-colors`}>
-        {e.title}
-      </Link>
-    ) : (
-      <span className={className}>{e.title}</span>
-    );
+  const reTag = (e: BoxOfficeEntry) =>
+    e.isReRelease ? (
+      <span className="ml-1.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-amber-700 bg-amber-100 rounded px-1.5 py-0.5">
+        {t('boxoffice_vikend.reedicia')}
+      </span>
+    ) : null;
+  const titleNode = (e: BoxOfficeEntry, className: string) => (
+    <>
+      {e.movie ? (
+        <Link href={`/movie/${e.movie.slug}`} className={`${className} hover:text-accent transition-colors`}>
+          {e.title}
+        </Link>
+      ) : (
+        <span className={className}>{e.title}</span>
+      )}
+      {reTag(e)}
+    </>
+  );
 
   return (
     <section className="mt-6 border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0">
@@ -67,7 +80,7 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
             {t('boxoffice_vikend.vikend')} {weekendLabel(data.weekendStart, data.weekendEnd)}
           </p>
         </div>
-        <Link href="/box-office" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
+        <Link href="/box-office/usa" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
           {t('boxoffice_vikend.viac')}
         </Link>
       </div>
@@ -76,9 +89,9 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
         {/* Zvýraznený film č. 1 (len na väčšej obrazovke) */}
         <div className="hidden lg:block border border-line rounded-xl p-3 bg-surface/40">
           <div className="flex gap-3">
-            {top.movie?.poster ? (
-              <Link href={`/movie/${top.movie.slug}`} className="flex-none">
-                <img src={top.movie.poster} alt={top.title} className="w-24 h-36 rounded-lg object-cover bg-surface" />
+            {top.poster ? (
+              <Link href={top.movie ? `/movie/${top.movie.slug}` : '/box-office/usa'} className="flex-none">
+                <img src={top.poster} alt={top.title} className="w-24 h-36 rounded-lg object-cover bg-surface" />
               </Link>
             ) : (
               <div className="w-24 h-36 rounded-lg bg-surface flex-none" />
@@ -138,12 +151,12 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
 
         {/* Číslovaný zoznam (mobil a tablet) */}
         <ol className="lg:hidden divide-y divide-line -mx-1">
-          {data.entries.map((e) => (
+          {data.entries.slice(0, MOBILE_LIMIT).map((e) => (
             <li key={`m-${e.rank}-${e.title}`} className="flex items-center gap-3 py-2.5 px-1">
               <span className="w-5 text-center font-display font-bold text-ink flex-none">{e.rank}</span>
-              {e.movie?.poster ? (
-                <Link href={`/movie/${e.movie.slug}`} className="flex-none">
-                  <img src={e.movie.poster} alt="" className="w-10 h-14 rounded-md object-cover bg-surface" />
+              {e.poster ? (
+                <Link href={e.movie ? `/movie/${e.movie.slug}` : '/box-office/usa'} className="flex-none">
+                  <img src={e.poster} alt="" className="w-10 h-14 rounded-md object-cover bg-surface" />
                 </Link>
               ) : (
                 <div className="w-10 h-14 rounded-md bg-surface flex-none" />

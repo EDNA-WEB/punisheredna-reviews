@@ -565,5 +565,14 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'boxoffice_vikend.celkom', group: 'Box Office', sk: 'Celkom' },
   { key: 'boxoffice_vikend.rezia', group: 'Box Office', sk: 'Réžia' },
   { key: 'boxoffice_vikend.hraju', group: 'Box Office', sk: 'Hrajú' },
-  { key: 'boxoffice_vikend.viac', group: 'Box Office', sk: 'Viac' }
+  { key: 'boxoffice_vikend.viac', group: 'Box Office', sk: 'Viac' },
+  { key: 'boxoffice_vikend.reedicia', group: 'Box Office', sk: 'reedícia' },
+  { key: 'boxoffice_usa.nadpis', group: 'Box Office', sk: 'Top 10 box office (USA)' },
+  { key: 'boxoffice_usa.popis', group: 'Box Office', sk: 'Víkendové tržby filmov v amerických kinách. Rebríček sa aktualizuje automaticky.' },
+  { key: 'boxoffice_usa.vikend', group: 'Box Office', sk: 'Víkend' },
+  { key: 'boxoffice_usa.tyzdne', group: 'Box Office', sk: 'týž.' },
+  { key: 'boxoffice_usa.zdroj', group: 'Box Office', sk: 'Zdroj' },
+  { key: 'boxoffice_usa.aktualizovane', group: 'Box Office', sk: 'aktualizované' },
+  { key: 'boxoffice_usa.ziadne_data', group: 'Box Office', sk: 'Dáta zatiaľ nie sú k dispozícii.' },
+  { key: 'boxoffice_usa.box_office_link', group: 'Box Office', sk: 'Všetky box office rebríčky' }
 ];

@@ -2,13 +2,19 @@ import { unstable_cache } from 'next/cache';
 import { prisma } from './prisma';
 import { normalizeTitle, pickField } from './titleMatch';
 import { getMoviePercents } from './moviePercents';
+import { tmdbSearchMovie } from './tmdb';
 
 // ---------------------------------------------------------------------------
 // Víkendový Top Box Office (USA) z GitHub bota (EDNA-WEB/bot → data.json).
-// Bot sťahuje dáta z IMDb raz za 24 h; web si ich berie SÁM každých 10 hodín:
-// výsledok (vrátane spárovania s filmami v našej databáze) drží Vercel Data
-// Cache 10 h, takže databáza sa kvôli tomuto boxu zobudí najviac raz za 10 h,
-// nie pri každom zobrazení hlavnej stránky. Žiadny ručný zásah netreba.
+// Bot sťahuje rebríček z IMDb (záloha Box Office Mojo) raz denne; web si ho
+// berie SÁM každých 10 hodín. Výsledok (vrátane spárovania s filmami, českých
+// názvov a percent) drží Vercel Data Cache 10 h — databáza aj TMDB sa kvôli
+// tomuto boxu volajú najviac raz za 10 hodín.
+//
+// Názvy: prednostne český názov z našej databázy; ak film u nás nie je,
+// český názov a plagát z TMDB; až potom originálny anglický názov.
+// Reedície (napr. predĺžená verzia Avengers: Endgame) sa spárujú s pôvodným
+// filmom a dostanú štítok "reedícia".
 // ---------------------------------------------------------------------------
 
 const DATA_URL = 'https://raw.githubusercontent.com/EDNA-WEB/bot/main/data.json';
@@ -17,9 +23,13 @@ const LIMIT = 10;
 
 export type BoxOfficeEntry = {
   rank: number;
-  title: string;
+  title: string; // zobrazovaný (český, ak existuje)
+  originalTitle: string; // pôvodný anglický z IMDb
+  poster: string | null;
+  isReRelease: boolean;
+  weeks: number | null;
   grossLabel: string | null; // "$26.1M"
-  grossValue: number | null; // 26100000 — na dĺžku pruhu
+  grossValue: number | null; // na dĺžku pruhu
   totalLabel: string | null;
   movie: {
     id: string;
@@ -35,7 +45,13 @@ export type BoxOfficeEntry = {
   } | null;
 };
 
-export type WeekendBoxOffice = { weekendStart: string; weekendEnd: string; entries: BoxOfficeEntry[] } | null;
+export type WeekendBoxOffice = {
+  weekendStart: string;
+  weekendEnd: string;
+  source: string | null;
+  updatedAt: string | null;
+  entries: BoxOfficeEntry[];
+} | null;
 
 // "$26.1M" / "26,100,000" / 26100000 → číslo v dolároch
 function parseMoney(v: unknown): number | null {
@@ -60,7 +76,7 @@ function lastWeekend(now = new Date()) {
   const d = new Date(now);
   d.setHours(0, 0, 0, 0);
   const day = d.getDay(); // 0 = nedeľa
-  const back = day === 0 ? 7 : day; // posledná UKONČENÁ nedeľa
+  const back = day === 0 ? 7 : day;
   const sunday = new Date(d);
   sunday.setDate(d.getDate() - back);
   const friday = new Date(sunday);
@@ -68,13 +84,37 @@ function lastWeekend(now = new Date()) {
   return { start: friday.toISOString(), end: sunday.toISOString() };
 }
 
+// Prípony reedícií v názve ("Re-release", "Extended Cut", "IMAX", "(2026)"…).
+const RERELEASE_RE =
+  /\s*[([]?\s*(?:\d{4}\s+)?(?:re-?release|re-?issue|extended(?:\s+(?:cut|edition|version))?|director'?s\s+cut|imax(?:\s+re-?release)?|remastered|\d{1,2}(?:st|nd|rd|th)\s+anniversary(?:\s+re-?release)?)\s*[)\]]?\s*$/i;
+function cleanTitle(t: string) {
+  let s = t.trim();
+  let marker = false;
+  for (let i = 0; i < 3; i++) {
+    const next = s.replace(RERELEASE_RE, '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+    if (next !== s) marker = marker || RERELEASE_RE.test(s);
+    if (next === s) break;
+    s = next;
+  }
+  // Názov, ktorý by po očistení zmizol úplne (film sa naozaj volá napr. "Extended"), ponecháme.
+  return s ? { title: s, marker } : { title: t.trim(), marker: false };
+}
+
 // Varianty názvu pre dopyt do databázy (dvojbodka ↔ pomlčka, rovnako ako titleMatch).
 function titleVariants(t: string) {
-  const s = new Set([t, t.replace(/\s*:\s*/g, ' - '), t.replace(/\s*:\s*/g, ' – '), t.replace(/\s+[–-]\s+/g, ': ')]);
-  return Array.from(s);
+  return Array.from(new Set([t, t.replace(/\s*:\s*/g, ' - '), t.replace(/\s*:\s*/g, ' – '), t.replace(/\s+[–-]\s+/g, ': ')]));
 }
 
 const splitNames = (v: string | null, n: number) => (v || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, n);
+
+type Candidate = {
+  id: string; slug: string; title: string; originalTitle: string | null; year: string | null; poster: string | null;
+  runtimeMinutes: number | null; synopsis: string | null; director: string | null; cast: string | null; createdAt: Date; tmdbId: number | null;
+};
+const movieSelect = {
+  id: true, slug: true, title: true, originalTitle: true, year: true, poster: true,
+  runtimeMinutes: true, synopsis: true, director: true, cast: true, createdAt: true, tmdbId: true
+} as const;
 
 async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   // Časová pečiatka v URL obíde medzipamäť GitHubu/CDN — vždy čerstvý súbor.
@@ -82,65 +122,84 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   if (!res.ok) throw new Error(`GitHub vrátil ${res.status}`);
   const raw = await res.json();
 
-  // Podporí viac tvarov: [ {...} ], { items|data|movies|results|boxOffice: [...] },
-  // prípadne pole obyčajných textov [ "Resident Evil", ... ].
   const list: any[] = Array.isArray(raw)
     ? raw
     : (['items', 'data', 'movies', 'results', 'boxOffice', 'box_office', 'list'].map((k) => raw?.[k]).find(Array.isArray) as any[]) || [];
   const items = list
     .map((it, i) => {
-      if (typeof it === 'string') return { title: it.trim(), gross: null, total: null, rank: i + 1, year: null as number | null };
-      const title = String(pickField(it, ['title', 'Title', 'name', 'Name', 'titleText', 'movie', 'film']) || '').trim();
-      const gross = parseMoney(pickField(it, ['weekendGross', 'weekend_gross', 'gross', 'Gross', 'weekend', 'amount', 'revenue', 'earnings']));
-      const total = parseMoney(pickField(it, ['totalGross', 'total_gross', 'total', 'Total', 'lifetimeGross', 'cumulative']));
-      const rank = Number(pickField(it, ['rank', 'Rank', 'position'])) || i + 1;
-      const year = parseInt(String(pickField(it, ['year', 'releaseYear']) || ''), 10) || null;
-      return { title, gross, total, rank, year };
+      const base = typeof it === 'string' ? { title: it } : it;
+      const rawTitle = String(pickField(base, ['title', 'Title', 'name', 'Name', 'titleText', 'movie', 'film']) || '').trim();
+      const { title, marker } = cleanTitle(rawTitle);
+      const gross = parseMoney(pickField(base, ['weekendGross', 'weekend_gross', 'gross', 'Gross', 'weekend', 'amount', 'revenue', 'earnings']));
+      const total = parseMoney(pickField(base, ['totalGross', 'total_gross', 'total', 'Total', 'lifetimeGross', 'cumulative']));
+      const weeks = parseInt(String(pickField(base, ['weeks', 'weeksReleased', 'Weeks']) || ''), 10) || null;
+      const rank = Number(pickField(base, ['rank', 'Rank', 'position'])) || i + 1;
+      const year = parseInt(String(pickField(base, ['year', 'releaseYear']) || ''), 10) || null;
+      // Reedícia: značka v názve, alebo film je v kinách len krátko, no celkové
+      // tržby sú mnohonásobne vyššie (zahŕňajú pôvodné uvedenie).
+      const isReRelease = marker || (!!weeks && weeks <= 3 && !!gross && !!total && total > gross * 6);
+      return { title, rawTitle, gross, total, weeks, rank, year, isReRelease };
     })
     .filter((it) => it.title)
     .sort((a, b) => a.rank - b.rank)
     .slice(0, LIMIT);
   if (items.length === 0) throw new Error('data.json neobsahuje žiadne filmy');
 
-  // Spárovanie s filmami v databáze — jeden dopyt pre celý zoznam.
+  // 1) Spárovanie s našou databázou podľa názvu / originálneho názvu.
   const or = items.flatMap((it) =>
     titleVariants(it.title).flatMap((v) => [{ title: { equals: v, mode: 'insensitive' as const } }, { originalTitle: { equals: v, mode: 'insensitive' as const } }])
   );
-  const candidates = await prisma.movie.findMany({
-    where: { approved: true, OR: or },
-    select: {
-      id: true, slug: true, title: true, originalTitle: true, year: true, poster: true,
-      runtimeMinutes: true, synopsis: true, director: true, cast: true, createdAt: true
-    }
+  const candidates: Candidate[] = await prisma.movie.findMany({ where: { approved: true, OR: or }, select: movieSelect });
+
+  const minYear = new Date().getFullYear() - 1;
+  const yearOk = (c: { year: string | null; createdAt: Date }, it: (typeof items)[number]) => {
+    if (it.isReRelease) return true; // reedícia → pôvodný film môže byť starý
+    const y = parseInt(String(c.year || ''), 10);
+    if (it.year) return !!y && Math.abs(y - it.year) <= 1;
+    if (y) return y >= minYear;
+    return Date.now() - c.createdAt.getTime() < 540 * 24 * 60 * 60 * 1000;
+  };
+  const pickFrom = (list: Candidate[], it: (typeof items)[number]) =>
+    list
+      .filter((c) => yearOk(c, it))
+      .sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime())[0] || null;
+
+  const matched: { it: (typeof items)[number]; movie: Candidate | null; tmdb: { title: string; poster: string | null } | null }[] = items.map((it) => {
+    const n = normalizeTitle(it.title);
+    const byName = candidates.filter((c) => normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n));
+    return { it, movie: pickFrom(byName, it), tmdb: null };
   });
 
-  // Box office = filmy, ktoré sú PRÁVE v kinách. Spárujeme preto len s filmom
-  // z tohto alebo minulého roka — inak by sa napr. "Daniel" alebo "Odysea"
-  // prepojil so starým filmom rovnakého mena (iný plagát, iný odkaz).
-  // Ak aktuálny film v databáze nie je, zobrazí sa len názov bez odkazu.
-  const minYear = new Date().getFullYear() - 1;
-  const isCurrent = (c: { year: string | null; createdAt: Date }) => {
-    const y = parseInt(String(c.year || ''), 10);
-    if (y) return y >= minYear;
-    return Date.now() - c.createdAt.getTime() < 540 * 24 * 60 * 60 * 1000; // bez roku: pridaný za posledných ~18 mesiacov
-  };
-  // Ak bot pošle rok filmu, páruje sa presne podľa neho (±1 rok kvôli
-  // rozdielom v dátumoch premiér) — funguje tak aj reedícia starého filmu
-  // (napr. Avengers: Endgame 2019). Bez roku platí pravidlo "aktuálny film".
-  const pick = (title: string, year: number | null) => {
-    const n = normalizeTitle(title);
-    const matches = candidates.filter((c) => {
-      if (!(normalizeTitle(c.title) === n || (c.originalTitle && normalizeTitle(c.originalTitle) === n))) return false;
-      if (year) {
-        const y = parseInt(String(c.year || ''), 10);
-        return !!y && Math.abs(y - year) <= 1;
-      }
-      return isCurrent(c);
+  // 2) Nespárované → TMDB (český názov + plagát), a cez TMDB ID ešte raz naša databáza.
+  const unmatched = matched.filter((m) => !m.movie);
+  if (unmatched.length && process.env.TMDB_READ_ACCESS_TOKEN) {
+    const found = await Promise.all(
+      unmatched.map(async (m) => {
+        try {
+          const results = (await tmdbSearchMovie(m.it.title)).filter((r: any) => r.mediaType === 'movie');
+          const n = normalizeTitle(m.it.title);
+          const good = results.filter((r: any) => normalizeTitle(r.originalTitle || '') === n || normalizeTitle(r.title || '') === n);
+          const byYear = good.filter((r: any) => {
+            const y = parseInt(r.year, 10);
+            if (m.it.isReRelease) return true;
+            if (m.it.year) return !!y && Math.abs(y - m.it.year) <= 1;
+            return !!y && y >= minYear;
+          });
+          return byYear[0] || null;
+        } catch {
+          return null;
+        }
+      })
+    );
+    const tmdbIds = found.filter(Boolean).map((r: any) => r.id as number);
+    const byTmdb: Candidate[] = tmdbIds.length ? await prisma.movie.findMany({ where: { approved: true, tmdbId: { in: tmdbIds } }, select: movieSelect }) : [];
+    unmatched.forEach((m, i) => {
+      const r: any = found[i];
+      if (!r) return;
+      m.movie = byTmdb.find((c) => c.tmdbId === r.id) || null;
+      if (!m.movie) m.tmdb = { title: r.title || m.it.title, poster: r.poster || null };
     });
-    // Pri viacerých zhodách ber najnovší film.
-    return matches.sort((a, b) => Number(b.year || 0) - Number(a.year || 0) || b.createdAt.getTime() - a.createdAt.getTime())[0] || null;
-  };
-  const matched = items.map((it) => ({ it, movie: pick(it.title, it.year) }));
+  }
 
   const ids = matched.map((m) => m.movie?.id).filter(Boolean) as string[];
   const percents = await getMoviePercents(ids);
@@ -156,9 +215,15 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   return {
     weekendStart: weekend.start,
     weekendEnd: weekend.end,
-    entries: matched.map(({ it, movie }, index) => ({
+    source: typeof raw?.source === 'string' ? raw.source : null,
+    updatedAt: typeof raw?.updatedAt === 'string' ? raw.updatedAt : null,
+    entries: matched.map(({ it, movie, tmdb }, index) => ({
       rank: it.rank,
-      title: movie?.title || it.title,
+      title: movie?.title || tmdb?.title || it.title,
+      originalTitle: it.title,
+      poster: movie?.poster || tmdb?.poster || null,
+      isReRelease: it.isReRelease,
+      weeks: it.weeks,
       grossLabel: formatMoney(it.gross),
       grossValue: it.gross,
       totalLabel: formatMoney(it.total),
@@ -180,10 +245,8 @@ async function loadWeekendBoxOffice(): Promise<WeekendBoxOffice> {
   };
 }
 
-// Do cache sa ukladá LEN úspešný výsledok. Pri chybe (GitHub nedostupný,
-// prázdny súbor…) sa nič neuloží a ďalšie zobrazenie to skúsi znova —
-// inak by sa "nič" držalo v pamäti celých 10 hodín.
-const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v4'], {
+// Do cache sa ukladá LEN úspešný výsledok — pri chybe to ďalšie zobrazenie skúsi znova.
+const getCachedWeekendBoxOffice = unstable_cache(loadWeekendBoxOffice, ['weekend-box-office-v5'], {
   revalidate: REFRESH_SECONDS,
   tags: ['weekend-box-office']
 });
@@ -193,7 +256,7 @@ export async function getWeekendBoxOffice(): Promise<WeekendBoxOffice> {
     return await getCachedWeekendBoxOffice();
   } catch (e) {
     console.error('[weekendBoxOffice]', (e as any)?.message || e);
-    return null; // box sa jednoducho neukáže, stránka funguje ďalej
+    return null;
   }
 }
 
@@ -213,8 +276,10 @@ export async function debugWeekendBoxOffice() {
     sample: text.slice(0, 1500),
     parsedCount: parsed?.entries.length || 0,
     matched: parsed?.entries.filter((x) => x.movie).length || 0,
-    // Každý riadok: poradie, názov z bota → film v databáze (alebo "nespárované")
-    pairs: (parsed?.entries || []).map((x) => `${x.rank}. ${x.title} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : 'nespárované'}`),
+    pairs: (parsed?.entries || []).map(
+      (x) =>
+        `${x.rank}. ${x.originalTitle}${x.isReRelease ? ' [reedícia]' : ''} → ${x.movie ? `${x.movie.title} (${x.movie.year || '?'}) /movie/${x.movie.slug}` : x.title !== x.originalTitle ? `${x.title} (z TMDB, nie je v databáze)` : 'nespárované'}`
+    ),
     error
   };
 }
