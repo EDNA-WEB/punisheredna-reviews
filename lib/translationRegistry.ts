@@ -557,5 +557,13 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'feed.pred_h', group: 'Aktivita obľúbených', sk: 'pred {n} h' },
 
   // Správy — indikátor písania
-  { key: 'spravy.pise', group: 'Správy', sk: 'píše…' }
+  { key: 'spravy.pise', group: 'Správy', sk: 'píše…' },
+
+  // Víkendový box office na hlavnej stránke
+  { key: 'boxoffice_vikend.nadpis', group: 'Box Office', sk: 'Top box office (USA)' },
+  { key: 'boxoffice_vikend.vikend', group: 'Box Office', sk: 'Víkend' },
+  { key: 'boxoffice_vikend.celkom', group: 'Box Office', sk: 'Celkom' },
+  { key: 'boxoffice_vikend.rezia', group: 'Box Office', sk: 'Réžia' },
+  { key: 'boxoffice_vikend.hraju', group: 'Box Office', sk: 'Hrajú' },
+  { key: 'boxoffice_vikend.viac', group: 'Box Office', sk: 'Viac' }
 ];

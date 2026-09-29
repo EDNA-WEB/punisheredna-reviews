@@ -21,6 +21,8 @@ import { parseConsentCookie, isConsentGranted } from '@/lib/privacyDefaults';
 import { getRecommendationsForUser } from '@/lib/recommendations';
 import MovieCard from '@/components/MovieCard';
 import { primaryGenreLabel } from '@/lib/genreLabel';
+import WeekendBoxOffice from '@/components/WeekendBoxOffice';
+import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
 
 export const dynamic = 'force-dynamic';
 
@@ -164,6 +166,9 @@ export default async function HomePage() {
     ORDER BY name ASC
     LIMIT 8
   `;
+
+  // Víkendový box office z GitHub bota — cachované 10 h (lib/weekendBoxOffice.ts).
+  const weekendBoxOffice = await getWeekendBoxOffice();
 
   const recentlyDeceasedRaw = await prisma.person.findMany({
     where: { approved: true, deathDate: { not: null }, photo: { not: null } },
@@ -398,6 +403,8 @@ export default async function HomePage() {
           )}
         </div>
       )}
+
+      <WeekendBoxOffice data={weekendBoxOffice} t={t} />
 
       {(birthdaysToday.length > 0 || recentlyDeceased.length > 0) && (
         <div className="mt-6 border border-line rounded-xl bg-card divide-y divide-line min-w-0">
