@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Neprezrádzať hlavičkou "X-Powered-By: Next.js", na čom web beží.
+  poweredByHeader: false,
   experimental: {
     serverActions: { bodySizeLimit: '8mb' }
   },
@@ -14,26 +16,18 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           // Pri odkazoch na iné weby posiela len doménu, nie celú URL s citlivými parametrami
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          // Obmedzí prístup k citlivým funkciám prehliadača (kamera, mikrofón, poloha), ktoré web nepotrebuje
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-          // Obmedzí, odkiaľ sa smie na stránku načítať skript/obrázok/rámec — základná ochrana proti
-          // vloženiu cudzieho škodlivého kódu (napr. cez zraniteľnosť v komentároch/recenziách)
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "img-src 'self' data: https://image.tmdb.org https://res.cloudinary.com https://i.ytimg.com https://img.youtube.com https://cdn.simpleicons.org https://flagcdn.com",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com",
-              "style-src 'self' 'unsafe-inline'",
-              "frame-src https://www.youtube.com",
-              "connect-src 'self'",
-              "font-src 'self' data:"
-            ].join('; ')
-          }
+          // Obmedzí prístup k citlivým funkciám prehliadača. Rovnaká hodnota ako v middleware.ts,
+          // aby sa hlavičky nebili (kamera "self" = len pre odfotenie v správach na tomto webe).
+          { key: 'Permissions-Policy', value: 'camera=(self), microphone=(), geolocation=(), payment=(), usb=()' },
+          // Izolácia okna prehliadača od cudzích stránok (odporúčanie analyzátora — COOP)
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' }
+          // Content-Security-Policy tu ZÁMERNE nie je — nastavuje ju middleware.ts, a to prísnejšie:
+          // každá stránka dostane jednorazový kľúč (nonce), takže bez 'unsafe-inline' a 'unsafe-eval'.
+          // Dve CSP hlavičky naraz by sa navzájom obmedzovali a oslabená by ostala viditeľná pre analyzátory.
         ]
       }
     ];
   }
 };
-// deploy-marker: 2026-09-27
+// deploy-marker: 2026-09-30
 module.exports = nextConfig;

@@ -59,6 +59,7 @@ import ReactionButtons from '@/components/ReactionButtons';
 import { IconUser, IconClock, IconPlay } from '@/components/Icons';
 
 import { valueLabel, valueListLabel } from '@/lib/valueLabels';
+import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -406,6 +407,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   return (
     <div className="pt-6">
       <script
+        nonce={headers().get('x-nonce') ?? undefined}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: movieJsonLd({

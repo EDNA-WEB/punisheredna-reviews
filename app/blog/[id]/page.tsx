@@ -12,6 +12,7 @@ import RequestPublishButton from '@/components/RequestPublishButton';
 import ApproveBlogPostButton from '@/components/ApproveBlogPostButton';
 import DeleteBlogPostButton from '@/components/DeleteBlogPostButton';
 
+import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -65,6 +66,7 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
     <div className="pt-10 max-w-2xl">
       {post.published && (
         <script
+          nonce={headers().get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: articleJsonLd({

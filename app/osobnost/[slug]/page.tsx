@@ -21,6 +21,7 @@ import { isActiveMember } from '@/lib/membership';
 import CareerTimelineModal from '@/components/CareerTimelineModal';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
+import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -118,6 +119,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     <div className="pt-8">
       {person.approved && (
         <script
+          nonce={headers().get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: personJsonLd({ name: person.name, slug: person.slug, bio: person.bio, photo: person.photo, role: person.role })

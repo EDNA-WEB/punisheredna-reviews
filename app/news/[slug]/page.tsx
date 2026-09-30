@@ -14,6 +14,7 @@ import CommentForm from '@/components/CommentForm';
 import MovieMiniProfile from '@/components/MovieMiniProfile';
 import NewsSidebarList from '@/components/NewsSidebarList';
 
+import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -152,6 +153,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
   return (
     <div className="pt-6">
       <script
+        nonce={headers().get('x-nonce') ?? undefined}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: articleJsonLd({

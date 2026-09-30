@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Poppins, Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { detectTvMode } from '@/lib/tvMode';
 import './globals.css';
 import Providers from './providers';
@@ -115,6 +115,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             odporúčajú popri ňom aj tento novší, štandardizovaný ekvivalent. */}
         <meta name="mobile-web-app-capable" content="yes" />
         <script
+          nonce={headers().get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
