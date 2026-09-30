@@ -33,7 +33,7 @@ export default async function EditReviewPage({ params }: { params: { slug: strin
 
   return (
     <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-1">Upraviť recenziu</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-1">Upravit recenzi</h1>
       <p className="text-muted mb-8">{review.movie.title}</p>
       <ReviewForm
         initial={{ id: review.id, movieId: review.movieId, body: review.body, rating: rating?.value || 0 }}

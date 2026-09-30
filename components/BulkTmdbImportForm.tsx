@@ -120,7 +120,7 @@ export default function BulkTmdbImportForm() {
           disabled={running || !namesText.trim()}
           className="mt-3 bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          {running ? 'Importujem…' : 'Spustiť hromadný import'}
+          {running ? 'Importuji…' : 'Spustit hromadný import'}
         </button>
       </div>
 
@@ -159,7 +159,7 @@ export default function BulkTmdbImportForm() {
                       {r.message}
                     </Link>
                   ) : (
-                    r.message || (r.status === 'pending' ? 'Čaká…' : r.status === 'searching' ? 'Hledám na TMDb…' : '')
+                    r.message || (r.status === 'pending' ? 'Čeká…' : r.status === 'searching' ? 'Hledám na TMDb…' : '')
                   )}
                 </span>
               </div>

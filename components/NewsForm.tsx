@@ -94,7 +94,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
       return;
     }
     if (tags.length < 5) {
-      setError('Musíš pridať aspoň 5 tagov.');
+      setError('Musíš přidat alespoň 5 tagů.');
       return;
     }
     setLoading(asDraft ? 'draft' : 'publish');
@@ -142,7 +142,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
         <div className="max-w-2xl border border-line rounded-xl p-6 bg-card">
           <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">Takto bude článek vypadat na webu</div>
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
-          <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Názov novinky'}</h1>
+          <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Název novinky'}</h1>
           <div className="flex items-center gap-3 flex-wrap text-sm text-muted mb-6">
             <span className="flex items-center gap-1.5"><IconUser className="w-4 h-4" />KrálFilmu</span>
             <span className="flex items-center gap-1.5">
@@ -173,7 +173,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
               className="w-full text-3xl font-display font-extrabold text-ink bg-transparent border-0 border-b-2 border-line focus:border-accent outline-none pb-3 transition-colors placeholder:text-line"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Názov novinky…"
+              placeholder="Název novinky…"
             />
 
             <input
@@ -200,7 +200,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
               </div>
               <div className="p-4 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-ink mb-1.5">Naplánovať na presný čas</label>
+                  <label className="block text-xs font-semibold text-ink mb-1.5">Naplánovat na přesný čas</label>
                   <input
                     type="datetime-local"
                     className="field-input-sm w-full"
@@ -214,7 +214,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                   </p>
                   {publishAt && (
                     <button type="button" onClick={() => setPublishAt('')} className="text-[11px] text-danger hover:underline mt-1">
-                      Zrušiť plánovanie
+                      Zrušit plánování
                     </button>
                   )}
                 </div>
@@ -227,7 +227,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     disabled={loading !== null}
                     className="w-full bg-accent text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 transition-colors"
                   >
-                    {loading === 'publish' ? 'Ukladám…' : wasDraft ? 'Zverejniť' : isEdit ? 'Uložiť zmeny' : 'Publikovať novinku'}
+                    {loading === 'publish' ? 'Ukládám…' : wasDraft ? 'Zveřejnit' : isEdit ? 'Uložit změny' : 'Publikovat novinku'}
                   </button>
                   <button
                     type="button"
@@ -235,14 +235,14 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     disabled={loading !== null}
                     className="w-full text-sm font-semibold text-ink border border-line px-4 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                   >
-                    {loading === 'draft' ? 'Ukladám…' : 'Uložit jako koncept'}
+                    {loading === 'draft' ? 'Ukládám…' : 'Uložit jako koncept'}
                   </button>
                   <button
                     type="button"
                     onClick={() => router.back()}
                     className="w-full text-xs font-semibold text-muted hover:text-ink py-1.5"
                   >
-                    Zrušiť
+                    Zrušit
                   </button>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
 
             <div className="border border-line rounded-xl overflow-hidden">
               <div className="bg-surface px-4 py-2.5 border-b border-line">
-                <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Titulný obrázok</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Titulní obrázek</h3>
               </div>
               <div className="p-4">
                 <label
@@ -260,7 +260,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                 >
                   {cover ? (
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <span className="text-white text-xs font-semibold">Zmeniť obrázok</span>
+                      <span className="text-white text-xs font-semibold">Změnit obrázek</span>
                     </div>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-muted gap-1">
@@ -272,7 +272,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                 <input id="news-cover-upload" type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
                 {cover && (
                   <button type="button" onClick={() => setCover('')} className="text-[11px] text-danger hover:underline mt-2">
-                    Odstrániť obrázok
+                    Odstranit obrázek
                   </button>
                 )}
               </div>
@@ -287,7 +287,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                   <div className="flex items-center gap-2 bg-surface border border-line rounded-lg px-3 py-2">
                     <span className="text-sm text-ink flex-1 truncate">{movieLabel}</span>
                     <button type="button" onClick={clearMovie} className="text-xs font-semibold text-muted hover:text-danger flex-none">
-                      Odobrať
+                      Odebrat
                     </button>
                   </div>
                 ) : (

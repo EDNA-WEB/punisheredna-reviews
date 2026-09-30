@@ -52,7 +52,7 @@ export default function PersonFormWithTmdbImport() {
   return (
     <div>
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
-        <h2 className="text-sm font-bold text-ink mb-1">Importovať z TMDb</h2>
+        <h2 className="text-sm font-bold text-ink mb-1">Importovat z TMDb</h2>
         <p className="text-xs text-muted mb-3">
           Najdi herce/tvůrce a formulář níže se automaticky předvyplní. Zdroj dat: TMDb — před uložením to prosím zkontroluj (např. roli Herec/Tvůrce).
         </p>
@@ -87,7 +87,7 @@ export default function PersonFormWithTmdbImport() {
                   <div className="text-sm font-semibold text-ink truncate">{r.name}</div>
                   {r.knownFor && <div className="text-xs text-muted truncate">{r.knownFor}</div>}
                 </div>
-                <span className="text-xs text-accent font-semibold flex-none">{importing === r.id ? 'Importujem…' : 'Použiť'}</span>
+                <span className="text-xs text-accent font-semibold flex-none">{importing === r.id ? 'Importuji…' : 'Použít'}</span>
               </button>
             ))}
           </div>

@@ -46,7 +46,7 @@ export default function EntityReviewForm({ apiBase }: { apiBase: string }) {
         className="field-input min-h-[160px]"
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Napíš svoju recenziu…"
+        placeholder="Napiš svou recenzi…"
         maxLength={20000}
         autoFocus
       />
@@ -57,10 +57,10 @@ export default function EntityReviewForm({ apiBase }: { apiBase: string }) {
           disabled={loading}
           className="bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Ukladám…' : 'Uverejniť recenziu'}
+          {loading ? 'Ukládám…' : 'Zveřejnit recenzi'}
         </button>
         <button onClick={() => setOpen(false)} className="text-sm text-muted hover:text-ink">
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </div>

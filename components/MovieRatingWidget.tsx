@@ -85,8 +85,8 @@ export default function MovieRatingWidget({ movieId, initialValue }: { movieId: 
           <button
             onClick={clearRating}
             disabled={loading}
-            title="Zmazať hodnotenie"
-            aria-label="Zmazať hodnotenie"
+            title="Smazat hodnocení"
+            aria-label="Smazat hodnocení"
             className="w-6 h-6 rounded-full flex items-center justify-center text-muted hover:text-white hover:bg-danger transition-colors disabled:opacity-50"
           >
             <IconTrash className="w-3 h-3" />

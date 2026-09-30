@@ -9,7 +9,7 @@ import { logBulkAction } from '@/lib/auditLog';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { preview } = await req.json().catch(() => ({ preview: false }));
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     try {
       const imageUrl = await tmdbGetBackdropUrl(movie.tmdbId!, movie.contentType === 'Seriál' ? 'tv' : 'movie');
       if (!imageUrl) {
-        results.push({ title: movie.title, status: 'BEZ OBRÁZKA', detail: 'Na TMDb sa nenašiel vhodný obrázok' });
+        results.push({ title: movie.title, status: 'BEZ OBRÁZKA', detail: 'Na TMDb se nenašel vhodný obrázek' });
         continue;
       }
       await prisma.movie.update({ where: { id: movie.id }, data: { onlineImage: imageUrl } });
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné doplnenie obrázkov k online sledovaniu',
+    toolName: 'Hromadné doplnění obrázků k online sledování',
     updated: changes.length,
     failed: results.filter((r) => r.status === 'CHYBA').length,
     total: results.length

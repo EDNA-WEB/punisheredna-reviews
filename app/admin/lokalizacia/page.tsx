@@ -30,10 +30,9 @@ export default async function AdminLocalizationPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Lokalizácia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Lokalizace</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
-        Rýchle hromadné nastavenie, ktoré filmy a seriály majú dabing, titulky, alebo ani jedno — bez potreby otvárať
-        každý film zvlášť cez "Upraviť film".
+        Rychlé hromadné nastavení, které filmy a seriály mají dabing, titulky, nebo ani jedno — bez nutnosti otevírat každý film zvlášť přes "Upravit film".
       </p>
 
       <LocalizationAdminList movies={sortedMovies} />

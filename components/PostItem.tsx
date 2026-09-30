@@ -26,7 +26,7 @@ export default function PostItem({
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš tento príspevok zmazať?')) return;
+    if (!confirm('Opravdu chceš tento příspěvek smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE' });
@@ -58,7 +58,7 @@ export default function PostItem({
             <span>{new Date(post.createdAt).toLocaleDateString('cs-CZ')}</span>
           </div>
           {canDelete && (
-            <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">Zmazať</button>
+            <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">Smazat</button>
           )}
         </div>
         <p className="text-[15px] text-ink whitespace-pre-wrap mb-2">{post.body}</p>

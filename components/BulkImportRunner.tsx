@@ -162,7 +162,7 @@ export default function BulkImportRunner({
             disabled={busy}
             className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
           >
-            {busy ? 'Ukladám…' : `Potvrdiť a uložiť (${changedCount})`}
+            {busy ? 'Ukládám…' : `Potvrdit a uložit (${changedCount})`}
           </button>
         )}
 

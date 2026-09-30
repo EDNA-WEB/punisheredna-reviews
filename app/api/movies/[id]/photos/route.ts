@@ -13,7 +13,7 @@ async function requireAdmin() {
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { thumbnail, full } = await req.json();
   if (!full) return NextResponse.json({ error: 'Chýba fotka.' }, { status: 400 });

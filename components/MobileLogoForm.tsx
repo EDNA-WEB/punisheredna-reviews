@@ -85,11 +85,11 @@ export default function MobileLogoForm({ initial }: { initial: string | null }) 
 
       <div className="flex gap-3">
         <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : 'Uložiť logo appky'}
+          {loading ? 'Ukládám…' : 'Uložit logo appky'}
         </button>
         {logo && (
           <button onClick={remove} disabled={loading} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-danger hover:border-danger">
-            Odstrániť logo
+            Odstranit logo
           </button>
         )}
       </div>

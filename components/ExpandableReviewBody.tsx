@@ -23,7 +23,7 @@ export default function ExpandableReviewBody({ html, plainText }: { html: string
           onClick={() => setExpanded((e) => !e)}
           className="text-accent font-semibold hover:underline text-sm mt-1.5"
         >
-          {expanded ? 'zobrazit méně' : 'zobraziť celú recenziu'}
+          {expanded ? 'zobrazit méně' : 'zobrazit celou recenzi'}
         </button>
       )}
     </div>

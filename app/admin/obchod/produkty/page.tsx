@@ -21,7 +21,7 @@ export default async function ShopProductsAdminPage() {
       <AdminTabs />
       <div className="flex items-center justify-between mb-8">
         <div>
-          <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia — Obchod</div>
+          <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace — Obchod</div>
           <h1 className="font-display font-extrabold text-3xl text-ink">Produkty</h1>
         </div>
         <div className="flex gap-2">
@@ -29,7 +29,7 @@ export default async function ShopProductsAdminPage() {
             Kategórie
           </Link>
           <Link href="/admin/obchod/produkty/novy" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
-            + Pridať produkt
+            + Přidat produkt
           </Link>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default async function ShopProductsAdminPage() {
             )}
           </Link>
         ))}
-        {products.length === 0 && <p className="text-sm text-muted p-4">Zatiaľ žiadne produkty.</p>}
+        {products.length === 0 && <p className="text-sm text-muted p-4">Zatím žádné produkty.</p>}
       </div>
     </div>
   );

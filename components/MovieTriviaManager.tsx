@@ -113,7 +113,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
   return (
     <div className="border border-line rounded-xl p-4 bg-surface space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-bold uppercase tracking-wide text-muted">Zaujímavosti ({trivia.length}/50)</div>
+        <div className="text-xs font-bold uppercase tracking-wide text-muted">Zajímavosti ({trivia.length}/50)</div>
         <button
           type="button"
           onClick={() => {
@@ -122,7 +122,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
           }}
           className="text-xs font-semibold text-accent hover:underline"
         >
-          {bulkMode ? 'Zrušiť hromadné pridávanie' : 'Hromadne pridať (vložiť blok textu)'}
+          {bulkMode ? 'Zrušit hromadné přidávání' : 'Hromadně přidat (vložit blok textu)'}
         </button>
       </div>
 
@@ -156,7 +156,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
                 disabled={!bulkText.trim()}
                 className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                Rozdeliť na položky
+                Rozdělit na položky
               </button>
             </>
           ) : (
@@ -180,7 +180,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
                   disabled={bulkSaving || bulkPreview.length === 0}
                   className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
                 >
-                  {bulkSaving ? `Ukladám… (${bulkProgress}/${bulkPreview.length})` : `Potvrdit a přidat všechny ${bulkPreview.length}`}
+                  {bulkSaving ? `Ukládám… (${bulkProgress}/${bulkPreview.length})` : `Potvrdit a přidat všechny ${bulkPreview.length}`}
                 </button>
                 <button type="button" onClick={() => setBulkPreview(null)} disabled={bulkSaving} className="text-xs text-muted hover:underline">
                   Zpět na úpravu textu
@@ -196,7 +196,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             maxLength={2000}
-            placeholder="Napíš novú zaujímavosť a klikni Pridať…"
+            placeholder="Napiš novou zajímavost a klikni na Přidat…"
           />
           <button
             type="button"
@@ -204,7 +204,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
             disabled={saving || !newText.trim()}
             className="bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {saving ? '…' : 'Pridať'}
+            {saving ? '…' : 'Přidat'}
           </button>
         </div>
       )}

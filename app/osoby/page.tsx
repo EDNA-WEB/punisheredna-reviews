@@ -52,7 +52,7 @@ export default async function PeopleResultsPage({ searchParams }: { searchParams
 
   return (
     <div className="pt-8">
-      <Link href="/tvorcovia/filter" className="text-sm text-muted hover:text-accent inline-block mb-5">← Upraviť filter</Link>
+      <Link href="/tvorcovia/filter" className="text-sm text-muted hover:text-accent inline-block mb-5">← Upravit filtr</Link>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Výsledky vyhledávání</h1>
       <p className="text-muted mb-8">{filtered.length} nalezených osob.</p>
 

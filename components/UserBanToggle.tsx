@@ -34,7 +34,7 @@ export default function UserBanToggle({ id, banned }: { id: string; banned: bool
         banned ? 'text-white bg-night border-night hover:bg-night/80' : 'text-danger border-danger hover:bg-danger hover:text-white'
       }`}
     >
-      {banned ? 'Odblokovať' : 'Zablokovať'}
+      {banned ? 'Odblokovat' : 'Zablokovat'}
     </button>
   );
 }

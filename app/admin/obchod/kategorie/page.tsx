@@ -19,7 +19,7 @@ export default async function ShopCategoriesAdminPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia — Obchod</div>
+      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace — Obchod</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Kategórie</h1>
       <ShopCategoriesAdmin initialCategories={categories} />
     </div>

@@ -50,7 +50,7 @@ export default function PostForm({ threadId }: { threadId: string }) {
       <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Napiš odpověď…" className="field-input min-h-[100px]" maxLength={3000} />
       {error && <div className="text-danger text-sm">{error}</div>}
       <button type="submit" disabled={loading} className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-        {loading ? 'Odosielam…' : 'Odpovedať'}
+        {loading ? 'Odesílám…' : 'Odpovědět'}
       </button>
     </form>
   );

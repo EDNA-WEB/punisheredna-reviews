@@ -29,7 +29,7 @@ const PREFERRED_REGIONS = ['CZ', 'SK', 'US'];
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   let items: any[];
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     items = Array.isArray(body) ? body : [body];
   } catch {
-    return NextResponse.json({ error: 'Neplatný JSON súbor.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatný soubor JSON.' }, { status: 400 });
   }
 
   const results: { tmdbId: number; status: string; detail?: string }[] = [];
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     const movie = await prisma.movie.findFirst({ where: { tmdbId }, select: { id: true } });
     if (!movie) {
-      results.push({ tmdbId, status: 'NENÁJDENÉ', detail: 'Žiadny film s týmto tmdb_id v databáze' });
+      results.push({ tmdbId, status: 'NENÁJDENÉ', detail: 'Žádný film s tímto tmdb_id v databázi' });
       continue;
     }
 

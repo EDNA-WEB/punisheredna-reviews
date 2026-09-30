@@ -97,9 +97,9 @@ export default async function MessagesPage() {
                     <p className="text-xs text-muted truncate">
                       {(() => {
                         const st = statusByOtherId.get(c.user.id);
-                        if (st?.status === 'DECLINED') return <span className="text-danger">Zamietnuté</span>;
-                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-amber-600">Čaká na potvrdenie</span>;
-                        if (st?.status === 'PENDING') return <span className="text-accent font-semibold">Chce s tebou komunikovať</span>;
+                        if (st?.status === 'DECLINED') return <span className="text-danger">Zamítnuto</span>;
+                        if (st?.status === 'PENDING' && st.initiatorId === myId) return <span className="text-amber-600">Čeká na potvrzení</span>;
+                        if (st?.status === 'PENDING') return <span className="text-accent font-semibold">Chce s tebou komunikovat</span>;
                         return (
                           <>
                             {c.lastMine && <span className="mr-1">✓✓</span>}

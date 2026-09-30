@@ -310,16 +310,16 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
           href="/api/admin/movies/export-missing-online"
           className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
         >
-          Stiahnuť zoznam (.txt)
+          Stáhnout seznam (.txt)
         </a>
       </div>
 
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-online"
-        title="Hromadne pridať online odkazy"
+        title="Hromadně přidat online odkazy"
         description={'Vlož seznam ve tvaru "Název filmu – https://..." pro filmy, nebo "Název seriálu S01E01 – https://..." pro konkrétní epizodu, jeden řádek na položku.'}
         placeholder={'Together – https://...\nHra o trůny S01E01 – https://...'}
-        buttonLabel="Priradiť odkazy"
+        buttonLabel="Přiřadit odkazy"
       />
 
       <div className="border border-line rounded-xl p-4 bg-surface mb-2">
@@ -352,10 +352,10 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                 disabled={imgBusy}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {imgBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${imgPreview.count})`}
+                {imgBusy ? 'Doplňuji…' : `Potvrdit a doplnit (${imgPreview.count})`}
               </button>
               <button type="button" onClick={() => setImgPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -405,7 +405,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
             <div className="w-10 h-14 rounded-md bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
             <Link href={`/movie/${m.slug}`} target="_blank" className="text-sm font-semibold text-ink hover:text-accent flex-1 truncate flex items-center gap-1.5">
               {(m.contentType === 'Seriál' ? !m.seasons.some((s) => s.episodes.some((ep) => ep.onlineUrl)) : !m.watchUrl) && (
-                <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýba online odkaz" />
+                <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chybí online odkaz" />
               )}
               {m.title}
               {m.year && <span className="text-muted font-normal text-xs">({m.year})</span>}
@@ -421,7 +421,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
               onClick={() => setOpenFor((cur) => (cur === m.id ? null : m.id))}
               className="text-xs font-semibold text-accent hover:underline flex-none whitespace-nowrap"
             >
-              {openFor === m.id ? 'Skryť' : 'Nastaviť Online'}
+              {openFor === m.id ? 'Skrýt' : 'Nastavit Online'}
             </button>
           </div>
 
@@ -444,7 +444,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                     disabled={saving === m.id}
                     className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
                   >
-                    {saving === m.id ? '…' : 'Uložiť'}
+                    {saving === m.id ? '…' : 'Uložit'}
                   </button>
                 </div>
               </div>
@@ -463,7 +463,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                     <img src={m.onlineImage} alt="" className="w-48 h-28 object-cover rounded-lg bg-surface" />
                   ) : (
                     <div className="w-48 h-28 rounded-lg bg-surface border border-dashed border-line flex items-center justify-center text-xs text-muted text-center px-2">
-                      {uploading === m.id ? 'Nahrávam…' : 'Klikni pre nahratie'}
+                      {uploading === m.id ? 'Nahrávám…' : 'Klikni pre nahratie'}
                     </div>
                   )}
                 </label>
@@ -475,7 +475,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                     disabled={uploading === m.id}
                     className="mt-1.5 text-xs font-semibold text-accent hover:underline disabled:opacity-50"
                   >
-                    {uploading === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                    {uploading === m.id ? 'Načítám…' : 'Automaticky z TMDb'}
                   </button>
                 )}
               </div>
@@ -487,7 +487,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                     onClick={() => setOpenEpisodesFor((cur) => (cur === m.id ? null : m.id))}
                     className="text-xs font-semibold text-accent hover:underline mt-3"
                   >
-                    {openEpisodesFor === m.id ? 'Skryť epizódy' : 'Nastaviť pre jednotlivé epizódy ▾'}
+                    {openEpisodesFor === m.id ? 'Skrýt epizody' : 'Nastavit pro jednotlivé epizody ▾'}
                   </button>
 
                   {openEpisodesFor === m.id && (
@@ -531,7 +531,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                                   className="field-input-sm flex-1"
                                   value={episodeUrlFor(ep)}
                                   onChange={(e) => setEpisodeUrlDrafts((prev) => ({ ...prev, [ep.id]: e.target.value }))}
-                                  placeholder="Vlastný odkaz (nepovinné)…"
+                                  placeholder="Vlastní odkaz (nepovinné)…"
                                 />
                                 <button
                                   type="button"
@@ -539,7 +539,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                                   disabled={saving === ep.id}
                                   className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
                                 >
-                                  {saving === ep.id ? '…' : 'Uložiť'}
+                                  {saving === ep.id ? '…' : 'Uložit'}
                                 </button>
                               </div>
                             ))}

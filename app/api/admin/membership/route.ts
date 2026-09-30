@@ -7,7 +7,7 @@ import { generatePaidCode } from '@/lib/membership';
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const codes = await prisma.membershipCode.findMany({
@@ -22,7 +22,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { type, targetUsername } = await req.json();
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   let targetUserId: string | undefined;
   if (targetUsername && String(targetUsername).trim()) {
     const target = await prisma.user.findFirst({ where: { name: String(targetUsername).trim() }, select: { id: true } });
-    if (!target) return NextResponse.json({ error: 'Používateľ s touto prezývkou sa nenašiel.' }, { status: 404 });
+    if (!target) return NextResponse.json({ error: 'Uživatel s touto přezdívkou se nenašel.' }, { status: 404 });
     targetUserId = target.id;
   }
 

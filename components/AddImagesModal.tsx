@@ -47,13 +47,13 @@ export default function AddImagesModal({ movieId, movieTitle, movieYear, onClose
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface transition-colors"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           ✕
         </button>
         <SubmissionModalShell
           title="Přidat obrázky"
-          explanation="Nahraj fotky z filmu/seriálu (plagáty, zábery zo scén a pod.). Pred zverejnením v galérii ich skontrolujeme."
+          explanation="Nahraj fotky z filmu/seriálu (plakáty, záběry ze scén apod.). Před zveřejněním v galerii je zkontrolujeme."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat obrázky ke schválení"

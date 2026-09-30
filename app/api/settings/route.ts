@@ -30,7 +30,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const body = await req.json();

@@ -138,7 +138,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
   return (
     <div>
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Hromadne doplniť tagy z TMDb</div>
+        <div className="text-sm font-semibold text-ink mb-1">Hromadně doplnit tagy z TMDb</div>
         <div className="text-xs text-muted mb-3">
           Automaticky načte a rovnou uloží tagy z TMDb pro všechny filmy/seriály, které ještě nemají žádné tagy — nemusíš klikat na "Automaticky z TMDb" a "Uložit" u každého filmu zvlášť. Filmů, které už tagy mají, se to nedotkne.
         </div>
@@ -167,10 +167,10 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                 disabled={bulkTagsBusy}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {bulkTagsBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${bulkTagsPreview.count})`}
+                {bulkTagsBusy ? 'Doplňuji…' : `Potvrdit a doplnit (${bulkTagsPreview.count})`}
               </button>
               <button type="button" onClick={() => setBulkTagsPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -223,10 +223,10 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
 
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-tags"
-        title="Hromadne pridať vlastné tagy"
+        title="Hromadně přidat vlastní tagy"
         description={'Vlož seznam ve tvaru "Název filmu – tag1, tag2, tag3", jeden řádek na film. Nové tagy se přidají k již existujícím, nic se nepřepíše.'}
         placeholder={'Batman – Batman, Joker, hádanka, kladivo, policie'}
-        buttonLabel="Priradiť tagy"
+        buttonLabel="Přiřadit tagy"
       />
 
       <input
@@ -266,7 +266,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                     title="Navrhne přeložené tagy z klíčových slov TMDb"
                     className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none"
                   >
-                    {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                    {suggesting === m.id ? 'Načítám…' : 'Automaticky z TMDb'}
                   </button>
                 )}
                 <button
@@ -274,7 +274,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                   disabled={saving === m.id || !isDirty}
                   className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-40 flex-none"
                 >
-                  {saving === m.id ? 'Ukladám…' : 'Uložiť'}
+                  {saving === m.id ? 'Ukládám…' : 'Uložit'}
                 </button>
               </div>
             );

@@ -6,12 +6,12 @@ import { tmdbSearchPerson } from '@/lib/tmdb';
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('query');
-  if (!query || !query.trim()) return NextResponse.json({ error: 'Zadaj meno na vyhľadanie.' }, { status: 400 });
+  if (!query || !query.trim()) return NextResponse.json({ error: 'Zadej jméno k vyhledání.' }, { status: 400 });
 
   try {
     const results = await tmdbSearchPerson(query.trim());

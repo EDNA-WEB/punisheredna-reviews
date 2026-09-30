@@ -54,7 +54,7 @@ export default function QrLoginPanel() {
       // Podľa hodín prehliadača, nie servera (rozdiel času by spôsobil nekonečné obnovovanie).
       setExpiresAt(Date.now() + (Number(data.ttlSeconds) || 180) * 1000);
     } catch {
-      setCreateError('Nepodarilo sa pripojiť k serveru.');
+      setCreateError('Nepodařilo se připojit k serveru.');
     }
   }
 

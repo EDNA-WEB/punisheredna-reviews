@@ -19,7 +19,7 @@ export default async function DiskusiePage() {
     <div className="pt-8">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Diskusie</h1>
+          <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Diskuze</h1>
           <p className="text-muted">Založ vlastní téma nebo se přidej do povídání o filmech.</p>
         </div>
         <Link href="/diskusie/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark flex-none">

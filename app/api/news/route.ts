@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isEditor = (session?.user as any)?.isEditor;
   if (!session || (!isAdmin && !isEditor)) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const data = await req.json();
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   }
   const tags = Array.isArray(data.tags) ? data.tags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
   if (tags.length < 5) {
-    return NextResponse.json({ error: 'Musíš pridať aspoň 5 tagov.' }, { status: 400 });
+    return NextResponse.json({ error: 'Musíš přidat alespoň 5 tagů.' }, { status: 400 });
   }
 
   let slug = slugify(data.title);

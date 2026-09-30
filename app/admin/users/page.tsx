@@ -23,11 +23,11 @@ export default async function AdminUsersPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Čitatelia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Čtenáři</h1>
 
       {users.length === 0 ? (
         <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">
-          Zatiaľ sa nikto nezaregistroval.
+          Zatím se nikdo nezaregistroval.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">

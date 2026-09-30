@@ -181,7 +181,7 @@ export default function MovieLinksAdmin({
     setSaveError('');
     const payload = Array.from(d.checked).map((linkTypeId) => ({ linkTypeId, url: (d.urls[linkTypeId] || '').trim() }));
     if (payload.some((p) => !p.url)) {
-      setSaveError('Každý zaškrtnutý typ odkazu musí mať vyplnenú URL.');
+      setSaveError('Každý zaškrtnutý typ odkazu musí mít vyplněnou URL.');
       return;
     }
     setSaving(movieId);
@@ -214,7 +214,7 @@ export default function MovieLinksAdmin({
           href="/api/admin/movies/export-missing-links"
           className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
         >
-          Stiahnuť zoznam (.txt)
+          Stáhnout seznam (.txt)
         </a>
       </div>
 
@@ -222,7 +222,7 @@ export default function MovieLinksAdmin({
       <div className="border border-line rounded-xl p-4 bg-surface">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <div className="text-sm font-semibold text-ink">Hromadne pridať IMDb odkazy</div>
+            <div className="text-sm font-semibold text-ink">Hromadně přidat odkazy IMDb</div>
             <div className="text-xs text-muted">
               Projde všechny filmy propojené s TMDb, které ještě nemají uložený IMDb odkaz, a automaticky ho doplní. Typ odkazu "IMDb" se při prvním spuštění sám vytvoří, pokud ještě neexistuje. Zpracovává se po dávkách automaticky za sebou — stačí kliknout jednou, běží to samo, dokud nezpracuje všechny filmy.
             </div>
@@ -233,7 +233,7 @@ export default function MovieLinksAdmin({
             disabled={bulkImporting}
             className="flex-none bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
           >
-            {bulkImporting ? 'Importujem…' : 'Importovať z TMDb'}
+            {bulkImporting ? 'Importuji…' : 'Importovat z TMDb'}
           </button>
         </div>
         {bulkError && <p className="text-danger text-xs mt-2">{bulkError}</p>}
@@ -249,10 +249,10 @@ export default function MovieLinksAdmin({
       {/* Hromadné pridanie ČSFD odkazov zo zoznamu "Názov – URL" */}
       <BulkImportRunner
         endpoint="/api/admin/link-types/bulk-import-csfd"
-        title="Hromadne pridať ČSFD odkazy"
+        title="Hromadně přidat odkazy ČSFD"
         description={'Vlož seznam ve tvaru "Název filmu – https://www.csfd.cz/...", jeden řádek na film. Pokud máte ve filmotéce dva filmy se stejným názvem, přidej rok do závorky, např. "Street Fighter (2026)".'}
         placeholder={'Kmotr – https://www.csfd.cz/film/1644-kmotr/prehled/\nStreet Fighter (2026) – https://www.csfd.cz/film/1721046-street-fighter/prehled/'}
-        buttonLabel="Priradiť odkazy"
+        buttonLabel="Přiřadit odkazy"
       />
 
       {/* Katalóg typov odkazov */}
@@ -286,7 +286,7 @@ export default function MovieLinksAdmin({
             className="field-input-sm flex-1 min-w-[160px]"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Názov typu odkazu (napr. Facebook, ČSFD, IMDb)"
+            placeholder="Název typu odkazu (např. Facebook, ČSFD, IMDb)"
           />
           <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-9 h-9 rounded-full border border-line cursor-pointer flex-none" title="Farba (ak nemá ikonku)" />
           <button
@@ -294,7 +294,7 @@ export default function MovieLinksAdmin({
             disabled={addingType}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {addingType ? 'Pridávam…' : 'Pridať'}
+            {addingType ? 'Přidávám…' : 'Přidat'}
           </button>
         </form>
         {typeError && <p className="text-danger text-xs mt-2">{typeError}</p>}
@@ -302,7 +302,7 @@ export default function MovieLinksAdmin({
 
       {/* Priradenie k filmom */}
       <div>
-        <h2 className="text-sm font-bold text-ink mb-3">Priradiť filmom odkazy</h2>
+        <h2 className="text-sm font-bold text-ink mb-3">Přiřadit filmům odkazy</h2>
         <input
           className="field-input mb-4"
           value={search}
@@ -321,7 +321,7 @@ export default function MovieLinksAdmin({
                   <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
-                      {m.links.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú odkazy" />}
+                      {m.links.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chybí odkazy" />}
                       {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                     </div>
                     <div className="text-xs text-muted">{m.links.length > 0 ? `${m.links.length} odkazov priradených` : 'Zatím žádné odkazy'}</div>
@@ -363,7 +363,7 @@ export default function MovieLinksAdmin({
                       disabled={saving === m.id}
                       className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
                     >
-                      {saving === m.id ? 'Ukladám…' : 'Uložiť'}
+                      {saving === m.id ? 'Ukládám…' : 'Uložit'}
                     </button>
                   </div>
                 )}

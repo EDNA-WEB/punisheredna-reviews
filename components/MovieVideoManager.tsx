@@ -86,7 +86,7 @@ export default function MovieVideoManager({ movieId, initialVideos }: { movieId:
           disabled={saving || !url.trim()}
           className="bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
         >
-          {saving ? '…' : 'Pridať'}
+          {saving ? '…' : 'Přidat'}
         </button>
       </div>
 

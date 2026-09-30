@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { IconChevronRight } from './Icons';
 import { useT } from './TranslationProvider';
 
+import { valueLabel } from '@/lib/valueLabels';
 export default function MultiSelectDropdown({
   label,
   options,
@@ -35,8 +36,8 @@ export default function MultiSelectDropdown({
     selected.length === 0
       ? `${t('filter.vyber_prefix')} ${label.toLowerCase()} —`
       : selected.length <= 2
-      ? selected.join(', ')
-      : `${selected.slice(0, 2).join(', ')} +${selected.length - 2}`;
+      ? selected.map(valueLabel).join(', ')
+      : `${selected.slice(0, 2).map(valueLabel).join(', ')} +${selected.length - 2}`;
 
   return (
     <div ref={boxRef} className="relative">
@@ -64,7 +65,7 @@ export default function MultiSelectDropdown({
             {options.map((o) => (
               <label key={o} className="flex items-center gap-2 text-xs text-ink px-2 py-1 rounded hover:bg-surface cursor-pointer">
                 <input type="checkbox" checked={selected.includes(o)} onChange={() => toggle(o)} className="w-3.5 h-3.5 accent-accent flex-none" />
-                {o}
+                {valueLabel(o)}
               </label>
             ))}
           </div>

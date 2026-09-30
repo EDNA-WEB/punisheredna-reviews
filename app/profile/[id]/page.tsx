@@ -228,7 +228,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
           <div className="flex items-center gap-3 mt-3 flex-wrap">
             {isOwn && (
               <Link href="/profile/edit" className="text-accent font-semibold text-sm hover:underline">
-                Upraviť profil
+                Upravit profil
               </Link>
             )}
             {!isOwn && viewerId && (

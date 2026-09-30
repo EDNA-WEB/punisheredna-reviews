@@ -63,7 +63,7 @@ export default function ChatThemeCustomizer({ otherId, onClose }: { otherId: str
 
         <div className="flex justify-between">
           <button type="button" onClick={reset} className="text-xs font-semibold text-muted hover:text-ink">
-            Vrátiť predvolené
+            Vrátit výchozí
           </button>
           <button type="button" onClick={onClose} className="bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-accent-dark">
             Hotovo

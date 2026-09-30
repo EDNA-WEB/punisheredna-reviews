@@ -59,7 +59,7 @@ export default function MembershipOverviewTable({ initialMembers }: { initialMem
                   disabled={revokingId === m.id}
                   className="ml-auto text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
                 >
-                  {revokingId === m.id ? 'Vypínam…' : 'Vypnúť členstvo'}
+                  {revokingId === m.id ? 'Vypínám…' : 'Vypnout členství'}
                 </button>
               </div>
             );

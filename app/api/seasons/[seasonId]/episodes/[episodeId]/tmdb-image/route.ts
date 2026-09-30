@@ -7,7 +7,7 @@ import { tmdbGetEpisodeStillUrl } from '@/lib/tmdb';
 export async function GET(_req: Request, { params }: { params: { seasonId: string; episodeId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const episode = await prisma.episode.findUnique({ where: { id: params.episodeId }, select: { number: true } });

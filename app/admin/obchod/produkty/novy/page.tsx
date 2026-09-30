@@ -16,10 +16,10 @@ export default async function NewShopProductPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia — Obchod</div>
+      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace — Obchod</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Nový produkt</h1>
       {categories.length === 0 ? (
-        <p className="text-sm text-muted">Najprv vytvor aspoň jednu kategóriu v Administrácia → Obchod → Kategórie.</p>
+        <p className="text-sm text-muted">Nejdřív vytvoř alespoň jednu kategorii v Administrace → Obchod → Kategorie.</p>
       ) : (
         <ShopProductForm categories={categories} />
       )}

@@ -31,6 +31,7 @@ import { IconUser, IconClock, IconPlay, IconChevronLeft, IconChevronRight } from
 import CriticBadge from '@/components/CriticBadge';
 import StarRating from '@/components/StarRating';
 
+import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 export const dynamic = 'force-dynamic';
 
 const t = (k: string) => k;
@@ -44,7 +45,7 @@ export async function generateMetadata({
   if (!movie) return {};
   const code = `S${params.number.padStart(2, '0')}E${params.epNumber.padStart(2, '0')}`;
   const title = `${movie.title} — ${code}`;
-  const description = `Hodnotenia a recenzie epizódy ${code} seriálu ${movie.title} na KrálFilmu.cz.`;
+  const description = `Hodnocení a recenze epizody ${code} seriálu ${movie.title} na KrálFilmu.cz.`;
   return {
     title,
     description,
@@ -327,13 +328,13 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {genres.map((g) => (
                   <span key={g} className="text-xs font-semibold text-ink bg-surface border border-line px-2.5 py-1 rounded-full">
-                    {g}
+                    {valueLabel(g)}
                   </span>
                 ))}
               </div>
             )}
 
-            <div className="text-sm text-muted mb-3">{[movie.countries, season.year].filter(Boolean).join(' · ')}</div>
+            <div className="text-sm text-muted mb-3">{[valueListLabel(movie.countries), season.year].filter(Boolean).join(' · ')}</div>
 
             {!season.released && (
               <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
@@ -389,7 +390,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             </div>
           )}
           <div className="p-4 bg-card">
-            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnocení</div>
             {!season.released ? (
               <p className="text-sm text-muted">Série ještě neměla premiéru — hodnotit a psát recenze lze až po jejím vydání.</p>
             ) : viewerId ? (
@@ -463,13 +464,13 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               <div className="flex flex-wrap gap-1.5 my-3">
                 {genres.map((g) => (
                   <span key={g} className="text-xs font-semibold text-ink bg-surface border border-line px-2.5 py-1 rounded-full">
-                    {g}
+                    {valueLabel(g)}
                   </span>
                 ))}
               </div>
             )}
 
-            <div className="text-sm text-muted mb-3">{[movie.countries, season.year].filter(Boolean).join(' · ')}</div>
+            <div className="text-sm text-muted mb-3">{[valueListLabel(movie.countries), season.year].filter(Boolean).join(' · ')}</div>
 
             {!season.released && (
               <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
@@ -521,7 +522,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                 <div className="space-y-8">
                   <div>
                     <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
-                      <span className="text-sm font-bold text-ink">Recenzie{episode.reviews.length > 0 ? ` (${episode.reviews.length})` : ''}</span>
+                      <span className="text-sm font-bold text-ink">Recenze{episode.reviews.length > 0 ? ` (${episode.reviews.length})` : ''}</span>
                       {episode.reviews.length > 0 && <MovieGoToTabButton tabKey="recenzie" />}
                     </div>
                     <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line">
@@ -539,11 +540,11 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             },
             {
               key: 'recenzie',
-              label: 'Recenzie',
+              label: 'Recenze',
               content: (
                 <div>
                   <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
-                    <h3 className="font-display font-bold text-xl text-ink">Recenzie {episode.reviews.length > 0 && `(${episode.reviews.length})`}</h3>
+                    <h3 className="font-display font-bold text-xl text-ink">Recenze {episode.reviews.length > 0 && `(${episode.reviews.length})`}</h3>
                     {viewerId && season.released && !myReview && (
                       <Link
                         href={`/movie/${movie.slug}/sezona/${season.number}/epizoda/${episode.number}/napisat`}
@@ -569,11 +570,11 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             },
             {
               key: 'zaujimavosti',
-              label: 'Zaujímavosti',
+              label: 'Zajímavosti',
               content:
                 movie.trivia.length > 0 ? (
                   <div>
-                    <h3 className="font-display font-bold text-xl text-ink mb-5">Zaujímavosti ({movie.trivia.length})</h3>
+                    <h3 className="font-display font-bold text-xl text-ink mb-5">Zajímavosti ({movie.trivia.length})</h3>
                     <div className="space-y-3">
                       {movie.trivia.map((tr, i) => (
                         <div key={tr.id} className="flex gap-3 text-sm text-ink">
@@ -745,7 +746,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
             <div className="text-xs opacity-90 mt-1">{episode.ratings.length} hlasov</div>
           </div>
           <div className="p-4 bg-card">
-            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnocení</div>
             {!season.released ? (
               <p className="text-sm text-muted">Série ještě neměla premiéru — hodnotit a psát recenze lze až po jejím vydání.</p>
             ) : viewerId ? (

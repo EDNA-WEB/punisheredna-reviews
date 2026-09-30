@@ -15,7 +15,7 @@ const PRICE_PER_CU_HOUR = 0.105;
 const SUSPEND_AFTER_MIN = 5;
 
 const RANGES = [
-  { key: '1', label: '24 hodín', hours: 24 },
+  { key: '1', label: '24 hodin', hours: 24 },
   { key: '7', label: '7 dní', hours: 24 * 7 },
   { key: '30', label: '30 dní', hours: 24 * 30 }
 ];
@@ -162,8 +162,8 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
   if (awakePct > 60 && range.hours >= 24) {
     tips.push({
       severity: 'critical',
-      title: `Databáza je hore ${awakePct.toFixed(0)} % času`,
-      text: 'Neon účtuje hlavne čas, kedy je databáza prebudená — nie počet dopytov. Ak sa takmer neuspáva, príčinou sú skoro vždy pravidelné volania (polling) z otvorených okien/appky. Pozri riadky označené „častý“ nižšie.'
+      title: `Databáze je vzhůru ${awakePct.toFixed(0)} % času`,
+      text: 'Neon účtuje hlavně čas, kdy je databáze probuzená — ne počet dotazů. Pokud se téměř neuspává, příčinou jsou skoro vždy pravidelná volání (polling) z otevřených oken/appky. Podívej se na řádky označené „častý“ níže.'
     });
   }
   for (const s of sources) {
@@ -173,21 +173,21 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
       tips.push({
         severity: perHour > 600 ? 'critical' : 'warning',
         title: `${s.source} — ${fmtNum(perHour)} dopytov za hodinu`,
-        text: 'Volá sa veľmi často, pravdepodobne pravidelným obnovovaním. Riešenie: predĺžiť interval, obnovovať len keď je okno/appka aktívna, pridať cache alebo tieto dáta presunúť mimo databázy.'
+        text: 'Volá se velmi často, pravděpodobně pravidelným obnovováním. Řešení: prodloužit interval, obnovovat jen když je okno/appka aktivní, přidat cache nebo tato data přesunout mimo databázi.'
       });
     }
     if (avg > 150 && s.count >= 10) {
       tips.push({
         severity: avg > 500 ? 'critical' : 'warning',
         title: `${s.source} — priemerne ${fmtMs(avg)} na dopyt`,
-        text: 'Pomalé dopyty. Skontrolovať index na stĺpcoch vo WHERE/ORDER BY, načítavať len potrebné polia (select) a obmedziť počet riadkov (take), prípadne výsledok cachovať (unstable_cache).'
+        text: 'Pomalé dotazy. Zkontrolovat index na sloupcích ve WHERE/ORDER BY, načítat jen potřebná pole (select) a omezit počet řádků (take), případně výsledek cachovat (unstable_cache).'
       });
     }
     if (s.writes > 0 && s.writes / s.count > 0.5 && s.count > 200) {
       tips.push({
         severity: 'info',
         title: `${s.source} — prevažujú zápisy (${fmtNum(s.writes)})`,
-        text: 'Časté zápisy (napr. „posledná aktivita“, „naposledy online“) sa dajú obmedziť: zapisovať najviac raz za pár minút na používateľa.'
+        text: 'Časté zápisy (např. „poslední aktivita“, „naposledy online“) lze omezit: zapisovat nejvýše jednou za pár minut na uživatele.'
       });
     }
   }
@@ -215,17 +215,15 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
         </div>
       </div>
       <p className="text-sm text-muted mb-6 max-w-3xl">
-        Každý dopyt do databázy sa meria priebežne a raz za minútu uloží. Stránka sa sama neobnovuje — automatické
-        obnovovanie by samo držalo databázu hore a zvyšovalo náklady. Aktuálny stav načítaš tlačidlom obnoviť v prehliadači.
-        Vlastné dopyty tejto stránky sa nezapočítavajú.
+        Každý dotaz do databáze se měří průběžně a jednou za minutu uloží. Stránka se sama neobnovuje — automatické obnovování by samo drželo databázi vzhůru a zvyšovalo náklady. Aktuální stav načteš tlačítkem obnovit v prohlížeči. Vlastní dotazy této stránky se nezapočítávají.
       </p>
 
       {!PERF_ENABLED && (
-        <div className="mb-6 border border-amber-300 bg-amber-50 text-amber-800 rounded-xl p-4 text-sm">Meranie je vypnuté premennou PERF_MONITOR=off.</div>
+        <div className="mb-6 border border-amber-300 bg-amber-50 text-amber-800 rounded-xl p-4 text-sm">Měření je vypnuté proměnnou PERF_MONITOR=off.</div>
       )}
       {tablesMissing && (
         <div className="mb-6 border border-red-300 bg-red-50 text-red-800 rounded-xl p-4 text-sm">
-          Tabuľky pre meranie ešte neexistujú — spusti <code>npx prisma db push</code> a nasaď web.
+          Tabulky pro měření ještě neexistují — spusť <code>npx prisma db push</code> a nasaď web.
         </div>
       )}
 
@@ -258,20 +256,20 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
       </div>
 
       <p className="text-xs text-muted -mt-5 mb-8">
-        Odhad počíta s veľkosťou{' '}
+        Odhad počítá s velikostí{' '}
         {[0.25, 0.5, 1, 2].map((v) => (
           <Link key={v} href={`/admin/vykon?rozsah=${range.key}&cu=${v}`} className={`mx-0.5 font-semibold ${v === cu ? 'text-accent' : 'hover:text-accent'}`}>
             {v} CU
           </Link>
         ))}{' '}
-        a cenou ~${PRICE_PER_CU_HOUR}/CU-hod. Presné číslo vždy ukáže Neon (Billing) — tu ide o to vidieť, ČO náklady spôsobuje.
+        a cenou ~${PRICE_PER_CU_HOUR}/CU-hod. Přesné číslo vždy ukáže Neon (Billing) — tady jde o to vidět, CO náklady způsobuje.
       </p>
 
       {/* ODPORÚČANIA */}
-      <h2 className="font-display font-bold text-xl text-ink mb-3">Čo treba riešiť</h2>
+      <h2 className="font-display font-bold text-xl text-ink mb-3">Co je potřeba řešit</h2>
       {tips.length === 0 ? (
         <p className="text-sm text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-xl p-4 mb-8">
-          Zatiaľ nič kritické. {totalQueries < 500 && 'Nazbieraných dát je ešte málo — pozri sa znova o deň-dva bežného používania.'}
+          Zatím nic kritického. {totalQueries < 500 && 'Nasbíraných dat je zatím málo — podívej se znovu po dni či dvou běžného používání.'}
         </p>
       ) : (
         <div className="space-y-2 mb-8">
@@ -293,14 +291,14 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
       )}
 
       {/* ČASOVÁ OS 24 H */}
-      <h2 className="font-display font-bold text-xl text-ink mb-1">Posledných 24 hodín</h2>
-      <p className="text-xs text-muted mb-3">Výška stĺpca = počet dopytov. Farba = koľko minút z hodiny bola databáza hore (zelená málo, červená skoro celú hodinu).</p>
+      <h2 className="font-display font-bold text-xl text-ink mb-1">Posledních 24 hodin</h2>
+      <p className="text-xs text-muted mb-3">Výška sloupce = počet dotazů. Barva = kolik minut z hodiny byla databáze vzhůru (zelená málo, červená skoro celou hodinu).</p>
       <div className="border border-line rounded-xl p-4 bg-card mb-8 overflow-x-auto">
         <div className="flex items-end gap-1 h-40 min-w-[560px]">
           {hourBars.map((h, i) => {
             const color = h.awake > 45 ? 'bg-red-500' : h.awake > 20 ? 'bg-amber-500' : h.awake > 0 ? 'bg-emerald-500' : 'bg-line';
             return (
-              <div key={i} className="flex-1 flex flex-col items-center justify-end h-full" title={`${h.label}:00 — ${fmtNum(h.queries)} dopytov, hore ${Math.round(h.awake)} min`}>
+              <div key={i} className="flex-1 flex flex-col items-center justify-end h-full" title={`${h.label}:00 — ${fmtNum(h.queries)} dotazů, vzhůru ${Math.round(h.awake)} min`}>
                 <div className={`w-full rounded-t ${color}`} style={{ height: `${Math.max(3, (h.queries / maxBar) * 100)}%` }} />
                 <div className="text-[10px] text-muted mt-1">{h.label}</div>
               </div>
@@ -310,7 +308,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
       </div>
 
       {/* PODĽA STRÁNOK / API */}
-      <h2 className="font-display font-bold text-xl text-ink mb-3">Odkiaľ dopyty prichádzajú</h2>
+      <h2 className="font-display font-bold text-xl text-ink mb-3">Odkud dotazy přicházejí</h2>
       <div className="border border-line rounded-xl overflow-x-auto mb-8">
         <table className="w-full text-sm min-w-[720px]">
           <thead className="bg-surface text-muted text-xs uppercase">
@@ -321,7 +319,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
               <th className="text-right px-3 py-2">Za hodinu</th>
               <th className="text-right px-3 py-2">Priemer</th>
               <th className="text-right px-3 py-2">Najdlhší</th>
-              <th className="text-right px-3 py-2">Čas spolu</th>
+              <th className="text-right px-3 py-2">Čas celkem</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -354,7 +352,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
             {topByCount.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-6 text-center text-muted bg-card">
-                  Zatiaľ žiadne dáta — prvé sa objavia asi minútu po nasadení.
+                  Zatím žádná data — první se objeví asi minutu po nasazení.
                 </td>
               </tr>
             )}
@@ -363,17 +361,17 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
       </div>
 
       {/* PODĽA TABULIEK */}
-      <h2 className="font-display font-bold text-xl text-ink mb-3">Najnáročnejšie operácie (tabuľka + operácia)</h2>
+      <h2 className="font-display font-bold text-xl text-ink mb-3">Nejnáročnější operace (tabulka + operace)</h2>
       <div className="border border-line rounded-xl overflow-x-auto mb-8">
         <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-surface text-muted text-xs uppercase">
             <tr>
-              <th className="text-left px-3 py-2">Tabuľka</th>
+              <th className="text-left px-3 py-2">Tabulka</th>
               <th className="text-left px-3 py-2">Operácia</th>
-              <th className="text-left px-3 py-2">Odkiaľ</th>
+              <th className="text-left px-3 py-2">Odkud</th>
               <th className="text-right px-3 py-2">Počet</th>
               <th className="text-right px-3 py-2">Priemer</th>
-              <th className="text-right px-3 py-2">Čas spolu</th>
+              <th className="text-right px-3 py-2">Čas celkem</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -404,7 +402,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
                 <th className="text-left px-3 py-2">SQL</th>
                 <th className="text-right px-3 py-2">Volaní</th>
                 <th className="text-right px-3 py-2">Priemer</th>
-                <th className="text-right px-3 py-2">Spolu</th>
+                <th className="text-right px-3 py-2">Celkem</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -423,7 +421,7 @@ export default async function AdminPerfPage({ searchParams }: { searchParams?: {
         </div>
       ) : (
         <p className="text-sm text-muted border border-line rounded-xl p-4 bg-card mb-4">
-          Rozšírenie pg_stat_statements nie je zapnuté ({pgssError?.slice(0, 120)}). Zapneš ho tlačidlom nižšie — je to bezpečné, len zbiera štatistiku.
+          Rozšíření pg_stat_statements není zapnuté ({pgssError?.slice(0, 120)}). Zapneš ho tlačítkem níže — je to bezpečné, jen sbírá statistiku.
         </p>
       )}
 

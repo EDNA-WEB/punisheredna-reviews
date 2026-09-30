@@ -31,7 +31,7 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
   ]);
 
   const typeTabs = [
-    { key: 'all', label: 'Všetko' },
+    { key: 'all', label: 'Vše' },
     { key: 'Film', label: 'Filmy' },
     { key: 'Seriál', label: 'Seriály' },
     { key: 'TV film', label: 'TV filmy' }
@@ -50,7 +50,7 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
             href="/admin/movies/export"
             className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent"
           >
-            Export zoznamu
+            Export seznamu
           </Link>
           <Link
             href="/admin/movies/hromadny-import"
@@ -62,7 +62,7 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
             href={typeFilter === 'Seriál' ? '/admin/movies/new?type=Seriál' : typeFilter === 'TV film' ? '/admin/movies/new?type=TV film' : '/admin/movies/new'}
             className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark"
           >
-            {typeFilter === 'Seriál' ? '+ Pridať seriál' : typeFilter === 'TV film' ? '+ Pridať TV film' : '+ Pridať film'}
+            {typeFilter === 'Seriál' ? '+ Přidat seriál' : typeFilter === 'TV film' ? '+ Přidat TV film' : '+ Přidat film'}
           </Link>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
 
       {approved.length === 0 ? (
         <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">
-          Zatiaľ žiadne filmy. Pridaj prvý — recenziu potom vieš pridať len k existujúcemu filmu.
+          Zatím žádné filmy. Přidej první — recenzi pak můžeš přidat jen k existujícímu filmu.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -126,7 +126,7 @@ export default async function AdminMoviesPage({ searchParams }: { searchParams: 
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-muted mt-1">{m.year} · {m._count.ratings} hodnotení · {m._count.reviews} recenzií</div>
+                <div className="text-xs text-muted mt-1">{m.year} · {m._count.ratings} hodnocení · {m._count.reviews} recenzí</div>
               </div>
               <MovieNowShowingToggle id={m.id} nowShowing={m.nowShowing} />
               <AdminMovieActions id={m.id} slug={m.slug} />

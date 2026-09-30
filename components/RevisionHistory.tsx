@@ -48,7 +48,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
   return (
     <div className="border border-line rounded-xl p-4 bg-surface">
       <button type="button" onClick={loadRevisions} className="text-sm font-semibold text-accent hover:underline">
-        {open ? 'Skryť históriu verzií ▴' : 'História verzií ▾'}
+        {open ? 'Skrýt historii verzí ▴' : 'História verzií ▾'}
       </button>
 
       {open && (
@@ -72,7 +72,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
                         onClick={() => setExpandedId((cur) => (cur === r.id ? null : r.id))}
                         className="text-[11px] font-semibold text-accent hover:underline"
                       >
-                        {expandedId === r.id ? 'Skryť text' : 'Zobraziť text'}
+                        {expandedId === r.id ? 'Skrýt text' : 'Zobrazit text'}
                       </button>
                       <button
                         type="button"
@@ -80,7 +80,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
                         disabled={restoring === r.id}
                         className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50"
                       >
-                        {restoring === r.id ? '…' : 'Obnoviť túto verziu'}
+                        {restoring === r.id ? '…' : 'Obnovit tuto verzi'}
                       </button>
                     </div>
                   </div>

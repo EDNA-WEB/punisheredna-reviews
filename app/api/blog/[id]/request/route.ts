@@ -10,7 +10,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id }, include: { author: { select: { name: true } } } });
   if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
-  if (post.authorId !== userId) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (post.authorId !== userId) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   if (post.published) return NextResponse.json({ error: 'Tento článek je už publikovaný.' }, { status: 400 });
   if (post.publicationRequested) return NextResponse.json({ error: 'O publikáciu si už požiadal(a).' }, { status: 400 });
 

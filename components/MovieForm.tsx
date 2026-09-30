@@ -228,7 +228,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       )}
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Dátum premiéry</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Datum premiéry</label>
         <input type="date" className="field-input" value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} />
         <p className="text-xs text-muted mt-1.5">Dokud toto datum nenastane, uživatelé nemohou film hodnotit ani na něj psát recenzi.</p>
       </div>
@@ -267,7 +267,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Názov</label>
+          <label className="block text-sm font-semibold text-ink mb-2">Název</label>
           <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={contentType === 'Seriál' ? 'Game of Thrones' : 'Odyssea'} />
         </div>
         <div>
@@ -277,7 +277,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Žánre (oddelené čiarkou)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Žánry (oddělené čárkou)</label>
         <input className="field-input" value={genres} onChange={(e) => setGenres(e.target.value)} placeholder="Akčný, Dobrodružný, Dráma" />
       </div>
 
@@ -309,7 +309,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
               disabled={importingCast}
               className="flex-none bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
             >
-              {importingCast ? 'Importujem…' : 'Importovať z TMDb'}
+              {importingCast ? 'Importuji…' : 'Importovat z TMDb'}
             </button>
           </div>
           {importError && <p className="text-danger text-xs mt-2">{importError}</p>}
@@ -337,7 +337,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Hrajú (oddelené čiarkou)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Hrají (oddělené čárkou)</label>
         <input className="field-input" value={cast} onChange={(e) => setCast(e.target.value)} placeholder="Matt Damon, Tom Holland, Anne Hathaway…" />
       </div>
 
@@ -354,7 +354,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             onChange={(e) => setNowShowing(e.target.checked)}
             className="w-4 h-4 accent-accent"
           />
-          <span className="text-sm font-semibold text-ink">V kinách teraz</span>
+          <span className="text-sm font-semibold text-ink">Teď v kinech</span>
           <span className="text-xs text-muted">— zobrazí se v pruhu nahoře na stránce</span>
         </label>
       )}
@@ -363,10 +363,10 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
 
       <div className="flex gap-3">
         <button type="submit" disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : isEdit ? 'Uložiť zmeny' : 'Pridať film'}
+          {loading ? 'Ukládám…' : isEdit ? 'Uložit změny' : 'Přidat film'}
         </button>
         <button type="button" onClick={() => router.back()} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-ink hover:border-ink">
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </form>

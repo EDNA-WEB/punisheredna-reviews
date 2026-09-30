@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 const PRESETS = [
   { label: '+1 měsíc', days: 30 },
-  { label: '+3 mesiace', days: 90 },
+  { label: '+3 měsíce', days: 90 },
   { label: '+1 rok', days: 365 }
 ];
 
@@ -39,7 +39,7 @@ export default function MembershipDirectSetForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Nastavenie zlyhalo.');
-      setSuccess(`Členstvo pre "${data.name}" nastaveno do ${new Date(data.membershipUntil).toLocaleDateString('cs-CZ')}.`);
+      setSuccess(`Členství pro "${data.name}" nastaveno do ${new Date(data.membershipUntil).toLocaleDateString('cs-CZ')}.`);
       setUsername('');
       setCustomDate('');
       router.refresh();
@@ -52,7 +52,7 @@ export default function MembershipDirectSetForm() {
 
   return (
     <div className="border border-line rounded-xl p-4 space-y-3">
-      <h2 className="text-sm font-bold text-ink">Priamo nastaviť členstvo</h2>
+      <h2 className="text-sm font-bold text-ink">Přímo nastavit členství</h2>
       <p className="text-xs text-muted">
         Okamžite nastaví členstvo bez potreby kódu — použi napríklad hneď po tom, čo si sám overil platbu.
       </p>
@@ -86,7 +86,7 @@ export default function MembershipDirectSetForm() {
           disabled={loading || !customDate}
           className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          Nastaviť na dátum
+          Nastavit na datum
         </button>
       </div>
       {error && <p className="text-danger text-xs">{error}</p>}

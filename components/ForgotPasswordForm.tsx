@@ -119,7 +119,7 @@ export default function ForgotPasswordForm() {
         disabled={loading}
         className="w-full bg-accent text-white py-2.5 rounded text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 transition-colors mt-1"
       >
-        {loading ? 'Ukladám…' : t('forgot.nastavit')}
+        {loading ? 'Ukládám…' : t('forgot.nastavit')}
       </button>
     </form>
   );

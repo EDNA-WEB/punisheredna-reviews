@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text článku nemůže být prázdný.' }, { status: 400 });
   if (String(body).length > 30000) return NextResponse.json({ error: 'Text je příliš dlouhý (max. 30 000 znaků).' }, { status: 400 });
   const tags = Array.isArray(rawTags) ? rawTags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
-  if (tags.length < 5) return NextResponse.json({ error: 'Musíš pridať aspoň 5 tagov.' }, { status: 400 });
+  if (tags.length < 5) return NextResponse.json({ error: 'Musíš přidat alespoň 5 tagů.' }, { status: 400 });
 
   if (coverImage) {
     const imageError = validateImageDataUrl(coverImage);

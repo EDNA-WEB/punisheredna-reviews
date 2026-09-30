@@ -32,7 +32,7 @@ export default function MovieNowShowingToggle({ id, nowShowing }: { id: string; 
         nowShowing ? 'bg-accent text-white border-accent' : 'text-muted border-line hover:border-accent hover:text-accent'
       }`}
     >
-      {nowShowing ? 'V kinách ✓' : 'Zaradiť do kín'}
+      {nowShowing ? 'V kinech ✓' : 'Zařadit do kin'}
     </button>
   );
 }

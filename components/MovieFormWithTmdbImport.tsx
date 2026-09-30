@@ -82,7 +82,7 @@ export default function MovieFormWithTmdbImport({ contentType }: { contentType: 
   return (
     <div>
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
-        <h2 className="text-sm font-bold text-ink mb-1">Importovať z TMDb</h2>
+        <h2 className="text-sm font-bold text-ink mb-1">Importovat z TMDb</h2>
         <p className="text-xs text-muted mb-3">
           Najdi film/seriál a formulář níže se automaticky předvyplní. Zdroj dat: TMDb — před uložením to prosím zkontroluj.
         </p>
@@ -117,7 +117,7 @@ export default function MovieFormWithTmdbImport({ contentType }: { contentType: 
                   <div className="text-sm font-semibold text-ink truncate">{r.title} {r.year && <span className="text-muted font-normal">· {r.year}</span>}</div>
                   {r.originalTitle && r.originalTitle !== r.title && <div className="text-xs text-muted truncate">{r.originalTitle}</div>}
                 </div>
-                <span className="text-xs text-accent font-semibold flex-none">{importing === r.id ? 'Importujem…' : 'Použiť'}</span>
+                <span className="text-xs text-accent font-semibold flex-none">{importing === r.id ? 'Importuji…' : 'Použít'}</span>
               </button>
             ))}
           </div>

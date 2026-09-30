@@ -77,11 +77,11 @@ export default function CommentForm({
           disabled={loading}
           className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Odosielam…' : parentId ? 'Odpovedať' : 'Přidat komentář'}
+          {loading ? 'Odesílám…' : parentId ? 'Odpovědět' : 'Přidat komentář'}
         </button>
         {onDone && (
           <button type="button" onClick={onDone} className="text-sm text-muted hover:text-ink">
-            Zrušiť
+            Zrušit
           </button>
         )}
       </div>

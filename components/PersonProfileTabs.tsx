@@ -76,7 +76,7 @@ export default function PersonProfileTabs({ bio, movies, news }: { bio: string |
       )}
 
       <div>
-        <h3 className="font-display font-bold text-lg text-ink mb-4">Všetky filmy a seriály u nás</h3>
+        <h3 className="font-display font-bold text-lg text-ink mb-4">Všechny filmy a seriály u nás</h3>
         {movies.length === 0 ? (
           <p className="text-sm text-muted">Zatím žádné filmy přiřazené k této osobě.</p>
         ) : (

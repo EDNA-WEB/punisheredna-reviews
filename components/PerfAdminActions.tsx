@@ -29,12 +29,12 @@ export default function PerfAdminActions({ pgssEnabled }: { pgssEnabled: boolean
     <div className="flex flex-wrap items-center gap-2 mb-10">
       {!pgssEnabled && (
         <button onClick={() => run('enable_pgss')} disabled={!!busy} className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full disabled:opacity-50">
-          {busy === 'enable_pgss' ? 'Zapínam…' : 'Zapnúť pg_stat_statements'}
+          {busy === 'enable_pgss' ? 'Zapínám…' : 'Zapnout pg_stat_statements'}
         </button>
       )}
       {pgssEnabled && (
         <button onClick={() => run('reset_pgss')} disabled={!!busy} className="border border-line text-sm font-semibold px-4 py-2 rounded-full hover:border-accent disabled:opacity-50">
-          {busy === 'reset_pgss' ? 'Nulujem…' : 'Vynulovať SQL štatistiku'}
+          {busy === 'reset_pgss' ? 'Nuluji…' : 'Vynulovat SQL statistiku'}
         </button>
       )}
       <button
@@ -42,7 +42,7 @@ export default function PerfAdminActions({ pgssEnabled }: { pgssEnabled: boolean
         disabled={!!busy}
         className="border border-red-300 text-red-700 text-sm font-semibold px-4 py-2 rounded-full hover:bg-red-50 disabled:opacity-50"
       >
-        {busy === 'clear_stats' ? 'Mažem…' : 'Vymazať nazbierané údaje'}
+        {busy === 'clear_stats' ? 'Mažu…' : 'Smazat nasbíraná data'}
       </button>
       {msg && <span className="text-sm text-muted">{msg}</span>}
     </div>

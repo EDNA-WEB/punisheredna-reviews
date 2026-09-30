@@ -17,7 +17,7 @@ async function requireAuthorOrAdmin(reviewId: string) {
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
   if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const data = await req.json();
   if (!data.body || !String(data.body).trim()) {
@@ -47,7 +47,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
   if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   await prisma.review.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });

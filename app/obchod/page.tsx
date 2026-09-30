@@ -37,7 +37,7 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
     <div className="pt-8 pb-16">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-1">Obchod</h1>
       <p className="text-sm text-muted mb-8">
-        {activeCategory ? activeCategory.name : 'Všetky produkty'} <span className="text-line">·</span> {sorted.length} položiek
+        {activeCategory ? activeCategory.name : 'Všechny produkty'} <span className="text-line">·</span> {sorted.length} položiek
       </p>
 
       <div className="grid lg:grid-cols-[240px_1fr] gap-8">
@@ -49,7 +49,7 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
                 href="/obchod"
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${!activeCategory ? 'bg-accent text-white font-semibold' : 'text-ink hover:bg-surface'}`}
               >
-                <span>Všetko</span>
+                <span>Vše</span>
                 <span className={`text-xs ${activeCategory ? 'text-muted' : 'opacity-90'}`}>{totalCount}</span>
               </Link>
               {categories.map((c) => (

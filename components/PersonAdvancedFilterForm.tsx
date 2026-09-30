@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PERSON_TYPES } from '@/lib/filterConstants';
 
+import { valueLabel } from '@/lib/valueLabels';
 export default function PersonAdvancedFilterForm({ birthPlaces, deathPlaces }: { birthPlaces: string[]; deathPlaces: string[] }) {
   const router = useRouter();
 
@@ -58,7 +59,7 @@ export default function PersonAdvancedFilterForm({ birthPlaces, deathPlaces }: {
             {PERSON_TYPES.map((t) => (
               <label key={t} className="flex items-center gap-1.5 text-xs text-ink cursor-pointer">
                 <input type="checkbox" checked={types.includes(t)} onChange={() => toggleType(t)} className="w-3.5 h-3.5 accent-accent flex-none" />
-                {t}
+                {valueLabel(t)}
               </label>
             ))}
           </div>

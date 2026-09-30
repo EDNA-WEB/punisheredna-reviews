@@ -117,10 +117,10 @@ export default function CommentItem({
             {canDelete && !editing && (
               <div className="flex items-center gap-2">
                 <button onClick={() => { setEditing(true); setEditBody(currentBody); }} className="text-xs text-muted hover:text-accent">
-                  Upraviť
+                  Upravit
                 </button>
                 <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">
-                  Zmazať
+                  Smazat
                 </button>
               </div>
             )}
@@ -141,13 +141,13 @@ export default function CommentItem({
                   disabled={loading}
                   className="bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
                 >
-                  {loading ? 'Ukladám…' : 'Uložiť'}
+                  {loading ? 'Ukládám…' : 'Uložit'}
                 </button>
                 <button
                   onClick={() => { setEditing(false); setEditError(''); }}
                   className="text-xs font-semibold text-muted hover:text-ink"
                 >
-                  Zrušiť
+                  Zrušit
                 </button>
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function CommentItem({
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-accent"
               >
                 <IconReply className="w-3.5 h-3.5" />
-                Odpovedať
+                Odpovědět
               </button>
             )}
           </div>

@@ -26,7 +26,7 @@ export default async function PremieresList() {
   return (
     <div className="border border-line rounded-xl overflow-hidden bg-card">
       <div className="px-4 py-3 bg-surface border-b border-line">
-        <h3 className="font-display font-bold text-sm text-ink">{t['home.v_kinach_coskoro'] || 'V kinách čoskoro'}</h3>
+        <h3 className="font-display font-bold text-sm text-ink">{t['home.v_kinach_coskoro'] || 'Brzy v kinech'}</h3>
       </div>
 
       <PremieresCarousel premieres={premieres} />

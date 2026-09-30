@@ -11,12 +11,12 @@ const MAX_NAMES = 25;
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { names } = await req.json();
   if (!Array.isArray(names) || names.length === 0) {
-    return NextResponse.json({ error: 'Zadaj aspoň jedno meno.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej alespoň jedno jméno.' }, { status: 400 });
   }
 
   // Odstránenie prázdnych riadkov a orezanie na maximálny povolený počet naraz —
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné pridanie osôb',
+    toolName: 'Hromadné přidání osob',
     updated: results.filter((r) => r.status === 'added').length,
     failed: results.filter((r) => r.status === 'error').length,
     total: names.length

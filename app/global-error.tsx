@@ -21,7 +21,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
               cursor: 'pointer'
             }}
           >
-            Skúsiť znova
+            Zkusit znovu
           </button>
         </div>
       </body>

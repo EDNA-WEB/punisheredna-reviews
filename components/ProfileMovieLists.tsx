@@ -41,7 +41,7 @@ export default function ProfileMovieLists({ lists: initialLists, isOwn }: { list
         <div>
           {!creating ? (
             <button onClick={() => setCreating(true)} className="bg-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent-dark">
-              + Nový zoznam
+              + Nový seznam
             </button>
           ) : (
             <div className="flex items-center gap-2 max-w-sm">
@@ -54,9 +54,9 @@ export default function ProfileMovieLists({ lists: initialLists, isOwn }: { list
                 autoFocus
               />
               <button onClick={createList} disabled={loading} className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none">
-                {loading ? '…' : 'Vytvoriť'}
+                {loading ? '…' : 'Vytvořit'}
               </button>
-              <button onClick={() => setCreating(false)} className="text-xs text-muted hover:text-ink flex-none">Zrušiť</button>
+              <button onClick={() => setCreating(false)} className="text-xs text-muted hover:text-ink flex-none">Zrušit</button>
             </div>
           )}
           {error && <div className="text-danger text-xs mt-1.5">{error}</div>}

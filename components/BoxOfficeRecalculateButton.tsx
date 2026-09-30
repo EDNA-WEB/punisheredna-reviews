@@ -32,7 +32,7 @@ export default function BoxOfficeRecalculateButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50 whitespace-nowrap"
       >
-        {loading ? 'Prepočítavam…' : '🔄 Prepočítať poradie (admin)'}
+        {loading ? 'Prepočítavam…' : '🔄 Přepočítat pořadí (admin)'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

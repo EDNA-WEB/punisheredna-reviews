@@ -66,7 +66,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
                   body: JSON.stringify({ trailerId: current.id })
                 }).catch(() => {});
               }}
-              aria-label="Prehrať trailer"
+              aria-label="Přehrát trailer"
               className="absolute inset-0 flex items-center justify-center group"
             >
               <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 flex items-center justify-center text-night group-hover:bg-white group-hover:scale-105 transition-all shadow-lg">
@@ -92,7 +92,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
             </button>
             <button
               onClick={() => go(1)}
-              aria-label="Ďalší trailer"
+              aria-label="Další trailer"
               className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
             >
               <IconChevronRight className="w-5 h-5" />

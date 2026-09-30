@@ -10,7 +10,7 @@ export default function ReviewActions({ id, movieSlug, showEdit = true }: { id: 
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš túto recenziu natrvalo zmazať?')) return;
+    if (!confirm('Opravdu chceš tuto recenzi natrvalo smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/reviews/${id}`, { method: 'DELETE' });
@@ -28,8 +28,8 @@ export default function ReviewActions({ id, movieSlug, showEdit = true }: { id: 
       {showEdit && (
         <Link
           href={`/movie/${movieSlug}/upravit/${id}`}
-          title="Upraviť recenziu"
-          aria-label="Upraviť recenziu"
+          title="Upravit recenzi"
+          aria-label="Upravit recenzi"
           className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent transition-colors"
         >
           <IconEdit className="w-4 h-4" />
@@ -38,8 +38,8 @@ export default function ReviewActions({ id, movieSlug, showEdit = true }: { id: 
       <button
         onClick={handleDelete}
         disabled={loading}
-        title="Zmazať recenziu"
-        aria-label="Zmazať recenziu"
+        title="Smazat recenzi"
+        aria-label="Smazat recenzi"
         className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-white hover:bg-danger hover:border-danger transition-colors disabled:opacity-50"
       >
         <IconTrash className="w-4 h-4" />

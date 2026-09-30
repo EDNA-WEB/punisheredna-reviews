@@ -62,7 +62,7 @@ export default function SystemBroadcastForm({ recipientCount }: { recipientCount
         disabled={loading || !body.trim()}
         className="bg-accent text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
       >
-        {loading ? 'Odosielam…' : 'Hromadne odoslať'}
+        {loading ? 'Odesílám…' : 'Hromadně odeslat'}
       </button>
     </div>
   );

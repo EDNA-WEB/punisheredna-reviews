@@ -28,7 +28,7 @@ export default async function AdminNewsPage() {
       </div>
 
       {news.length === 0 ? (
-        <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">Zatiaľ žiadne novinky.</div>
+        <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">Zatím žádné novinky.</div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
           {news.map((n) => (

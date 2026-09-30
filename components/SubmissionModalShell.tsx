@@ -69,7 +69,7 @@ export default function SubmissionModalShell({
               onClick={handleSubmit}
               className="bg-danger text-white text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {submitting ? 'Odosielam…' : submitLabel}
+              {submitting ? 'Odesílám…' : submitLabel}
             </button>
           </div>
         </>

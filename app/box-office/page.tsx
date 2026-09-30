@@ -87,7 +87,7 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
         <h1 className="font-display font-extrabold text-3xl text-ink">{t('boxoffice.nadpis')}</h1>
         <div className="flex items-center gap-3">
           <Link href="/box-office/porovnanie" className="text-xs font-semibold text-accent hover:underline whitespace-nowrap">
-            Porovnať 2 filmy →
+            Porovnat 2 filmy →
           </Link>
           <BoxOfficeSortSelect currentSort={sort} />
           {isAdmin && <BoxOfficeRecalculateButton />}

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvůj účet byl zablokován, nemůžeš přidávat komentáře.' }, { status: 403 });
     }
     if (user.commentsDisabled) {
-      return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať komentáre.' }, { status: 403 });
+      return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat komentáře.' }, { status: 403 });
     }
 
     const { reviewId, newsId, movieId, parentId, body } = await req.json();

@@ -165,7 +165,7 @@ export default function BoxOfficeStatus({
             ) : (
               <div className="flex justify-between"><span>Celosvětové tržby × 40 % (odhad, bez rozpadu podle zemí)</span><span className="font-semibold">{formatMoney(stats.earned)} → {formatMoney(stats.studioTheatricalRevenue)}</span></div>
             )}
-            <div className="flex justify-between font-semibold pt-1 border-t border-line"><span>Podiel štúdia z kín</span><span>{formatMoney(stats.studioTheatricalRevenue)}</span></div>
+            <div className="flex justify-between font-semibold pt-1 border-t border-line"><span>Podíl studia z kin</span><span>{formatMoney(stats.studioTheatricalRevenue)}</span></div>
             {stats.ancillaryRevenue > 0 && (
               <div className="flex justify-between"><span>+ Sekundárne príjmy (VOD/streaming/TV)</span><span className="font-semibold">{formatMoney(stats.ancillaryRevenue)}</span></div>
             )}
@@ -183,7 +183,7 @@ export default function BoxOfficeStatus({
 
       {!compact && (
         <div className="text-[11px] text-muted mb-1.5 leading-snug">
-          Podiel štúdia z kín {formatMoney(stats.studioTheatricalRevenue)}
+          Podíl studia z kin {formatMoney(stats.studioTheatricalRevenue)}
           {stats.ancillaryRevenue > 0 && <> + sekundárne príjmy {formatMoney(stats.ancillaryRevenue)}</>}
           {' '}− náklady {formatMoney(stats.totalCost)}
         </div>

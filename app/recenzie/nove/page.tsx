@@ -28,8 +28,8 @@ export default async function AllNewReviewsPage({ searchParams }: { searchParams
   return (
     <div className="pt-8">
       <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na hlavní stránku</Link>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nové recenzie</h1>
-      <p className="text-muted mb-8">Všetky recenzie na stránke, od najnovšej.</p>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nové recenze</h1>
+      <p className="text-muted mb-8">Všechny recenze na webu, od nejnovější.</p>
 
       {reviews.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">

@@ -39,11 +39,8 @@ export default async function AdminTrailersPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Trailery</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
-        Video sa pri filme (cez "Upraviť film" → Videá) vždy pridá len na jeho vlastný profil. Sem sa dostanú všetky
-        trailery zo všetkých filmov naraz — a odtiaľto vyberáš, ktoré z nich sa <strong className="text-ink">navyše zobrazia
-        aj na hlavnej stránke</strong> (tlačidlo "Zobraziť na hlavnej stránke"). Tu vieš k trailerom doplniť aj titulky
-        alebo vlastný náhľadový obrázok. Trailer s titulkami má na hlavnej stránke aj na profile filmu prednosť pred
-        trailerom bez nich.
+        Video se u filmu (přes "Upravit film" → Videa) vždy přidá jen na jeho vlastní profil. Sem se dostanou všechny trailery ze všech filmů najednou — a odsud vybíráš, které z nich se <strong className="text-ink">navyše zobrazia
+        aj na hlavnej stránke</strong> (tlačítko "Zobrazit na hlavní stránce"). Tady můžeš k trailerům doplnit i titulky nebo vlastní náhledový obrázek. Trailer s titulky má na hlavní stránce i na profilu filmu přednost před trailerem bez nich.
       </p>
 
       <TrailerSubtitleAdminList items={items} />

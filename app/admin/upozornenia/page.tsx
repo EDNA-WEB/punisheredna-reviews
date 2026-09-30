@@ -71,19 +71,18 @@ export default async function AdminAlertsPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Upozornenia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Upozornění</h1>
       <p className="text-sm text-muted mb-6">
-        Prehľad všetkého, čo ešte chýba dopĺniť. Táto stránka sa vždy zobrazí aktuálny stav — over ju pravidelne, kým sa
-        pravidelné notifikácie na web ešte nepridali.
+        Přehled všeho, co ještě chybí doplnit. Tato stránka vždy zobrazí aktuální stav — kontroluj ji pravidelně, dokud na web nepřibudou pravidelná upozornění.
       </p>
 
       <div className="border border-accent rounded-xl overflow-hidden mb-8 bg-accent/5">
         <div className="bg-accent px-4 py-2.5 flex items-center justify-between">
-          <h2 className="font-display font-bold text-sm text-white">Čas skontrolovať kvalitný zdroj (2+ mesiace v kinách)</h2>
+          <h2 className="font-display font-bold text-sm text-white">Čas zkontrolovat kvalitní zdroj (2+ měsíce v kinech)</h2>
           <span className="text-xs font-semibold text-white">{readyForOnlineCheck.length}</span>
         </div>
         {readyForOnlineCheck.length === 0 ? (
-          <p className="text-sm text-muted p-4">Zatiaľ nič — všetky filmy staršie ako 2 mesiace už majú online odkaz.</p>
+          <p className="text-sm text-muted p-4">Zatím nic — všechny filmy starší než 2 měsíce už mají online odkaz.</p>
         ) : (
           <div className="divide-y divide-line">
             {readyForOnlineCheck.map((m) => (
@@ -96,18 +95,18 @@ export default async function AdminAlertsPage() {
         )}
       </div>
 
-      <Section title="Chýbajúce premiéry" href="/admin/premieres" items={missingPremieres} hint="Všetko vyplnené." />
-      <Section title="Chýbajúce streamovacie služby" href="/admin/kde-sledovat" items={missingStreaming} hint="Všetko vyplnené." />
-      <Section title="Chýbajúce odkazy" href="/admin/odkazy" items={missingLinks} hint="Všetko vyplnené." />
-      <Section title="Chýbajúci online odkaz" href="/admin/online" items={missingOnline} hint="Všetko vyplnené." />
+      <Section title="Chybějící premiéry" href="/admin/premieres" items={missingPremieres} hint="Vše vyplněno." />
+      <Section title="Chybějící streamovací služby" href="/admin/kde-sledovat" items={missingStreaming} hint="Vše vyplněno." />
+      <Section title="Chybějící odkazy" href="/admin/odkazy" items={missingLinks} hint="Vše vyplněno." />
+      <Section title="Chybějící online odkaz" href="/admin/online" items={missingOnline} hint="Vše vyplněno." />
 
       <div className="border border-line rounded-xl overflow-hidden mb-6">
         <div className="bg-surface px-4 py-2.5 flex items-center justify-between">
-          <h2 className="font-display font-bold text-sm text-ink">Chýbajúce zaujímavosti</h2>
+          <h2 className="font-display font-bold text-sm text-ink">Chybějící zajímavosti</h2>
           <span className="text-xs font-semibold text-danger">{missingTrivia.length}</span>
         </div>
         {missingTrivia.length === 0 ? (
-          <p className="text-sm text-muted p-4">Všetko vyplnené.</p>
+          <p className="text-sm text-muted p-4">Vše vyplněno.</p>
         ) : (
           <div className="divide-y divide-line max-h-72 overflow-y-auto">
             {missingTrivia.map((m) => (

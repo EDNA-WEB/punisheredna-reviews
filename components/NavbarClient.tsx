@@ -73,7 +73,7 @@ export default function NavbarClient({
             <div className="flex items-center gap-1.5 sm:gap-4 flex-none">
               <button
                 onClick={() => setOpen(true)}
-                aria-label="Otvoriť menu"
+                aria-label="Otevřít menu"
                 className="w-9 h-9 flex flex-col justify-center gap-[5px] sm:hidden flex-none"
               >
                 <span className="block h-[2px] w-6 bg-ink" />
@@ -159,7 +159,7 @@ export default function NavbarClient({
       {open && (
         <div className="fixed inset-0 z-40 bg-[#15171A] text-white flex flex-col">
           <div className="flex justify-end p-5">
-            <button onClick={() => setOpen(false)} aria-label="Zavrieť menu" className="text-3xl leading-none">×</button>
+            <button onClick={() => setOpen(false)} aria-label="Zavřít menu" className="text-3xl leading-none">×</button>
           </div>
           <nav className="flex flex-col px-8 gap-1 overflow-y-auto">
             {secondaryLinks.map((l) => (

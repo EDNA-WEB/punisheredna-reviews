@@ -23,8 +23,7 @@ export default async function AdminRightsPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Práva</h1>
       <p className="text-muted mb-6 max-w-xl">
-        Tu udeľuješ obmedzené admin práva vybraným používateľom — momentálne je dostupné len právo "Redaktor".
-        V budúcnosti tu môžu pribudnúť ďalšie.
+        Tady uděluješ omezená admin práva vybraným uživatelům — momentálně je dostupné jen právo "Redaktor". V budoucnu tu mohou přibýt další.
       </p>
       <RightsAdminList initialUsers={users} />
     </div>

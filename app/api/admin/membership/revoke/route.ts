@@ -6,11 +6,11 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { userId } = await req.json();
-  if (!userId) return NextResponse.json({ error: 'Chýba ID používateľa.' }, { status: 400 });
+  if (!userId) return NextResponse.json({ error: 'Chybí ID uživatele.' }, { status: 400 });
 
   const updated = await prisma.user.update({
     where: { id: userId },

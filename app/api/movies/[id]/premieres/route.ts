@@ -6,18 +6,18 @@ import { prisma } from '@/lib/prisma';
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { ageRating, premieres } = await req.json();
   // "premieres" je pole { country, releaseDate, distributor } — nahradí VŠETKY
   // doterajšie premiéry tohto filmu naraz.
   if (!Array.isArray(premieres)) {
-    return NextResponse.json({ error: 'Neplatný formát dát.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatný formát dat.' }, { status: 400 });
   }
   for (const p of premieres) {
     if (!p.country || !p.releaseDate) {
-      return NextResponse.json({ error: 'Každá premiéra musí mať krajinu a dátum.' }, { status: 400 });
+      return NextResponse.json({ error: 'Každá premiéra musí mít zemi a datum.' }, { status: 400 });
     }
   }
 

@@ -132,7 +132,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
             </button>
 
             <label className="text-xs font-semibold text-accent hover:underline flex-none whitespace-nowrap cursor-pointer">
-              {uploadingFor === item.id ? 'Nahrávam…' : item.previewImage ? 'Změnit náhled' : 'Přidat náhled'}
+              {uploadingFor === item.id ? 'Nahrávám…' : item.previewImage ? 'Změnit náhled' : 'Přidat náhled'}
               <input
                 type="file"
                 accept="image/*"
@@ -151,7 +151,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
                   : 'text-muted border-line hover:border-accent hover:text-accent'
               }`}
             >
-              {item.featuredOnHome ? '✓ Na hlavnej stránke' : 'Zobraziť na hlavnej stránke'}
+              {item.featuredOnHome ? '✓ Na hlavnej stránke' : 'Zobrazit na hlavní stránce'}
             </button>
 
             <button
@@ -159,7 +159,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
               onClick={() => setOpenFor((cur) => (cur === item.id ? null : item.id))}
               className="text-xs font-semibold text-accent hover:underline flex-none whitespace-nowrap"
             >
-              {openFor === item.id ? 'Skryť titulky' : `Titulky${item.subtitles.length > 0 ? ` (${item.subtitles.length})` : ''}`}
+              {openFor === item.id ? 'Skrýt titulky' : `Titulky${item.subtitles.length > 0 ? ` (${item.subtitles.length})` : ''}`}
             </button>
           </div>
 

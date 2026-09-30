@@ -155,12 +155,12 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
 
       <div>
         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-          <label className="block text-sm font-semibold text-ink">Text recenzie</label>
+          <label className="block text-sm font-semibold text-ink">Text recenze</label>
           <div className="flex items-center gap-1.5">
             <button type="button" onClick={() => wrapSelection('**')} className="w-8 h-8 rounded-lg border border-line text-sm font-bold hover:border-night">B</button>
             <button type="button" onClick={() => wrapSelection('*')} className="w-8 h-8 rounded-lg border border-line text-sm italic hover:border-night">I</button>
             <button type="button" onClick={() => setPreview((p) => !p)} className={`h-8 px-3 rounded-lg border text-xs font-semibold ${preview ? 'bg-night text-white border-night' : 'border-line hover:border-night'}`}>
-              {preview ? 'Upraviť' : 'Náhled'}
+              {preview ? 'Upravit' : 'Náhled'}
             </button>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
         {preview ? (
           <div className="field-input min-h-[260px] leading-relaxed article-body overflow-auto" dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatím nic nenapsáno…</p>' }} />
         ) : (
-          <textarea ref={textareaRef} className="field-input min-h-[260px] leading-relaxed" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Napíš svoju recenziu…" />
+          <textarea ref={textareaRef} className="field-input min-h-[260px] leading-relaxed" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Napiš svou recenzi…" />
         )}
 
         <div className="flex items-center justify-between mt-2 text-xs text-muted">
@@ -188,10 +188,10 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
 
       <div className="flex gap-3">
         <button type="submit" disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : isEdit ? 'Uložiť zmeny' : 'Publikovať recenziu'}
+          {loading ? 'Ukládám…' : isEdit ? 'Uložit změny' : 'Publikovat recenzi'}
         </button>
         <button type="button" onClick={() => router.back()} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-ink hover:border-night">
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </form>

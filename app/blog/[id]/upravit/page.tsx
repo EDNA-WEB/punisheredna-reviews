@@ -18,7 +18,7 @@ export default async function EditBlogPostPage({ params }: { params: { id: strin
 
   return (
     <div className="pt-10">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Upraviť článok</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Upravit článek</h1>
       <div className="max-w-2xl mb-6">
         <RevisionHistory apiBase={`/api/blog/${post.id}`} />
       </div>

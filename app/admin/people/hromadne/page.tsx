@@ -11,10 +11,9 @@ export default async function BulkAddPeoplePage() {
 
   return (
     <div className="pt-8 max-w-2xl">
-      <h1 className="font-display font-extrabold text-2xl text-ink mb-2">Hromadné pridanie osôb</h1>
+      <h1 className="font-display font-extrabold text-2xl text-ink mb-2">Hromadné přidání osob</h1>
       <p className="text-sm text-muted mb-6">
-        Zadaj mená hercov/tvorcov, jedno na riadok — max. 25 naraz. Systém pre každé meno nájde zhodu na TMDb a automaticky
-        vyplní fotku, životopis aj dátumy. Ak osoba pod rovnakým menom už u nás existuje, automaticky sa preskočí.
+        Zadej jména herců/tvůrců, jedno na řádek — max. 25 najednou. Systém pro každé jméno najde shodu na TMDb a automaticky vyplní fotku, životopis i data. Pokud osoba se stejným jménem už u nás existuje, automaticky se přeskočí.
       </p>
       <BulkAddPeopleForm />
     </div>

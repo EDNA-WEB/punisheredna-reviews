@@ -33,10 +33,9 @@ export default async function AdminTranslationsPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Preklad</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Překlad</h1>
       <p className="text-muted mb-6 max-w-2xl">
-        Základné texty webu (navigácia, tlačidlá, popisky) — nie obsah recenzií ani novinových článkov, ten sa neprekladá.
-        Slovenčina je zdroj, doplň k nej anglický a český preklad.
+        Základní texty webu (navigace, tlačítka, popisky) — ne obsah recenzí ani článků, ten se nepřekládá. Čeština je hlavní jazyk webu a její výchozí znění je přímo v kódu; tady ho můžeš upravit a doplnit slovenský a anglický překlad.
       </p>
       <SeedMembershipTranslationsButton />
       <SeedLoginTranslationsButton />

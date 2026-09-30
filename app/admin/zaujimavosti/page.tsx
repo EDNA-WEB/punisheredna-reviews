@@ -37,10 +37,9 @@ export default async function AdminTriviaPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Zaujímavosti</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Zajímavosti</h1>
       <p className="text-sm text-muted mb-6">
-        Hromadné pridávanie zaujímavostí naprieč viacerými filmami naraz. Jednotlivé úpravy zostávajú možné aj priamo
-        vo formulári na úpravu filmu.
+        Hromadné přidávání zajímavostí napříč více filmy najednou. Jednotlivé úpravy zůstávají možné i přímo ve formuláři pro úpravu filmu.
       </p>
       <TriviaAdminList initialMovies={sortedMovies} />
     </div>

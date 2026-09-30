@@ -40,7 +40,7 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
             className={`inline-block ${googlePlayUrl ? '' : 'opacity-60 cursor-default pointer-events-none'}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/googleplay-badge.png" alt="Získať na Google Play" className="h-11 w-auto" />
+            <img src="/googleplay-badge.png" alt="Stáhnout z Google Play" className="h-11 w-auto" />
           </a>
         </div>
         {!appStoreUrl && !googlePlayUrl && (

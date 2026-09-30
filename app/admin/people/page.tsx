@@ -33,14 +33,14 @@ export default async function AdminPeoplePage() {
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Herci a tvorcovia</h1>
+          <h1 className="font-display font-extrabold text-3xl text-ink">Herci a tvůrci</h1>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/admin/people/hromadne" className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent">
-            Hromadne pridať
+            Hromadně přidat
           </Link>
           <Link href="/admin/people/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
-            + Pridať osobu
+            + Přidat osobu
           </Link>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default async function AdminPeoplePage() {
 
       {approved.length === 0 ? (
         <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">
-          Zatiaľ žiadni herci ani tvorcovia. Pridaj prvého.
+          Zatím žádní herci ani tvůrci. Přidej prvního.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -76,7 +76,7 @@ export default async function AdminPeoplePage() {
               <div className="w-12 h-12 rounded-full bg-surface bg-cover bg-center flex-none" style={p.photo ? { backgroundImage: `url('${p.photo}')` } : undefined} />
               <div className="flex-1 min-w-0">
                 <div className="font-display font-bold text-lg text-ink truncate">{p.name}</div>
-                <div className="text-xs text-muted mt-1">{p.role === 'ACTOR' ? 'Herec/herečka' : 'Tvorca'} · {p._count.followers} sledovateľov</div>
+                <div className="text-xs text-muted mt-1">{p.role === 'ACTOR' ? 'Herec/herečka' : 'Tvorca'} · {p._count.followers} sledujících</div>
               </div>
               <AdminPersonActions id={p.id} slug={p.slug} />
             </div>

@@ -102,7 +102,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
               }}
               className="w-full text-left px-4 py-3 text-sm font-medium text-ink hover:bg-surface transition-colors border-b border-line"
             >
-              ☑ Vymazať vybrané správy
+              ☑ Smazat vybrané zprávy
             </button>
             <button
               type="button"
@@ -112,7 +112,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
               }}
               className="w-full text-left px-4 py-3 text-sm font-medium text-danger hover:bg-surface transition-colors"
             >
-              🗑 Vymazať konverzáciu
+              🗑 Smazat konverzaci
             </button>
           </div>
         </>
@@ -123,13 +123,13 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-card border border-line rounded-xl p-5 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-display font-bold text-ink mb-2">Vymazať celú konverzáciu?</h3>
+            <h3 className="font-display font-bold text-ink mb-2">Smazat celou konverzaci?</h3>
             <p className="text-sm text-muted mb-4">
               Smažou se všechny zprávy mezi tebou a {otherName}, u obou. Tuto akci nelze vrátit zpět.
             </p>
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowDeleteConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
-                Zrušiť
+                Zrušit
               </button>
               <button
                 type="button"
@@ -137,7 +137,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
                 disabled={deleting}
                 className="text-sm font-semibold px-4 py-2 rounded-full text-white bg-danger hover:opacity-90 disabled:opacity-50"
               >
-                {deleting ? '…' : 'Vymazať'}
+                {deleting ? '…' : 'Smazat'}
               </button>
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowConfirm(false)}>
           <div className="bg-card border border-line rounded-xl p-5 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-display font-bold text-ink mb-2">
-              {blocked ? `Odblokovať ${otherName}?` : `Zablokovať ${otherName}?`}
+              {blocked ? `Odblokovat ${otherName}?` : `Zablokovat ${otherName}?`}
             </h3>
             <p className="text-sm text-muted mb-4">
               {blocked
@@ -158,7 +158,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
             {blocked ? (
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
-                  Zrušiť
+                  Zrušit
                 </button>
                 <button
                   type="button"
@@ -166,7 +166,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
                   disabled={loading}
                   className="text-sm font-semibold px-4 py-2 rounded-full text-white bg-accent hover:bg-accent-dark disabled:opacity-50"
                 >
-                  {loading ? '…' : 'Odblokovať'}
+                  {loading ? '…' : 'Odblokovat'}
                 </button>
               </div>
             ) : (
@@ -177,7 +177,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
                   disabled={loading}
                   className="text-sm font-semibold px-4 py-2.5 rounded-full text-white bg-danger hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? '…' : 'Zablokovať a nahlásiť chat'}
+                  {loading ? '…' : 'Zablokovat a nahlásit chat'}
                 </button>
                 <button
                   type="button"
@@ -185,10 +185,10 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
                   disabled={loading}
                   className="text-sm font-semibold px-4 py-2.5 rounded-full text-ink border border-line hover:border-danger hover:text-danger disabled:opacity-50"
                 >
-                  {loading ? '…' : 'Len zablokovať'}
+                  {loading ? '…' : 'Jen zablokovat'}
                 </button>
                 <button type="button" onClick={() => setShowConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink py-1.5">
-                  Zrušiť
+                  Zrušit
                 </button>
               </div>
             )}

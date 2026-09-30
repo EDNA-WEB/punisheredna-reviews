@@ -10,7 +10,7 @@ const BATCH_SIZE = 40; // rozumná dávka na jedno spustenie, nech to nenarazí 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   // Filmy, čo sme už v tomto behu vyskúšali (aj neúspešne) — bez tohto by sa
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadný import IMDb odkazov',
+    toolName: 'Hromadný import odkazů IMDb',
     updated: added,
     failed: notFound,
     total: candidates.length

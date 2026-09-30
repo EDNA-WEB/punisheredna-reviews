@@ -45,7 +45,7 @@ export default async function AdminKdeSledovatPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Kde sledovať</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Kde sledovat</h1>
       <StreamingServicesAdmin initialServices={services} initialMovies={sortedMovies} />
     </div>
   );

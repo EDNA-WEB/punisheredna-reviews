@@ -8,7 +8,7 @@ import { logBulkAction } from '@/lib/auditLog';
 export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -48,7 +48,7 @@ export async function POST() {
       const filteredPremieres = Array.from(earliestByKey.values());
 
       if (filteredPremieres.length === 0) {
-        results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pre tento film žiadne sledované premiéry (ČR/USA)' });
+        results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pro tento film žádné sledované premiéry (ČR/USA)' });
         continue;
       }
 
@@ -62,7 +62,7 @@ export async function POST() {
         await prisma.movie.update({ where: { id: movie.id }, data: { ageRating } });
       }
 
-      results.push({ title: movie.title, status: 'OK', detail: `Pridané premiéry: ${filteredPremieres.length}` });
+      results.push({ title: movie.title, status: 'OK', detail: `Přidané premiéry: ${filteredPremieres.length}` });
     } catch (err: any) {
       results.push({ title: movie.title, status: 'CHYBA', detail: err.message });
     }
@@ -71,7 +71,7 @@ export async function POST() {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné doplnenie nedávnych premiér z TMDb',
+    toolName: 'Hromadné doplnění nedávných premiér z TMDb',
     updated: results.filter((r) => r.status === 'OK').length,
     failed: results.filter((r) => r.status === 'CHYBA').length,
     total: movies.length

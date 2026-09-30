@@ -56,7 +56,7 @@ export default function ProfileTabs({
     { key: 'prehlad', label: 'Přehled' },
     { key: 'o_mne', label: 'O mne' },
     { key: 'hodnotenie', label: 'Hodnotenie' },
-    { key: 'reviews', label: 'Recenzie' },
+    { key: 'reviews', label: 'Recenze' },
     { key: 'blog', label: 'Blog', desktopOnly: true },
     { key: 'seznamy', label: 'Zoznamy', desktopOnly: true }
   ];
@@ -192,7 +192,7 @@ export default function ProfileTabs({
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
-              <span className="text-sm font-bold text-ink">Posledné recenzie{reviews.length > 0 ? ` (${reviews.length})` : ''}</span>
+              <span className="text-sm font-bold text-ink">Poslední recenze{reviews.length > 0 ? ` (${reviews.length})` : ''}</span>
               {reviews.length > 3 && (
                 <button onClick={() => setActive('reviews')} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
                   VÍCE
@@ -268,7 +268,7 @@ export default function ProfileTabs({
                   disabled={bioSaving}
                   className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
                 >
-                  {bioSaving ? 'Ukladám…' : 'Uložiť'}
+                  {bioSaving ? 'Ukládám…' : 'Uložit'}
                 </button>
                 <button
                   onClick={() => {
@@ -278,7 +278,7 @@ export default function ProfileTabs({
                   }}
                   className="text-xs text-muted hover:text-ink"
                 >
-                  Zrušiť
+                  Zrušit
                 </button>
               </div>
             </div>
@@ -288,8 +288,8 @@ export default function ProfileTabs({
               {isOwn && (
                 <button
                   onClick={() => setEditingBio(true)}
-                  title="Upraviť"
-                  aria-label="Upraviť"
+                  title="Upravit"
+                  aria-label="Upravit"
                   className="w-7 h-7 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent flex-none"
                 >
                   <IconEdit className="w-3.5 h-3.5" />
@@ -332,7 +332,7 @@ export default function ProfileTabs({
                     <div className="text-[11px] text-muted mt-0.5">
                       Ohodnotené {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
                       {days !== null && (
-                        <> · {days === 0 ? 'v deň premiéry' : days > 0 ? `${days}. deň od premiéry` : `${Math.abs(days)} dní pred premiérou`}</>
+                        <> · {days === 0 ? 'v den premiéry' : days > 0 ? `${days}. den od premiéry` : `${Math.abs(days)} dní pred premiérou`}</>
                       )}
                     </div>
                   </div>
@@ -363,8 +363,8 @@ export default function ProfileTabs({
                   {isOwn && (
                     <Link
                       href={`/movie/${r.movie.slug}/upravit/${r.id}`}
-                      title="Upraviť recenziu"
-                      aria-label="Upraviť recenziu"
+                      title="Upravit recenzi"
+                      aria-label="Upravit recenzi"
                       className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent transition-colors flex-none"
                     >
                       <IconEdit className="w-3.5 h-3.5" />

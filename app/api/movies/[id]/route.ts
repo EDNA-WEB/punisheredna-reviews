@@ -19,7 +19,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
@@ -93,14 +93,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   await prisma.movie.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   const data = await req.json();
   const updateData: any = {};
   if (typeof data.nowShowing === 'boolean') updateData.nowShowing = data.nowShowing;

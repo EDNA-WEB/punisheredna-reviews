@@ -9,12 +9,12 @@ import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJs
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { text, preview, batchId: clientBatchId } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
-    return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
+    return NextResponse.json({ error: 'Chybí text ke zpracování.' }, { status: 400 });
   }
 
   // Dva podporované formáty riadku:
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   for (const line of lines) {
     const extracted = extractTrailingUrl(line);
     if (!extracted) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj, či riadok obsahuje platnú http(s) adresu)' });
+      results.push({ line, status: 'CHYBA', detail: 'Řádek neodpovídá formátu "Název – URL" (zkontroluj, zda řádek obsahuje platnou http(s) adresu)' });
       continue;
     }
     const { rest: titlePart, url } = extracted;
@@ -92,13 +92,13 @@ export async function POST(req: Request) {
       results.push({
         line,
         status: 'NENÁJDENÉ',
-        detail: suggestion ? `Žiadny presný film/seriál s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film/seriál s názvom "${title}"`
+        detail: suggestion ? `Žádný přesný film/seriál s názvem "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žádný film/seriál s názvem "${title}"`
       });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac záznamov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Více záznamů s názvem "${title}" (roky: ${years}) — přidej rok do závorky` });
       continue;
     }
 
@@ -110,11 +110,11 @@ export async function POST(req: Request) {
         results.push({
           line,
           status: 'CHYBA',
-          detail: `"${movie.title}" je seriál — pri seriáloch treba uviesť aj sériu a diel, napr. "${title} S01E01"`
+          detail: `"${movie.title}" je seriál — u seriálů je potřeba uvést i sérii a díl, např. "${title} S01E01"`
         });
         continue;
       }
-      results.push({ line, status: movie.watchUrl === url ? 'BEZ ZMENY' : 'OK', detail: `${movie.title} — odkaz na film priradený` });
+      results.push({ line, status: movie.watchUrl === url ? 'BEZ ZMENY' : 'OK', detail: `${movie.title} — odkaz na film přiřazen` });
       if (!preview && movie.watchUrl !== url) {
         await prisma.movie.update({ where: { id: movie.id }, data: { watchUrl: url } });
         changes.push({ targetType: 'movie', targetId: movie.id, movieTitle: movie.title, field: 'watchUrl', oldValue: movie.watchUrl, newValue: url });
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     }
 
     if (episodeNumber === null) {
-      results.push({ line, status: 'CHYBA', detail: 'Chýba číslo epizódy vo vzore "S01E01"' });
+      results.push({ line, status: 'CHYBA', detail: 'Chybí číslo epizody ve vzoru "S01E01"' });
       continue;
     }
     const season = await prisma.season.findFirst({ where: { movieId: movie.id, number: seasonNumber } });
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
     }
 
     const label = `${movie.title} S${String(seasonNumber).padStart(2, '0')}E${String(episodeNumber).padStart(2, '0')}`;
-    results.push({ line, status: episode.onlineUrl === url ? 'BEZ ZMENY' : 'OK', detail: `${label} — odkaz priradený` });
+    results.push({ line, status: episode.onlineUrl === url ? 'BEZ ZMENY' : 'OK', detail: `${label} — odkaz přiřazen` });
     if (!preview && episode.onlineUrl !== url) {
       await prisma.episode.update({ where: { id: episode.id }, data: { onlineUrl: url } });
       changes.push({ targetType: 'episode', targetId: episode.id, movieTitle: label, field: 'onlineUrl', oldValue: episode.onlineUrl, newValue: url });
@@ -157,7 +157,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadný import Online odkazov',
+    toolName: 'Hromadný import online odkazů',
     updated: changes.length,
     total: results.length
   });

@@ -59,7 +59,7 @@ export default function RichTextBlocks({ addMoreLabel, onChange }: { addMoreLabe
             <span className="w-px h-5 bg-line mx-1" />
             <button
               type="button"
-              title="Vložiť odkaz"
+              title="Vložit odkaz"
               onClick={() => insertAtCursor(textareaRefs.current[i] as any, block, (v) => updateBlock(i, v), '[', '](https://)', 'text odkazu')}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card"
             >
@@ -67,7 +67,7 @@ export default function RichTextBlocks({ addMoreLabel, onChange }: { addMoreLabe
             </button>
             <button
               type="button"
-              title="Vyčistiť formátovanie"
+              title="Vyčistit formátování"
               onClick={() => updateBlock(i, block.replace(/\*\*|\*|\[|\]\(.*?\)/g, ''))}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card"
             >

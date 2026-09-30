@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvůj účet byl zablokován, nemůžeš přidávat recenze.' }, { status: 403 });
     }
     if (user.reviewsDisabled) {
-      return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať recenzie.' }, { status: 403 });
+      return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat recenze.' }, { status: 403 });
     }
     const rateLimitError = await checkRateLimit('review', authorId, user.createdAt);
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
           userId: f.followerId,
           actorName: author.name,
           type: 'REVIEW',
-          text: `${author.name} pridal(a) novú recenziu: ${movie.title}`,
+          text: `${author.name} přidal(a) novou recenzi: ${movie.title}`,
           link: `/movie/${movie.slug}`
         }))
       });

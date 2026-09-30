@@ -44,7 +44,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
   async function submit(e: React.FormEvent, asDraft: boolean) {
     e.preventDefault();
     if (tags.length < 5) {
-      setError('Musíš pridať aspoň 5 tagov.');
+      setError('Musíš přidat alespoň 5 tagů.');
       return;
     }
     setLoading(asDraft ? 'draft' : 'publish');
@@ -94,7 +94,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
 
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
 
-          <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Názov článku'}</h1>
+          <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Název článku'}</h1>
 
           <div className="flex items-center gap-3 mb-6 text-sm text-muted">
             <span className="flex items-center gap-2"><IconUser className="w-5 h-5" />Ty</span>
@@ -120,7 +120,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
         <>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Titulný obrázok (nepovinné)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Titulní obrázek (nepovinné)</label>
         <label htmlFor="blog-cover-upload" className="block cursor-pointer">
           {cover ? (
             <img src={cover} alt="" className="w-full max-h-64 object-cover rounded-xl bg-surface" />
@@ -133,13 +133,13 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
         <input id="blog-cover-upload" type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
         {cover && (
           <button type="button" onClick={() => setCover('')} className="text-xs text-danger hover:underline mt-1.5">
-            Odstrániť obrázok
+            Odstranit obrázek
           </button>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Názov</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Název</label>
         <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={150} required />
       </div>
 
@@ -164,7 +164,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
           disabled={loading !== null}
           className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading === 'publish' ? 'Ukladám…' : wasDraft ? 'Zverejniť' : initial?.id ? 'Uložiť zmeny' : 'Uverejniť v profile'}
+          {loading === 'publish' ? 'Ukládám…' : wasDraft ? 'Zveřejnit' : initial?.id ? 'Uložit změny' : 'Zveřejnit v profilu'}
         </button>
         <button
           type="button"
@@ -172,7 +172,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
           disabled={loading !== null}
           className="text-sm font-semibold text-ink border border-line px-6 py-3 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
         >
-          {loading === 'draft' ? 'Ukladám…' : 'Uložit jako koncept'}
+          {loading === 'draft' ? 'Ukládám…' : 'Uložit jako koncept'}
         </button>
       </div>
     </form>

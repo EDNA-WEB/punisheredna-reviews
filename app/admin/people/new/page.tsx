@@ -11,7 +11,7 @@ export default async function NewPersonPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Pridať osobu</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Přidat osobu</h1>
       <PersonFormWithTmdbImport />
     </div>
   );

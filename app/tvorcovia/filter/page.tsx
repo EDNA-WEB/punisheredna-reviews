@@ -16,7 +16,7 @@ export default async function TvorcoviaFilterPage() {
           Filmy
         </Link>
         <Link href="/tvorcovia/filter" className="text-sm font-semibold px-4 py-3 border-b-2 border-accent text-accent">
-          Tvorcovia
+          Tvůrci
         </Link>
       </div>
 

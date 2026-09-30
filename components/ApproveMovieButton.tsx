@@ -25,7 +25,7 @@ export default function ApproveMovieButton({ id }: { id: string }) {
   }
 
   async function reject() {
-    if (!confirm('Naozaj chceš tento návrh zamietnuť a zmazať?')) return;
+    if (!confirm('Opravdu chceš tento návrh zamítnout a smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/movies/${id}`, { method: 'DELETE' });
@@ -41,7 +41,7 @@ export default function ApproveMovieButton({ id }: { id: string }) {
   return (
     <div className="flex items-center gap-2 flex-none">
       <button onClick={approve} disabled={loading} className="text-xs font-semibold bg-emerald-600 text-white px-3 py-1.5 rounded-full hover:bg-emerald-700 disabled:opacity-50">
-        Schváliť
+        Schválit
       </button>
       <button onClick={reject} disabled={loading} className="text-xs font-semibold text-muted hover:text-danger disabled:opacity-50">
         Zamietnuť

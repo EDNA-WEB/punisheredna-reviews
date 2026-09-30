@@ -195,7 +195,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
       // Voliteľný zdroj fotky (napr. "Prima", "Instagram") — ak sa zadá,
       // pridá sa do obrázka trvalý textový vodoznak "Zdroj: ..." v rohu.
       // Nič sa pritom znova nenahráva — Cloudinary text dokreslí sama.
-      const source = window.prompt('Zdroj fotky (nepovinné, napr. "Prima") — necháš prázdne, ak žiadny netreba:', '');
+      const source = window.prompt('Zdroj fotky (nepovinné, např. "Prima") — necháš prázdné, pokud žádný není potřeba:', '');
       const finalUrl = source && source.trim() ? cloudinaryWithSourceWatermark(data.url, source) : data.url;
 
       insertText(`\n\n![${file.name}](${finalUrl})\n\n`);
@@ -275,11 +275,11 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
 
         <span className="w-px h-5 bg-line mx-1" />
 
-        <label className="toolbar-btn cursor-pointer" title="Vložiť obrázok">
+        <label className="toolbar-btn cursor-pointer" title="Vložit obrázek">
           {uploading ? '…' : '🖼️ Obrázok'}
           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
         </label>
-        <button type="button" title="Vložiť YouTube video" onClick={() => setLinkPicker('youtube')} className="toolbar-btn">
+        <button type="button" title="Vložit YouTube video" onClick={() => setLinkPicker('youtube')} className="toolbar-btn">
           🎥 Video
         </button>
         <button type="button" title="Odkaz na film nebo seriál" onClick={() => openLinkPicker('movie')} className="toolbar-btn">
@@ -321,7 +321,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               disabled={!urlInput.trim()}
               className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
             >
-              Vložiť odkaz
+              Vložit odkaz
             </button>
             <button
               type="button"
@@ -332,7 +332,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               }}
               className="text-xs text-muted hover:text-ink"
             >
-              Zrušiť
+              Zrušit
             </button>
           </div>
         </div>
@@ -355,10 +355,10 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               disabled={!urlInput.trim()}
               className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
             >
-              Vložiť video
+              Vložit video
             </button>
             <button type="button" onClick={() => { setLinkPicker(null); setUrlInput(''); }} className="text-xs text-muted hover:text-ink">
-              Zrušiť
+              Zrušit
             </button>
           </div>
         </div>
@@ -375,7 +375,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               placeholder={linkPicker === 'movie' ? 'Hledat film nebo seriál…' : 'Hledat osobnost…'}
             />
             <button type="button" onClick={() => setLinkPicker(null)} className="text-xs text-muted hover:text-ink">
-              Zrušiť
+              Zrušit
             </button>
           </div>
           {searching && <p className="text-xs text-muted">Hledám…</p>}

@@ -48,7 +48,7 @@ export default function PrivacyModal({ text, categories, trigger }: { text: stri
           <div className="relative w-full max-w-xl max-h-[88vh] bg-card border-2 border-accent rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <button
               onClick={() => setOpen(false)}
-              aria-label="Zavrieť"
+              aria-label="Zavřít"
               className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface hover:text-ink text-xl leading-none z-10"
             >
               ×

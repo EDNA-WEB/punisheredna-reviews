@@ -15,7 +15,7 @@ export default async function EditPersonPage({ params }: { params: { id: string 
   return (
     <div className="pt-8">
       <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upraviť osobu</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit osobu</h1>
       <PersonForm initial={person} />
     </div>
   );

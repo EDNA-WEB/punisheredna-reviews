@@ -28,7 +28,7 @@ export default function AddExternalReviewModal({ movieId, movieTitle, movieYear,
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface transition-colors"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           ✕
         </button>
@@ -45,7 +45,7 @@ export default function AddExternalReviewModal({ movieId, movieTitle, movieYear,
               className="field-input"
               value={site}
               onChange={(e) => setSite(e.target.value)}
-              placeholder="Názov webu/autora (napr. ČSFD, Filmtoro…)"
+              placeholder="Název webu/autora (např. ČSFD, Filmtoro…)"
             />
             <input
               className="field-input"

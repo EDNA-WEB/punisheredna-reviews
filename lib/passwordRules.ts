@@ -7,7 +7,7 @@ export function validatePassword(password: string): string | null {
 }
 
 export function validateNickname(nickname: string): string | null {
-  if (nickname.length < 3 || nickname.length > 20) return 'Prezývka musí mať 3 až 20 znakov.';
+  if (nickname.length < 3 || nickname.length > 20) return 'Přezdívka musí mít 3 až 20 znaků.';
   if (!/^[a-zA-Z0-9_.-]+$/.test(nickname)) return 'Přezdívka může obsahovat jen písmena, číslice, tečku, pomlčku a podtržítko.';
   return null;
 }

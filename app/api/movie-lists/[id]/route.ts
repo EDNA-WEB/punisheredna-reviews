@@ -10,7 +10,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
   const list = await prisma.movieList.findUnique({ where: { id: params.id } });
   if (!list) return NextResponse.json({ error: 'Seznam se nenašel.' }, { status: 404 });
-  if (list.authorId !== userId) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (list.authorId !== userId) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { title } = await req.json();
   const trimmedTitle = String(title || '').trim();
@@ -30,7 +30,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   const list = await prisma.movieList.findUnique({ where: { id: params.id } });
   if (!list) return NextResponse.json({ error: 'Seznam se nenašel.' }, { status: 404 });
   if (list.authorId !== userId && !isAdmin) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   await prisma.movieList.delete({ where: { id: params.id } });

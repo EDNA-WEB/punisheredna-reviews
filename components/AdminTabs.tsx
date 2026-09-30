@@ -11,31 +11,31 @@ const PROFILE_GROUP = {
     { href: '/admin/premieres', label: 'Premiéry' },
     { href: '/admin/tagy', label: 'Tagy' },
     { href: '/admin/online', label: 'Online' },
-    { href: '/admin/kde-sledovat', label: 'Kde sledovať' },
+    { href: '/admin/kde-sledovat', label: 'Kde sledovat' },
     { href: '/admin/odkazy', label: 'Odkazy' },
-    { href: '/admin/lokalizacia', label: 'Lokalizácia' },
-    { href: '/admin/zaujimavosti', label: 'Zaujímavosti' }
+    { href: '/admin/lokalizacia', label: 'Lokalizace' },
+    { href: '/admin/zaujimavosti', label: 'Zajímavosti' }
   ]
 };
 
 const TABS = [
-  { href: '/admin/prehlad', label: '📊 Prehľad' },
-  { href: '/admin', label: 'Recenzie' },
+  { href: '/admin/prehlad', label: '📊 Přehled' },
+  { href: '/admin', label: 'Recenze' },
   { href: '/admin/movies', label: 'Filmy' },
   { href: '/admin/people', label: 'Osobnosti' },
   { href: '/admin/news', label: 'Novinky' },
   { href: '/admin/trailers', label: 'Trailery' },
-  { href: '/admin/upozornenia', label: 'Upozornenia' },
-  { href: '/admin/nahlasenia', label: 'Nahlásenia' },
+  { href: '/admin/upozornenia', label: 'Upozornění' },
+  { href: '/admin/nahlasenia', label: 'Nahlášení' },
   { href: '/admin/obchod/produkty', label: 'Obchod' },
   { href: '/admin/navrhy-obsahu', label: 'Návrhy obsahu' },
-  { href: '/admin/clenstvo', label: '🎫 Členstvo' },
+  { href: '/admin/clenstvo', label: '🎫 Členství' },
   { href: '/admin/audit-log', label: 'Audit log' },
   { href: '/admin/analytics', label: 'Analytics' },
   { href: '/admin/vykon', label: '⚡ Výkon' },
-  { href: '/admin/users', label: 'Čitatelia' },
-  { href: '/admin/settings', label: 'Vzhľad' },
-  { href: '/admin/preklad', label: 'Preklad' },
+  { href: '/admin/users', label: 'Čtenáři' },
+  { href: '/admin/settings', label: 'Vzhled' },
+  { href: '/admin/preklad', label: 'Překlad' },
   { href: '/admin/prava', label: 'Práva' },
   { href: '/admin/system', label: 'Systém' }
 ];

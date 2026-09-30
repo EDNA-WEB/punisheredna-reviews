@@ -157,7 +157,7 @@ export default function PremieresCarousel({ premieres }: { premieres: PremiereIt
       <button
         type="button"
         onClick={() => scrollByAmount(1)}
-        aria-label="Posunúť doprava"
+        aria-label="Posunout doprava"
         className="hidden md:flex absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-night/80 text-white items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-night"
       >
         <IconChevronRight className="w-4 h-4" />

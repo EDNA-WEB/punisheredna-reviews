@@ -30,9 +30,9 @@ export default function UserRestrictionsToggle({ id, initial }: { id: string; in
   }
 
   const items: { key: keyof Restrictions; onLabel: string; offLabel: string }[] = [
-    { key: 'reviewsDisabled', onLabel: 'Zakázané recenzie', offLabel: 'Zakázať recenzie' },
-    { key: 'ratingsDisabled', onLabel: 'Zakázané hodnotenia', offLabel: 'Zakázať hodnotenia' },
-    { key: 'commentsDisabled', onLabel: 'Zakázané komentáre', offLabel: 'Zakázať komentáre' }
+    { key: 'reviewsDisabled', onLabel: 'Zakázané recenze', offLabel: 'Zakázat recenze' },
+    { key: 'ratingsDisabled', onLabel: 'Zakázaná hodnocení', offLabel: 'Zakázat hodnocení' },
+    { key: 'commentsDisabled', onLabel: 'Zakázané komentáře', offLabel: 'Zakázat komentáře' }
   ];
 
   return (

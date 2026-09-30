@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     // konverzáciu zamietol, odosielateľ už nemôže poslať vôbec nič.
     const conversation = await getOrCreateConversation(senderId, receiverId, senderId);
     if (conversation.status === 'DECLINED') {
-      return NextResponse.json({ error: 'Táto osoba odmietla s tebou komunikovať.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tato osoba s tebou odmítla komunikovat.' }, { status: 403 });
     }
     if (conversation.status === 'PENDING' && conversation.initiatorId === senderId) {
       const alreadySent = await prisma.message.count({ where: { senderId, receiverId } });

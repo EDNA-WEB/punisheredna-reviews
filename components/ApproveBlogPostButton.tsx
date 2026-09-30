@@ -9,7 +9,7 @@ export default function ApproveBlogPostButton({ postId }: { postId: string }) {
   const [error, setError] = useState('');
 
   async function approve() {
-    if (!confirm('Schváliť tento článok a automaticky ho zverejniť na hlavnej stránke?')) return;
+    if (!confirm('Schválit tento článek a automaticky ho zveřejnit na hlavní stránce?')) return;
     setLoading(true);
     setError('');
     try {
@@ -32,7 +32,7 @@ export default function ApproveBlogPostButton({ postId }: { postId: string }) {
         disabled={loading}
         className="bg-accent text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
       >
-        {loading ? 'Schvaluji…' : 'Schváliť a zverejniť'}
+        {loading ? 'Schvaluji…' : 'Schválit a zveřejnit'}
       </button>
       {error && <div className="text-danger text-xs mt-2">{error}</div>}
     </div>

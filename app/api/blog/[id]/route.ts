@@ -15,7 +15,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
   if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
   if (post.authorId !== userId && !isAdmin) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { title, body, coverImage, isDraft, tags: rawTags } = await req.json();
@@ -46,7 +46,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (isDraft !== undefined) data.isDraft = !!isDraft;
   if (rawTags !== undefined) {
     const tags = Array.isArray(rawTags) ? rawTags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
-    if (tags.length < 5) return NextResponse.json({ error: 'Musíš pridať aspoň 5 tagov.' }, { status: 400 });
+    if (tags.length < 5) return NextResponse.json({ error: 'Musíš přidat alespoň 5 tagů.' }, { status: 400 });
     data.tags = tags;
   }
 
@@ -95,7 +95,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
   if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
   if (post.authorId !== userId && !isAdmin) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   await prisma.blogPost.delete({ where: { id: params.id } });

@@ -12,7 +12,7 @@ export async function POST(req: Request, { params }: { params: { episodeId: stri
     const authorId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: authorId } });
     if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
-    if (user.reviewsDisabled) return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať recenzie.' }, { status: 403 });
+    if (user.reviewsDisabled) return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat recenze.' }, { status: 403 });
     const rateLimitError = await checkRateLimit('review', authorId, user.createdAt);
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
@@ -36,7 +36,7 @@ export async function POST(req: Request, { params }: { params: { episodeId: stri
       where: { movieId: episode.season.movieId, authorId, seasonId: episode.seasonId, episodeId: episode.id }
     });
     if (existing) {
-      return NextResponse.json({ error: 'K tejto epizóde už recenziu máš.', existingId: existing.id }, { status: 409 });
+      return NextResponse.json({ error: 'K této epizodě už recenzi máš.', existingId: existing.id }, { status: 409 });
     }
 
     const review = await prisma.$transaction(async (tx) => {

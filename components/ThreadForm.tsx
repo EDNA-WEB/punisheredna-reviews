@@ -21,7 +21,7 @@ export default function ThreadForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !body.trim()) {
-      setError('Vyplň názov aj text témy.');
+      setError('Vyplň název i text tématu.');
       return;
     }
     setLoading(true);
@@ -46,8 +46,8 @@ export default function ThreadForm() {
   return (
     <form onSubmit={submit} className="max-w-xl space-y-5">
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Názov témy</label>
-        <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="O čom chceš diskutovať?" />
+        <label className="block text-sm font-semibold text-ink mb-2">Název tématu</label>
+        <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="O čem chceš diskutovat?" />
       </div>
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Týká se filmu (nepovinné)</label>
@@ -65,10 +65,10 @@ export default function ThreadForm() {
       {error && <div className="text-danger text-sm">{error}</div>}
       <div className="flex gap-3">
         <button type="submit" disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Zakladám…' : 'Založiť tému'}
+          {loading ? 'Zakládám…' : 'Založit téma'}
         </button>
         <button type="button" onClick={() => router.back()} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-ink hover:border-ink">
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </form>

@@ -15,7 +15,7 @@ export default function SeedLoginTranslationsButton() {
       const res = await fetch('/api/admin/translations/seed-login-batch', { method: 'POST' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Doplnenie zlyhalo.');
-      setResult(`Hotovo — vytvorených ${data.created}, doplnených ${data.updated} z ${data.total} kľúčov.`);
+      setResult(`Hotovo — vytvorených ${data.created}, doplnených ${data.updated} z ${data.total} klíčů.`);
       router.refresh();
     } catch (err: any) {
       setResult(err.message || 'Doplnenie zlyhalo.');
@@ -32,7 +32,7 @@ export default function SeedLoginTranslationsButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
       >
-        {loading ? 'Doplňuji…' : '✅ Doplniť pripravené EN/CS preklady (prihlasovacia stránka)'}
+        {loading ? 'Doplňuji…' : '✅ Doplnit připravené EN/CS překlady (přihlašovací stránka)'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

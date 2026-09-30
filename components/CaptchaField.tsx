@@ -56,8 +56,8 @@ export default function CaptchaField({
         <button
           type="button"
           onClick={load}
-          title="Načítať iný kód"
-          aria-label="Načítať iný kód"
+          title="Načíst jiný kód"
+          aria-label="Načíst jiný kód"
           className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 flex-none"
         >
           <IconRefresh className="w-4 h-4" />

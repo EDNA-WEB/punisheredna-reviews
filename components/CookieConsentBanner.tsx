@@ -63,7 +63,7 @@ export default function CookieConsentBanner() {
                 onClick={acceptAll}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark transition-colors"
               >
-                Prijať všetko
+                Přijmout vše
               </button>
               <button
                 onClick={rejectOptional}
@@ -72,13 +72,13 @@ export default function CookieConsentBanner() {
                 Odmítnout volitelné
               </button>
               <button onClick={() => setSettingsOpen(true)} className="text-sm font-semibold text-muted hover:text-ink px-3 py-2.5">
-                Nastavenia
+                Nastavení
               </button>
             </div>
           </>
         ) : (
           <>
-            <h2 className="font-display font-bold text-base text-ink mb-4">Nastavenia cookies</h2>
+            <h2 className="font-display font-bold text-base text-ink mb-4">Nastavení cookies</h2>
             <div className="space-y-3 mb-5 max-h-[45vh] overflow-y-auto">
               {DEFAULT_PRIVACY_CATEGORIES.map((cat) => (
                 <div key={cat.key} className="flex items-start justify-between gap-4 border border-line rounded-lg p-3">
@@ -109,7 +109,7 @@ export default function CookieConsentBanner() {
                 onClick={() => save(choices)}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark transition-colors"
               >
-                Uložiť nastavenia
+                Uložit nastavení
               </button>
               <button onClick={() => setSettingsOpen(false)} className="text-sm font-semibold text-muted hover:text-ink px-3 py-2.5">
                 Zpět

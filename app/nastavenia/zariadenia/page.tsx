@@ -11,7 +11,7 @@ export default async function DevicesSettingsPage() {
 
   return (
     <div className="pt-10">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nastavenia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nastavení</h1>
       <SettingsTabs />
       <div className="max-w-md border border-line rounded-xl bg-surface p-5">
         <p className="text-sm text-muted leading-relaxed mb-3">

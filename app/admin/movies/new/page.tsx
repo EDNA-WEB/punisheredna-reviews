@@ -8,7 +8,7 @@ export default async function NewMoviePage({ searchParams }: { searchParams: { t
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 
   const type = searchParams?.type === 'Seriál' || searchParams?.type === 'TV film' ? searchParams.type : 'Film';
-  const title = type === 'Seriál' ? 'Pridať seriál' : type === 'TV film' ? 'Pridať TV film' : 'Pridať film';
+  const title = type === 'Seriál' ? 'Přidat seriál' : type === 'TV film' ? 'Přidat TV film' : 'Přidat film';
 
   return (
     <div className="pt-8">

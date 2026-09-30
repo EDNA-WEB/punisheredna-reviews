@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const TABS = [
   { href: '/nastavenia/ucet', label: 'Účet' },
-  { href: '/nastavenia/clenstvo', label: '🎫 Členstvo' },
+  { href: '/nastavenia/clenstvo', label: '🎫 Členství' },
   { href: '/nastavenia/avatar', label: 'Avatar' },
   { href: '/nastavenia/zobrazenie', label: 'Zobrazenie' },
   { href: '/nastavenia/jazyky', label: 'Jazyky' },

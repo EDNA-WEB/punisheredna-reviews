@@ -47,8 +47,7 @@ export default async function AdminPremieresPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Premiéry</h1>
       <p className="text-sm text-muted mb-6">
-        Vyber existujúci film a nastav mu dátumy premiér v jednotlivých krajinách (s distribútorom) a vekové obmedzenie.
-        Tieto dáta sa zobrazujú aj na profile filmu, aj v prehľade Kino.
+        Vyber existující film a nastav mu data premiér v jednotlivých zemích (s distributorem) a věkové omezení. Tato data se zobrazují na profilu filmu i v přehledu Kino.
       </p>
       <MoviePremieresAdmin initialMovies={sortedMovies} />
     </div>

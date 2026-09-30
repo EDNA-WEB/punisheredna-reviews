@@ -17,7 +17,7 @@ async function requireAdmin() {
 // nechá tak — anglický a český preklad, čo tam admin doplnil, sa nikdy neprepíše).
 export async function GET() {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   await Promise.all(
     TRANSLATION_REGISTRY.map((entry) =>
@@ -37,7 +37,7 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { items } = await req.json();
   if (!Array.isArray(items)) return NextResponse.json({ error: 'Neplatná data.' }, { status: 400 });

@@ -24,7 +24,7 @@ export default function AddPodobneFilmyModal({ movieId, movieTitle, movieYear, o
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface transition-colors"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           ✕
         </button>

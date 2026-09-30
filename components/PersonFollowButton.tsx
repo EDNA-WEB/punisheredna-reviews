@@ -35,7 +35,7 @@ export default function PersonFollowButton({ personId, initialFollowing }: { per
         following ? 'bg-surface text-ink border-line hover:border-danger hover:text-danger' : 'bg-accent text-white border-accent hover:bg-accent-dark'
       }`}
     >
-      {following ? 'Sledujem ♥' : '+ Sledovať'}
+      {following ? 'Sleduji ♥' : '+ Sledovat'}
     </button>
   );
 }

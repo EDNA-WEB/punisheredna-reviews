@@ -82,12 +82,11 @@ export default async function AdminOnlinePage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Online</h1>
       <p className="text-sm text-muted mb-1 max-w-2xl">
-        Nastav odkaz, kam sa diváci presmerujú, keď kliknú na náhľad v záložke "Online", a náhľadový obrázok, ktorý sa
-        im pri tom zobrazí. Pri seriáloch vieš rozkliknúť aj jednotlivé epizódy a nastaviť to isté pre každú zvlášť.
+        Nastav odkaz, kam se diváci přesměrují, když kliknou na náhled v záložce "Online", a náhledový obrázek, který se jim při tom zobrazí. U seriálů můžeš rozkliknout i jednotlivé epizody a nastavit totéž pro každou zvlášť.
       </p>
       <p className="text-sm mb-6">
-        <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmov má'} nastavené online,{' '}
-        <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} nastavené online.
+        <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmů má'} nastavené online,{' '}
+        <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} nastavené online.
       </p>
 
       <FetchTmdbPopularityButton />

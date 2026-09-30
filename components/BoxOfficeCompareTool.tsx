@@ -54,7 +54,7 @@ function MoviePicker({ label, onPick, picked }: { label: string; onPick: (m: Mov
           <div className="text-xs text-muted">{label}</div>
           <div className="text-sm font-semibold text-ink truncate">{picked.title} {picked.year && <span className="text-muted font-normal">· {picked.year}</span>}</div>
         </div>
-        <button type="button" onClick={() => onPick(null as any)} className="text-muted hover:text-danger text-xs flex-none">Zmeniť</button>
+        <button type="button" onClick={() => onPick(null as any)} className="text-muted hover:text-danger text-xs flex-none">Změnit</button>
       </div>
     );
   }
@@ -178,13 +178,13 @@ export default function BoxOfficeCompareTool() {
               <>
                 <Row label={`Rozpočet${suffix}`} a={formatMoney(av.totalCost)} b={formatMoney(bv.totalCost)} />
                 <Row
-                  label={`Tržby z kín${suffix}`}
+                  label={`Tržby z kin${suffix}`}
                   a={formatMoney(av.earned)}
                   b={formatMoney(bv.earned)}
                   aBetter={av.earned > bv.earned}
                   bBetter={bv.earned > av.earned}
                 />
-                <Row label={`Podiel štúdia z kín${suffix}`} a={formatMoney(av.studioTheatricalRevenue)} b={formatMoney(bv.studioTheatricalRevenue)} />
+                <Row label={`Podíl studia z kin${suffix}`} a={formatMoney(av.studioTheatricalRevenue)} b={formatMoney(bv.studioTheatricalRevenue)} />
                 <Row label={`Sekundárne príjmy${suffix}`} a={formatMoney(av.ancillaryRevenue)} b={formatMoney(bv.ancillaryRevenue)} />
                 <Row
                   label={`Zisk štúdia${suffix}`}

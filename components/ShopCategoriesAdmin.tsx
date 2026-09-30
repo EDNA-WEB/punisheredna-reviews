@@ -59,14 +59,14 @@ export default function ShopCategoriesAdmin({ initialCategories }: { initialCate
           className="field-input flex-1"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="Názov novej kategórie (napr. Netflix)"
+          placeholder="Název nové kategorie (např. Netflix)"
         />
         <button
           onClick={addCategory}
           disabled={saving || !newName.trim()}
           className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          Pridať
+          Přidat
         </button>
       </div>
       {error && <p className="text-danger text-sm mb-4">{error}</p>}
@@ -83,10 +83,10 @@ export default function ShopCategoriesAdmin({ initialCategories }: { initialCate
                   autoFocus
                 />
                 <button onClick={() => saveEdit(c.id)} className="text-xs font-semibold text-accent hover:underline flex-none">
-                  Uložiť
+                  Uložit
                 </button>
                 <button onClick={() => setEditingId(null)} className="text-xs text-muted hover:underline flex-none">
-                  Zrušiť
+                  Zrušit
                 </button>
               </>
             ) : (
@@ -100,7 +100,7 @@ export default function ShopCategoriesAdmin({ initialCategories }: { initialCate
                   }}
                   className="text-xs font-semibold text-accent hover:underline flex-none"
                 >
-                  Upraviť
+                  Upravit
                 </button>
                 <button onClick={() => removeCategory(c.id)} className="text-muted hover:text-danger flex-none">
                   ✕

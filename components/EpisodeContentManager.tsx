@@ -49,7 +49,7 @@ export default function EpisodeContentManager({
       if (!res.ok) throw new Error(data.error);
       setPhotos((prev) => [...prev, ...data]);
     } catch (err: any) {
-      alert(err.message || 'Natiahnutie fotky z TMDb zlyhalo.');
+      alert(err.message || 'Načtení fotky z TMDb se nezdařilo.');
     } finally {
       setFetchingTmdbPhoto(false);
     }
@@ -156,7 +156,7 @@ export default function EpisodeContentManager({
   return (
     <div className="mt-2 pt-2 border-t border-line space-y-3">
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Obsah epizódy</label>
+        <label className="block text-[11px] font-semibold text-ink mb-1">Obsah epizody</label>
         <textarea
           className="field-input-sm min-h-[60px]"
           value={synopsis}
@@ -178,7 +178,7 @@ export default function EpisodeContentManager({
               <button
                 type="button"
                 onClick={() => removePhoto(p.id)}
-                title={`Zmazať fotku #${i + 1}`}
+                title={`Smazat fotku #${i + 1}`}
                 className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-night text-white text-[9px] flex items-center justify-center"
               >
                 ✕
@@ -188,7 +188,7 @@ export default function EpisodeContentManager({
         </div>
         <div className="flex items-center gap-3">
           <label className="text-[11px] text-accent hover:underline cursor-pointer">
-            {uploading ? 'Nahrávam…' : '+ Pridať fotku'}
+            {uploading ? 'Nahrávám…' : '+ Přidat fotku'}
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
           </label>
           {hasTmdb && (
@@ -198,7 +198,7 @@ export default function EpisodeContentManager({
               disabled={fetchingTmdbPhoto}
               className="text-[11px] text-accent hover:underline disabled:opacity-50"
             >
-              {fetchingTmdbPhoto ? 'Naťahujem…' : '+ Automaticky z TMDb'}
+              {fetchingTmdbPhoto ? 'Načítám…' : '+ Automaticky z TMDb'}
             </button>
           )}
         </div>
@@ -229,7 +229,7 @@ export default function EpisodeContentManager({
             disabled={addingVideo}
             className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {addingVideo ? '…' : 'Pridať'}
+            {addingVideo ? '…' : 'Přidat'}
           </button>
         </div>
       </div>
@@ -241,7 +241,7 @@ export default function EpisodeContentManager({
             <img src={onlineImage} alt="" className="w-32 h-18 object-cover rounded-lg bg-surface" />
           ) : (
             <div className="w-32 h-18 rounded-lg bg-surface border border-dashed border-line flex items-center justify-center text-[10px] text-muted text-center px-2">
-              {uploadingOnlineImage ? 'Nahrávam…' : 'Klikni pre nahratie'}
+              {uploadingOnlineImage ? 'Nahrávám…' : 'Klikni pre nahratie'}
             </div>
           )}
         </label>

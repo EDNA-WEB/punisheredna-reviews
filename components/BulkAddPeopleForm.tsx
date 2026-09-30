@@ -66,7 +66,7 @@ export default function BulkAddPeopleForm() {
           disabled={loading || lineCount === 0 || overLimit}
           className="bg-accent text-white font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Spracovávam…' : 'Hromadne pridať'}
+          {loading ? 'Spracovávam…' : 'Hromadně přidat'}
         </button>
         {error && <p className="text-danger text-sm mt-2">{error}</p>}
       </form>
@@ -83,12 +83,12 @@ export default function BulkAddPeopleForm() {
                 </span>
                 {r.status === 'added' && r.slug && (
                   <Link href={`/osobnost/${r.slug}`} className="text-xs text-accent font-semibold hover:underline">
-                    Zobraziť
+                    Zobrazit
                   </Link>
                 )}
                 {r.status === 'duplicate' && r.existingSlug && (
                   <Link href={`/osobnost/${r.existingSlug}`} className="text-xs text-accent font-semibold hover:underline">
-                    Zobraziť existujúci
+                    Zobrazit existující
                   </Link>
                 )}
               </div>

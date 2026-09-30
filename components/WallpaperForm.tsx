@@ -72,7 +72,7 @@ export default function WallpaperForm({ initial }: { initial: string | null }) {
         className="block border-2 border-dashed border-line rounded-xl p-6 text-center text-muted text-sm cursor-pointer bg-cover bg-center min-h-[180px] flex items-center justify-center"
         style={wallpaper ? { backgroundImage: `url('${wallpaper}')`, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.8)', backgroundColor: 'rgba(0,0,0,0.25)', backgroundBlendMode: 'darken' } : undefined}
       >
-        {wallpaper ? 'Klikni pre zmenu tapety' : 'Klikni a vyber obrázok tapety (odporúčame širokouhlý, min. 1920px)'}
+        {wallpaper ? 'Klikni pre zmenu tapety' : 'Klikni a vyber obrázek tapety (doporučujeme širokoúhlý, min. 1920px)'}
       </label>
       <input id="wallpaper-upload" type="file" accept="image/*" className="hidden" onChange={handleUpload} />
 
@@ -80,11 +80,11 @@ export default function WallpaperForm({ initial }: { initial: string | null }) {
 
       <div className="flex gap-3">
         <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : 'Uložiť tapetu'}
+          {loading ? 'Ukládám…' : 'Uložit tapetu'}
         </button>
         {wallpaper && (
           <button onClick={remove} disabled={loading} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-danger hover:border-danger">
-            Odstrániť tapetu
+            Odstranit tapetu
           </button>
         )}
       </div>

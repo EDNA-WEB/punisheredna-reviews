@@ -51,7 +51,7 @@ export default function MovieGallery({ movieId, photos, noHeading }: { movieId: 
 
           <button
             onClick={() => setOpenIndex(null)}
-            aria-label="Zavrieť"
+            aria-label="Zavřít"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center text-2xl leading-none z-10 hover:bg-white/20"
           >
             ×

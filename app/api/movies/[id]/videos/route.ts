@@ -8,11 +8,11 @@ const CATEGORIES = ['trailer', 'tv_spot', 'ukazka'];
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { url, category, title } = await req.json();
-  if (!url || !String(url).trim()) return NextResponse.json({ error: 'Zadaj odkaz na video.' }, { status: 400 });
+  if (!url || !String(url).trim()) return NextResponse.json({ error: 'Zadej odkaz na video.' }, { status: 400 });
   if (!CATEGORIES.includes(category)) return NextResponse.json({ error: 'Neplatná kategória.' }, { status: 400 });
 
   const count = await prisma.movieVideo.count({ where: { movieId: params.id } });

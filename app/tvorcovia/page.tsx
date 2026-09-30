@@ -9,7 +9,7 @@ export default async function CreatorsPage() {
   return (
     <div className="pt-8">
       <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na hlavní stránku</Link>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Tvorcovia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Tvůrci</h1>
       <p className="text-muted mb-8">Režie, scénář, kamera, hudba — seřazení podle počtu sledujících.</p>
 
       {creators.length === 0 ? (

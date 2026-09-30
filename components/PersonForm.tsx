@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PERSON_TYPES } from '@/lib/filterConstants';
 import { useRouter } from 'next/navigation';
 
+import { valueLabel } from '@/lib/valueLabels';
 type Initial = {
   id?: string;
   name?: string;
@@ -90,7 +91,7 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
           className="block border-2 border-dashed border-line rounded-xl p-5 text-center text-muted text-sm cursor-pointer bg-cover bg-center min-h-[140px] flex items-center justify-center"
           style={photo ? { backgroundImage: `url('${photo}')`, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.8)', backgroundColor: 'rgba(0,0,0,0.25)', backgroundBlendMode: 'darken' } : undefined}
         >
-          {photo ? 'Klikni pre zmenu fotky' : 'Klikni a vyber fotku'}
+          {photo ? 'Klikni pro změnu fotky' : 'Klikni a vyber fotku'}
         </label>
         <input id="person-photo" type="file" accept="image/*" className="hidden" onChange={handleUpload} />
       </div>
@@ -107,27 +108,27 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
         <label className="block text-sm font-semibold text-ink mb-2">Skupina</label>
         <select className="field-input" value={role} onChange={(e) => setRole(e.target.value)}>
           <option value="ACTOR">Herci</option>
-          <option value="CREATOR">Tvorcovia</option>
+          <option value="CREATOR">Tvůrci</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Konkrétny typ (nepovinné)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Konkrétní typ (nepovinné)</label>
         <select className="field-input" value={subRole} onChange={(e) => setSubRole(e.target.value)}>
-          <option value="">— Nešpecifikované —</option>
+          <option value="">— Nespecifikováno —</option>
           {PERSON_TYPES.map((t) => (
-            <option key={t} value={t}>{t}</option>
+            <option key={t} value={t}>{valueLabel(t)}</option>
           ))}
         </select>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Dátum narodenia</label>
+          <label className="block text-sm font-semibold text-ink mb-2">Datum narození</label>
           <input type="date" className="field-input" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Dátum úmrtia</label>
+          <label className="block text-sm font-semibold text-ink mb-2">Datum úmrtí</label>
           <input type="date" className="field-input" value={deathDate} onChange={(e) => setDeathDate(e.target.value)} />
           <p className="text-xs text-muted mt-1.5">Ak osoba žije, nechaj prázdne.</p>
         </div>
@@ -153,10 +154,10 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
 
       <div className="flex gap-3">
         <button type="submit" disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : isEdit ? 'Uložiť zmeny' : 'Pridať osobu'}
+          {loading ? 'Ukládám…' : isEdit ? 'Uložit změny' : 'Přidat osobu'}
         </button>
         <button type="button" onClick={() => router.back()} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-ink hover:border-ink">
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </form>

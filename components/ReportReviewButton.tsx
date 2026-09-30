@@ -35,7 +35,7 @@ export default function ReportReviewButton({ reportId, initialReviewed }: { repo
         reviewed ? 'border border-line text-muted hover:text-ink' : 'bg-accent text-white hover:bg-accent-dark'
       }`}
     >
-      {loading ? '…' : reviewed ? 'Vybavené ✓' : 'Označit jako vyřízené'}
+      {loading ? '…' : reviewed ? 'Vyřízeno ✓' : 'Označit jako vyřízené'}
     </button>
   );
 }

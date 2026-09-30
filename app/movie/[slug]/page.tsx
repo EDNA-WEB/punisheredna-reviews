@@ -58,6 +58,7 @@ import ReviewActions from '@/components/ReviewActions';
 import ReactionButtons from '@/components/ReactionButtons';
 import { IconUser, IconClock, IconPlay } from '@/components/Icons';
 
+import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -69,7 +70,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const description = movie.synopsis
     ? movie.synopsis.slice(0, 160)
-    : `${movie.contentType === 'Seriál' ? 'Seriál' : 'Film'}${movie.year ? ` z roku ${movie.year}` : ''}${movie.genres ? ` — ${movie.genres}` : ''}. Recenzie, hodnotenia a diskusia na KrálFilmu.cz.`;
+    : `${movie.contentType === 'Seriál' ? 'Seriál' : 'Film'}${movie.year ? ` z roku ${movie.year}` : ''}${movie.genres ? ` — ${valueListLabel(movie.genres)}` : ''}. Recenze, hodnocení a diskuze na KrálFilmu.cz.`;
 
   return {
     title: movie.title,
@@ -467,7 +468,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                     <span key={g}>
                       {i > 0 && <span className="text-muted"> · </span>}
                       <Link href={`/recenzie?genre=${encodeURIComponent(g)}`} className="text-accent font-semibold hover:underline">
-                        {g}
+                        {valueLabel(g)}
                       </Link>
                     </span>
                   ))}
@@ -476,7 +477,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
               <div className="flex items-start justify-between gap-3">
                 <div className="text-sm text-muted">
-                  {[movie.countries, displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+                  {[valueListLabel(movie.countries), displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
                 </div>
                 {effectiveBudget && !isVodOnly && (
                   <details className="flex-none text-right">
@@ -568,14 +569,14 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {genres.map((g) => (
                     <span key={g} className="text-xs font-semibold text-ink bg-surface border border-line px-2.5 py-1 rounded-full">
-                      {g}
+                      {valueLabel(g)}
                     </span>
                   ))}
                 </div>
               )}
 
               <div className="text-sm text-muted mb-3">
-                {[movie.countries, displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
+                {[valueListLabel(movie.countries), displayYear, movie.runtimeMinutes ? `${movie.runtimeMinutes} ${t('movie.min')}` : null].filter(Boolean).join(' · ')}
               </div>
 
               {isUpcoming && (

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     if (user.commentsDisabled) {
-      return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať komentáre.' }, { status: 403 });
+      return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat komentáře.' }, { status: 403 });
     }
 
     const { threadId, body } = await req.json();

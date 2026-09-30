@@ -49,13 +49,13 @@ async function ensurePersonExists(tmdbId: number, fallbackName: string): Promise
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const movie = await prisma.movie.findUnique({ where: { id: params.id } });
-  if (!movie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
   if (!movie.tmdbId) {
-    return NextResponse.json({ error: 'Tento film nemá prepojenie na TMDb, obsadenie sa nedá automaticky natiahnuť.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento film nemá propojení s TMDb, obsazení se nedá automaticky načíst.' }, { status: 400 });
   }
 
   try {
@@ -84,6 +84,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ ...updateData, importedCount: castNames.length + directorNames.length + screenplayNames.length + cinematographyNames.length + musicNames.length });
   } catch (err: any) {
     console.error('[import-cast]', err);
-    return NextResponse.json({ error: 'Natiahnutie obsadenia z TMDb zlyhalo. Skús to prosím znova.' }, { status: 500 });
+    return NextResponse.json({ error: 'Načtení obsazení z TMDb se nezdařilo. Zkus to prosím znovu.' }, { status: 500 });
   }
 }

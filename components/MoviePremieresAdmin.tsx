@@ -256,7 +256,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
     const rows = rowDrafts[movieId] || [];
     setSaveError('');
     if (rows.some((r) => !r.releaseDate)) {
-      setSaveError('Každá premiéra musí mať vyplnený dátum.');
+      setSaveError('Každá premiéra musí mít vyplněné datum.');
       return;
     }
     setSaving(movieId);
@@ -296,7 +296,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         </div>
         <label className="flex items-center gap-2 text-xs text-ink mb-3 cursor-pointer">
           <input type="checkbox" checked={selectedIncludeVod} onChange={(e) => setSelectedIncludeVod(e.target.checked)} />
-          Zahrnúť aj VOD premiéru
+          Zahrnout i VOD premiéru
         </label>
         <div className="text-xs text-ink mb-2">Vybraných filmů: <strong>{selectedIds.size}</strong></div>
 
@@ -324,10 +324,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                 disabled={selectedBusy}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {selectedBusy ? 'Aktualizujem…' : `Potvrdiť a aktualizovať (${selectedPreview.count})`}
+                {selectedBusy ? 'Aktualizuji…' : `Potvrdit a aktualizovat (${selectedPreview.count})`}
               </button>
               <button type="button" onClick={() => setSelectedPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -362,7 +362,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       </div>
 
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — všetky filmy</div>
+        <div className="text-sm font-semibold text-ink mb-1">Doplnit premiéry z TMDb — všechny filmy</div>
         <div className="text-xs text-muted mb-3">
           Projde všechny filmy/seriály bez jakékoli premiéry a doplní z TMDb jen <strong>najskoršiu</strong> českou a americkou premiéru — žádná opakovaná pozdější uvedení. Filmů, které už premiéru mají, se to nedotkne.
         </div>
@@ -395,10 +395,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                 disabled={allBusy}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {allBusy ? 'Doplňujem…' : `Potvrdiť a doplniť (${allPreview.count})`}
+                {allBusy ? 'Doplňuji…' : `Potvrdit a doplnit (${allPreview.count})`}
               </button>
               <button type="button" onClick={() => setAllPreview(null)} className="text-sm font-semibold text-muted hover:text-ink">
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       </div>
 
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — filmy za poslednú hodinu</div>
+        <div className="text-sm font-semibold text-ink mb-1">Doplnit premiéry z TMDb — filmy za poslední hodinu</div>
         <div className="text-xs text-muted mb-3">
           Projde filmy přidané za posledních 60 minut, které ještě nemají žádnou premiéru, a doplní je automaticky z TMDb (ČR + USA). Starších filmů ani těch, které už premiéru mají, se to nedotkne.
         </div>
@@ -443,7 +443,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
           disabled={recentImporting}
           className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          {recentImporting ? 'Doplňujem…' : 'Doplniť premiéry (posledná hodina)'}
+          {recentImporting ? 'Doplňuji…' : 'Doplnit premiéry (poslední hodina)'}
         </button>
         {recentResults && (
           <div className="mt-3 text-xs space-y-1 max-h-64 overflow-y-auto">
@@ -459,10 +459,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
 
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-distributors"
-        title="Hromadne priradiť distribútorov"
+        title="Hromadně přiřadit distributory"
         description={'Vlož seznam ve tvaru "Název filmu – Distributor ČR, Distributor původní premiéry", jeden řádek na film. První distributor se přiřadí k domácí premiéře (ČR, pak SR), další k následující zemi v pořadí — film musí mít data premiér už přidaná.'}
         placeholder={'Together – Bontonfilm, Neon'}
-        buttonLabel="Priradiť distribútorov"
+        buttonLabel="Přiřadit distributory"
       />
 
       <input
@@ -493,7 +493,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                   <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
-                      {m.premiereDates.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú premiéry" />}
+                      {m.premiereDates.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chybí premiéry" />}
                       {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                     </div>
                     <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastaveno` : 'Zatím žádné premiéry'}</div>
@@ -505,7 +505,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                     disabled={suggesting === m.id}
                     className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none whitespace-nowrap"
                   >
-                    {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                    {suggesting === m.id ? 'Načítám…' : 'Automaticky z TMDb'}
                   </button>
                 )}
                 <button onClick={() => openMovie(m)} className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</button>
@@ -561,7 +561,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                         <button onClick={() => removeRow(m.id, i)} className="text-muted hover:text-danger text-xs flex-none px-1">✕</button>
                       </div>
                     ))}
-                    <button onClick={() => addRow(m.id)} className="text-accent text-xs font-semibold hover:underline">+ Pridať premiéru</button>
+                    <button onClick={() => addRow(m.id)} className="text-accent text-xs font-semibold hover:underline">+ Přidat premiéru</button>
                   </div>
 
                   <button
@@ -569,7 +569,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                     disabled={saving === m.id}
                     className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
                   >
-                    {saving === m.id ? 'Ukladám…' : 'Uložiť'}
+                    {saving === m.id ? 'Ukládám…' : 'Uložit'}
                   </button>
                 </div>
               )}

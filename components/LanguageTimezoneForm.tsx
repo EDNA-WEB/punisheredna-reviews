@@ -64,9 +64,9 @@ export default function LanguageTimezoneForm({ initialLanguage, initialTimezone 
 
       <div className="flex items-center gap-3">
         <button onClick={save} disabled={saving} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {saving ? 'Ukladám…' : t('settings.ulozit')}
+          {saving ? 'Ukládám…' : t('settings.ulozit')}
         </button>
-        {saved && <span className="text-emerald-600 text-sm font-semibold">Uložené.</span>}
+        {saved && <span className="text-emerald-600 text-sm font-semibold">Uloženo.</span>}
         {notice && <span className="text-amber-700 text-sm font-semibold">{notice}</span>}
       </div>
     </div>

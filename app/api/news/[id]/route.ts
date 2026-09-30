@@ -13,7 +13,7 @@ async function requireAdmin() {
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
@@ -21,7 +21,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
   const tags = Array.isArray(data.tags) ? data.tags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
   if (tags.length < 5) {
-    return NextResponse.json({ error: 'Musíš pridať aspoň 5 tagov.' }, { status: 400 });
+    return NextResponse.json({ error: 'Musíš přidat alespoň 5 tagů.' }, { status: 400 });
   }
 
   const before = await prisma.newsPost.findUnique({ where: { id: params.id } });
@@ -72,7 +72,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const news = await prisma.newsPost.findUnique({ where: { id: params.id } });
   if (!news) return NextResponse.json({ error: 'Novinka se nenašla.' }, { status: 404 });

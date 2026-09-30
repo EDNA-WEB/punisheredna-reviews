@@ -75,7 +75,7 @@ export default function MovieExportForm() {
           onChange={(e) => setContentType(e.target.value)}
           className="w-full border border-line rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">Všetko (filmy aj seriály)</option>
+          <option value="">Vše (filmy i seriály)</option>
           <option value="Film">Len filmy</option>
           <option value="Seriál">Len seriály</option>
           <option value="TV film">Len TV filmy</option>
@@ -93,7 +93,7 @@ export default function MovieExportForm() {
         disabled={downloading}
         className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
       >
-        {downloading ? 'Pripravujem…' : 'Stiahnuť zoznam (CSV)'}
+        {downloading ? 'Pripravujem…' : 'Stáhnout seznam (CSV)'}
       </button>
     </div>
   );

@@ -7,7 +7,7 @@ import { tmdbGetSeasonEpisodes } from '@/lib/tmdb';
 export async function POST(_req: Request, { params }: { params: { seasonId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const season = await prisma.season.findUnique({

@@ -26,7 +26,7 @@ export default async function AdminContentSubmissionsPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Návrhy obsahu</h1>
       <p className="text-sm text-muted mb-6">
-        Návrhy obsahu filmov/seriálov od používateľov, čakajúce na schválenie. Po schválení sa text uloží ako "Obsah" daného filmu.
+        Návrhy obsahu filmů/seriálů od uživatelů, čekající na schválení. Po schválení se text uloží jako "Obsah" daného filmu.
       </p>
       <ContentSubmissionsAdmin initialSubmissions={submissions} />
     </div>

@@ -23,7 +23,7 @@ export default function WhereToWatchBox({
 
   return (
     <div className="border border-line rounded-xl overflow-hidden mb-5">
-      <div className="bg-surface px-4 py-2.5 font-display font-bold text-sm text-ink">Kde sledovať</div>
+      <div className="bg-surface px-4 py-2.5 font-display font-bold text-sm text-ink">Kde sledovat</div>
       <div className="p-4 space-y-3">
         {isInCinemas && (
           <div className="flex items-center gap-3">
@@ -32,7 +32,7 @@ export default function WhereToWatchBox({
               href={cinemaHref}
               className="inline-flex items-center text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
             >
-              Hrajú v kinách
+              Hrají v kinech
             </a>
           </div>
         )}

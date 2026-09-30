@@ -251,7 +251,7 @@ export default function StreamingServicesAdmin({
     setSaveError('');
     const payload = Array.from(d.checked).map((serviceId) => ({ streamingServiceId: serviceId, url: (d.urls[serviceId] || '').trim() }));
     if (payload.some((p) => !p.url)) {
-      setSaveError('Každá zaškrtnutá služba musí mať vyplnený odkaz.');
+      setSaveError('Každá zaškrtnutá služba musí mít vyplněný odkaz.');
       return;
     }
     setSaving(movieId);
@@ -276,10 +276,10 @@ export default function StreamingServicesAdmin({
     <div className="max-w-3xl space-y-8">
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-streaming"
-        title="Hromadne priradiť VOD platformy a odkazy"
+        title="Hromadně přiřadit VOD platformy a odkazy"
         description={'Vlož seznam ve tvaru "Název filmu – Platforma – https://...", jeden řádek na film. Pokud platforma ještě v katalogu neexistuje, automaticky se vytvoří.'}
         placeholder={'Together – Netflix – https://www.netflix.com/title/...'}
-        buttonLabel="Priradiť platformy"
+        buttonLabel="Přiřadit platformy"
       />
 
       {/* Katalóg služieb */}
@@ -308,13 +308,13 @@ export default function StreamingServicesAdmin({
 
         {editingId && (
           <div className="border border-line rounded-xl p-4 bg-surface mb-4">
-            <div className="text-xs font-semibold text-ink mb-2">Upraviť službu</div>
+            <div className="text-xs font-semibold text-ink mb-2">Upravit službu</div>
             <div className="flex items-center gap-2 flex-wrap mb-2">
               <label className="w-9 h-9 rounded-full border border-line flex items-center justify-center cursor-pointer hover:border-accent flex-none overflow-hidden">
                 {editIcon ? <img src={editIcon} alt="" className="w-full h-full object-cover" /> : <span className="text-muted text-xs">＋</span>}
                 <input type="file" accept="image/*" className="hidden" onChange={handleEditIconFile} />
               </label>
-              <input className="field-input-sm flex-1 min-w-[160px]" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Názov" />
+              <input className="field-input-sm flex-1 min-w-[160px]" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Název" />
               <input type="color" value={editColor} onChange={(e) => setEditColor(e.target.value)} className="w-9 h-9 rounded-full border border-line cursor-pointer flex-none" />
             </div>
             {editError && <p className="text-danger text-xs mb-2">{editError}</p>}
@@ -325,10 +325,10 @@ export default function StreamingServicesAdmin({
                 disabled={savingEdit || !editName.trim()}
                 className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {savingEdit ? 'Ukladám…' : 'Uložiť zmeny'}
+                {savingEdit ? 'Ukládám…' : 'Uložit změny'}
               </button>
               <button type="button" onClick={() => setEditingId(null)} className="text-xs font-semibold text-muted hover:text-ink">
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -336,13 +336,13 @@ export default function StreamingServicesAdmin({
 
         {services.length > 1 && (
           <div className="border border-line rounded-xl p-4 bg-surface mb-4">
-            <div className="text-xs font-semibold text-ink mb-1">Zlúčiť duplicitné služby</div>
+            <div className="text-xs font-semibold text-ink mb-1">Sloučit duplicitní služby</div>
             <div className="text-xs text-muted mb-3">
               Pokud máš tu samou platformu dvakrát pod různými názvy (např. z omylem vytvořené duplicity při hromadném importu), slouč ji sem — všechna přiřazení filmů se přesunou na ponechanou službu a duplicita se smaže.
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <select className="field-input-sm" value={mergeFrom} onChange={(e) => setMergeFrom(e.target.value)}>
-                <option value="">Zlúčiť službu…</option>
+                <option value="">Sloučit službu…</option>
                 {services.map((s) => (
                   <option key={s.id} value={s.id} disabled={s.id === mergeTo}>
                     {s.name}
@@ -351,7 +351,7 @@ export default function StreamingServicesAdmin({
               </select>
               <span className="text-xs text-muted">do</span>
               <select className="field-input-sm" value={mergeTo} onChange={(e) => setMergeTo(e.target.value)}>
-                <option value="">…tejto služby</option>
+                <option value="">…této služby</option>
                 {services.map((s) => (
                   <option key={s.id} value={s.id} disabled={s.id === mergeFrom}>
                     {s.name}
@@ -364,7 +364,7 @@ export default function StreamingServicesAdmin({
                 disabled={merging || !mergeFrom || !mergeTo}
                 className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {merging ? 'Zlučujem…' : 'Zlúčiť'}
+                {merging ? 'Slučuji…' : 'Sloučit'}
               </button>
             </div>
             {mergeMessage && <p className="text-xs text-ink mt-2">{mergeMessage}</p>}
@@ -380,7 +380,7 @@ export default function StreamingServicesAdmin({
             className="field-input-sm flex-1 min-w-[160px]"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Názov služby (napr. HBO Max)"
+            placeholder="Název služby (např. HBO Max)"
           />
           <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-9 h-9 rounded-full border border-line cursor-pointer flex-none" title="Farba (ak nemá ikonku)" />
           <button
@@ -388,7 +388,7 @@ export default function StreamingServicesAdmin({
             disabled={addingService}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {addingService ? 'Pridávam…' : 'Pridať'}
+            {addingService ? 'Přidávám…' : 'Přidat'}
           </button>
         </form>
         {serviceError && <p className="text-danger text-xs mt-2">{serviceError}</p>}
@@ -396,7 +396,7 @@ export default function StreamingServicesAdmin({
 
       {/* Priradenie k filmom */}
       <div>
-        <h2 className="text-sm font-bold text-ink mb-3">Priradiť službám filmy</h2>
+        <h2 className="text-sm font-bold text-ink mb-3">Přiřadit službám filmy</h2>
         <input
           className="field-input mb-4"
           value={search}
@@ -419,7 +419,7 @@ export default function StreamingServicesAdmin({
                     <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
-                        {m.streamingServices.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú streamovacie služby" />}
+                        {m.streamingServices.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chybí streamovací služby" />}
                         {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                       </div>
                       <div className="text-xs text-muted">{m.streamingServices.length > 0 ? `${m.streamingServices.length} služieb priradených` : 'Zatím žádné služby'}</div>
@@ -431,7 +431,7 @@ export default function StreamingServicesAdmin({
                       disabled={suggesting === m.id}
                       className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none whitespace-nowrap"
                     >
-                      {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
+                      {suggesting === m.id ? 'Načítám…' : 'Automaticky z TMDb'}
                     </button>
                   )}
                   <button onClick={() => openMovie(m)} className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</button>
@@ -439,7 +439,7 @@ export default function StreamingServicesAdmin({
 
                 {openFor === m.id && draft && (
                   <div className="p-4 bg-surface border-t border-line space-y-3">
-                    {services.length === 0 && <p className="text-xs text-muted">Najprv pridaj aspoň jednu službu do katalógu vyššie.</p>}
+                    {services.length === 0 && <p className="text-xs text-muted">Nejdřív přidej alespoň jednu službu do katalogu výše.</p>}
                     {services.map((s) => (
                       <div key={s.id} className="flex items-center gap-3">
                         <input
@@ -471,7 +471,7 @@ export default function StreamingServicesAdmin({
                       disabled={saving === m.id}
                       className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
                     >
-                      {saving === m.id ? 'Ukladám…' : 'Uložiť'}
+                      {saving === m.id ? 'Ukládám…' : 'Uložit'}
                     </button>
                   </div>
                 )}

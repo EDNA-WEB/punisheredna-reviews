@@ -91,7 +91,7 @@ export default function ProfileEditForm({
             </div>
           )}
           <label htmlFor="avatar-upload" className="text-sm font-semibold text-accent hover:underline cursor-pointer">
-            {avatar ? 'Zmeniť fotku' : 'Nahrať fotku'}
+            {avatar ? 'Změnit fotku' : 'Nahrát fotku'}
           </label>
           <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
         </div>
@@ -122,14 +122,14 @@ export default function ProfileEditForm({
           disabled={loading}
           className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Ukladám…' : 'Uložiť profil'}
+          {loading ? 'Ukládám…' : 'Uložit profil'}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-ink hover:border-ink"
         >
-          Zrušiť
+          Zrušit
         </button>
       </div>
     </form>

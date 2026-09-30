@@ -9,12 +9,12 @@ import { buildTitleIndex, findCandidates, splitLineParts, splitLines, tryParseJs
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { text, preview, batchId: clientBatchId } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
-    return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
+    return NextResponse.json({ error: 'Chybí text ke zpracování.' }, { status: 400 });
   }
 
   // Očakávaný formát riadku: "Názov filmu – https://www.csfd.cz/film/..."
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
   for (const line of lines) {
     const extracted = extractTrailingUrl(line);
     if (!extracted) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – URL" (skontroluj, či riadok obsahuje platnú http(s) adresu)' });
+      results.push({ line, status: 'CHYBA', detail: 'Řádek neodpovídá formátu "Název – URL" (zkontroluj, zda řádek obsahuje platnou http(s) adresu)' });
       continue;
     }
     const { rest: rawTitleFull, url } = extracted;
@@ -59,13 +59,13 @@ export async function POST(req: Request) {
       results.push({
         line,
         status: 'NENÁJDENÉ',
-        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
+        detail: suggestion ? `Žádný přesný film s názvem "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žádný film s názvem "${title}"`
       });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Více filmů s názvem "${title}" (roky: ${years}) — přidej rok do závorky` });
       continue;
     }
 
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadný import ČSFD odkazov',
+    toolName: 'Hromadný import odkazů ČSFD',
     updated: changes.length,
     total: results.length
   });

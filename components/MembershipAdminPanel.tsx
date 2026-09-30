@@ -43,7 +43,7 @@ export default function MembershipAdminPanel({ initialCodes }: { initialCodes: C
   return (
     <div className="max-w-2xl">
       <form onSubmit={generate} className="border border-line rounded-xl p-4 mb-6 space-y-3">
-        <h2 className="text-sm font-bold text-ink">Vygenerovať nový kód</h2>
+        <h2 className="text-sm font-bold text-ink">Vygenerovat nový kód</h2>
         <p className="text-xs text-muted">
           Zkušební 4denní kódy se generují automaticky při registraci — tady můžeš vygenerovat jen placené kódy, typicky po ověření přijaté platby.
         </p>
@@ -63,7 +63,7 @@ export default function MembershipAdminPanel({ initialCodes }: { initialCodes: C
             disabled={loading}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {loading ? 'Generujem…' : 'Vygenerovať'}
+            {loading ? 'Generuji…' : 'Vygenerovat'}
           </button>
         </div>
         {error && <p className="text-danger text-xs">{error}</p>}

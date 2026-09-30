@@ -32,7 +32,7 @@ export default async function AdminTagsPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Tagy</h1>
       <p className="text-sm text-muted mb-6">
-        Jediné miesto na správu tagov — pridávanie, mazanie aj úpravu. Nastavovanie tagov nikde inde na webe nie je možné.
+        Jediné místo pro správu tagů — přidávání, mazání i úpravy. Nastavování tagů nikde jinde na webu není možné.
       </p>
       <TagsAdminList initialMovies={sortedMovies} />
     </div>

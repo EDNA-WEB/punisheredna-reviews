@@ -133,14 +133,14 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
                 disabled={oldBusy}
                 className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
               >
-                {oldBusy ? 'Ukladám…' : `Potvrdiť a uložiť (${oldPreview.count})`}
+                {oldBusy ? 'Ukládám…' : `Potvrdit a uložit (${oldPreview.count})`}
               </button>
               <button
                 type="button"
                 onClick={() => setOldPreview(null)}
                 className="text-sm font-semibold text-muted hover:text-ink"
               >
-                Zrušiť
+                Zrušit
               </button>
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
 
       <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
         <div className="flex items-center gap-3 px-4 py-2 bg-surface text-[11px] font-bold uppercase tracking-wide text-muted">
-          <span className="flex-1">Názov</span>
+          <span className="flex-1">Název</span>
           <span className="w-20 text-center flex-none">Dabing</span>
           <span className="w-20 text-center flex-none">Titulky</span>
         </div>

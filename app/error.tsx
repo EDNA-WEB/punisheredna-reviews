@@ -22,7 +22,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
           onClick={reset}
           className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark transition-colors"
         >
-          Skúsiť znova
+          Zkusit znovu
         </button>
         <Link
           href="/"

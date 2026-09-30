@@ -24,10 +24,10 @@ export default async function AdminReportsPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Nahlásenia z Pošty</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Nahlášení z Pošty</h1>
 
       {reports.length === 0 ? (
-        <p className="text-sm text-muted">Zatiaľ žiadne nahlásenia.</p>
+        <p className="text-sm text-muted">Zatím žádná nahlášení.</p>
       ) : (
         <div className="space-y-4">
           {reports.map((r) => (

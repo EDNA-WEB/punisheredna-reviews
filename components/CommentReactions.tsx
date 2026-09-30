@@ -144,7 +144,7 @@ export default function CommentReactions({
           onClick={() => setPickerOpen((o) => !o)}
           className={`text-xs font-semibold ${myReaction ? 'text-accent' : 'text-muted hover:text-ink'}`}
         >
-          {myReaction ? REACTIONS.find((r) => r.key === myReaction)?.label : 'Reagovať'}
+          {myReaction ? REACTIONS.find((r) => r.key === myReaction)?.label : 'Reagovat'}
         </button>
       ) : (
         <span className="text-xs text-muted italic">Reakcie sú pre Golden Ticket členov</span>

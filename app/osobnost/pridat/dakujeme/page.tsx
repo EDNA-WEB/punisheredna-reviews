@@ -9,7 +9,7 @@ export default function ThankYouPersonPage() {
       </div>
       <h1 className="font-display font-extrabold text-2xl text-ink mb-3">Ďakujeme za návrh!</h1>
       <p className="text-muted mb-8">
-        Osobu sme prijali a čaká na schválenie administrátorom. Kým ju schváli, ostatní návštevníci ju na webe neuvidia.
+        Osobu jsme přijali a čeká na schválení administrátorem. Dokud ji neschválí, ostatní návštěvníci ji na webu neuvidí.
       </p>
       <Link href="/" className="text-accent font-semibold hover:underline">Zpět na hlavní stránku</Link>
     </div>

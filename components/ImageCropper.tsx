@@ -101,7 +101,7 @@ export default function ImageCropper({
           <img
             ref={imgRef}
             src={src}
-            alt="Orezanie fotky"
+            alt="Oříznutí fotky"
             onLoad={handleImgLoad}
             draggable={false}
             style={{
@@ -135,13 +135,13 @@ export default function ImageCropper({
             onClick={confirm}
             className="flex-1 bg-accent text-white py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark"
           >
-            Uložiť orezanie
+            Uložit oříznutí
           </button>
           <button
             onClick={onCancel}
             className="border border-line text-muted px-5 py-2.5 rounded-full text-sm font-semibold hover:text-ink hover:border-ink"
           >
-            Zrušiť
+            Zrušit
           </button>
         </div>
       </div>

@@ -9,14 +9,14 @@ export async function POST(req: Request) {
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isEditor = (session?.user as any)?.isEditor;
   if (!session || (!isAdmin && !isEditor)) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { dataUrl } = await req.json();
   const error = validateImageDataUrl(dataUrl);
   if (error) return NextResponse.json({ error }, { status: 400 });
   if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image')) {
-    return NextResponse.json({ error: 'Neplatný obrázok.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatný obrázek.' }, { status: 400 });
   }
 
   try {

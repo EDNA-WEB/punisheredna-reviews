@@ -78,7 +78,7 @@ export default function MovieGalleryManager({ movieId, initialPhotos }: { movieI
       <div className="flex items-center justify-between">
         <div className="text-xs font-bold uppercase tracking-wide text-muted">Fotogaléria ({photos.length}/30)</div>
         <label className="text-xs font-semibold text-accent hover:underline cursor-pointer">
-          {uploading ? 'Nahrávam…' : '+ Pridať fotky'}
+          {uploading ? 'Nahrávám…' : '+ Přidat fotky'}
           <input type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} disabled={uploading} />
         </label>
       </div>
@@ -98,7 +98,7 @@ export default function MovieGalleryManager({ movieId, initialPhotos }: { movieI
                 onClick={() => removePhoto(p.id)}
                 className="absolute inset-0 bg-night/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold"
               >
-                Zmazať #{i + 1}
+                Smazat #{i + 1}
               </button>
             </div>
           ))}

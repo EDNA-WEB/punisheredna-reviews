@@ -19,25 +19,24 @@ export default async function AdminSettingsPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Vzhľad webu</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Vzhled webu</h1>
       <p className="text-muted mb-8">
-        Tapeta sa zobrazí na pozadí po stranách stránky na širokých obrazovkách — presne tam, kde by inak bol
-        priestor na reklamu.
+        Tapeta se zobrazí na pozadí po stranách stránky na širokých obrazovkách — přesně tam, kde by jinak bylo místo na reklamu.
       </p>
       <WallpaperForm initial={settings?.wallpaper || null} />
 
       <div className="mt-12 pt-8 border-t border-line">
-        <h2 className="font-display font-bold text-xl text-ink mb-2">Tapeta mobilnej appky</h2>
+        <h2 className="font-display font-bold text-xl text-ink mb-2">Tapeta mobilní appky</h2>
         <p className="text-muted mb-8">
-          Samostatný obrázok len pre uvítaciu obrazovku mobilnej appky — nezávislý od tapety webu vyššie.
+          Samostatný obrázek jen pro uvítací obrazovku mobilní appky — nezávislý na tapetě webu výše.
         </p>
         <MobileWallpaperForm initial={settings?.mobileWallpaper || null} />
       </div>
 
       <div className="mt-12 pt-8 border-t border-line">
-        <h2 className="font-display font-bold text-xl text-ink mb-2">Logo mobilnej appky</h2>
+        <h2 className="font-display font-bold text-xl text-ink mb-2">Logo mobilní appky</h2>
         <p className="text-muted mb-8">
-          Zobrazí sa na uvítacej obrazovke appky po prihlásení. Bez nahratého loga sa zobrazí jednoduchý kruh s písmenom.
+          Zobrazí se na uvítací obrazovce appky po přihlášení. Bez nahraného loga se zobrazí jednoduchý kruh s písmenem.
         </p>
         <MobileLogoForm initial={settings?.mobileLogo || null} />
       </div>
@@ -45,7 +44,7 @@ export default async function AdminSettingsPage() {
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Aplikácia a sociálne siete</h2>
         <p className="text-muted mb-8">
-          Zobrazí sa na hlavnej stránke pod rebríčkami. Prázdne polia sa jednoducho nezobrazia.
+          Zobrazí se na hlavní stránce pod žebříčky. Prázdná pole se jednoduše nezobrazí.
         </p>
         <AppAndSocialLinksForm
           initial={{
@@ -62,7 +61,7 @@ export default async function AdminSettingsPage() {
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Nastavenie súkromia</h2>
         <p className="text-muted mb-8">
-          Text, ktorý sa zobrazí v modálnom okne, keď niekto klikne na "Nastavenie súkromia" v pätičke hlavnej stránky.
+          Text, který se zobrazí v modálním okně, když někdo klikne na "Nastavení soukromí" v patičce hlavní stránky.
         </p>
         <PrivacyModalTextForm initialText={settings?.privacyModalText || null} initialCategories={settings?.privacyCategories || null} />
       </div>
@@ -70,7 +69,7 @@ export default async function AdminSettingsPage() {
       <div className="mt-12 pt-8 border-t border-line">
         <h2 className="font-display font-bold text-xl text-ink mb-2">Stránka Cookies</h2>
         <p className="text-muted mb-8">
-          Text, ktorý sa zobrazí na stránke /cookies, keď niekto klikne na "Cookies" v pätičke hlavnej stránky.
+          Text, který se zobrazí na stránce /cookies, když někdo klikne na "Cookies" v patičce hlavní stránky.
         </p>
         <CookiesPolicyForm initial={settings?.cookiesPolicyText || null} />
       </div>

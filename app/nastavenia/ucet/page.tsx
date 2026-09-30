@@ -18,7 +18,7 @@ export default async function AccountSettingsPage() {
 
   return (
     <div className="pt-10">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nastavenia</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nastavení</h1>
       <SettingsTabs />
       <AccountSettingsForm
         initial={{

@@ -12,12 +12,12 @@ const MAX_TRIVIA_LENGTH = 2000;
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { text, preview, batchId: clientBatchId } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
-    return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
+    return NextResponse.json({ error: 'Chybí text ke zpracování.' }, { status: 400 });
   }
 
   // Očakávaný formát riadku: "Názov filmu – Zaujímavosť 1; Zaujímavosť 2"
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   for (const line of lines) {
     const parts = splitLineParts(line, 2);
     if (!parts) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – zaujímavosti" (skontroluj medzery okolo pomlčky)' });
+      results.push({ line, status: 'CHYBA', detail: 'Řádek neodpovídá formátu "Název – zajímavosti" (zkontroluj mezery kolem pomlčky)' });
       continue;
     }
     const [rawTitleFull, rawTrivia] = parts;
@@ -63,13 +63,13 @@ export async function POST(req: Request) {
       results.push({
         line,
         status: 'NENÁJDENÉ',
-        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
+        detail: suggestion ? `Žádný přesný film s názvem "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žádný film s názvem "${title}"`
       });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Více filmů s názvem "${title}" (roky: ${years}) — přidej rok do závorky` });
       continue;
     }
 
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       .filter((t) => t.length <= MAX_TRIVIA_LENGTH);
 
     if (newFacts.length === 0) {
-      results.push({ line, status: 'CHYBA', detail: 'Žiadna platná zaujímavosť na pridanie (príliš dlhá alebo prázdna)' });
+      results.push({ line, status: 'CHYBA', detail: 'Žádná platná zajímavost k přidání (příliš dlouhá nebo prázdná)' });
       continue;
     }
 
@@ -124,7 +124,7 @@ export async function POST(req: Request) {
     results.push({
       line,
       status: 'OK',
-      detail: `${movie.title}: nahradené — pôvodných ${existing.length}, nových ${finalToAdd.length}${skippedNote}`
+      detail: `${movie.title}: nahrazeno — původních ${existing.length}, nových ${finalToAdd.length}${skippedNote}`
     });
   }
 
@@ -136,10 +136,10 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadný import Zaujímavostí',
+    toolName: 'Hromadný import zajímavostí',
     updated: changes.length,
     total: results.length,
-    extraDetails: 'existujúce zaujímavosti pri dotknutých filmoch boli nahradené novými'
+    extraDetails: 'existující zajímavosti u dotčených filmů byly nahrazeny novými'
   });
   return NextResponse.json({ results, batchId, changedCount: changes.length });
 }

@@ -84,7 +84,7 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
 
         {movie.streamingServices.length > 0 && (
           <div className="px-5 py-3.5">
-            <div className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2.5">Kde sledovať</div>
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2.5">Kde sledovat</div>
             <div className="flex flex-wrap gap-2">
               {movie.streamingServices.slice(0, 5).map((s, i) => (
                 <a

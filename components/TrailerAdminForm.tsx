@@ -35,7 +35,7 @@ export default function TrailerAdminForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !youtubeUrl.trim()) {
-      setError('Vyplň názov aj YouTube odkaz.');
+      setError('Vyplň název i YouTube odkaz.');
       return;
     }
     setLoading(true);
@@ -73,7 +73,7 @@ export default function TrailerAdminForm() {
         <input id="trailer-poster" type="file" accept="image/*" className="hidden" onChange={handleUpload} />
       </div>
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Názov filmu / seriálu</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Název filmu / seriálu</label>
         <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="napr. Odyssea" />
       </div>
       <div>
@@ -86,7 +86,7 @@ export default function TrailerAdminForm() {
         disabled={loading}
         className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
       >
-        {loading ? 'Pridávam…' : '+ Pridať trailer'}
+        {loading ? 'Přidávám…' : '+ Přidat trailer'}
       </button>
     </form>
   );

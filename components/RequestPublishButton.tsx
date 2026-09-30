@@ -10,7 +10,7 @@ export default function RequestPublishButton({ postId }: { postId: string }) {
   const [error, setError] = useState('');
 
   async function request() {
-    if (!confirm('Poslať administrátorovi žiadosť o zverejnenie tohto článku na hlavnej stránke?')) return;
+    if (!confirm('Poslat administrátorovi žádost o zveřejnění tohoto článku na hlavní stránce?')) return;
     setLoading(true);
     setError('');
     try {
@@ -37,7 +37,7 @@ export default function RequestPublishButton({ postId }: { postId: string }) {
         disabled={loading}
         className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
       >
-        {loading ? 'Odosielam…' : 'Požiadať o publikáciu na hlavnej stránke'}
+        {loading ? 'Odesílám…' : 'Požádat o publikaci na hlavní stránce'}
       </button>
       {error && <div className="text-danger text-xs mt-2">{error}</div>}
     </div>

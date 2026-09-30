@@ -42,14 +42,14 @@ export default function BuyMeACoffeeLinkForm({ initial }: { initial: string | nu
         placeholder="https://www.buymeacoffee.com/..."
       />
       {error && <p className="text-danger text-xs">{error}</p>}
-      {saved && !error && <p className="text-emerald-600 text-xs font-semibold">Uložené.</p>}
+      {saved && !error && <p className="text-emerald-600 text-xs font-semibold">Uloženo.</p>}
       <button
         type="button"
         onClick={save}
         disabled={loading}
         className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
       >
-        {loading ? 'Ukladám…' : 'Uložiť odkaz'}
+        {loading ? 'Ukládám…' : 'Uložit odkaz'}
       </button>
     </div>
   );

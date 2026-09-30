@@ -8,7 +8,7 @@ import { logBulkAction } from '@/lib/auditLog';
 export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   // Len filmy prepojené s TMDb — bez tmdbId nemáme odkiaľ popularitu natiahnuť.
@@ -41,7 +41,7 @@ export async function POST() {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné natiahnutie popularity/hodnotenia z TMDb',
+    toolName: 'Hromadné načtení popularity/hodnocení z TMDb',
     updated,
     failed,
     total: movies.length

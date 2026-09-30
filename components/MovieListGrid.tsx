@@ -46,8 +46,8 @@ export default function MovieListGrid({ listId, initialItems, isOwn }: { listId:
                   <button
                     type="button"
                     onClick={() => removeItem(item.id)}
-                    title="Odstrániť zo zoznamu"
-                    aria-label="Odstrániť zo zoznamu"
+                    title="Odstranit ze seznamu"
+                    aria-label="Odstranit ze seznamu"
                     className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-night text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <IconX className="w-3 h-3" />

@@ -14,7 +14,7 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   const isAdmin = (session.user as any).role === 'ADMIN';
   const isOwner = post.authorId === (session.user as any).id;
   if (!isAdmin && !isOwner) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie zmazať tento príspevok.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění smazat tento příspěvek.' }, { status: 403 });
   }
   if (isOwner && !isAdmin && !(await isActiveMember((session.user as any).id))) {
     return NextResponse.json({ error: 'Mazání vlastních příspěvků je dostupné jen pro Golden Ticket členy.' }, { status: 403 });

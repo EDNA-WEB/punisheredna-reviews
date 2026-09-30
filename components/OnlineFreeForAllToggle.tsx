@@ -42,7 +42,7 @@ export default function OnlineFreeForAllToggle({ initialEnabled }: { initialEnab
           enabled ? 'border border-line text-muted hover:border-danger hover:text-danger' : 'bg-accent text-white hover:bg-accent-dark'
         }`}
       >
-        {loading ? '…' : enabled ? 'Vypnúť' : 'Zapnout pro všechny'}
+        {loading ? '…' : enabled ? 'Vypnout' : 'Zapnout pro všechny'}
       </button>
     </div>
   );

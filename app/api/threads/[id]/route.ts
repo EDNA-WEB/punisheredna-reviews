@@ -12,7 +12,7 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
 
   const isAdmin = (session.user as any).role === 'ADMIN';
   if (!isAdmin && thread.authorId !== (session.user as any).id) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie zmazať toto vlákno.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění smazat toto vlákno.' }, { status: 403 });
   }
 
   await prisma.thread.delete({ where: { id: params.id } });

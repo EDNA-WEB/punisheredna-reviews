@@ -20,7 +20,7 @@ export default function TxtFileImportButton({ onText }: { onText: (text: string)
       onClick={() => inputRef.current?.click()}
       className="text-xs font-semibold text-accent border border-line rounded-full px-3 py-1.5 hover:border-accent"
     >
-      Nahrať .txt súbor
+      Nahrát soubor .txt
       <input ref={inputRef} type="file" accept=".txt,text/plain" className="hidden" onChange={handleFile} />
     </button>
   );

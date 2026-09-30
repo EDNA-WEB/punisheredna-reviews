@@ -82,11 +82,11 @@ export default function AvatarOnlyForm({ initialAvatar }: { initialAvatar: strin
 
           <div className="min-w-0">
             <label htmlFor="avatar-upload" className="inline-block text-sm font-semibold text-accent hover:underline cursor-pointer">
-              Vybrať súbor
+              Vybrat soubor
             </label>
             <input id="avatar-upload" type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleUpload} disabled={saving} />
             <div className="text-xs text-muted mt-1 truncate">
-              {fileName || 'Žiadny súbor nevybraný'}
+              {fileName || 'Žádný soubor nevybrán'}
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function AvatarOnlyForm({ initialAvatar }: { initialAvatar: strin
             disabled={saving}
             className="text-xs font-semibold text-danger hover:underline disabled:opacity-50"
           >
-            {saving ? 'Mažem…' : 'Zmazať'}
+            {saving ? 'Mažu…' : 'Smazat'}
           </button>
         )}
       </div>

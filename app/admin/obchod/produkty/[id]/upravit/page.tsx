@@ -21,8 +21,8 @@ export default async function EditShopProductPage({ params }: { params: { id: st
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia — Obchod</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upraviť produkt</h1>
+      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace — Obchod</div>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit produkt</h1>
       <ShopProductForm categories={categories} initial={product} />
     </div>
   );

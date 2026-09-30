@@ -28,13 +28,13 @@ export default function AddWebModal({ movieId, movieTitle, movieYear, onClose }:
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface transition-colors"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           ✕
         </button>
         <SubmissionModalShell
           title="Přidat web"
-          explanation="Navrhni oficiálnu webovú stránku, sociálnu sieť alebo inú relevantnú databázu (napr. ČSFD, IMDb) k tomuto filmu/seriálu."
+          explanation="Navrhni oficiální webovou stránku, sociální síť nebo jinou relevantní databázi (např. ČSFD, IMDb) k tomuto filmu/seriálu."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat web ke schválení"
@@ -45,7 +45,7 @@ export default function AddWebModal({ movieId, movieTitle, movieYear, onClose }:
               className="field-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Názov (napr. Oficiálna stránka, ČSFD, Facebook…)"
+              placeholder="Název (např. Oficiální stránka, ČSFD, Facebook…)"
             />
             <input
               className="field-input"

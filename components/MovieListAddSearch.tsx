@@ -88,8 +88,8 @@ export default function MovieListAddSearch({ listId, onAdded }: { listId: string
                 type="button"
                 onClick={() => addMovie(m)}
                 disabled={adding === m.id}
-                title="Pridať do zoznamu"
-                aria-label="Pridať do zoznamu"
+                title="Přidat do seznamu"
+                aria-label="Přidat do seznamu"
                 className="w-7 h-7 rounded-full flex items-center justify-center text-white bg-accent hover:bg-accent-dark disabled:opacity-50 flex-none"
               >
                 <IconPlus className="w-4 h-4" />

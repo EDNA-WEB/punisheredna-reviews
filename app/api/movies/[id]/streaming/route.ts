@@ -6,18 +6,18 @@ import { prisma } from '@/lib/prisma';
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { services } = await req.json();
   // "services" je pole { streamingServiceId, url } — nahradí VŠETKY doterajšie
   // priradenia tohto filmu naraz (jednoduchšie než dopočítavať rozdiely).
   if (!Array.isArray(services)) {
-    return NextResponse.json({ error: 'Neplatný formát dát.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatný formát dat.' }, { status: 400 });
   }
   for (const s of services) {
     if (!s.streamingServiceId || !s.url || !String(s.url).trim()) {
-      return NextResponse.json({ error: 'Každá zaškrtnutá služba musí mať vyplnený odkaz.' }, { status: 400 });
+      return NextResponse.json({ error: 'Každá zaškrtnutá služba musí mít vyplněný odkaz.' }, { status: 400 });
     }
     if (!/^https?:\/\//i.test(s.url)) {
       return NextResponse.json({ error: 'Odkaz musí začínat na http:// nebo https://' }, { status: 400 });

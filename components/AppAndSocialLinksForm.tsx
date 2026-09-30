@@ -91,10 +91,10 @@ export default function AppAndSocialLinksForm({ initial }: { initial: Initial })
       </div>
 
       {error && <div className="text-danger text-sm">{error}</div>}
-      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Odkazy boli uložené.</div>}
+      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Odkazy byly uloženy.</div>}
 
       <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-        {loading ? 'Ukladám…' : 'Uložiť odkazy'}
+        {loading ? 'Ukládám…' : 'Uložit odkazy'}
       </button>
       <p className="text-xs text-muted">Prázdné pole = daná ikonka/tlačítko se na hlavní stránce jednoduše nezobrazí.</p>
     </div>

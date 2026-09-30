@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { userId, isEditor } = await req.json();
@@ -15,9 +15,9 @@ export async function POST(req: Request) {
   }
 
   const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-  if (!target) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+  if (!target) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
   if (target.role === 'ADMIN') {
-    return NextResponse.json({ error: 'Admin už má plný prístup, právo redaktora tu netreba nastavovať.' }, { status: 400 });
+    return NextResponse.json({ error: 'Admin už má plný přístup, právo redaktora tu není potřeba nastavovat.' }, { status: 400 });
   }
 
   const updated = await prisma.user.update({ where: { id: userId }, data: { isEditor } });

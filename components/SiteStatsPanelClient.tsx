@@ -21,7 +21,7 @@ export default function SiteStatsPanelClient({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={open ? 'Skryť štatistiky webu' : 'Zobraziť štatistiky webu'}
+        aria-label={open ? 'Skrýt statistiky webu' : 'Zobrazit statistiky webu'}
         className="hidden xl:flex fixed right-0 top-1/2 -translate-y-1/2 z-20 w-7 h-16 items-center justify-center rounded-l-xl border border-r-0 border-line bg-card shadow-lg hover:bg-surface transition-colors"
       >
         <svg

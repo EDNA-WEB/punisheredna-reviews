@@ -38,16 +38,16 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
           href="/api/admin/movies/export-missing-trivia"
           className="inline-block border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent"
         >
-          Stiahnuť zoznam (.txt)
+          Stáhnout seznam (.txt)
         </a>
       </div>
 
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-trivia"
-        title="Hromadne pridať zaujímavosti"
+        title="Hromadně přidat zajímavosti"
         description={'Vlož seznam ve tvaru "Název filmu – Zajímavost 1; Zajímavost 2", jeden řádek na film. Jednotlivé zajímavosti odděluj středníkem (ne čárkou, ta se může vyskytnout přímo ve větě). Pozor: u filmu, který se v seznamu objeví, se jeho PŮVODNÍ zajímavosti úplně nahradí těmito novými (neslučují se).'}
         placeholder={'Kmotr – Film se natáčel v New Yorku a na Sicílii.; Marlon Brando za roli dostal Oscara, kterého odmítl převzít.'}
-        buttonLabel="Pridať zaujímavosti"
+        buttonLabel="Přidat zajímavosti"
       />
 
       <input
@@ -78,7 +78,7 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
                 </div>
               </div>
               <a href={`/admin/movies/${m.id}/edit`} className="text-xs font-semibold text-accent hover:underline flex-none">
-                Upraviť vo filme
+                Upravit ve filmu
               </a>
             </div>
           ))}

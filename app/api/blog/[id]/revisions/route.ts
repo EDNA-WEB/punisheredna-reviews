@@ -17,7 +17,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   const isAdmin = (session.user as any).role === 'ADMIN';
 
   const post = await canAccess(params.id, userId, isAdmin);
-  if (!post) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!post) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const revisions = await prisma.articleRevision.findMany({
     where: { blogPostId: params.id },
@@ -34,7 +34,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const isAdmin = (session.user as any).role === 'ADMIN';
 
   const current = await canAccess(params.id, userId, isAdmin);
-  if (!current) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!current) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { revisionId } = await req.json();
   const revision = await prisma.articleRevision.findUnique({ where: { id: revisionId } });

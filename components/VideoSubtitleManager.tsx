@@ -87,7 +87,7 @@ export default function VideoSubtitleManager({
       return;
     }
     if (!text.trim()) {
-      setError('Napíš text titulku.');
+      setError('Napiš text titulku.');
       return;
     }
     setSaving(true);
@@ -168,7 +168,7 @@ export default function VideoSubtitleManager({
             disabled={saving}
             className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {saving ? '…' : 'Pridať titulok'}
+            {saving ? '…' : 'Přidat titulek'}
           </button>
         </div>
         {error && <div className="text-danger text-xs">{error}</div>}

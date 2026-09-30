@@ -5,6 +5,7 @@ import KinoFilter from '@/components/KinoFilter';
 import VodTabs from '@/components/VodTabs';
 import PersonNameList from '@/components/PersonNameList';
 
+import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 export const dynamic = 'force-dynamic';
 
 export default async function VodPage({ searchParams }: { searchParams: { month?: string; year?: string } }) {
@@ -81,7 +82,7 @@ export default async function VodPage({ searchParams }: { searchParams: { month?
                             {m.title} <span className="text-muted font-normal">{m.year}</span>
                           </Link>
                           <div className="text-xs text-muted mt-1">
-                            {[m.countries, genresList.join(', ')].filter(Boolean).join(' · ')}
+                            {[valueListLabel(m.countries), genresList.map(valueLabel).join(', ')].filter(Boolean).join(' · ')}
                           </div>
                           {director.length > 0 && (
                             <div className="text-xs text-muted mt-1">

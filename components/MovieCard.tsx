@@ -33,7 +33,7 @@ export default function MovieCard({
     if (premiereYear !== currentYear) return 'Čoskoro';
 
     if (movie.contentType === 'Seriál') return 'Čoskoro na VOD';
-    return movie.premiereType === 'VOD' ? 'Čoskoro na VOD' : 'Čoskoro v kinách';
+    return movie.premiereType === 'VOD' ? 'Čoskoro na VOD' : 'Brzy v kinech';
   }
 
   return (

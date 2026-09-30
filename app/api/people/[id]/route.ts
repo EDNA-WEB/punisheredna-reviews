@@ -13,7 +13,7 @@ async function requireAdmin() {
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { name, role, subRole, photo, bio, birthDate, deathDate, birthPlace, deathPlace } = await req.json();
   if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadej jméno.' }, { status: 400 });
@@ -48,14 +48,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   await prisma.person.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   const { approved } = await req.json();
 
   const before = await prisma.person.findUnique({ where: { id: params.id }, select: { approved: true, submittedById: true, name: true, slug: true } });

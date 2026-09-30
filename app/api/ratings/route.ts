@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
   }
   if (user.ratingsDisabled) {
-    return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť hodnotiť filmy.' }, { status: 403 });
+    return NextResponse.json({ error: 'Administrátor ti omezil možnost hodnotit filmy.' }, { status: 403 });
   }
   const rateLimitError = await checkRateLimit('rating', userId, user.createdAt);
   if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   const { movieId, value } = await req.json();
   const v = Number(value);
   if (!movieId || !(v >= 0.5 && v <= 5 && v % 0.5 === 0)) {
-    return NextResponse.json({ error: 'Neplatné hodnotenie.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatné hodnocení.' }, { status: 400 });
   }
 
   const movie = await prisma.movie.findUnique({ where: { id: movieId }, select: { releaseDate: true } });

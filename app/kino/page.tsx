@@ -6,6 +6,7 @@ import KinoTabs from '@/components/KinoTabs';
 import PersonNameList from '@/components/PersonNameList';
 import Badge from '@/components/Badge';
 
+import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 export const dynamic = 'force-dynamic';
 
 export default async function KinoPage({ searchParams }: { searchParams: { month?: string; year?: string } }) {
@@ -84,7 +85,7 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
                             {m.title} <span className="text-muted font-normal">{m.year}</span>
                           </Link>
                           <div className="text-xs text-muted mt-1">
-                            {[m.countries, genresList.join(', ')].filter(Boolean).join(' · ')}
+                            {[valueListLabel(m.countries), genresList.map(valueLabel).join(', ')].filter(Boolean).join(' · ')}
                           </div>
                           {director.length > 0 && (
                             <div className="text-xs text-muted mt-1">

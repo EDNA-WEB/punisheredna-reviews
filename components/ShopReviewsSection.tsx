@@ -51,7 +51,7 @@ export default function ShopReviewsSection({
     <div className="mt-10 max-w-2xl">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-display font-bold text-lg text-ink">Recenzie</h2>
+          <h2 className="font-display font-bold text-lg text-ink">Recenze</h2>
           {avg !== null ? (
             <div className="flex items-center gap-2 text-sm mt-1">
               <span className="text-amber-500">{'★'.repeat(Math.round(avg))}{'☆'.repeat(5 - Math.round(avg))}</span>
@@ -67,7 +67,7 @@ export default function ShopReviewsSection({
             onClick={() => setShowForm((v) => !v)}
             className="text-sm font-semibold text-accent hover:underline flex-none"
           >
-            {myExistingReview ? 'Upraviť moju recenziu' : 'Napsat recenzi'}
+            {myExistingReview ? 'Upravit mou recenzi' : 'Napsat recenzi'}
           </button>
         ) : (
           <Link href="/login" className="text-sm font-semibold text-accent hover:underline flex-none">
@@ -97,7 +97,7 @@ export default function ShopReviewsSection({
             disabled={saving || !rating}
             className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
           >
-            {saving ? 'Ukladám…' : 'Uložiť recenziu'}
+            {saving ? 'Ukládám…' : 'Uložit recenzi'}
           </button>
         </div>
       )}

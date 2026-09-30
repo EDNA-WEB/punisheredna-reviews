@@ -18,11 +18,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+  if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { name, icon, color } = await req.json();
   if (!name || !String(name).trim()) {
-    return NextResponse.json({ error: 'Zadaj názov služby.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej název služby.' }, { status: 400 });
   }
   if (icon) {
     const imageError = validateImageDataUrl(icon);

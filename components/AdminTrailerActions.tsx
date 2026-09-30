@@ -8,7 +8,7 @@ export default function AdminTrailerActions({ id }: { id: string }) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš tento trailer zmazať?')) return;
+    if (!confirm('Opravdu chceš tento trailer smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/trailers/${id}`, { method: 'DELETE' });
@@ -23,7 +23,7 @@ export default function AdminTrailerActions({ id }: { id: string }) {
 
   return (
     <button onClick={handleDelete} disabled={loading} className="text-xs font-semibold text-muted hover:text-danger disabled:opacity-50">
-      Zmazať
+      Smazat
     </button>
   );
 }

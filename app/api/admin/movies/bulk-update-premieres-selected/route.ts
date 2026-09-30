@@ -9,12 +9,12 @@ import { logBulkAction } from '@/lib/auditLog';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { movieIds, includeVod, preview } = await req.json();
   if (!Array.isArray(movieIds) || movieIds.length === 0) {
-    return NextResponse.json({ error: 'Nevybral si žiadny film.' }, { status: 400 });
+    return NextResponse.json({ error: 'Nevybral jsi žádný film.' }, { status: 400 });
   }
 
   const movies = await prisma.movie.findMany({
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       await prisma.moviePremiereDate.deleteMany({ where: { movieId: movie.id } });
 
       if (filteredPremieres.length === 0) {
-        results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pre tento film žiadnu vyhovujúcu premiéru — pôvodné dáta boli zmazané' });
+        results.push({ title: movie.title, status: 'BEZ DÁT', detail: 'TMDb nemá pro tento film žádnou vyhovující premiéru — původní data byla smazána' });
         continue;
       }
 
@@ -106,11 +106,11 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné prepísanie premiér z TMDb (vybrané filmy)',
+    toolName: 'Hromadné přepsání premiér z TMDb (vybrané filmy)',
     updated: results.filter((r) => r.status === 'OK').length,
     failed: results.filter((r) => r.status === 'CHYBA').length,
     total: movies.length,
-    extraDetails: 'pôvodné premiéry boli zmazané a nahradené'
+    extraDetails: 'původní premiéry byly smazány a nahrazeny'
   });
   return NextResponse.json({ results, batchId, checked: movies.length });
 }

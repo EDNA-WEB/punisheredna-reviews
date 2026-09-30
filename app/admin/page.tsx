@@ -26,11 +26,11 @@ export default async function AdminPage() {
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Prehľad recenzií</h1>
+          <h1 className="font-display font-extrabold text-3xl text-ink">Přehled recenzí</h1>
         </div>
         <div className="flex gap-3">
           <Link href="/admin/movies" className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent">
-            Spravovať filmy
+            Spravovat filmy
           </Link>
           <Link href="/admin/reviews/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
             + Nová recenzia
@@ -40,7 +40,7 @@ export default async function AdminPage() {
 
       {reviews.length === 0 ? (
         <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">
-          Zatiaľ žiadne recenzie. Najprv pridaj film v sekcii „Spravovať filmy“, potom k nemu napíš recenziu.
+          Zatím žádné recenze. Nejdřív přidej film v sekci „Spravovat filmy“, pak k němu napiš recenzi.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">

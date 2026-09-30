@@ -64,7 +64,7 @@ export default function PrivacyModalTextForm({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Úvodný text</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Úvodní text</label>
         <textarea
           className="field-input min-h-[100px] text-sm"
           value={text}
@@ -80,7 +80,7 @@ export default function PrivacyModalTextForm({
         <div className="flex items-center justify-between mb-3">
           <label className="block text-sm font-semibold text-ink">Kategórie súhlasu</label>
           <button type="button" onClick={addCategory} className="text-xs font-semibold text-accent hover:underline">
-            + Pridať kategóriu
+            + Přidat kategorii
           </button>
         </div>
 
@@ -92,10 +92,10 @@ export default function PrivacyModalTextForm({
                   className="field-input-sm flex-1"
                   value={cat.title}
                   onChange={(e) => updateCategory(i, 'title', e.target.value)}
-                  placeholder="Názov kategórie"
+                  placeholder="Název kategorie"
                 />
                 <button type="button" onClick={() => removeCategory(i)} className="text-xs text-muted hover:text-danger flex-none px-2">
-                  Zmazať
+                  Smazat
                 </button>
               </div>
               <textarea
@@ -106,7 +106,7 @@ export default function PrivacyModalTextForm({
               />
               <label className="flex items-center gap-2 text-xs text-ink cursor-pointer w-fit">
                 <input type="checkbox" checked={cat.mandatory} onChange={(e) => updateCategory(i, 'mandatory', e.target.checked)} className="w-3.5 h-3.5 accent-accent" />
-                Povinná (bez možnosti vypnúť — napr. technická prevádzka)
+                Povinná (bez možnosti vypnout — např. technický provoz)
               </label>
             </div>
           ))}
@@ -115,9 +115,9 @@ export default function PrivacyModalTextForm({
       </div>
 
       {error && <div className="text-danger text-sm">{error}</div>}
-      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Uložené.</div>}
+      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Uloženo.</div>}
       <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-        {loading ? 'Ukladám…' : 'Uložiť'}
+        {loading ? 'Ukládám…' : 'Uložit'}
       </button>
     </div>
   );

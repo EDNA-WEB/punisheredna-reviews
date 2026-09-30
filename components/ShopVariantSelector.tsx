@@ -58,7 +58,7 @@ export default function ShopVariantSelector({ variants }: { variants: Variant[] 
             onClick={() => alert('Nákupní košík zatím není dostupný — tato funkce brzy přibude.')}
             className="bg-accent text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-accent-dark transition-colors shadow-sm"
           >
-            Pridať do košíka
+            Přidat do košíku
           </button>
         </div>
       )}

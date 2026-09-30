@@ -48,9 +48,7 @@ export default async function AdminOdkazyPage() {
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Odkazy</h1>
       <p className="text-sm text-muted mb-6">
-        <strong className="text-ink">{missingImdb}</strong> {missingImdb === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} IMDb
-        odkaz, <strong className="text-ink">{missingCsfd}</strong> {missingCsfd === 1 ? 'film ešte nemá' : 'filmov ešte nemá'} ČSFD
-        odkaz.
+        <strong className="text-ink">{missingImdb}</strong> {missingImdb === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} IMDb odkaz, <strong className="text-ink">{missingCsfd}</strong> {missingCsfd === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} ČSFD odkaz.
       </p>
       <MovieLinksAdmin initialLinkTypes={linkTypes} initialMovies={sortedMovies} />
     </div>

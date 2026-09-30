@@ -63,7 +63,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
 
   async function deleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Zmazať ${selectedIds.size} vybraných zpráv? Zmizí i druhé straně.`)) return;
+    if (!confirm(`Smazat ${selectedIds.size} vybraných zpráv? Zmizí i druhé straně.`)) return;
     setDeletingSelection(true);
     try {
       await Promise.all(Array.from(selectedIds).map((id) => fetch(`/api/messages/${id}`, { method: 'DELETE' })));
@@ -150,7 +150,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
               }}
               className="text-sm font-semibold text-muted hover:text-ink px-3 py-1.5"
             >
-              Zrušiť
+              Zrušit
             </button>
             <button
               type="button"
@@ -158,7 +158,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
               disabled={selectedIds.size === 0 || deletingSelection}
               className="text-sm font-semibold text-white bg-danger px-4 py-1.5 rounded-full hover:opacity-90 disabled:opacity-50"
             >
-              {deletingSelection ? 'Mažem…' : `Zmazať vybrané (${selectedIds.size})`}
+              {deletingSelection ? 'Mažu…' : `Smazat vybrané (${selectedIds.size})`}
             </button>
           </div>
         </div>

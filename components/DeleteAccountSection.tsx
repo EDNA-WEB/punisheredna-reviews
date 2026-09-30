@@ -36,7 +36,7 @@ export default function DeleteAccountSection() {
 
       {!open ? (
         <button onClick={() => setOpen(true)} className="text-xs font-semibold text-danger hover:underline">
-          Zmazať účet
+          Smazat účet
         </button>
       ) : (
         <div className="space-y-3 max-w-xs">
@@ -59,10 +59,10 @@ export default function DeleteAccountSection() {
               disabled={loading || !password}
               className="bg-danger text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? 'Mažem…' : 'Natrvalo zmazať účet'}
+              {loading ? 'Mažu…' : 'Natrvalo smazat účet'}
             </button>
             <button onClick={() => setOpen(false)} className="text-xs text-muted hover:text-ink">
-              Zrušiť
+              Zrušit
             </button>
           </div>
         </div>

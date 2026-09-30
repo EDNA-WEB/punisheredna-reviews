@@ -9,7 +9,7 @@ export default function AdminPersonActions({ id, slug }: { id: string; slug: str
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš túto osobu zmazať?')) return;
+    if (!confirm('Opravdu chceš tuto osobu smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/people/${id}`, { method: 'DELETE' });
@@ -24,9 +24,9 @@ export default function AdminPersonActions({ id, slug }: { id: string; slug: str
 
   return (
     <div className="flex items-center gap-4 text-xs font-semibold flex-none">
-      <Link href={`/osobnost/${slug}`} className="text-muted hover:text-accent">Zobraziť</Link>
-      <Link href={`/admin/people/${id}/edit`} className="text-muted hover:text-accent">Upraviť</Link>
-      <button onClick={handleDelete} disabled={loading} className="text-muted hover:text-danger disabled:opacity-50">Zmazať</button>
+      <Link href={`/osobnost/${slug}`} className="text-muted hover:text-accent">Zobrazit</Link>
+      <Link href={`/admin/people/${id}/edit`} className="text-muted hover:text-accent">Upravit</Link>
+      <button onClick={handleDelete} disabled={loading} className="text-muted hover:text-danger disabled:opacity-50">Smazat</button>
     </div>
   );
 }

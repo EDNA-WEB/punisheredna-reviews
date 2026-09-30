@@ -9,7 +9,7 @@ export default function DeleteMovieListButton({ listId }: { listId: string }) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš tento zoznam natrvalo zmazať?')) return;
+    if (!confirm('Opravdu chceš tento seznam natrvalo smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/movie-lists/${listId}`, { method: 'DELETE' });
@@ -29,7 +29,7 @@ export default function DeleteMovieListButton({ listId }: { listId: string }) {
       className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-danger border border-line hover:border-danger rounded-full px-3 py-1.5 disabled:opacity-50"
     >
       <IconTrash className="w-3.5 h-3.5" />
-      Zmazať zoznam
+      Smazat seznam
     </button>
   );
 }

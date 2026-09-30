@@ -51,7 +51,7 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
   }
 
   if (submissions.length === 0) {
-    return <p className="text-sm text-muted">Žiadne návrhy nečakajú na schválenie.</p>;
+    return <p className="text-sm text-muted">Žádné návrhy nečekají na schválení.</p>;
   }
 
   return (
@@ -90,7 +90,7 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
               disabled={working === s.id}
               className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
             >
-              Schváliť a uložiť
+              Schválit a uložit
             </button>
             <button
               onClick={() => act(s.id, 'reject')}

@@ -51,13 +51,13 @@ export default async function AnalyticsPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia · Viditeľné iba tebe</div>
+      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace · Viditelné jen tobě</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Analytics</h1>
 
       <div className="grid grid-cols-2 gap-4 mb-8 max-w-md">
         <div className="border border-line rounded-xl p-4">
           <div className="text-2xl font-display font-extrabold text-ink">{totalViews24h}</div>
-          <div className="text-xs text-muted">zobrazení za 24 hodín</div>
+          <div className="text-xs text-muted">zobrazení za 24 hodin</div>
         </div>
         <div className="border border-line rounded-xl p-4">
           <div className="text-2xl font-display font-extrabold text-ink">{totalViewsAllTime}</div>
@@ -65,10 +65,10 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      <h2 className="font-display font-bold text-xl text-ink mb-4">Najčítanejšie za 24 hodín</h2>
+      <h2 className="font-display font-bold text-xl text-ink mb-4">Nejčtenější za 24 hodin</h2>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-muted">Za posledných 24 hodín zatiaľ nikto žiadny článok neotvoril.</p>
+        <p className="text-sm text-muted">Za posledních 24 hodin zatím nikdo žádný článek neotevřel.</p>
       ) : (
         <div className="border border-line rounded-xl overflow-hidden divide-y divide-line max-w-2xl">
           {rows.map((r, i) => (

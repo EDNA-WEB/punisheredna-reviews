@@ -148,7 +148,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
 
               {users.length > 0 && (
                 <div>
-                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">Používatelia</div>
+                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">Uživatelé</div>
                   {users.map((u) => (
                     <button
                       key={u.id}

@@ -85,7 +85,7 @@ export default function ChangePasswordForm() {
         disabled={loading}
         className="bg-night text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-night/85 disabled:opacity-50"
       >
-        {loading ? 'Ukladám…' : 'Změnit heslo'}
+        {loading ? 'Ukládám…' : 'Změnit heslo'}
       </button>
     </form>
   );

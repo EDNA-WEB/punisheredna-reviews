@@ -24,7 +24,7 @@ export default async function UsersPage({ searchParams }: { searchParams: { sort
   return (
     <div className="pt-8">
       <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
-        <h1 className="font-display font-extrabold text-3xl text-ink">Používatelia</h1>
+        <h1 className="font-display font-extrabold text-3xl text-ink">Uživatelé</h1>
         <div className="flex gap-2">
           <Link href="/pouzivatelia?sort=activity" className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border ${sortMode === 'activity' ? 'bg-night text-white border-night' : 'text-muted border-line hover:border-night'}`}>
             Podle aktivity

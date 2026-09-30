@@ -33,8 +33,7 @@ export default async function AdminSystemPage() {
       </div>
 
       <p className="text-muted mb-8 max-w-xl">
-        Odošli hromadnú správu (novinku, upozornenie, reklamu) do schránky úplne všetkým používateľom naraz.
-        Odosielateľom bude technický účet "Systém", nie tvoj osobný účet.
+        Odešli hromadnou zprávu (novinku, upozornění, reklamu) do schránky úplně všem uživatelům najednou. Odesílatelem bude technický účet "Systém", ne tvůj osobní účet.
       </p>
       <SystemBroadcastForm recipientCount={recipientCount} />
     </div>

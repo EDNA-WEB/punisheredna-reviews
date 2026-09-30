@@ -9,7 +9,7 @@ import { logBulkAction } from '@/lib/auditLog';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { preview } = await req.json().catch(() => ({ preview: false }));
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         headers: { Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`, accept: 'application/json' }
       });
       if (!res.ok) {
-        results.push({ id: movie.id, title: movie.title, status: 'CHYBA', detail: 'Načítanie kľúčových slov z TMDb zlyhalo' });
+        results.push({ id: movie.id, title: movie.title, status: 'CHYBA', detail: 'Načtení klíčových slov z TMDb selhalo' });
         continue;
       }
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       const englishTags: string[] = (keywordList || []).slice(0, 10).map((k: any) => k.name);
 
       if (englishTags.length === 0) {
-        results.push({ id: movie.id, title: movie.title, status: 'BEZ TAGOV', detail: 'TMDb pre tento film/seriál nemá žiadne kľúčové slová' });
+        results.push({ id: movie.id, title: movie.title, status: 'BEZ TAGOV', detail: 'TMDb pro tento film/seriál nemá žádná klíčová slova' });
         continue;
       }
 
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadné doplnenie tagov z TMDb',
+    toolName: 'Hromadné doplnění tagů z TMDb',
     updated: changes.length,
     total: movies.length
   });

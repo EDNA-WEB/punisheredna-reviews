@@ -47,9 +47,9 @@ export default function CookiesPolicyForm({ initial }: { initial: string | null 
         Řádky napsané VELKÝMI PÍSMENY (např. "ZÁSADY COOKIES") se na stránce zobrazí jako nadpisy. Prázdný řádek odděluje odstavce.
       </p>
       {error && <div className="text-danger text-sm">{error}</div>}
-      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Uložené.</div>}
+      {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Uloženo.</div>}
       <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-        {loading ? 'Ukladám…' : 'Uložiť text'}
+        {loading ? 'Ukládám…' : 'Uložit text'}
       </button>
     </div>
   );

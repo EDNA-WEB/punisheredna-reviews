@@ -98,14 +98,14 @@ export async function generatePaidCode(type: 'month' | 'year', adminId: string, 
 export async function redeemMembershipCode(userId: string, rawCode: string) {
   const code = rawCode.trim().toUpperCase().replace(/[\s-]/g, '');
   if (code.length !== CODE_LENGTH) {
-    return { ok: false as const, error: `Kód musí mať presne ${CODE_LENGTH} znakov.` };
+    return { ok: false as const, error: `Kód musí mít přesně ${CODE_LENGTH} znakov.` };
   }
 
   const record = await prisma.membershipCode.findUnique({ where: { code } });
   if (!record) return { ok: false as const, error: 'Tento kód neexistuje.' };
   if (record.usedByUserId) return { ok: false as const, error: 'Tento kód už byl uplatněn.' };
   if (record.type === 'trial4d' && record.forUserId !== userId) {
-    return { ok: false as const, error: 'Tento skúšobný kód patrí inému účtu.' };
+    return { ok: false as const, error: 'Tento zkušební kód patří jinému účtu.' };
   }
   if (record.type === 'trial4d') {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { redeemedTrial: true } });

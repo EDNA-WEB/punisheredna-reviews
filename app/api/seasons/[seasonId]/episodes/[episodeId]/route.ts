@@ -8,7 +8,7 @@ import { uploadImage, deleteImageByUrl } from '@/lib/cloudinary';
 export async function PATCH(req: Request, { params }: { params: { seasonId: string; episodeId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { title, synopsis, onlineImage, onlineUrl } = await req.json();

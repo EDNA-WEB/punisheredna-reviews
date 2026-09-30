@@ -67,7 +67,7 @@ export default function RightsAdminList({ initialUsers }: { initialUsers: UserIt
                       : 'text-accent border border-accent/40 hover:bg-accent/10'
                   }`}
                 >
-                  {savingId === u.id ? '…' : u.isEditor ? 'Odobrať redaktora' : 'Nastavit jako redaktora'}
+                  {savingId === u.id ? '…' : u.isEditor ? 'Odebrat redaktora' : 'Nastavit jako redaktora'}
                 </button>
               </div>
             ))

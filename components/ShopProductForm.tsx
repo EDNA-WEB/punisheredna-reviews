@@ -123,7 +123,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Názov produktu</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Název produktu</label>
         <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="napr. Netflix Predplatné" required />
       </div>
 
@@ -168,7 +168,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
         <div className="flex items-center justify-between mb-1">
           <label className="block text-sm font-semibold text-ink">Balíky predplatného</label>
           <button type="button" onClick={addVariant} className="text-xs font-semibold text-accent hover:underline">
-            + Pridať balík
+            + Přidat balíček
           </button>
         </div>
         <p className="text-xs text-muted mb-2">
@@ -212,7 +212,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
         disabled={saving}
         className="bg-accent text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-accent-dark disabled:opacity-50"
       >
-        {saving ? 'Ukladám…' : isEdit ? 'Uložiť zmeny' : 'Vytvoriť produkt'}
+        {saving ? 'Ukládám…' : isEdit ? 'Uložit změny' : 'Vytvořit produkt'}
       </button>
     </form>
   );

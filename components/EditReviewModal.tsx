@@ -25,11 +25,11 @@ export default function EditReviewModal({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted hover:bg-surface transition-colors"
-          aria-label="Zavrieť"
+          aria-label="Zavřít"
         >
           ✕
         </button>
-        <h2 className="font-display font-extrabold text-2xl text-ink mb-1">{reviewId ? 'Upraviť recenziu' : 'Napsat recenzi'}</h2>
+        <h2 className="font-display font-extrabold text-2xl text-ink mb-1">{reviewId ? 'Upravit recenzi' : 'Napsat recenzi'}</h2>
         <p className="text-muted mb-6">{title}</p>
         <ReviewForm
           initial={{ id: reviewId || undefined, movieId, body: initialBody, rating: initialRating }}

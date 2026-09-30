@@ -25,8 +25,8 @@ export default function MovieListCard({ id, title, itemCount, items }: { id: str
         </Link>
         <button
           onClick={copyLink}
-          title="Skopírovať odkaz na zoznam"
-          aria-label="Skopírovať odkaz na zoznam"
+          title="Zkopírovat odkaz na seznam"
+          aria-label="Zkopírovat odkaz na seznam"
           className="w-7 h-7 rounded-full flex items-center justify-center text-muted hover:text-accent hover:bg-card transition-colors flex-none"
         >
           <IconLink className="w-3.5 h-3.5" />

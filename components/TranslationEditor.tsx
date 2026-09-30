@@ -46,9 +46,9 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
     <div>
       <div className="sticky top-[130px] z-10 bg-bg py-3 mb-2 flex items-center gap-3 border-b border-line">
         <button onClick={saveAll} disabled={loading} className="bg-accent text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : 'Uložiť všetky preklady'}
+          {loading ? 'Ukládám…' : 'Uložit všechny překlady'}
         </button>
-        {saved && <span className="text-emerald-600 text-sm font-semibold">Uložené.</span>}
+        {saved && <span className="text-emerald-600 text-sm font-semibold">Uloženo.</span>}
         <span className="text-xs text-muted ml-auto">{rows.length} položiek</span>
       </div>
 
@@ -70,7 +70,7 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
                   {items.map((row) => (
                     <div key={row.key} className="grid sm:grid-cols-3 gap-3 p-4">
                       <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">Slovenčina (zdroj)</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">Slovenština</div>
                         <div className="text-sm text-ink font-medium">{row.sk}</div>
                         <div className="text-[10px] text-muted mt-0.5">{row.key}</div>
                       </div>

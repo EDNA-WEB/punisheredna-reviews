@@ -76,11 +76,11 @@ export default function MessagesListClient({ conversations, myId }: { conversati
             </div>
             <p className="text-xs text-muted truncate">
               {c.status?.status === 'DECLINED' ? (
-                <span className="text-danger">Zamietnuté</span>
+                <span className="text-danger">Zamítnuto</span>
               ) : c.status?.status === 'PENDING' && c.status.initiatorId === myId ? (
-                <span className="text-amber-600">Čaká na potvrdenie</span>
+                <span className="text-amber-600">Čeká na potvrzení</span>
               ) : c.status?.status === 'PENDING' ? (
-                <span className="text-accent font-semibold">Chce s tebou komunikovať</span>
+                <span className="text-accent font-semibold">Chce s tebou komunikovat</span>
               ) : (
                 <>
                   {c.lastMine && <span className="mr-1">✓✓</span>}

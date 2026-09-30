@@ -57,27 +57,26 @@ export default async function AdminOverviewPage() {
     <div className="pt-8">
       <AdminTabs />
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Prehľad</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Přehled</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
-        Rýchly prehľad, koľko je z {totalApproved} schválených filmov a seriálov doplnených v jednotlivých oblastiach —
-        klikni na riadok pre priamy prechod na danú sekciu.
+        Rychlý přehled, kolik z {totalApproved} schválených filmů a seriálů je doplněných v jednotlivých oblastech — klikni na řádek pro přímý přechod do dané sekce.
       </p>
 
       <div className="max-w-2xl border border-line rounded-xl p-5 bg-card mb-6">
         <h2 className="text-xs font-bold uppercase tracking-wide text-muted mb-1">Profil filmu</h2>
-        <StatRow label="Majú online odkaz" value={withOnline} total={totalApproved} href="/admin/online" />
-        <StatRow label="Majú aspoň 1 VOD platformu (Kde sledovať)" value={withStreamingService} total={totalApproved} href="/admin/kde-sledovat" />
-        <StatRow label="Majú aspoň 2 odkazy (IMDb/ČSFD...)" value={withTwoPlusLinks} total={totalApproved} href="/admin/odkazy" />
-        <StatRow label="Majú nastavenú aspoň 1 premiéru" value={withPremiere} total={totalApproved} href="/admin/premieres" />
-        <StatRow label="Majú dabing alebo titulky" value={withDubbingOrSubs} total={totalApproved} href="/admin/lokalizacia" />
+        <StatRow label="Mají online odkaz" value={withOnline} total={totalApproved} href="/admin/online" />
+        <StatRow label="Mají alespoň 1 VOD platformu (Kde sledovat)" value={withStreamingService} total={totalApproved} href="/admin/kde-sledovat" />
+        <StatRow label="Mají alespoň 2 odkazy (IMDb/ČSFD...)" value={withTwoPlusLinks} total={totalApproved} href="/admin/odkazy" />
+        <StatRow label="Mají nastavenou alespoň 1 premiéru" value={withPremiere} total={totalApproved} href="/admin/premieres" />
+        <StatRow label="Mají dabing nebo titulky" value={withDubbingOrSubs} total={totalApproved} href="/admin/lokalizacia" />
         <StatRow label="Majú aspoň 1 zaujímavosť" value={withTrivia} total={totalApproved} href="/admin/zaujimavosti" />
-        <StatRow label="Majú vyplnené tagy" value={withTags} total={totalApproved} href="/admin/tagy" />
+        <StatRow label="Mají vyplněné tagy" value={withTags} total={totalApproved} href="/admin/tagy" />
       </div>
 
       <div className="max-w-2xl border border-line rounded-xl p-5 bg-card">
-        <h2 className="text-xs font-bold uppercase tracking-wide text-muted mb-1">Preklad webu</h2>
-        <StatRow label="Kľúčov preložených do angličtiny" value={translatedEn} total={totalTranslationKeys} href="/admin/preklad" />
-        <StatRow label="Kľúčov preložených do češtiny" value={translatedCs} total={totalTranslationKeys} href="/admin/preklad" />
+        <h2 className="text-xs font-bold uppercase tracking-wide text-muted mb-1">Překlad webu</h2>
+        <StatRow label="Klíčů přeložených do angličtiny" value={translatedEn} total={totalTranslationKeys} href="/admin/preklad" />
+        <StatRow label="Klíčů přeložených do češtiny" value={translatedCs} total={totalTranslationKeys} href="/admin/preklad" />
       </div>
     </div>
   );

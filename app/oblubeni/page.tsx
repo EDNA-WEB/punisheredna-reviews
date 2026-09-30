@@ -99,7 +99,7 @@ export default async function FavoritesPage() {
                   </div>
 
                   <div>
-                    <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-2.5">Napísal recenziu</div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-2.5">Napsal recenzi</div>
                     {reviews.length === 0 ? (
                       <p className="text-sm text-muted">Zatím žádná.</p>
                     ) : (

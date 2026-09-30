@@ -6,13 +6,13 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { number, year, episodeCount } = await req.json();
   const num = Number(number);
   if (!Number.isFinite(num) || num < 1) {
-    return NextResponse.json({ error: 'Zadaj platné číslo série.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej platné číslo série.' }, { status: 400 });
   }
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum) || yearNum < 1900 || yearNum > 2100) {

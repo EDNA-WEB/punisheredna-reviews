@@ -29,7 +29,7 @@ export default async function NotesPage() {
           icon={<IconNote className="w-5 h-5" />}
           title="Zatím žádné poznámky"
           description="Pridaj si nejakú priamo na stránke filmu."
-          actionLabel="Prezrieť filmy"
+          actionLabel="Prohlédnout filmy"
           actionHref="/recenzie"
         />
       ) : (

@@ -27,7 +27,7 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Uplatnenie kódu zlyhalo.');
-      setSuccess(`Členstvo aktivované! Platí do ${new Date(data.until).toLocaleDateString('cs-CZ')}.`);
+      setSuccess(`Členství aktivováno! Platí do ${new Date(data.until).toLocaleDateString('cs-CZ')}.`);
       setCode('');
       router.refresh();
     } catch (err: any) {
@@ -51,7 +51,7 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
               <div>
                 <p className="text-sm font-semibold text-ink">Si aktívny Golden Ticket člen!</p>
                 <p className="text-sm text-muted mt-1">
-                  Platí ještě {daysLeft} {daysLeft === 1 ? 'deň' : daysLeft < 5 ? 'dni' : 'dní'}, do{' '}
+                  Platí ještě {daysLeft} {daysLeft === 1 ? 'den' : daysLeft < 5 ? 'dni' : 'dní'}, do{' '}
                   <span className="font-semibold text-ink">{until!.toLocaleDateString('cs-CZ')}</span>.
                 </p>
               </div>
@@ -66,7 +66,7 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
       </div>
 
       <form onSubmit={submit} className="border border-line rounded-xl p-4">
-        <label className="block text-sm font-semibold text-ink mb-2">Uplatniť kód členstva</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Uplatnit kód členství</label>
         <div className="flex items-center gap-2">
           <input
             className="field-input flex-1 uppercase tracking-widest"
@@ -80,7 +80,7 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
             disabled={loading || !code.trim()}
             className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {loading ? 'Overujem…' : 'Uplatniť'}
+            {loading ? 'Ověřuji…' : 'Uplatnit'}
           </button>
         </div>
         {error && <p className="text-danger text-sm mt-2">{error}</p>}

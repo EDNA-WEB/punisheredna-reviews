@@ -39,7 +39,7 @@ export default function ConversationConsentBanner({ otherId, otherName }: { othe
           disabled={loading !== null}
           className="bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading === 'accept' ? 'Prijímam…' : 'Prijať'}
+          {loading === 'accept' ? 'Přijímám…' : 'Přijmout'}
         </button>
         <button
           type="button"

@@ -13,12 +13,12 @@ const DOMESTIC_PRIORITY = ['CZ', 'SK'];
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
   const { text, preview, batchId: clientBatchId } = await req.json();
   if (typeof text !== 'string' || !text.trim()) {
-    return NextResponse.json({ error: 'Chýba text na spracovanie.' }, { status: 400 });
+    return NextResponse.json({ error: 'Chybí text ke zpracování.' }, { status: 400 });
   }
 
   // Očakávaný formát riadku: "Názov filmu – Distribútor1, Distribútor2"
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   for (const line of lines) {
     const parts = splitLineParts(line, 2);
     if (!parts) {
-      results.push({ line, status: 'CHYBA', detail: 'Riadok nezodpovedá formátu "Názov – distribútori" (skontroluj medzery okolo pomlčky)' });
+      results.push({ line, status: 'CHYBA', detail: 'Řádek neodpovídá formátu "Název – distributoři" (zkontroluj mezery kolem pomlčky)' });
       continue;
     }
     const [rawTitleFull] = parts;
@@ -63,13 +63,13 @@ export async function POST(req: Request) {
       results.push({
         line,
         status: 'NENÁJDENÉ',
-        detail: suggestion ? `Žiadny presný film s názvom "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žiadny film s názvom "${title}"`
+        detail: suggestion ? `Žádný přesný film s názvem "${title}" — vo filmotéke je podobný "${suggestion}"` : `Žádný film s názvem "${title}"`
       });
       continue;
     }
     if (candidates.length > 1) {
       const years = candidates.map((c) => c.year || '?').join(', ');
-      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Viac filmov s názvom "${title}" (roky: ${years}) — pridaj rok do zátvorky` });
+      results.push({ line, status: 'NEJEDNOZNAČNÉ', detail: `Více filmů s názvem "${title}" (roky: ${years}) — přidej rok do závorky` });
       continue;
     }
 
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     });
 
     if (premieres.length === 0) {
-      results.push({ line, status: 'BEZ PREMIÉR', detail: `Film "${movie.title}" nemá zatiaľ pridané žiadne dátumy premiér` });
+      results.push({ line, status: 'BEZ PREMIÉR', detail: `Film "${movie.title}" nemá zatím přidaná žádná data premiér` });
       continue;
     }
 
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
         results.push({
           line,
           status: 'CHYBA',
-          detail: `Ak použiješ označenie krajiny pri jednom distribútorovi ("CZ: Názov"), treba ho použiť pri všetkých v tomto riadku. Chýba pri: ${invalidEntries.join(', ')}`
+          detail: `Pokud použiješ označení země u jednoho distributora ("CZ: Název"), je potřeba ho použít u všech v tomto řádku. Chybí u: ${invalidEntries.join(', ')}`
         });
         continue;
       }
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
         results.push({
           line,
           status: 'CHYBA',
-          detail: `Film "${movie.title}" nemá žiadnu domácu (ČR/SR) premiéru — bez nej nevieme bezpečne určiť poradie. Použi explicitné označenie krajiny, napr. "${availableCountries.split(', ')[0]}: ${rawDistributors[0]}".`
+          detail: `Film "${movie.title}" nemá žádnou domácí (ČR/SR) premiéru — bez ní nedokážeme bezpečně určit pořadí. Použij explicitní označení země, např. "${availableCountries.split(', ')[0]}: ${rawDistributors[0]}".`
         });
         continue;
       }
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
         results.push({
           line,
           status: 'ČIASTOČNE',
-          detail: `${movie.title} — priradené: ${assignments.join(', ')}. Zvyšní distribútori nemajú k dispozícii ďalšiu krajinu premiéry.`
+          detail: `${movie.title} — priradené: ${assignments.join(', ')}. Zbývající distributoři nemají k dispozici další zemi premiéry.`
         });
       }
     }
@@ -190,7 +190,7 @@ export async function POST(req: Request) {
   await logBulkAction({
     userId: (session.user as any).id,
     userName: (session.user as any).name || 'neznámy',
-    toolName: 'Hromadný import Distribútorov',
+    toolName: 'Hromadný import distributorů',
     updated: changes.length,
     total: results.length
   });

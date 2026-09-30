@@ -80,7 +80,7 @@ export default function MobileWallpaperForm({ initial }: { initial: string | nul
             : undefined
         }
       >
-        {wallpaper ? 'Klikni pre zmenu tapety appky' : 'Klikni a vyber obrázok tapety pre uvítaciu obrazovku appky (odporúčame na výšku, min. 1080×1920)'}
+        {wallpaper ? 'Klikni pro změnu tapety appky' : 'Klikni a vyber obrázek tapety pro uvítací obrazovku appky (doporučujeme na výšku, min. 1080×1920)'}
       </label>
       <input id="mobile-wallpaper-upload" type="file" accept="image/*" className="hidden" onChange={handleUpload} />
 
@@ -88,11 +88,11 @@ export default function MobileWallpaperForm({ initial }: { initial: string | nul
 
       <div className="flex gap-3">
         <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
-          {loading ? 'Ukladám…' : 'Uložiť tapetu appky'}
+          {loading ? 'Ukládám…' : 'Uložit tapetu appky'}
         </button>
         {wallpaper && (
           <button onClick={remove} disabled={loading} className="border border-line text-muted px-6 py-3 rounded-full text-sm font-semibold hover:text-danger hover:border-danger">
-            Odstrániť tapetu appky
+            Odstranit tapetu appky
           </button>
         )}
       </div>

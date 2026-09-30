@@ -223,7 +223,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     s.released ? 'text-emerald-600 border-emerald-300 hover:bg-emerald-50' : 'text-danger border-danger/40 hover:bg-danger/5'
                   }`}
                 >
-                  {togglingId === s.id ? '…' : s.released ? '✓ Vydaná' : 'Zamknuté — odomknúť'}
+                  {togglingId === s.id ? '…' : s.released ? '✓ Vydaná' : 'Zamčeno — odemknout'}
                 </button>
                 <span className="flex-1">
                   Séria {s.number} {s.year && `· ${s.year}`} · {s.episodes.length} epizód
@@ -236,14 +236,14 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                   }}
                   className="text-accent hover:underline flex-none"
                 >
-                  {synopsisFor === s.id ? 'Skryť obsah' : 'Upraviť obsah'}
+                  {synopsisFor === s.id ? 'Skrýt obsah' : 'Upravit obsah'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setOpenFor((cur) => (cur === s.id ? null : s.id))}
                   className="text-accent hover:underline flex-none"
                 >
-                  {openFor === s.id ? 'Skryť epizódy' : 'Pomenovať epizódy'}
+                  {openFor === s.id ? 'Skrýt epizody' : 'Pojmenovat epizody'}
                 </button>
                 <button type="button" onClick={() => removeSeason(s.id)} className="text-muted hover:text-danger flex-none">✕</button>
               </div>
@@ -254,7 +254,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     className="field-input-sm min-h-[80px] resize-y"
                     value={synopsisDrafts[s.id] ?? ''}
                     onChange={(e) => setSynopsisDrafts((prev) => ({ ...prev, [s.id]: e.target.value }))}
-                    placeholder="Krátky obsah/synopsis tejto série…"
+                    placeholder="Krátký obsah/synopse této série…"
                   />
                   <button
                     type="button"
@@ -262,7 +262,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     disabled={savingSynopsis === s.id}
                     className="mt-1.5 bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
                   >
-                    {savingSynopsis === s.id ? 'Ukladám…' : 'Uložiť obsah'}
+                    {savingSynopsis === s.id ? 'Ukládám…' : 'Uložit obsah'}
                   </button>
                 </div>
               )}
@@ -292,13 +292,13 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     disabled={addingVideoFor === s.id}
                     className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
                   >
-                    {addingVideoFor === s.id ? '…' : 'Pridať'}
+                    {addingVideoFor === s.id ? '…' : 'Přidat'}
                   </button>
                 </div>
               </div>
 
               <div className="mt-2 ml-1">
-                <div className="text-[11px] font-semibold text-ink mb-1">Galéria série {s.number} ({(s.photos || []).length})</div>
+                <div className="text-[11px] font-semibold text-ink mb-1">Galerie série {s.number} ({(s.photos || []).length})</div>
                 {(s.photos || []).length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-1.5">
                     {(s.photos || []).map((p) => (
@@ -322,7 +322,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                     disabled={fetchingPhotosFor === s.id}
                     className="text-[11px] text-accent hover:underline disabled:opacity-50"
                   >
-                    {fetchingPhotosFor === s.id ? 'Naťahujem…' : '+ Automaticky z TMDb'}
+                    {fetchingPhotosFor === s.id ? 'Načítám…' : '+ Automaticky z TMDb'}
                   </button>
                 )}
               </div>
@@ -337,14 +337,14 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                           className="field-input-sm flex-1"
                           defaultValue={e.title || ''}
                           onBlur={(ev) => renameEpisode(s.id, e.id, ev.target.value)}
-                          placeholder={`Názov epizódy ${e.number}…`}
+                          placeholder={`Název epizody ${e.number}…`}
                         />
                         <button
                           type="button"
                           onClick={() => setOpenEpisodeFor((cur) => (cur === e.id ? null : e.id))}
                           className="text-[11px] text-accent hover:underline flex-none whitespace-nowrap"
                         >
-                          {openEpisodeFor === e.id ? 'Skryť' : 'Více'}
+                          {openEpisodeFor === e.id ? 'Skrýt' : 'Více'}
                         </button>
                       </div>
                       {openEpisodeFor === e.id && (
@@ -375,7 +375,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
             disabled={importingTmdb}
             className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
           >
-            {importingTmdb ? 'Importujem série a epizódy…' : 'Importovať všetky série a epizódy z TMDb'}
+            {importingTmdb ? 'Importuji série a epizody…' : 'Importovat všechny série a epizody z TMDb'}
           </button>
           <p className="text-[11px] text-muted mt-1.5">
             Doplní chybějící série s jejich epizodami (název, obsah). Série, které už máš přidané, se nepřepíšou.
@@ -389,7 +389,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
               disabled={syncingAllDates}
               className="border border-accent text-accent text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent hover:text-white disabled:opacity-50"
             >
-              {syncingAllDates ? 'Aktualizujem dátumy…' : '📅 Aktualizovať dátumy vysielania pre celý seriál'}
+              {syncingAllDates ? 'Aktualizuji data…' : '📅 Aktualizovat data vysílání pro celý seriál'}
             </button>
             <p className="text-[11px] text-muted mt-1.5">
               Jedním kliknutím doplní/opraví datum vysílání u VŠECH sérií i epizod najednou — nemusíš klikat sérii po sérii.
@@ -403,7 +403,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
           <label className="text-xs text-ink">Kolik sérií chceš přidat?</label>
           <input type="number" min="1" max="50" className="field-input-sm w-16" value={howMany} onChange={(e) => setHowMany(e.target.value)} />
           <button type="button" onClick={startAdding} className="text-xs font-semibold text-accent hover:underline">
-            Pokračovať
+            Pokračovat
           </button>
         </div>
       ) : (
@@ -432,10 +432,10 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
               disabled={saving}
               className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
             >
-              {saving ? 'Ukladám…' : 'Uložiť série'}
+              {saving ? 'Ukládám…' : 'Uložit série'}
             </button>
             <button type="button" onClick={() => setDrafts(null)} className="text-xs text-muted hover:text-ink">
-              Zrušiť
+              Zrušit
             </button>
           </div>
         </div>

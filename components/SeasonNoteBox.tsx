@@ -46,7 +46,7 @@ export default function SeasonNoteBox({ seasonId, initialBody }: { seasonId: str
             disabled={loading || saved}
             className="bg-accent text-white text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-accent-dark disabled:opacity-50"
           >
-            {loading ? 'Ukladám…' : saved ? 'Uložené' : 'Uložiť'}
+            {loading ? 'Ukládám…' : saved ? 'Uloženo' : 'Uložit'}
           </button>
         </div>
       </div>

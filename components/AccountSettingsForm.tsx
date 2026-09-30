@@ -55,13 +55,13 @@ function Section({ title, children, onSave, saving, isSaved, error }: {
       <div className="p-5">{children}</div>
       <div className="px-5 py-3 border-t border-line flex items-center justify-end gap-3">
         {error && <span className="text-danger text-xs">{error}</span>}
-        {isSaved && !error && <span className="text-emerald-600 text-xs font-semibold">Uložené.</span>}
+        {isSaved && !error && <span className="text-emerald-600 text-xs font-semibold">Uloženo.</span>}
         <button
           onClick={onSave}
           disabled={saving}
           className="bg-accent text-white px-5 py-1.5 rounded-full text-xs font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {saving ? 'Ukladám…' : 'Uložiť'}
+          {saving ? 'Ukládám…' : 'Uložit'}
         </button>
       </div>
     </div>
@@ -134,7 +134,7 @@ export default function AccountSettingsForm({ initial }: { initial: Initial }) {
             <option value="žena">žena</option>
           </select>
         </Field>
-        <Field label="Dátum narodenia">
+        <Field label="Datum narození">
           <input type="date" className="field-input-sm" value={form.birthDate || ''} onChange={(e) => set('birthDate', e.target.value)} />
         </Field>
         <Field label="Kto som / čím som">
@@ -145,7 +145,7 @@ export default function AccountSettingsForm({ initial }: { initial: Initial }) {
             <input className="field-input-sm bg-card flex-1 min-w-[160px]" value={form.email || ''} disabled />
             <label className="flex items-center gap-1.5 text-xs text-ink cursor-pointer whitespace-nowrap">
               <input type="checkbox" checked={form.hideEmail} onChange={(e) => set('hideEmail', e.target.checked)} className="w-3.5 h-3.5 accent-accent" />
-              nezverejňovať
+              nezveřejňovat
             </label>
           </div>
         </Field>
@@ -171,7 +171,7 @@ export default function AccountSettingsForm({ initial }: { initial: Initial }) {
       </Section>
 
       <Section
-        title="Lokalizácia"
+        title="Lokalizace"
         onSave={() => save('lokalizacia', ['country', 'region'])}
         saving={savingSection === 'lokalizacia'}
         isSaved={saved === 'lokalizacia'}

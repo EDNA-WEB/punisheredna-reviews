@@ -28,7 +28,7 @@ export default function MoviePremieresBox({ ageRating, premieres }: { ageRating:
             <div key={p.id} className="flex items-start gap-2">
               {Flag ? <Flag className="w-5 h-3.5 mt-0.5" /> : <span className="w-5 h-3.5 mt-0.5 rounded-[2px] bg-line flex-none" />}
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-ink">{p.type === 'VOD' ? 'Na VOD od' : 'V kinách od'}</div>
+                <div className="text-sm font-semibold text-ink">{p.type === 'VOD' ? 'Na VOD od' : 'V kinech od'}</div>
                 <div className="text-xs text-muted">
                   {(() => {
                     const d = new Date(p.releaseDate);

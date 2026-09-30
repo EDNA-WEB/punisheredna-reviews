@@ -9,7 +9,7 @@ export default function AdminMovieActions({ id, slug }: { id: string; slug: stri
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš tento film natrvalo zmazať? Zmažú sa aj všetky jeho recenzie a hodnotenia.')) return;
+    if (!confirm('Opravdu chceš tento film natrvalo smazat? Smažou se i všechny jeho recenze a hodnocení.')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/movies/${id}`, { method: 'DELETE' });
@@ -24,9 +24,9 @@ export default function AdminMovieActions({ id, slug }: { id: string; slug: stri
 
   return (
     <div className="flex items-center gap-4 text-xs font-semibold flex-none">
-      <Link href={`/movie/${slug}`} className="text-muted hover:text-accent">Zobraziť</Link>
-      <Link href={`/admin/movies/${id}/edit`} className="text-muted hover:text-accent">Upraviť</Link>
-      <button onClick={handleDelete} disabled={loading} className="text-muted hover:text-danger disabled:opacity-50">Zmazať</button>
+      <Link href={`/movie/${slug}`} className="text-muted hover:text-accent">Zobrazit</Link>
+      <Link href={`/admin/movies/${id}/edit`} className="text-muted hover:text-accent">Upravit</Link>
+      <button onClick={handleDelete} disabled={loading} className="text-muted hover:text-danger disabled:opacity-50">Smazat</button>
     </div>
   );
 }
