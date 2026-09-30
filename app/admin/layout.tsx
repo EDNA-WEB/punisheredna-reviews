@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAdminBadges } from '@/lib/adminDashboard';
 import AdminShell from '@/components/admin/AdminShell';
+import './admin.css';
 
 export const dynamic = 'force-dynamic';
 

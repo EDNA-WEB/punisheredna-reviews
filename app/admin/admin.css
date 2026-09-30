@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Jednotný vzhľad sekcií administrácie.
+   Platí LEN vnútri .admin-content (components/admin/AdminShell.tsx) — verejný
+   web to neovplyvní. Upravuje spoločné prvky, ktoré stránky administrácie
+   používajú (karty, zoznamy, tlačidlá, polia, tabuľky, nadpisy), takže sa nový
+   štýl prejaví naraz vo všetkých sekciách bez prepisovania každej zvlášť.
+   ========================================================================== */
+
+.admin-content {
+  font-size: 14px;
+}
+
+/* ---- Hlavička stránky ---------------------------------------------------- */
+.admin-content > .pt-8 {
+  padding-top: 1.75rem;
+}
+.admin-content h1.font-display {
+  font-size: 1.625rem;
+  line-height: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+.admin-content h1.font-display.mb-8,
+.admin-content h1.font-display.mb-2 {
+  margin-bottom: 1.25rem;
+}
+.admin-content h1.font-display + p {
+  color: var(--color-muted);
+}
+.admin-content h2.font-display {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* ---- Karty a zoznamy ----------------------------------------------------- */
+.admin-content .border.border-line.rounded-xl,
+.admin-content .border.border-line.rounded-2xl {
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+.admin-content .border.border-line.rounded-xl:not([class*='bg-']) {
+  background-color: var(--color-card);
+}
+.admin-content .border.border-line.rounded-xl.p-4,
+.admin-content .border.border-line.rounded-xl.p-5 {
+  padding: 1.25rem;
+}
+/* riadky zoznamov: jemné zvýraznenie pri prejdení myšou */
+.admin-content .divide-y.divide-line > a,
+.admin-content .divide-y.divide-line > div,
+.admin-content .divide-y.divide-line > li {
+  transition: background-color 0.15s ease;
+}
+.admin-content .divide-y.divide-line > a:hover,
+.admin-content .divide-y.divide-line > div:hover,
+.admin-content .divide-y.divide-line > li:hover {
+  background-color: var(--color-surface);
+}
+
+/* ---- Tlačidlá ------------------------------------------------------------ */
+/* "Pilulky" s textom → zaoblené obdĺžniky (prepínače a odznaky ostávajú okrúhle) */
+.admin-content :is(a, button).rounded-full[class*='px-'] {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.admin-content :is(a, button).bg-accent {
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.admin-content :is(a, button).border.border-line:not(.bg-accent) {
+  background-color: var(--color-card);
+}
+.admin-content :is(a, button).border.border-line:not(.bg-accent):hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-line));
+}
+.admin-content button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---- Formulárové polia --------------------------------------------------- */
+.admin-content .field-input,
+.admin-content .field-input-sm {
+  border-radius: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.admin-content .field-input:focus,
+.admin-content .field-input-sm:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+.admin-content label.text-xs.font-semibold,
+.admin-content label.text-sm.font-semibold {
+  color: var(--color-ink);
+}
+
+/* ---- Tabuľky ------------------------------------------------------------- */
+.admin-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.admin-content table thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+}
+.admin-content table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.admin-content table tbody tr:hover {
+  background-color: var(--color-surface);
+}
+.admin-content table td,
+.admin-content table th {
+  vertical-align: middle;
+}
+
+/* ---- Drobnosti ----------------------------------------------------------- */
+/* prázdne stavy ("Zatím žádné…") */
+.admin-content .border.border-line.rounded-xl.text-center.text-muted {
+  background-color: var(--color-surface);
+  border-style: dashed;
+  box-shadow: none;
+}
+/* odkazy "← Zpět" nad nadpisom */
+.admin-content a.text-sm.text-muted:hover {
+  color: var(--color-ink);
+}

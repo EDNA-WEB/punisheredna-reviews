@@ -12,6 +12,7 @@ import TopBar from '@/components/TopBar';
 import Navbar from '@/components/Navbar';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
+import SiteChrome from '@/components/SiteChrome';
 import GuestSiteCount from '@/components/GuestSiteCount';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
@@ -103,9 +104,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dict = await getDictionary(language);
 
   const isTv = await detectTvMode();
-  // Administrácia má vlastné rozhranie (app/admin/layout.tsx) — bez verejného
-  // menu, lišty, bočného panelu a pätičky. Adresu posiela proxy.ts.
-  const isAdminArea = ((await headers()).get('x-pathname') || '').startsWith('/admin');
 
   return (
     <html
@@ -141,20 +139,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <TvModeToggle />
         <TranslationProvider dict={dict}>
           <Providers>
-            {session && isAdminArea ? (
-              children
-            ) : session ? (
-              <>
-                <TvNavigation />
-                <SiteWallpaper />
-                <SiteStatsPanel />
-                <TopBar />
-                <Navbar />
-                <div className="main-content-shell max-w-6xl mx-auto px-5 sm:px-6 pb-20 bg-bg sm:shadow-[0_0_40px_rgba(0,0,0,0.06)] min-h-screen">
-                  {children}
-                  <SiteFooter />
-                </div>
-              </>
+            {session ? (
+              // V administrácii sa verejná obálka skryje (components/SiteChrome.tsx).
+              <SiteChrome
+                top={
+                  <>
+                    <TvNavigation />
+                    <SiteWallpaper />
+                    <SiteStatsPanel />
+                    <TopBar />
+                    <Navbar />
+                  </>
+                }
+                footer={<SiteFooter />}
+              >
+                {children}
+              </SiteChrome>
             ) : (
               // Neprihlásený: len formulár v strede + počet filmov. Žiadna navigácia,
               // panely ani pätička — obsah webu je skrytý (middleware.ts ho aj tak
