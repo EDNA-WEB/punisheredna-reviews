@@ -97,7 +97,7 @@ export default function StreamingServicesAdmin({
 
   async function handleMerge() {
     if (!mergeFrom || !mergeTo || mergeFrom === mergeTo) return;
-    if (!confirm('Naozaj zlúčiť tieto dve služby? Táto akcia sa nedá vrátiť späť.')) return;
+    if (!confirm('Opravdu sloučit tyto dvě služby? Tuto akci nelze vrátit zpět.')) return;
     setMerging(true);
     setMergeMessage('');
     try {
@@ -165,7 +165,7 @@ export default function StreamingServicesAdmin({
   }
 
   async function deleteService(id: string) {
-    if (!confirm('Naozaj zmazať túto službu z katalógu? Zmizne aj zo všetkých filmov, čo ju majú priradenú.')) return;
+    if (!confirm('Opravdu smazat tuto službu z katalogu? Zmizí i ze všech filmů, které ji mají přiřazenou.')) return;
     const res = await fetch(`/api/admin/streaming-services/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setServices((prev) => prev.filter((s) => s.id !== id));
@@ -277,7 +277,7 @@ export default function StreamingServicesAdmin({
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-streaming"
         title="Hromadne priradiť VOD platformy a odkazy"
-        description={'Vlož zoznam v tvare "Názov filmu – Platforma – https://...", jeden riadok na film. Ak platforma ešte neexistuje v katalógu, automaticky sa vytvorí.'}
+        description={'Vlož seznam ve tvaru "Název filmu – Platforma – https://...", jeden řádek na film. Pokud platforma ještě v katalogu neexistuje, automaticky se vytvoří.'}
         placeholder={'Together – Netflix – https://www.netflix.com/title/...'}
         buttonLabel="Priradiť platformy"
       />
@@ -338,8 +338,7 @@ export default function StreamingServicesAdmin({
           <div className="border border-line rounded-xl p-4 bg-surface mb-4">
             <div className="text-xs font-semibold text-ink mb-1">Zlúčiť duplicitné služby</div>
             <div className="text-xs text-muted mb-3">
-              Ak máš tú istú platformu dvakrát pod rôznymi názvami (napr. z omylom vytvorenej duplicity pri hromadnom
-              importe), zlúč ju sem — všetky priradenia filmov sa presunú na ponechanú službu a duplicita sa vymaže.
+              Pokud máš tu samou platformu dvakrát pod různými názvy (např. z omylem vytvořené duplicity při hromadném importu), slouč ji sem — všechna přiřazení filmů se přesunou na ponechanou službu a duplicita se smaže.
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <select className="field-input-sm" value={mergeFrom} onChange={(e) => setMergeFrom(e.target.value)}>
@@ -405,7 +404,7 @@ export default function StreamingServicesAdmin({
             setSearch(e.target.value);
             setPage(1);
           }}
-          placeholder="Hľadať film…"
+          placeholder="Hledat film…"
         />
 
         {saveError && <p className="text-danger text-xs mb-3">{saveError}</p>}
@@ -423,7 +422,7 @@ export default function StreamingServicesAdmin({
                         {m.streamingServices.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú streamovacie služby" />}
                         {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                       </div>
-                      <div className="text-xs text-muted">{m.streamingServices.length > 0 ? `${m.streamingServices.length} služieb priradených` : 'Zatiaľ žiadne služby'}</div>
+                      <div className="text-xs text-muted">{m.streamingServices.length > 0 ? `${m.streamingServices.length} služieb priradených` : 'Zatím žádné služby'}</div>
                     </div>
                   </button>
                   {m.tmdbId && (

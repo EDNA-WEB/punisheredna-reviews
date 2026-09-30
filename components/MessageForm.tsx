@@ -82,7 +82,7 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
       try {
         data = await res.json();
       } catch {
-        throw new Error(res.status === 413 ? 'Súbor je príliš veľký na odoslanie.' : `Server odpovedal neočakávane (${res.status}).`);
+        throw new Error(res.status === 413 ? 'Soubor je příliš velký na odeslání.' : `Server odpovedal neočakávane (${res.status}).`);
       }
       if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));
       setText('');

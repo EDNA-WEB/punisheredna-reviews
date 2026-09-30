@@ -56,8 +56,7 @@ export default function CookieConsentBanner() {
           <>
             <h2 className="font-display font-bold text-base text-ink mb-1.5">🍪 Používame cookies</h2>
             <p className="text-sm text-muted leading-relaxed mb-4">
-              Nevyhnutné cookies používame vždy. Štatistiku návštevnosti a ďalšie voliteľné cookies používame len
-              s tvojím súhlasom. Podrobnosti nájdeš v pätičke stránky pod "Nastavenie súkromia".
+              Nezbytné cookies používáme vždy. Statistiku návštěvnosti a další volitelné cookies používáme jen s tvým souhlasem. Podrobnosti najdeš v patičce stránky pod "Nastavení soukromí".
             </p>
             <div className="flex items-center gap-2.5 flex-wrap">
               <button
@@ -70,7 +69,7 @@ export default function CookieConsentBanner() {
                 onClick={rejectOptional}
                 className="text-sm font-semibold text-ink border border-line px-5 py-2.5 rounded-full hover:border-accent hover:text-accent transition-colors"
               >
-                Odmietnuť voliteľné
+                Odmítnout volitelné
               </button>
               <button onClick={() => setSettingsOpen(true)} className="text-sm font-semibold text-muted hover:text-ink px-3 py-2.5">
                 Nastavenia
@@ -89,7 +88,7 @@ export default function CookieConsentBanner() {
                   </div>
                   {cat.mandatory ? (
                     <span className="flex-none text-[11px] font-semibold text-muted bg-surface border border-line px-3 py-1.5 rounded-full whitespace-nowrap">
-                      Vždy aktívne
+                      Vždy aktivní
                     </span>
                   ) : (
                     <button
@@ -113,7 +112,7 @@ export default function CookieConsentBanner() {
                 Uložiť nastavenia
               </button>
               <button onClick={() => setSettingsOpen(false)} className="text-sm font-semibold text-muted hover:text-ink px-3 py-2.5">
-                Späť
+                Zpět
               </button>
             </div>
           </>

@@ -12,12 +12,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   const movie = await prisma.movie.findUnique({ where: { id: params.id }, select: { tmdbId: true, contentType: true } });
   if (!movie?.tmdbId) {
-    return NextResponse.json({ error: 'Tento film/seriál nie je prepojený s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento film/seriál není propojený s TMDb.' }, { status: 400 });
   }
 
   const result = await tmdbGetPremieresAndRating(movie.tmdbId, movie.contentType === 'Seriál' ? 'tv' : 'movie');
   if (result.premieres.length === 0) {
-    return NextResponse.json({ error: 'Na TMDb sa nenašli žiadne premiéry pre sledované krajiny.' }, { status: 404 });
+    return NextResponse.json({ error: 'Na TMDb se nenašly žádné premiéry pro sledované země.' }, { status: 404 });
   }
 
   return NextResponse.json(result);

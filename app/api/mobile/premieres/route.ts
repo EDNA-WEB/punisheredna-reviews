@@ -37,6 +37,6 @@ export async function GET() {
     return NextResponse.json(premieres, { status: 200, headers: cdnHeaders(600) });
   } catch (error) {
     console.error('[api/mobile/premieres]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní premiér.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání premiér.' }, { status: 500 });
   }
 }

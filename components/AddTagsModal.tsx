@@ -7,7 +7,7 @@ export default function AddTagsModal({ movieId, movieTitle, movieYear, onClose }
   const [value, setValue] = useState('');
 
   async function handleSubmit() {
-    if (!value.trim()) return { ok: false, error: 'Napíš prosím aspoň jeden tag.' };
+    if (!value.trim()) return { ok: false, error: 'Napiš prosím alespoň jeden tag.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,7 +30,7 @@ export default function AddTagsModal({ movieId, movieTitle, movieYear, onClose }
         </button>
         <SubmissionModalShell
           title="Přidat tagy"
-          explanation="Navrhni tagy, ktoré k filmu/seriálu sedia — oddeľ ich čiarkou (napr. Marvel, superhrdinovia, vesmír). Pomáhajú ostatným film ľahšie nájsť."
+          explanation="Navrhni tagy, které k filmu/seriálu sedí — odděl je čárkou (např. Marvel, superhrdinové, vesmír). Pomáhají ostatním film snáze najít."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat tagy ke schválení"

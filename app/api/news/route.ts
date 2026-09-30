@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
-    return NextResponse.json({ error: 'Názov je povinný.' }, { status: 400 });
+    return NextResponse.json({ error: 'Název je povinný.' }, { status: 400 });
   }
   const tags = Array.isArray(data.tags) ? data.tags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
   if (tags.length < 5) {

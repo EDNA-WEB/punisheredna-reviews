@@ -15,7 +15,7 @@ export async function GET() {
   const userId = (session.user as any).id;
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+  if (!user) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
 
   const [
     reviews,
@@ -75,7 +75,7 @@ export async function GET() {
     diskusnePrispevky: posts.map((p) => ({ text: p.body, datum: p.createdAt })),
     odoslaneSpravy: sentMessages.map((m) => ({
       prijemca: m.receiver.name,
-      text: m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : '[obrázok alebo nedešifrovateľný obsah]',
+      text: m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : '[obrázek nebo nedešifrovatelný obsah]',
       datum: m.createdAt
     })),
     sledujem: following.map((f) => f.following.name),

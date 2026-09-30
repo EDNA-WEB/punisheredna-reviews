@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const { token, platform, notifyMessages, sound } = await req.json();
     if (!token || typeof token !== 'string' || token.length > 300) {
       return NextResponse.json({ error: 'Neplatný token.' }, { status: 400 });
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const token = new URL(req.url).searchParams.get('token');
     if (token) await prisma.pushToken.deleteMany({ where: { token, userId: me.id } });
     return NextResponse.json({ ok: true }, { status: 200 });

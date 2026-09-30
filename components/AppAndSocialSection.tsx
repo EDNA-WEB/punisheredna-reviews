@@ -44,7 +44,7 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
           </a>
         </div>
         {!appStoreUrl && !googlePlayUrl && (
-          <p className="text-[11px] text-muted mt-2">Odkazy sa doplnia v Administrácia → Vzhľad.</p>
+          <p className="text-[11px] text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
         )}
       </div>
 
@@ -68,7 +68,7 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
           ))}
         </div>
         {socials.every((s) => !s.url) && (
-          <p className="text-[11px] text-muted mt-2">Odkazy sa doplnia v Administrácia → Vzhľad.</p>
+          <p className="text-[11px] text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
         )}
       </div>
     </div>

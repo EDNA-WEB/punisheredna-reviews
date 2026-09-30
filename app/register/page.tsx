@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
   const passwordChecks = [
     { label: 'aspoň 8 znakov', valid: password.length >= 8 },
-    { label: 'veľké písmeno', valid: /[A-Z]/.test(password) },
+    { label: 'velké písmeno', valid: /[A-Z]/.test(password) },
     { label: 'malé písmeno', valid: /[a-z]/.test(password) },
     { label: 'číslicu', valid: /[0-9]/.test(password) }
   ];
@@ -41,11 +41,11 @@ export default function RegisterPage() {
     setError('');
 
     if (password !== passwordConfirm) {
-      setError('Heslá sa nezhodujú.');
+      setError('Hesla se neshodují.');
       return;
     }
     if (passwordChecks.some((c) => !c.valid)) {
-      setError('Heslo nespĺňa všetky požiadavky nižšie.');
+      setError('Heslo nesplňuje všechny požadavky níže.');
       return;
     }
 
@@ -57,10 +57,10 @@ export default function RegisterPage() {
         body: JSON.stringify({ nickname, email, password, website, elapsedMs: Date.now() - formLoadedAt, captchaToken, captchaAnswer })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Registrácia zlyhala.');
+      if (!res.ok) throw new Error(data.error || 'Registrace se nezdařila.');
 
       const signInRes = await signIn('credentials', { redirect: false, nickname, password });
-      if (signInRes?.error) throw new Error('Účet bol vytvorený, ale prihlásenie zlyhalo. Skús sa prihlásiť ručne.');
+      if (signInRes?.error) throw new Error('Účet byl vytvořen, ale přihlášení se nezdařilo. Zkus se přihlásit ručně.');
 
       window.location.href = '/';
     } catch (err: any) {

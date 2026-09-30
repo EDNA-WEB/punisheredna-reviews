@@ -32,7 +32,7 @@ export default function SeedSteamAuthTranslationsButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
       >
-        {loading ? 'Dopĺňam…' : '✅ Doplniť pripravené EN/CS preklady (nové prihlásenie/registrácia)'}
+        {loading ? 'Doplňuji…' : '✅ Doplnit připravené EN/CS překlady (nové přihlášení/registrace)'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const userId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user || user.banned) return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+    if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
 
     const body = await req.json();
     const targetKey = reactionTargetKey(body);
@@ -22,9 +22,9 @@ export async function POST(req: Request) {
     return NextResponse.json(result.body, { status: result.status });
   } catch (err: any) {
     if (err?.code === 'P2002') {
-      return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });
+      return NextResponse.json({ error: 'Tato akce se už zpracovává nebo byla provedena.' }, { status: 409 });
     }
     console.error(err);
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

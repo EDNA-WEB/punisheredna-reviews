@@ -23,7 +23,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   const count = await prisma.moviePhoto.count({ where: { movieId: params.id } });
   if (count >= 30) {
-    return NextResponse.json({ error: 'Fotogaléria môže mať najviac 30 fotiek.' }, { status: 400 });
+    return NextResponse.json({ error: 'Fotogalerie může mít nejvýše 30 fotek.' }, { status: 400 });
   }
 
   // Nahráme len JEDEN (plný) obrázok — miniatúra je len tá istá adresa so

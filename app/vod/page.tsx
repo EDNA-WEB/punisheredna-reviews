@@ -49,12 +49,12 @@ export default async function VodPage({ searchParams }: { searchParams: { month?
       </div>
 
       {sortedGroupKeys.length === 0 ? (
-        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">V tomto mesiaci zatiaľ nie sú žiadne VOD premiéry.</div>
+        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">V tomto měsíci zatím nejsou žádné VOD premiéry.</div>
       ) : (
         <div className="space-y-6">
           {sortedGroupKeys.map((dateKey) => {
             const dateObj = new Date(dateKey);
-            const dateLabel = dateObj.toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const dateLabel = dateObj.toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const dayMovies = groups.get(dateKey)!;
 
             return (

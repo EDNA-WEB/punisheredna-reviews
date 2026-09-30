@@ -15,7 +15,7 @@ export async function PATCH(req: Request) {
   const userId = (session.user as any).id;
 
   if (!checkKeyRateLimit(`profile-update:${userId}`, 60_000, 10)) {
-    return NextResponse.json({ error: 'Príliš veľa úprav za krátky čas. Skús to prosím o chvíľu.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho úprav za krátkou dobu. Zkus to prosím za chvíli.' }, { status: 429 });
   }
 
   const body = await req.json();
@@ -25,7 +25,7 @@ export async function PATCH(req: Request) {
 
   if ('bio' in body) {
     if (body.bio && String(body.bio).length > 1000) {
-      return NextResponse.json({ error: 'Text „o mne“ môže mať najviac 1000 znakov.' }, { status: 400 });
+      return NextResponse.json({ error: 'Text „o mně“ může mít nejvýše 1000 znaků.' }, { status: 400 });
     }
     data.bio = body.bio ? String(body.bio).trim() : null;
   }

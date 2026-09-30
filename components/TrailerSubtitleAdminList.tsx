@@ -31,7 +31,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
 
   if (items.length === 0) {
-    return <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">Zatiaľ žiadne trailery — pridaj ich pri jednotlivých filmoch cez "Upraviť film".</div>;
+    return <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">Zatím žádné trailery — přidej je u jednotlivých filmů přes "Upravit film".</div>;
   }
 
   async function toggleFeatured(movieId: string, videoId: string, current: boolean) {
@@ -45,7 +45,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
       if (!res.ok) throw new Error();
     } catch {
       setItems((prev) => prev.map((it) => (it.id === videoId ? { ...it, featuredOnHome: current } : it)));
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     }
   }
 
@@ -61,7 +61,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
       if (!res.ok) throw new Error(data.error);
       setItems((prev) => prev.map((it) => (it.id === videoId ? { ...it, previewImage: data.previewImage ?? it.previewImage } : it)));
     } catch (err: any) {
-      alert(err.message || 'Stiahnutie náhľadu z YouTube zlyhalo.');
+      alert(err.message || 'Stažení náhledu z YouTube selhalo.');
     } finally {
       setUploadingFor(null);
     }
@@ -71,7 +71,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      alert('Súbor je príliš veľký (max. 8 MB).');
+      alert('Soubor je příliš velký (max. 8 MB).');
       return;
     }
     setUploadingFor(videoId);
@@ -89,7 +89,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
           if (!res.ok) throw new Error();
           setItems((prev) => prev.map((it) => (it.id === videoId ? { ...it, previewImage: dataUrl } : it)));
         } catch {
-          alert('Nahratie náhľadového obrázka zlyhalo.');
+          alert('Nahrání náhledového obrázku se nezdařilo.');
         } finally {
           setUploadingFor(null);
         }
@@ -132,7 +132,7 @@ export default function TrailerSubtitleAdminList({ items: initialItems }: { item
             </button>
 
             <label className="text-xs font-semibold text-accent hover:underline flex-none whitespace-nowrap cursor-pointer">
-              {uploadingFor === item.id ? 'Nahrávam…' : item.previewImage ? 'Zmeniť náhľad' : 'Pridať náhľad'}
+              {uploadingFor === item.id ? 'Nahrávam…' : item.previewImage ? 'Změnit náhled' : 'Přidat náhled'}
               <input
                 type="file"
                 accept="image/*"

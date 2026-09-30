@@ -53,14 +53,14 @@ export default function CommentItem({
   const wasEdited = comment.updatedAt && new Date(comment.updatedAt).getTime() - new Date(comment.createdAt).getTime() > 60_000;
 
   async function handleDelete() {
-    if (!confirm('Naozaj chceš tento komentár zmazať?')) return;
+    if (!confirm('Opravdu chceš tento komentář smazat?')) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/comments/${comment.id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      alert('Zmazanie zlyhalo. Skús to prosím znova.');
+      alert('Smazání se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export default function CommentItem({
   async function handleSaveEdit() {
     const trimmed = editBody.trim();
     if (!trimmed) {
-      setEditError('Komentár nemôže byť prázdny.');
+      setEditError('Komentář nemůže být prázdný.');
       return;
     }
     setLoading(true);
@@ -111,7 +111,7 @@ export default function CommentItem({
                 {displayUserName(comment.user.name, t)}
               </Link>
               {comment.user.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-              <span>{new Date(comment.createdAt).toLocaleDateString('sk-SK')}</span>
+              <span>{new Date(comment.createdAt).toLocaleDateString('cs-CZ')}</span>
               {wasEdited && <span className="italic">(upravené)</span>}
             </div>
             {canDelete && !editing && (

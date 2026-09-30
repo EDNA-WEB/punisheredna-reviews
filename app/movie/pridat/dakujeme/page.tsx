@@ -9,9 +9,9 @@ export default function ThankYouMoviePage() {
       </div>
       <h1 className="font-display font-extrabold text-2xl text-ink mb-3">Ďakujeme za návrh!</h1>
       <p className="text-muted mb-8">
-        Tvoj film sme prijali a čaká na schválenie administrátorom. Kým ho schváli, ostatní návštevníci ho na webe neuvidia.
+        Tvůj film jsme přijali a čeká na schválení administrátorem. Dokud ho neschválí, ostatní návštěvníci ho na webu neuvidí.
       </p>
-      <Link href="/" className="text-accent font-semibold hover:underline">Späť na hlavnú stránku</Link>
+      <Link href="/" className="text-accent font-semibold hover:underline">Zpět na hlavní stránku</Link>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export default function RequestPublishButton({ postId }: { postId: string }) {
   }
 
   if (done) {
-    return <p className="text-sm text-emerald-600 font-semibold">Žiadosť o publikáciu bola odoslaná administrátorovi.</p>;
+    return <p className="text-sm text-emerald-600 font-semibold">Žádost o publikaci byla odeslána administrátorovi.</p>;
   }
 
   return (

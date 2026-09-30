@@ -50,7 +50,7 @@ export default function ThreadForm() {
         <input className="field-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="O čom chceš diskutovať?" />
       </div>
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Týka sa filmu (nepovinné)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Týká se filmu (nepovinné)</label>
         <select className="field-input" value={movieId} onChange={(e) => setMovieId(e.target.value)}>
           <option value="">— Všeobecná téma —</option>
           {movies.map((m) => (

@@ -86,7 +86,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       router.refresh();
     } catch {
       setBulkTagsUndoStatus('idle');
-      alert('Vrátenie späť zlyhalo.');
+      alert('Vrácení zpět se nezdařilo.');
     }
   }
 
@@ -102,7 +102,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       if (!res.ok) throw new Error(data.error);
       setDrafts((prev) => ({ ...prev, [movieId]: data.tags }));
     } catch (err: any) {
-      alert(err.message || 'Návrh tagov z TMDb zlyhal.');
+      alert(err.message || 'Návrh tagů z TMDb se nezdařil.');
     } finally {
       setSuggesting(null);
     }
@@ -120,7 +120,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       const data = await res.json();
       setMovies((prev) => prev.map((m) => (m.id === movieId ? { ...m, tags: data.tags } : m)));
     } catch {
-      alert('Uloženie tagov zlyhalo. Skús to prosím znova.');
+      alert('Uložení tagů se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setSaving(null);
     }
@@ -140,9 +140,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
         <div className="text-sm font-semibold text-ink mb-1">Hromadne doplniť tagy z TMDb</div>
         <div className="text-xs text-muted mb-3">
-          Automaticky natiahne a rovno uloží tagy z TMDb pre všetky filmy/seriály, čo ešte nemajú žiadne tagy —
-          nemusíš klikať na "Automaticky z TMDb" a "Uložiť" pri každom filme zvlášť. Filmy, čo už tagy majú, sa
-          nedotknú.
+          Automaticky načte a rovnou uloží tagy z TMDb pro všechny filmy/seriály, které ještě nemají žádné tagy — nemusíš klikat na "Automaticky z TMDb" a "Uložit" u každého filmu zvlášť. Filmů, které už tagy mají, se to nedotkne.
         </div>
 
         {!bulkTagsPreview && !bulkTagsDone && (
@@ -152,14 +150,14 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
             disabled={bulkTagsBusy}
             className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {bulkTagsBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+            {bulkTagsBusy ? 'Načítavam…' : 'Zobrazit náhled'}
           </button>
         )}
 
         {bulkTagsPreview && !bulkTagsDone && (
           <div>
             <div className="text-xs text-ink mb-2">
-              Doplní sa <strong>{bulkTagsPreview.count}</strong> filmov/seriálov. Ukážka prvých {bulkTagsPreview.sample.length}:
+              Doplní se <strong>{bulkTagsPreview.count}</strong> filmů/seriálů. Ukázka prvních {bulkTagsPreview.sample.length}:
             </div>
             <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{bulkTagsPreview.sample.join(', ')}</div>
             <div className="flex items-center gap-2">
@@ -198,7 +196,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
         {bulkTagsDone && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {bulkTagsDone.checked} filmov/seriálov.</div>
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {bulkTagsDone.checked} filmů/seriálů.</div>
               {bulkTagsDone.batchId && bulkTagsUndoStatus !== 'done' && (
                 <button
                   type="button"
@@ -206,10 +204,10 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                   disabled={bulkTagsUndoStatus === 'undoing'}
                   className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
                 >
-                  {bulkTagsUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                  {bulkTagsUndoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
                 </button>
               )}
-              {bulkTagsUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+              {bulkTagsUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
             </div>
             <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
               {bulkTagsDone.results.map((r, i) => (
@@ -226,7 +224,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-tags"
         title="Hromadne pridať vlastné tagy"
-        description={'Vlož zoznam v tvare "Názov filmu – tag1, tag2, tag3", jeden riadok na film. Nové tagy sa pridajú k už existujúcim, nič sa neprepíše.'}
+        description={'Vlož seznam ve tvaru "Název filmu – tag1, tag2, tag3", jeden řádek na film. Nové tagy se přidají k již existujícím, nic se nepřepíše.'}
         placeholder={'Batman – Batman, Joker, hádanka, kladivo, policie'}
         buttonLabel="Priradiť tagy"
       />
@@ -238,7 +236,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
           setQuery(e.target.value);
           setPage(1);
         }}
-        placeholder="Hľadať film/seriál…"
+        placeholder="Hledat film/seriál…"
       />
 
       <div className="border border-line rounded-xl overflow-hidden">
@@ -265,7 +263,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
                   <button
                     onClick={() => suggestFromTmdb(m.id)}
                     disabled={suggesting === m.id}
-                    title="Navrhne preložené tagy z TMDb kľúčových slov"
+                    title="Navrhne přeložené tagy z klíčových slov TMDb"
                     className="text-xs font-semibold text-accent hover:underline disabled:opacity-40 flex-none"
                   >
                     {suggesting === m.id ? 'Naťahujem…' : 'Automaticky z TMDb'}
@@ -281,7 +279,7 @@ export default function TagsAdminList({ initialMovies }: { initialMovies: MovieI
               </div>
             );
           })}
-          {filtered.length === 0 && <p className="text-sm text-muted p-4">Žiadny film/seriál sa nenašiel.</p>}
+          {filtered.length === 0 && <p className="text-sm text-muted p-4">Žádný film/seriál se nenašel.</p>}
         </div>
       </div>
       <div className="mt-4">

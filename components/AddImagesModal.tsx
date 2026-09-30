@@ -30,7 +30,7 @@ export default function AddImagesModal({ movieId, movieTitle, movieYear, onClose
   }
 
   async function handleSubmit() {
-    if (images.length === 0) return { ok: false, error: 'Nahraj prosím aspoň jeden obrázok.' };
+    if (images.length === 0) return { ok: false, error: 'Nahraj prosím alespoň jeden obrázek.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,7 +61,7 @@ export default function AddImagesModal({ movieId, movieTitle, movieYear, onClose
         >
           <label className="border border-dashed border-line rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-accent transition-colors">
             <span className="text-sm text-muted mb-1">Klikni a vyber obrázky</span>
-            <span className="text-xs text-muted">Môžeš vybrať viac naraz</span>
+            <span className="text-xs text-muted">Můžeš vybrat víc najednou</span>
             <input type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} />
           </label>
           {images.length > 0 && (

@@ -77,13 +77,13 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
       return (
         <div className="pt-10 max-w-lg mx-auto text-center">
           <img src="/golden-ticket-badge.svg" alt="" width={48} height={48} className="mx-auto mb-4" />
-          <h1 className="font-display font-bold text-xl text-ink mb-2">Táto novinka bude dostupná čoskoro</h1>
+          <h1 className="font-display font-bold text-xl text-ink mb-2">Tato novinka bude dostupná brzy</h1>
           <p className="text-sm text-muted mb-1">
-            Golden Ticket členovia ju už čítajú — ostatným bude dostupná približne o {hoursLeft}{' '}
-            {hoursLeft === 1 ? 'hodinu' : hoursLeft < 5 ? 'hodiny' : 'hodín'}.
+            Golden Ticket členové ji už čtou — ostatním bude dostupná přibližně za {hoursLeft}{' '}
+            {hoursLeft === 1 ? 'hodinu' : hoursLeft < 5 ? 'hodiny' : 'hodin'}.
           </p>
           <Link href="/nastavenia/clenstvo" className="inline-block mt-4 text-accent text-sm font-semibold hover:underline">
-            Zistiť viac o členstve →
+            Zjistit více o členství →
           </Link>
         </div>
       );
@@ -176,7 +176,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
       {news.isDraft && (
         <div className="flex items-center gap-2 mb-5 text-xs font-semibold text-accent bg-surface border border-accent/40 rounded-full px-3 py-1.5 w-fit">
           <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
-          {isAdmin ? '📝 Rozpísané — vidíš to ako administrátor' : 'Skorý prístup vďaka Golden Ticket členstvu — tento článok ešte nie je verejne publikovaný'}
+          {isAdmin ? '📝 Rozepsané — vidíš to jako administrátor' : 'Dřívější přístup díky Golden Ticket členství — tento článek ještě není veřejně publikovaný'}
         </div>
       )}
 
@@ -196,7 +196,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
           {news.author.name}
         </Link>
         <span className="flex items-center gap-1.5"><IconClock className="w-4 h-4" />
-          {new Date(news.createdAt).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {new Date(news.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
         </span>
         <span className="flex items-center gap-1.5"><IconBook className="w-4 h-4" />{readingTime(news.body)} min čítania</span>
       </div>
@@ -264,7 +264,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
 
         <div className="space-y-0 mb-6">
           {news.comments.length === 0 ? (
-            <p className="text-muted text-sm mb-4">Zatiaľ žiadne komentáre. Buď prvý.</p>
+            <p className="text-muted text-sm mb-4">Zatím žádné komentáře. Buď první.</p>
           ) : (
             news.comments.map((c) => (
               <CommentItem

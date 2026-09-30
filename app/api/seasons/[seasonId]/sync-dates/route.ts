@@ -15,7 +15,7 @@ export async function POST(_req: Request, { params }: { params: { seasonId: stri
     select: { number: true, movie: { select: { tmdbId: true } }, episodes: { select: { id: true, number: true } } }
   });
   if (!season?.movie.tmdbId) {
-    return NextResponse.json({ error: 'Táto séria nie je prepojená s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tato série není propojená s TMDb.' }, { status: 400 });
   }
 
   const tmdbEpisodes = await tmdbGetSeasonEpisodes(season.movie.tmdbId, season.number);

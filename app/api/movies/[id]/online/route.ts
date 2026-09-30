@@ -17,7 +17,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if ('watchUrl' in body) {
     const url = String(body.watchUrl || '').trim();
     if (url && !/^https?:\/\//i.test(url)) {
-      return NextResponse.json({ error: 'Odkaz musí začínať na http:// alebo https://' }, { status: 400 });
+      return NextResponse.json({ error: 'Odkaz musí začínat na http:// nebo https://' }, { status: 400 });
     }
     data.watchUrl = url || null;
   }

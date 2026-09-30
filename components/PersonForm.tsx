@@ -59,7 +59,7 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Zadaj meno.');
+      setError('Zadej jméno.');
       return;
     }
     setLoading(true);
@@ -96,10 +96,10 @@ export default function PersonForm({ initial, redirectTo }: { initial?: Initial;
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Meno</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Jméno</label>
         <input className="field-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="napr. Matt Damon" />
         <p className="text-xs text-muted mt-1.5">
-          Meno musí presne sedieť s tým, ako je napísané v obsadení/réžii filmov, aby sa dalo prepojiť.
+          Jméno musí přesně sedět s tím, jak je napsané v obsazení/režii filmů, aby se dalo propojit.
         </p>
       </div>
 

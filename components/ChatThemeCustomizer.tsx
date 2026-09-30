@@ -25,9 +25,9 @@ export default function ChatThemeCustomizer({ otherId, onClose }: { otherId: str
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div className="bg-card border border-line rounded-xl p-5 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-        <h3 className="font-display font-bold text-ink mb-1">Vzhľad konverzácie</h3>
+        <h3 className="font-display font-bold text-ink mb-1">Vzhled konverzace</h3>
         <p className="text-xs text-muted mb-4">
-          Toto je len tvoje osobné nastavenie zobrazenia — vidíš ho len ty, na tomto zariadení. Druhá strana o ňom nevie.
+          Toto je jen tvoje osobní nastavení zobrazení — vidíš ho jen ty, na tomto zařízení. Druhá strana o něm neví.
         </p>
 
         <div className="mb-5">
@@ -43,7 +43,7 @@ export default function ChatThemeCustomizer({ otherId, onClose }: { otherId: str
                 }}
                 className={`w-8 h-8 rounded-full border-2 flex-none ${bubbleColor === c ? 'border-ink' : 'border-line'}`}
                 style={{ backgroundColor: c || 'var(--color-ink)' }}
-                title={c || 'Predvolená (podľa webu)'}
+                title={c || 'Výchozí (podle webu)'}
               />
             ))}
             <label className="w-8 h-8 rounded-full border-2 border-line flex-none flex items-center justify-center cursor-pointer text-[10px] text-muted overflow-hidden relative">

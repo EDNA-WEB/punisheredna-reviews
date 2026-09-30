@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         nickname: { label: 'Prezývka', type: 'text' },
         password: { label: 'Heslo', type: 'password' },
-        rememberMe: { label: 'Zapamätať si ma', type: 'text' },
+        rememberMe: { label: 'Zapamatovat si mě', type: 'text' },
         qrToken: { label: 'QR prihlásenie', type: 'text' }
       },
       async authorize(credentials) {

@@ -9,7 +9,7 @@ export default function SystemBroadcastForm({ recipientCount }: { recipientCount
   const [sentCount, setSentCount] = useState<number | null>(null);
 
   async function send() {
-    if (!confirm(`Naozaj chceš túto správu odoslať všetkým ${recipientCount} používateľom? Táto akcia sa nedá vziať späť.`)) {
+    if (!confirm(`Opravdu chceš tuto zprávu odeslat všem ${recipientCount} uživatelům? Tuto akci nelze vzít zpět.`)) {
       return;
     }
     setLoading(true);
@@ -47,14 +47,13 @@ export default function SystemBroadcastForm({ recipientCount }: { recipientCount
       </div>
 
       <p className="text-xs text-muted">
-        Správa príde do schránky (Pošta) presne <strong className="text-ink">{recipientCount}</strong> používateľom — od účtu "Systém",
-        nie od tvojho osobného účtu.
+        Správa príde do schránky (Pošta) presne <strong className="text-ink">{recipientCount}</strong> uživatelům — z účtu "Systém", ne z tvého osobního účtu.
       </p>
 
       {error && <div className="text-danger text-sm">{error}</div>}
       {sentCount !== null && (
         <div className="text-emerald-600 text-sm font-semibold">
-          Hotovo — správa bola odoslaná {sentCount} používateľom.
+          Hotovo — zpráva byla odeslána {sentCount} uživatelům.
         </div>
       )}
 

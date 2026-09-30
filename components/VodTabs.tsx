@@ -8,7 +8,7 @@ export default function VodTabs() {
 
   const tabs = [
     { href: '/vod', label: 'VOD premiéry' },
-    { href: '/vod/rocny-prehlad', label: 'Ročný prehľad' }
+    { href: '/vod/rocny-prehlad', label: 'Roční přehled' }
   ];
 
   return (

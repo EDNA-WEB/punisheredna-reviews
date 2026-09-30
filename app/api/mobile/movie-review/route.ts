@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const authUser = await getMobileUser(req);
-    if (!authUser) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!authUser) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     if (!checkIpRateLimit(req, 'reviews-create', 60_000, 5)) {
       return NextResponse.json({ error: 'Příliš mnoho recenzí za krátký čas. Zkus to prosím za chvíli znovu.' }, { status: 429 });
     }

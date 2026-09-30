@@ -8,7 +8,7 @@ export default function AddContentModal({ movieId, movieTitle, movieYear, onClos
   const [combined, setCombined] = useState('');
 
   async function handleSubmit() {
-    if (!combined) return { ok: false, error: 'Napíš prosím aspoň jeden odstavec obsahu.' };
+    if (!combined) return { ok: false, error: 'Napiš prosím alespoň jeden odstavec obsahu.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,7 +31,7 @@ export default function AddContentModal({ movieId, movieTitle, movieYear, onClos
         </button>
         <SubmissionModalShell
           title="Přidat obsah"
-          explanation={`Obsah k filmu/seriálu nemusí byť dlhý (stačí 5-8 viet), ale musí zrozumiteľne popísať, o čom daný film/seriál je. Žiadne ďalšie informácie do obsahu nepatria, tie umiestnime do Zaujímavostí. Obsah nesmie film/seriál ani nijako hodnotiť, musí byť nestranný. Ďakujeme!`}
+          explanation={`Obsah k filmu/seriálu nemusí být dlouhý (stačí 5–8 vět), ale musí srozumitelně popsat, o čem daný film/seriál je. Žádné další informace do obsahu nepatří, ty umístíme do Zajímavostí. Obsah nesmí film/seriál nijak hodnotit, musí být nestranný. Děkujeme!`}
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat obsah ke schválení a korektuře"

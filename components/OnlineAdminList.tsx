@@ -93,7 +93,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
       setImgUndoStatus('done');
     } catch {
       setImgUndoStatus('idle');
-      alert('Vrátenie späť zlyhalo.');
+      alert('Vrácení zpět se nezdařilo.');
     }
   }
   const [page, setPage] = useState(1);
@@ -114,7 +114,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
       if (!res.ok) throw new Error();
     } catch {
       setMovies((prev) => prev.map((x) => (x.id === m.id ? { ...x, isCamVersion: !next } : x)));
-      alert('Uloženie zlyhalo. Skús to prosím znova.');
+      alert('Uložení se nezdařilo. Zkus to prosím znovu.');
     }
   }
 
@@ -162,7 +162,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      alert('Súbor je príliš veľký (max. 8 MB).');
+      alert('Soubor je příliš velký (max. 8 MB).');
       return;
     }
     setUploading(movieId);
@@ -180,7 +180,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
           if (!res.ok) throw new Error();
           setMovies((prev) => prev.map((x) => (x.id === movieId ? { ...x, onlineImage: dataUrl } : x)));
         } catch {
-          alert('Nahratie náhľadového obrázka zlyhalo.');
+          alert('Nahrání náhledového obrázku se nezdařilo.');
         } finally {
           setUploading(null);
         }
@@ -253,7 +253,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      alert('Súbor je príliš veľký (max. 8 MB).');
+      alert('Soubor je příliš velký (max. 8 MB).');
       return;
     }
     setUploading(episodeId);
@@ -278,7 +278,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
             }))
           );
         } catch {
-          alert('Nahratie náhľadového obrázka zlyhalo.');
+          alert('Nahrání náhledového obrázku se nezdařilo.');
         } finally {
           setUploading(null);
         }
@@ -302,10 +302,9 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
   return (
     <div className="space-y-2 max-w-2xl">
       <div className="border border-line rounded-xl p-4 bg-surface mb-2">
-        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov bez online</div>
+        <div className="text-sm font-semibold text-ink mb-1">Stáhnout seznam filmů bez online</div>
         <div className="text-xs text-muted mb-3">
-          Vygeneruje textový súbor so všetkými filmami a seriálmi, čo ešte nemajú nastavené online sledovanie (pri
-          filmoch chýba odkaz, pri seriáloch žiadna epizóda s odkazom), v tvare "Názov (Rok)".
+          Vygeneruje textový soubor se všemi filmy a seriály, které ještě nemají nastavené online sledování (u filmů chybí odkaz, u seriálů žádná epizoda s odkazem), ve tvaru "Název (Rok)".
         </div>
         <a
           href="/api/admin/movies/export-missing-online"
@@ -318,16 +317,15 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-online"
         title="Hromadne pridať online odkazy"
-        description={'Vlož zoznam v tvare "Názov filmu – https://..." pre filmy, alebo "Názov seriálu S01E01 – https://..." pre konkrétnu epizódu, jeden riadok na položku.'}
+        description={'Vlož seznam ve tvaru "Název filmu – https://..." pro filmy, nebo "Název seriálu S01E01 – https://..." pro konkrétní epizodu, jeden řádek na položku.'}
         placeholder={'Together – https://...\nHra o trůny S01E01 – https://...'}
         buttonLabel="Priradiť odkazy"
       />
 
       <div className="border border-line rounded-xl p-4 bg-surface mb-2">
-        <div className="text-sm font-semibold text-ink mb-1">Doplniť náhľadové obrázky (TMDb)</div>
+        <div className="text-sm font-semibold text-ink mb-1">Doplnit náhledové obrázky (TMDb)</div>
         <div className="text-xs text-muted mb-3">
-          Automaticky doplní náhľadový obrázok pre všetky filmy/seriály prepojené s TMDb, čo ešte žiadny nemajú. Filmy
-          s už nastaveným obrázkom sa nedotknú.
+          Automaticky doplní náhledový obrázek pro všechny filmy/seriály propojené s TMDb, které ještě žádný nemají. Filmů s už nastaveným obrázkem se to nedotkne.
         </div>
 
         {!imgPreview && !imgDone && (
@@ -337,14 +335,14 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
             disabled={imgBusy}
             className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {imgBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+            {imgBusy ? 'Načítavam…' : 'Zobrazit náhled'}
           </button>
         )}
 
         {imgPreview && !imgDone && (
           <div>
             <div className="text-xs text-ink mb-2">
-              Doplní sa <strong>{imgPreview.count}</strong> filmov/seriálov. Ukážka prvých {imgPreview.sample.length}:
+              Doplní se <strong>{imgPreview.count}</strong> filmů/seriálů. Ukázka prvních {imgPreview.sample.length}:
             </div>
             <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{imgPreview.sample.join(', ')}</div>
             <div className="flex items-center gap-2">
@@ -366,7 +364,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
         {imgDone && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {imgDone.checked} filmov/seriálov.</div>
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {imgDone.checked} filmů/seriálů.</div>
               {imgDone.batchId && imgUndoStatus !== 'done' && (
                 <button
                   type="button"
@@ -374,10 +372,10 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
                   disabled={imgUndoStatus === 'undoing'}
                   className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
                 >
-                  {imgUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                  {imgUndoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
                 </button>
               )}
-              {imgUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+              {imgUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
             </div>
             <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
               {imgDone.results.map((r, i) => (
@@ -398,7 +396,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
           setQuery(e.target.value);
           setPage(1);
         }}
-        placeholder="Hľadať film/seriál…"
+        placeholder="Hledat film/seriál…"
       />
 
       {pageMovies.map((m) => (
@@ -416,7 +414,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
               )}
             </Link>
             {m.watchUrl && (
-              <span className="text-[11px] font-semibold text-emerald-600 flex-none whitespace-nowrap">✓ nastavené</span>
+              <span className="text-[11px] font-semibold text-emerald-600 flex-none whitespace-nowrap">✓ nastaveno</span>
             )}
             <button
               type="button"
@@ -431,7 +429,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
             <div className="p-3.5 pt-0 space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-ink mb-1.5">
-                  {m.contentType === 'Seriál' ? 'Základný odkaz (použije sa, ak epizóda nemá vlastný)' : 'Odkaz na sledovanie (kam sa diváci presmerujú)'}
+                  {m.contentType === 'Seriál' ? 'Základní odkaz (použije se, pokud epizoda nemá vlastní)' : 'Odkaz na sledování (kam se diváci přesměrují)'}
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -458,7 +456,7 @@ export default function OnlineAdminList({ movies: initialMovies }: { movies: Mov
 
               <div>
                 <label className="block text-xs font-semibold text-ink mb-1.5">
-                  {m.contentType === 'Seriál' ? 'Základný náhľadový obrázok' : 'Náhľadový obrázok'}
+                  {m.contentType === 'Seriál' ? 'Základní náhledový obrázek' : 'Náhledový obrázek'}
                 </label>
                 <label htmlFor={`online-img-${m.id}`} className="block cursor-pointer w-fit">
                   {m.onlineImage ? (

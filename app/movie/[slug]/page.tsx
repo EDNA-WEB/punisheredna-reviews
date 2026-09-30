@@ -125,13 +125,13 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
         return (
           <div className="pt-10 max-w-lg mx-auto text-center">
             <img src="/golden-ticket-badge.svg" alt="" width={48} height={48} className="mx-auto mb-4" />
-            <h1 className="font-display font-bold text-xl text-ink mb-2">Tento titul bude dostupný čoskoro</h1>
+            <h1 className="font-display font-bold text-xl text-ink mb-2">Tento titul bude dostupný brzy</h1>
             <p className="text-sm text-muted mb-1">
-              Golden Ticket členovia ho už môžu vidieť — ostatným bude dostupný približne o {minutesLeft}{' '}
-              {minutesLeft === 1 ? 'minútu' : minutesLeft < 5 ? 'minúty' : 'minút'}.
+              Golden Ticket členové ho už mohou vidět — ostatním bude dostupný přibližně za {minutesLeft}{' '}
+              {minutesLeft === 1 ? 'minútu' : minutesLeft < 5 ? 'minúty' : 'minut'}.
             </p>
             <Link href="/nastavenia/clenstvo" className="inline-block mt-4 text-accent text-sm font-semibold hover:underline">
-              Zistiť viac o členstve →
+              Zjistit více o členství →
             </Link>
           </div>
         );
@@ -362,7 +362,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
           )}
           <span className="text-xs text-muted flex items-center gap-1.5 ml-auto">
             <IconClock className="w-3.5 h-3.5" />
-            {new Date(review.createdAt).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {new Date(review.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
           </span>
         </div>
 
@@ -580,12 +580,12 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
 
               {isUpcoming && (
                 <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
-                  {t('movie.premiera')} {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('movie.premiera')} {movieReleaseDate!.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
               {!isUpcoming && movie.releaseDate && movie.contentType === 'Seriál' && (
                 <div className="text-xs text-muted mb-3">
-                  {t('movie.na_vod_od')} {new Date(movie.releaseDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {t('movie.na_vod_od')} {new Date(movie.releaseDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
 
@@ -639,7 +639,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               {isUpcoming ? (
                 <p className="text-xs text-muted">
                   {t('movie.este_nemal_premieru')}{' '}
-                  {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                  {movieReleaseDate!.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}.
                 </p>
               ) : viewerId ? (
                 <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />
@@ -909,7 +909,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                               {!s.released && (
                                 <span className="text-xs text-muted ml-auto truncate min-w-0">
                                   {s.releaseDate
-                                    ? `${t('movie.vyjde')} ${new Date(s.releaseDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                                    ? `${t('movie.vyjde')} ${new Date(s.releaseDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}`
                                     : t('movie.este_nevysla')}
                                 </span>
                               )}
@@ -997,9 +997,9 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
                   <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
                     <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
                     <div>
-                      <p className="text-sm font-semibold text-ink">Online sledovanie je dostupné len pre Golden Ticket členov.</p>
+                      <p className="text-sm font-semibold text-ink">Online sledování je dostupné jen pro Golden Ticket členy.</p>
                       <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-                        Zistiť viac o členstve →
+                        Zjistit více o členství →
                       </Link>
                     </div>
                   </div>
@@ -1157,7 +1157,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
               {isUpcoming ? (
                 <p className="text-xs text-muted">
                   {t('movie.este_nemal_premieru')}{' '}
-                  {movieReleaseDate!.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                  {movieReleaseDate!.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}.
                 </p>
               ) : viewerId ? (
                 <MovieRatingWidget movieId={movie.id} initialValue={myRating?.value || 0} />

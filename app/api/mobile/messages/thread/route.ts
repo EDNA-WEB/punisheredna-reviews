@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     const user = await getMobileUser(req);
-    if (!user) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!user) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const myId = user.id;
 
     const { searchParams } = new URL(req.url);
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     const other = await prisma.user.findUnique({ where: { id: otherId }, select: { id: true, name: true, avatar: true, lastActiveAt: true } });
     // Otvorený chat v appke = som aktívny (rovnako ako web pri otvorení konverzácie).
     touchLastActive(myId);
-    if (!other) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+    if (!other) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
 
     await prisma.message.updateMany({ where: { senderId: other.id, receiverId: myId, read: false }, data: { read: true } });
 
@@ -60,6 +60,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ other, messages, isPendingForMe, isPendingWaiting, isDeclined }, { status: 200 });
   } catch (error) {
     console.error('[api/mobile/messages/thread]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní konverzácie.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání konverzace.' }, { status: 500 });
   }
 }

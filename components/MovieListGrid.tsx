@@ -31,7 +31,7 @@ export default function MovieListGrid({ listId, initialItems, isOwn }: { listId:
       )}
 
       {items.length === 0 ? (
-        <p className="text-sm text-muted">Zatiaľ žiadne filmy v zozname.</p>
+        <p className="text-sm text-muted">Zatím žádné filmy v seznamu.</p>
       ) : (
         <>
           <div className="grid grid-cols-5 sm:grid-cols-10 gap-2.5">
@@ -62,7 +62,7 @@ export default function MovieListGrid({ listId, initialItems, isOwn }: { listId:
               onClick={() => setShowAll(true)}
               className="mt-4 text-xs font-bold text-white bg-accent px-4 py-2 rounded-full hover:bg-accent-dark"
             >
-              VIAC ({items.length - PER_ROW})
+              VÍCE ({items.length - PER_ROW})
             </button>
           )}
         </>

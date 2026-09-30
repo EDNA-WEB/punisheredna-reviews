@@ -26,6 +26,6 @@ export async function GET() {
     return NextResponse.json(movies, { status: 200 });
   } catch (error) {
     console.error('[api/data] Chyba pri načítaní filmov:', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní dát z databázy.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání dat z databáze.' }, { status: 500 });
   }
 }

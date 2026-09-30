@@ -70,7 +70,7 @@ export default async function MessagesPage() {
 
           {list.length === 0 ? (
             <div className="text-sm text-muted text-center py-10 px-4">
-              Zatiaľ nemáš žiadne konverzácie. Nájdi si niekoho vyššie a napíš mu.
+              Zatím nemáš žádné konverzace. Najdi si někoho výše a napiš mu.
             </div>
           ) : (
             <div className="space-y-1 -mx-4">
@@ -91,7 +91,7 @@ export default async function MessagesPage() {
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
                       <span className="text-[11px] text-muted flex-none">
-                        {new Date(c.lastAt).toLocaleDateString('sk-SK', { timeZone: 'Europe/Bratislava' })}
+                        {new Date(c.lastAt).toLocaleDateString('cs-CZ', { timeZone: 'Europe/Bratislava' })}
                       </span>
                     </div>
                     <p className="text-xs text-muted truncate">
@@ -123,7 +123,7 @@ export default async function MessagesPage() {
         <div className="hidden md:flex flex-col items-center justify-center text-center p-10 bg-surface/40">
           <IconMessage className="w-10 h-10 text-line mb-3" />
           <p className="text-sm text-muted max-w-xs">
-            Vyber konverzáciu zo zoznamu vľavo, alebo si vyhľadaj niekoho a napíš mu.
+            Vyber konverzaci ze seznamu vlevo, nebo si vyhledej někoho a napiš mu.
           </p>
         </div>
       </div>

@@ -44,10 +44,10 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const a = searchParams.get('a');
   const b = searchParams.get('b');
-  if (!a || !b) return NextResponse.json({ error: 'Chýba jeden alebo oba filmy.' }, { status: 400 });
+  if (!a || !b) return NextResponse.json({ error: 'Chybí jeden nebo oba filmy.' }, { status: 400 });
 
   const [dataA, dataB] = await Promise.all([loadMovieStats(a), loadMovieStats(b)]);
-  if (!dataA || !dataB) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (!dataA || !dataB) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
 
   return NextResponse.json({ a: dataA, b: dataB });
 }

@@ -17,12 +17,12 @@ export default function AvatarOnlyForm({ initialAvatar }: { initialAvatar: strin
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      setError('Súbor je príliš veľký (max. 5 MB). Vyber prosím menší obrázok.');
+      setError('Soubor je příliš velký (max. 5 MB). Vyber prosím menší obrázek.');
       setFileName('');
       return;
     }
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      setError('Podporovaný formát je len JPG alebo PNG.');
+      setError('Podporovaný formát je jen JPG nebo PNG.');
       setFileName('');
       return;
     }
@@ -73,7 +73,7 @@ export default function AvatarOnlyForm({ initialAvatar }: { initialAvatar: strin
       <div className="border border-line rounded-xl bg-surface p-5 max-w-md">
         <div className="flex items-center gap-4 mb-4">
           {avatar ? (
-            <img src={avatar} alt="Náhľad" className="w-20 h-20 rounded-full object-cover bg-card flex-none" />
+            <img src={avatar} alt="Náhled" className="w-20 h-20 rounded-full object-cover bg-card flex-none" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-card flex items-center justify-center flex-none">
               <IconUser className="w-8 h-8 text-muted" />
@@ -91,7 +91,7 @@ export default function AvatarOnlyForm({ initialAvatar }: { initialAvatar: strin
           </div>
         </div>
 
-        <p className="text-xs text-muted mb-4">Formát JPG alebo PNG / maximálna veľkosť 5 MB</p>
+        <p className="text-xs text-muted mb-4">Formát JPG nebo PNG / maximální velikost 5 MB</p>
 
         {error && <div className="text-danger text-xs mb-3">{error}</div>}
 

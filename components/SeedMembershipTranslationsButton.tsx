@@ -32,7 +32,7 @@ export default function SeedMembershipTranslationsButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
       >
-        {loading ? 'Dopĺňam…' : '✅ Doplniť pripravené EN/CS preklady (členstvo, nahlásenia, Box Office, súťaž)'}
+        {loading ? 'Doplňuji…' : '✅ Doplniť pripravené EN/CS preklady (členstvo, nahlásenia, Box Office, súťaž)'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

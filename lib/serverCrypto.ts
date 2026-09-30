@@ -52,6 +52,6 @@ export function tryDecryptMessageBody(ciphertext: string, iv: string): string {
     return decryptMessageBody(ciphertext, iv);
   } catch (err) {
     console.error('[serverCrypto] Dešifrovanie správy zlyhalo:', err);
-    return '⚠ Túto správu sa nepodarilo zobraziť.';
+    return '⚠ Tuto zprávu se nepodařilo zobrazit.';
   }
 }

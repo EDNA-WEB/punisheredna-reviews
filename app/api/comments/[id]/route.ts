@@ -9,21 +9,21 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
 
   const comment = await prisma.comment.findUnique({ where: { id: params.id } });
-  if (!comment) return NextResponse.json({ error: 'Komentár sa nenašiel.' }, { status: 404 });
+  if (!comment) return NextResponse.json({ error: 'Komentář se nenašel.' }, { status: 404 });
 
   const isAdmin = (session.user as any).role === 'ADMIN';
   const isOwner = comment.userId === (session.user as any).id;
   if (!isAdmin && !isOwner) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie upraviť tento komentár.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění upravit tento komentář.' }, { status: 403 });
   }
   if (isOwner && !isAdmin && !(await isActiveMember((session.user as any).id))) {
-    return NextResponse.json({ error: 'Úprava vlastných komentárov je dostupná len pre Golden Ticket členov.' }, { status: 403 });
+    return NextResponse.json({ error: 'Úprava vlastních komentářů je dostupná jen pro Golden Ticket členy.' }, { status: 403 });
   }
 
   const { body } = await req.json();
   const trimmed = String(body || '').trim();
-  if (!trimmed) return NextResponse.json({ error: 'Komentár nemôže byť prázdny.' }, { status: 400 });
-  if (trimmed.length > 2000) return NextResponse.json({ error: 'Komentár je príliš dlhý (max. 2000 znakov).' }, { status: 400 });
+  if (!trimmed) return NextResponse.json({ error: 'Komentář nemůže být prázdný.' }, { status: 400 });
+  if (trimmed.length > 2000) return NextResponse.json({ error: 'Komentář je příliš dlouhý (max. 2000 znaků).' }, { status: 400 });
 
   const updated = await prisma.comment.update({ where: { id: params.id }, data: { body: trimmed } });
   return NextResponse.json({ id: updated.id, body: updated.body, updatedAt: updated.updatedAt });
@@ -36,15 +36,15 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   }
 
   const comment = await prisma.comment.findUnique({ where: { id: params.id } });
-  if (!comment) return NextResponse.json({ error: 'Komentár sa nenašiel.' }, { status: 404 });
+  if (!comment) return NextResponse.json({ error: 'Komentář se nenašel.' }, { status: 404 });
 
   const isAdmin = (session.user as any).role === 'ADMIN';
   const isOwner = comment.userId === (session.user as any).id;
   if (!isAdmin && !isOwner) {
-    return NextResponse.json({ error: 'Nemáš oprávnenie zmazať tento komentár.' }, { status: 403 });
+    return NextResponse.json({ error: 'Nemáš oprávnění smazat tento komentář.' }, { status: 403 });
   }
   if (isOwner && !isAdmin && !(await isActiveMember((session.user as any).id))) {
-    return NextResponse.json({ error: 'Mazanie vlastných komentárov je dostupné len pre Golden Ticket členov.' }, { status: 403 });
+    return NextResponse.json({ error: 'Mazání vlastních komentářů je dostupné jen pro Golden Ticket členy.' }, { status: 403 });
   }
 
   await prisma.comment.delete({ where: { id: params.id } });

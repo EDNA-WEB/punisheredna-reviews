@@ -38,21 +38,20 @@ export default function RightsAdminList({ initialUsers }: { initialUsers: UserIt
       <div className="border border-line rounded-xl p-5 bg-card mb-6">
         <h2 className="text-sm font-bold text-ink mb-1">Redaktor</h2>
         <p className="text-xs text-muted mb-4">
-          Vidí tlačidlo Administrácia, no smie v nej len pridávať novinky — nič iné tu nie je dostupné. V profile sa
-          mu zobrazí označenie "Redaktor".
+          Vidí tlačítko Administrace, ale smí v ní jen přidávat novinky — nic jiného tu není dostupné. V profilu se mu zobrazí označení "Redaktor".
         </p>
         <input
           className="field-input-sm w-full mb-3"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Vyhľadaj prezývku…"
+          placeholder="Vyhledej přezdívku…"
         />
         {error && <p className="text-danger text-xs mb-2">{error}</p>}
 
         <div className="border border-line rounded-lg divide-y divide-line max-h-96 overflow-y-auto">
           {filtered.length === 0 ? (
             <p className="text-xs text-muted p-3">
-              {query.trim() ? 'Nikto nenájdený.' : 'Zatiaľ nikto nemá právo redaktora — vyhľadaj používateľa vyššie.'}
+              {query.trim() ? 'Nikto nenájdený.' : 'Zatím nikdo nemá právo redaktora — vyhledej uživatele výše.'}
             </p>
           ) : (
             filtered.map((u) => (
@@ -68,7 +67,7 @@ export default function RightsAdminList({ initialUsers }: { initialUsers: UserIt
                       : 'text-accent border border-accent/40 hover:bg-accent/10'
                   }`}
                 >
-                  {savingId === u.id ? '…' : u.isEditor ? 'Odobrať redaktora' : 'Nastaviť ako redaktora'}
+                  {savingId === u.id ? '…' : u.isEditor ? 'Odobrať redaktora' : 'Nastavit jako redaktora'}
                 </button>
               </div>
             ))

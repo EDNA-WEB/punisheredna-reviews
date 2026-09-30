@@ -30,10 +30,9 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
   return (
     <div>
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov bez zaujímavosti</div>
+        <div className="text-sm font-semibold text-ink mb-1">Stáhnout seznam filmů bez zajímavostí</div>
         <div className="text-xs text-muted mb-3">
-          Vygeneruje textový súbor so všetkými filmami, čo nemajú ani jednu zaujímavosť a majú priradený ČSFD odkaz, v
-          tvare "Názov (Rok) – ČSFD odkaz".
+          Vygeneruje textový soubor se všemi filmy, které nemají ani jednu zajímavost a mají přiřazený odkaz na ČSFD, ve tvaru "Název (Rok) – odkaz ČSFD".
         </div>
         <a
           href="/api/admin/movies/export-missing-trivia"
@@ -46,8 +45,8 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-trivia"
         title="Hromadne pridať zaujímavosti"
-        description={'Vlož zoznam v tvare "Názov filmu – Zaujímavosť 1; Zaujímavosť 2", jeden riadok na film. Jednotlivé zaujímavosti oddeľuj bodkočiarkou (nie čiarkou, tá sa môže vyskytnúť priamo vo vete). Pozor: pri filme, čo sa v zozname objaví, sa jeho PÔVODNÉ zaujímavosti úplne nahradia týmito novými (nezlučujú sa).'}
-        placeholder={'Kmotr – Film sa natáčal v New Yorku a na Sicílii.; Marlon Brando za rolu dostal Oscara, ktorý odmietol prevziať.'}
+        description={'Vlož seznam ve tvaru "Název filmu – Zajímavost 1; Zajímavost 2", jeden řádek na film. Jednotlivé zajímavosti odděluj středníkem (ne čárkou, ta se může vyskytnout přímo ve větě). Pozor: u filmu, který se v seznamu objeví, se jeho PŮVODNÍ zajímavosti úplně nahradí těmito novými (neslučují se).'}
+        placeholder={'Kmotr – Film se natáčel v New Yorku a na Sicílii.; Marlon Brando za roli dostal Oscara, kterého odmítl převzít.'}
         buttonLabel="Pridať zaujímavosti"
       />
 
@@ -58,7 +57,7 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
           setQuery(e.target.value);
           setPage(1);
         }}
-        placeholder="Hľadať film/seriál…"
+        placeholder="Hledat film/seriál…"
       />
 
       <div className="border border-line rounded-xl overflow-hidden">
@@ -71,11 +70,11 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
               />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold text-ink truncate flex items-center gap-1.5">
-                  {m._count.trivia === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none" title="Bez zaujímavostí" />}
+                  {m._count.trivia === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none" title="Bez zajímavostí" />}
                   {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                 </div>
                 <div className="text-xs text-muted">
-                  {m._count.trivia > 0 ? `${m._count.trivia} zaujímavostí` : 'Zatiaľ žiadne zaujímavosti'}
+                  {m._count.trivia > 0 ? `${m._count.trivia} zajímavostí` : 'Zatím žádné zajímavosti'}
                 </div>
               </div>
               <a href={`/admin/movies/${m.id}/edit`} className="text-xs font-semibold text-accent hover:underline flex-none">
@@ -83,7 +82,7 @@ export default function TriviaAdminList({ initialMovies }: { initialMovies: Movi
               </a>
             </div>
           ))}
-          {paged.length === 0 && <p className="text-sm text-muted p-4">Žiadny film/seriál sa nenašiel.</p>}
+          {paged.length === 0 && <p className="text-sm text-muted p-4">Žádný film/seriál se nenašel.</p>}
         </div>
       </div>
       <div className="mt-4">

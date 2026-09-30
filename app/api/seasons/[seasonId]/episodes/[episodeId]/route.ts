@@ -13,17 +13,17 @@ export async function PATCH(req: Request, { params }: { params: { seasonId: stri
 
   const { title, synopsis, onlineImage, onlineUrl } = await req.json();
   if (title !== undefined && String(title).length > 200) {
-    return NextResponse.json({ error: 'Názov je príliš dlhý (max. 200 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Název je příliš dlouhý (max. 200 znaků).' }, { status: 400 });
   }
   if (synopsis !== undefined && String(synopsis).length > 5000) {
-    return NextResponse.json({ error: 'Obsah je príliš dlhý (max. 5000 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Obsah je příliš dlouhý (max. 5000 znaků).' }, { status: 400 });
   }
   if (onlineImage) {
     const imageError = validateImageDataUrl(onlineImage);
     if (imageError) return NextResponse.json({ error: imageError }, { status: 400 });
   }
   if (onlineUrl && !/^https?:\/\//i.test(onlineUrl)) {
-    return NextResponse.json({ error: 'Odkaz musí začínať na http:// alebo https://' }, { status: 400 });
+    return NextResponse.json({ error: 'Odkaz musí začínat na http:// nebo https://' }, { status: 400 });
   }
 
   const data: Record<string, any> = {};

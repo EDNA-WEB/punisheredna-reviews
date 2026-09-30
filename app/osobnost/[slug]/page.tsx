@@ -146,7 +146,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
             <div className="text-sm text-ink space-y-1.5 mb-4">
               {person.birthDate && (
                 <div>
-                  <span className="text-muted">{t('person.narodeny')}</span> {new Date(person.birthDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  <span className="text-muted">{t('person.narodeny')}</span> {new Date(person.birthDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
               {person.birthPlace && (
@@ -163,7 +163,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
               {isDead && (
                 <>
                   <div>
-                    <span className="text-muted">{t('person.zomrel')}</span> {new Date(person.deathDate!).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <span className="text-muted">{t('person.zomrel')}</span> {new Date(person.deathDate!).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
                   {person.deathPlace && (
                     <div>

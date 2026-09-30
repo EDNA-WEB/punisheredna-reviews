@@ -69,8 +69,8 @@ export default async function ProfilePage({ params }: { params: { id: string } }
         <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center mx-auto mb-4">
           <IconUser className="w-8 h-8 text-muted" />
         </div>
-        <h1 className="font-display font-extrabold text-2xl text-ink mb-2">Zmazaný používateľ</h1>
-        <p className="text-sm text-muted">Tento používateľský účet bol zmazaný.</p>
+        <h1 className="font-display font-extrabold text-2xl text-ink mb-2">Smazaný uživatel</h1>
+        <p className="text-sm text-muted">Tento uživatelský účet byl smazán.</p>
       </div>
     );
   }
@@ -207,19 +207,19 @@ export default async function ProfilePage({ params }: { params: { id: string } }
             {user.banned && (
               <Badge tone="danger">Zablokovaný</Badge>
             )}
-            <Badge tone="accent" className="ml-auto sm:ml-0" title="Karma — súčet lajkov mínus dislajkov na jeho recenzie, komentáre, novinky a diskusné príspevky">
+            <Badge tone="accent" className="ml-auto sm:ml-0" title="Karma — součet lajků mínus dislajků na jeho recenze, komentáře, novinky a diskuzní příspěvky">
               <IconHeart className="w-3.5 h-3.5" filled />
               {user.role === 'ADMIN' ? '∞' : karmaValue} karma
             </Badge>
           </div>
           <div className="text-sm text-muted mt-1">
-            registrovaný {new Date(user.createdAt).toLocaleDateString('sk-SK')}
+            registrovaný {new Date(user.createdAt).toLocaleDateString('cs-CZ')}
           </div>
           {isOwn && user.membershipUntil && user.membershipUntil > new Date() && (
             <div className="text-sm text-accent font-semibold mt-0.5">
-              Golden Ticket členstvo aktívne ešte{' '}
+              Golden Ticket členství aktivní ještě{' '}
               {Math.max(1, Math.ceil((user.membershipUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} dní (do{' '}
-              {user.membershipUntil.toLocaleDateString('sk-SK')})
+              {user.membershipUntil.toLocaleDateString('cs-CZ')})
             </div>
           )}
           {(user.region || user.country) && (
@@ -238,7 +238,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                   href={`/messages/${user.id}`}
                   className="flex items-center gap-1.5 text-sm font-semibold text-ink border border-line rounded-full px-4 py-2 hover:border-accent hover:text-accent"
                 >
-                  <IconMessage className="w-4 h-4" /> Napísať správu
+                  <IconMessage className="w-4 h-4" /> Napsat zprávu
                 </Link>
               </>
             )}

@@ -68,7 +68,7 @@ export default function WhereToWatchBox({
                   onClick={() => setExpanded(true)}
                   className={`text-accent text-sm font-semibold hover:underline flex-none ${services.length > DESKTOP_LIMIT ? '' : 'sm:hidden'}`}
                 >
-                  viac
+                  více
                 </button>
               )}
             </div>

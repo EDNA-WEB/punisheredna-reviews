@@ -35,7 +35,7 @@ export default async function MembershipSettingsPage() {
 
         {isActive ? (
           <p className="text-sm text-ink">
-            {t('membership.aktivne_do')} <strong>{until!.toLocaleDateString('sk-SK')}</strong>.
+            {t('membership.aktivne_do')} <strong>{until!.toLocaleDateString('cs-CZ')}</strong>.
           </p>
         ) : (
           <p className="text-sm text-ink">{t('membership.nemas_aktivne')}</p>

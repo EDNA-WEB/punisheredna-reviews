@@ -31,7 +31,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
       <div className="-mx-5 sm:mx-0">
         <div className="relative rounded-none sm:rounded-xl overflow-hidden bg-surface border border-line aspect-[16/10] sm:aspect-video flex items-center justify-center">
           <p className="text-sm text-muted px-6 text-center">
-            Zatiaľ žiadny trailer. Pridaj ho pri filme cez "Upraviť film" → Videá.
+            Zatím žádný trailer. Přidej ho u filmu přes "Upravit film" → Videa.
           </p>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
           <>
             <button
               onClick={() => go(-1)}
-              aria-label="Predchádzajúci trailer"
+              aria-label="Předchozí trailer"
               className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
             >
               <IconChevronLeft className="w-5 h-5" />

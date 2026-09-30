@@ -26,11 +26,11 @@ export async function POST(req: Request) {
   const isAdmin = (session.user as any).role === 'ADMIN';
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || user.banned) {
-    return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+    return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
   }
 
   const { name, role, subRole, photo, bio, birthDate, deathDate, birthPlace, deathPlace, tmdbId } = await req.json();
-  if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadaj meno.' }, { status: 400 });
+  if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadej jméno.' }, { status: 400 });
 
   const duplicate = await prisma.person.findFirst({
     where: { name: { equals: String(name).trim(), mode: 'insensitive' } },

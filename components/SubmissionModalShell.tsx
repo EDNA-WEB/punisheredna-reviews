@@ -57,7 +57,7 @@ export default function SubmissionModalShell({
       </div>
 
       {done ? (
-        <p className="text-sm text-accent font-semibold">Ďakujeme! Návrh bol odoslaný na schválenie.</p>
+        <p className="text-sm text-accent font-semibold">Děkujeme! Návrh byl odeslán ke schválení.</p>
       ) : (
         <>
           {children}

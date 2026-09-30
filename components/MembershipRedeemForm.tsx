@@ -27,7 +27,7 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Uplatnenie kódu zlyhalo.');
-      setSuccess(`Členstvo aktivované! Platí do ${new Date(data.until).toLocaleDateString('sk-SK')}.`);
+      setSuccess(`Členstvo aktivované! Platí do ${new Date(data.until).toLocaleDateString('cs-CZ')}.`);
       setCode('');
       router.refresh();
     } catch (err: any) {
@@ -51,14 +51,14 @@ export default function MembershipRedeemForm({ membershipUntil }: { membershipUn
               <div>
                 <p className="text-sm font-semibold text-ink">Si aktívny Golden Ticket člen!</p>
                 <p className="text-sm text-muted mt-1">
-                  Platí ešte {daysLeft} {daysLeft === 1 ? 'deň' : daysLeft < 5 ? 'dni' : 'dní'}, do{' '}
-                  <span className="font-semibold text-ink">{until!.toLocaleDateString('sk-SK')}</span>.
+                  Platí ještě {daysLeft} {daysLeft === 1 ? 'deň' : daysLeft < 5 ? 'dni' : 'dní'}, do{' '}
+                  <span className="font-semibold text-ink">{until!.toLocaleDateString('cs-CZ')}</span>.
                 </p>
               </div>
             </div>
           ) : (
             <p className="text-sm text-muted">
-              Momentálne nie si Golden Ticket člen. Kód na skúšobnú alebo platenú verziu ti príde do{' '}
+              Momentálně nejsi Golden Ticket člen. Kód na zkušební nebo placenou verzi ti přijde do{' '}
               <a href="/spravy" className="text-accent font-semibold hover:underline">Pošty</a>, prípadne ho zadaj priamo tu.
             </p>
           )}

@@ -9,9 +9,9 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const userId = (session.user as any).id;
 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id }, include: { author: { select: { name: true } } } });
-  if (!post) return NextResponse.json({ error: 'Článok sa nenašiel.' }, { status: 404 });
+  if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
   if (post.authorId !== userId) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
-  if (post.published) return NextResponse.json({ error: 'Tento článok je už publikovaný.' }, { status: 400 });
+  if (post.published) return NextResponse.json({ error: 'Tento článek je už publikovaný.' }, { status: 400 });
   if (post.publicationRequested) return NextResponse.json({ error: 'O publikáciu si už požiadal(a).' }, { status: 400 });
 
   await prisma.blogPost.update({ where: { id: params.id }, data: { publicationRequested: true } });

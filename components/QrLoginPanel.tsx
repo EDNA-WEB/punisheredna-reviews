@@ -169,7 +169,7 @@ export default function QrLoginPanel() {
       />
       {secondsLeft !== null && (
         <p className="text-[11px] text-white/45">
-          Platí ešte {mm}:{String(ss).padStart(2, '0')}
+          Platí ještě {mm}:{String(ss).padStart(2, '0')}
         </p>
       )}
     </div>

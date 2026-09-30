@@ -20,7 +20,7 @@ function dayLabel(date: Date): string {
   yesterday.setDate(yesterday.getDate() - 1);
   if (date.toDateString() === today.toDateString()) return 'DNES';
   if (date.toDateString() === yesterday.toDateString()) return 'VČERA';
-  return date.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Bratislava' });
+  return date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Bratislava' });
 }
 
 export default function ChatMessageList({ messages, myId, otherId }: { messages: RawMessage[]; myId: string; otherId: string }) {
@@ -63,7 +63,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
 
   async function deleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Zmazať ${selectedIds.size} vybraných správ? Zmiznú aj druhej strane.`)) return;
+    if (!confirm(`Zmazať ${selectedIds.size} vybraných zpráv? Zmizí i druhé straně.`)) return;
     setDeletingSelection(true);
     try {
       await Promise.all(Array.from(selectedIds).map((id) => fetch(`/api/messages/${id}`, { method: 'DELETE' })));
@@ -71,14 +71,14 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
       setSelectedIds(new Set());
       setSelectionMode(false);
     } catch {
-      alert('Niektoré správy sa nepodarilo zmazať.');
+      alert('Některé zprávy se nepodařilo smazat.');
     } finally {
       setDeletingSelection(false);
     }
   }
 
   if (messages.length === 0) {
-    return <p className="text-muted text-sm text-center">Zatiaľ žiadne správy. Napíš prvú.</p>;
+    return <p className="text-muted text-sm text-center">Zatím žádné zprávy. Napiš první.</p>;
   }
 
   let lastDay = '';
@@ -122,13 +122,13 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   ) : (
                     m.imageViewedAt && (
                       <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
-                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka bola zobrazená</span>
+                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka byla zobrazena</span>
                       </div>
                     )
                   )}
                   {m.body && <p className="text-sm whitespace-pre-wrap leading-snug">{m.body}</p>}
                   <div className={`flex items-center justify-end gap-1 mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>
-                    <span className="text-[10px]">{createdAt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>
+                    <span className="text-[10px]">{createdAt.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>
                     {mine && <span className={`text-[11px] ${m.read ? 'text-white' : 'text-white/60'}`}>✓✓</span>}
                   </div>
                 </div>

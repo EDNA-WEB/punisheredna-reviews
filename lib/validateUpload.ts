@@ -21,7 +21,7 @@ export function validateImageDataUrl(value: unknown): string | null {
   }
 
   if (value.length > MAX_BASE64_LENGTH) {
-    return 'Obrázok je príliš veľký. Skús menší alebo viac skomprimovaný súbor.';
+    return 'Obrázek je příliš velký. Zkus menší nebo více zkomprimovaný soubor.';
   }
 
   // Deklarovaný typ v "data:image/png;..." je len nálepka, čo si klient sám
@@ -37,10 +37,10 @@ export function validateImageDataUrl(value: unknown): string | null {
     const isGif = buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46;
     const isWebp = buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46;
     if (!isJpeg && !isPng && !isGif && !isWebp) {
-      return 'Súbor nevyzerá ako platný obrázok podporovaného formátu.';
+      return 'Soubor nevypadá jako platný obrázek podporovaného formátu.';
     }
   } catch {
-    return 'Súbor sa nepodarilo overiť ako platný obrázok.';
+    return 'Soubor se nepodařilo ověřit jako platný obrázek.';
   }
 
   return null;
@@ -53,7 +53,7 @@ export function validateSafeUrl(value: unknown): string | null {
   if (typeof value !== 'string') return 'Neplatný formát odkazu.';
   const trimmed = value.trim();
   if (!/^https?:\/\//i.test(trimmed)) {
-    return 'Odkaz musí začínať na http:// alebo https://.';
+    return 'Odkaz musí začínat na http:// nebo https://.';
   }
   return null;
 }

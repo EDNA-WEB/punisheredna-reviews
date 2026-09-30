@@ -39,7 +39,7 @@ export default async function MovieListPage({ params }: { params: { id: string }
         ) : (
           <IconUser className="w-4 h-4" />
         )}
-        {list.author.name} · {list.items.length} filmov
+        {list.author.name} · {list.items.length} filmů
       </Link>
 
       <MovieListGrid listId={list.id} initialItems={list.items} isOwn={isOwn} />

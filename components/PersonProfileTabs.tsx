@@ -32,7 +32,7 @@ export default function PersonProfileTabs({ bio, movies, news }: { bio: string |
               onClick={() => setBioExpanded((v) => !v)}
               className="text-sm font-semibold text-accent hover:underline mt-2"
             >
-              {bioExpanded ? 'Zobraziť menej' : 'Zobraziť viac'}
+              {bioExpanded ? 'Zobrazit méně' : 'Zobrazit více'}
             </button>
           )}
         </div>
@@ -78,7 +78,7 @@ export default function PersonProfileTabs({ bio, movies, news }: { bio: string |
       <div>
         <h3 className="font-display font-bold text-lg text-ink mb-4">Všetky filmy a seriály u nás</h3>
         {movies.length === 0 ? (
-          <p className="text-sm text-muted">Zatiaľ žiadne filmy priradené k tejto osobe.</p>
+          <p className="text-sm text-muted">Zatím žádné filmy přiřazené k této osobě.</p>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
             {movies.map((m) => (

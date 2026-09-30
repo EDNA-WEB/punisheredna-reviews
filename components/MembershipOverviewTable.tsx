@@ -11,7 +11,7 @@ export default function MembershipOverviewTable({ initialMembers }: { initialMem
   const [revokingId, setRevokingId] = useState<string | null>(null);
 
   async function revoke(userId: string) {
-    const confirmed = confirm('Naozaj chceš tomuto používateľovi okamžite vypnúť členstvo?');
+    const confirmed = confirm('Opravdu chceš tomuto uživateli okamžitě vypnout členství?');
     if (!confirmed) return;
 
     setRevokingId(userId);
@@ -25,7 +25,7 @@ export default function MembershipOverviewTable({ initialMembers }: { initialMem
       setMembers((prev) => prev.filter((m) => m.id !== userId));
       router.refresh();
     } catch {
-      alert('Vypnutie členstva zlyhalo. Skús to prosím znova.');
+      alert('Vypnutí členství se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setRevokingId(null);
     }
@@ -35,10 +35,10 @@ export default function MembershipOverviewTable({ initialMembers }: { initialMem
 
   return (
     <div>
-      <h2 className="text-sm font-bold text-ink mb-3">Prehľad členstiev</h2>
+      <h2 className="text-sm font-bold text-ink mb-3">Přehled členství</h2>
       <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
         {members.length === 0 ? (
-          <p className="text-sm text-muted p-4">Zatiaľ nikto nemá nastavené členstvo.</p>
+          <p className="text-sm text-muted p-4">Zatím nikdo nemá nastavené členství.</p>
         ) : (
           members.map((m) => {
             const until = new Date(m.membershipUntil);
@@ -51,7 +51,7 @@ export default function MembershipOverviewTable({ initialMembers }: { initialMem
                     active ? 'text-emerald-600 border-emerald-600/40' : 'text-muted border-line'
                   }`}
                 >
-                  {active ? 'Aktívne' : 'Vypršané'} — do {until.toLocaleDateString('sk-SK')}
+                  {active ? 'Aktívne' : 'Vypršané'} — do {until.toLocaleDateString('cs-CZ')}
                 </span>
                 <button
                   type="button"

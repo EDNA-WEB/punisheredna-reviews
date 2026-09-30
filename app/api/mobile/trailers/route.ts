@@ -26,6 +26,6 @@ export async function GET() {
     return NextResponse.json(trailers, { status: 200, headers: cdnHeaders(300) });
   } catch (error) {
     console.error('[api/mobile/trailers]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní trailerov.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání trailerů.' }, { status: 500 });
   }
 }

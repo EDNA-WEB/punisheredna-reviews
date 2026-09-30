@@ -71,7 +71,7 @@ export default function MessagesListClient({ conversations, myId }: { conversati
             <div className="flex items-center justify-between gap-2">
               <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
               <span className="text-[11px] text-muted flex-none">
-                {new Date(c.lastAt).toLocaleDateString('sk-SK', { timeZone: 'Europe/Bratislava' })}
+                {new Date(c.lastAt).toLocaleDateString('cs-CZ', { timeZone: 'Europe/Bratislava' })}
               </span>
             </div>
             <p className="text-xs text-muted truncate">

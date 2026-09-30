@@ -191,7 +191,7 @@ export function tryParseJsonInput(text: string): JsonParseResult | null {
   try {
     data = JSON.parse(trimmed);
   } catch {
-    return { error: 'Text vyzerá ako JSON, ale nedá sa spracovať (skontroluj čiarky a zátvorky).' };
+    return { error: 'Text vypadá jako JSON, ale nedá se zpracovat (zkontroluj čárky a závorky).' };
   }
 
   const items = Array.isArray(data) ? data : [data];
@@ -205,7 +205,7 @@ export function tryParseJsonInput(text: string): JsonParseResult | null {
     if (hasScraperShape || hasObjectArrayField) {
       return {
         error:
-          'Tento JSON vyzerá ako export z automatizovaného sťahovania (scrapingu) inej stránky, nie ako jednoduchý zoznam, čo si sám pripravil — takýto tvar nespracujem. Použi jednoduchý plochý formát, napr. [{"title": "Kmotr", "url": "https://..."}].'
+          'Tento JSON vypadá jako export z automatizovaného stahování (scrapingu) jiné stránky, ne jako jednoduchý seznam, který sis sám připravil — takový tvar nezpracuji. Použij jednoduchý plochý formát, např. [{"title": "Kmotr", "url": "https://..."}].'
       };
     }
   }

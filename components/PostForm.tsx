@@ -15,10 +15,10 @@ export default function PostForm({ threadId }: { threadId: string }) {
   if (!session) {
     return (
       <div className="border border-line rounded-xl p-5 text-center text-muted text-sm bg-surface">
-        <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>
-        {' '}alebo{' '}
-        <Link href="/register" className="text-accent font-semibold hover:underline">zaregistruj sa</Link>
-        {' '}a zapoj sa do diskusie.
+        <Link href="/login" className="text-accent font-semibold hover:underline">Přihlas se</Link>
+        {' '}nebo{' '}
+        <Link href="/register" className="text-accent font-semibold hover:underline">zaregistruj se</Link>
+        {' '}a zapoj se do diskuze.
       </div>
     );
   }
@@ -47,7 +47,7 @@ export default function PostForm({ threadId }: { threadId: string }) {
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Napíš odpoveď…" className="field-input min-h-[100px]" maxLength={3000} />
+      <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Napiš odpověď…" className="field-input min-h-[100px]" maxLength={3000} />
       {error && <div className="text-danger text-sm">{error}</div>}
       <button type="submit" disabled={loading} className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
         {loading ? 'Odosielam…' : 'Odpovedať'}

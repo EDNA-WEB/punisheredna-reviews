@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const meFull = await prisma.user.findUnique({ where: { id: me.id } });
     if (!meFull || meFull.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });

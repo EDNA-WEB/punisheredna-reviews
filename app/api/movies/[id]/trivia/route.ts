@@ -10,12 +10,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const { text } = await req.json();
-  if (!text || !String(text).trim()) return NextResponse.json({ error: 'Text nemôže byť prázdny.' }, { status: 400 });
-  if (String(text).length > 2000) return NextResponse.json({ error: 'Text je príliš dlhý (max. 2000 znakov).' }, { status: 400 });
+  if (!text || !String(text).trim()) return NextResponse.json({ error: 'Text nemůže být prázdný.' }, { status: 400 });
+  if (String(text).length > 2000) return NextResponse.json({ error: 'Text je příliš dlouhý (max. 2000 znaků).' }, { status: 400 });
 
   const count = await prisma.movieTrivia.count({ where: { movieId: params.id } });
   if (count >= 50) {
-    return NextResponse.json({ error: 'Zaujímavostí môže byť najviac 50.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zajímavostí může být nejvýše 50.' }, { status: 400 });
   }
 
   const trivia = await prisma.movieTrivia.create({

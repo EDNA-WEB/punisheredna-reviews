@@ -49,8 +49,8 @@ export default function ThemeToggle({ variant = 'default' }: { variant?: 'defaul
   return (
     <button
       onClick={toggle}
-      aria-label={isDark ? 'Prepnúť na svetlý vzhľad' : 'Prepnúť na tmavý vzhľad'}
-      title={isDark ? 'Prepnúť na svetlý vzhľad' : 'Prepnúť na tmavý vzhľad'}
+      aria-label={isDark ? 'Přepnout na světlý vzhled' : 'Přepnout na tmavý vzhled'}
+      title={isDark ? 'Přepnout na světlý vzhled' : 'Přepnout na tmavý vzhled'}
       className="w-8 h-8 rounded-full flex items-center justify-center text-ink hover:bg-surface transition-colors"
     >
       {isDark ? <IconSun className="w-3.5 h-3.5" /> : <IconMoon className="w-3.5 h-3.5" />}

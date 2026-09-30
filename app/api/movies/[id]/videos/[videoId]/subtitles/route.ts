@@ -17,10 +17,10 @@ export async function POST(req: Request, { params }: { params: { videoId: string
     return NextResponse.json({ error: 'Neplatný časový rozsah — koniec musí byť za začiatkom.' }, { status: 400 });
   }
   if (!text || !String(text).trim()) {
-    return NextResponse.json({ error: 'Text titulku nemôže byť prázdny.' }, { status: 400 });
+    return NextResponse.json({ error: 'Text titulku nemůže být prázdný.' }, { status: 400 });
   }
   if (String(text).length > 300) {
-    return NextResponse.json({ error: 'Titulok je príliš dlhý (max. 300 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Titulek je příliš dlouhý (max. 300 znaků).' }, { status: 400 });
   }
 
   const count = await prisma.videoSubtitle.count({ where: { movieVideoId: params.videoId } });

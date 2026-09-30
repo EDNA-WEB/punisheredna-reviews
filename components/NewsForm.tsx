@@ -90,7 +90,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
   async function submit(e: React.FormEvent, asDraft: boolean) {
     e.preventDefault();
     if (!title.trim()) {
-      setError('Zadaj prosím názov novinky.');
+      setError('Zadej prosím název novinky.');
       return;
     }
     if (tags.length < 5) {
@@ -134,26 +134,26 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
           onClick={() => setPreviewMode((p) => !p)}
           className="text-sm font-semibold text-ink border border-line px-4 py-2 rounded-full hover:border-accent hover:text-accent transition-colors"
         >
-          {previewMode ? '← Späť na úpravu' : '👁️ Zobraziť náhľad'}
+          {previewMode ? '← Zpět na úpravu' : '👁️ Zobrazit náhled'}
         </button>
       </div>
 
       {previewMode ? (
         <div className="max-w-2xl border border-line rounded-xl p-6 bg-card">
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">Takto bude článok vyzerať na webe</div>
+          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">Takto bude článek vypadat na webu</div>
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
           <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Názov novinky'}</h1>
           <div className="flex items-center gap-3 flex-wrap text-sm text-muted mb-6">
             <span className="flex items-center gap-1.5"><IconUser className="w-4 h-4" />KrálFilmu</span>
             <span className="flex items-center gap-1.5">
               <IconClock className="w-4 h-4" />
-              {new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+              {new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
             </span>
             <span className="flex items-center gap-1.5"><IconBook className="w-4 h-4" />{readingTime(body)} min čítania</span>
           </div>
           <div
             className="article-body text-lg leading-relaxed text-ink font-body mb-6"
-            dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatiaľ nič nenapísané…</p>' }}
+            dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatím nic nenapsáno…</p>' }}
           />
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
@@ -181,7 +181,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               maxLength={200}
-              placeholder="Krátky popis, čo sa zobrazí na karte novinky (1–2 vety)…"
+              placeholder="Krátký popis, který se zobrazí na kartě novinky (1–2 věty)…"
             />
 
             <ArticleEditor value={body} onChange={setBody} />
@@ -209,8 +209,8 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                   />
                   <p className="text-[11px] text-muted mt-1.5">
                     {publishAt
-                      ? 'Nezobrazí sa nikde na webe, kým tento čas nenastane.'
-                      : 'Necháš prázdne → zverejní sa okamžite.'}
+                      ? 'Nezobrazí se nikde na webu, dokud tento čas nenastane.'
+                      : 'Necháš prázdné → zveřejní se okamžitě.'}
                   </p>
                   {publishAt && (
                     <button type="button" onClick={() => setPublishAt('')} className="text-[11px] text-danger hover:underline mt-1">
@@ -235,7 +235,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     disabled={loading !== null}
                     className="w-full text-sm font-semibold text-ink border border-line px-4 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                   >
-                    {loading === 'draft' ? 'Ukladám…' : 'Uložiť ako koncept'}
+                    {loading === 'draft' ? 'Ukladám…' : 'Uložit jako koncept'}
                   </button>
                   <button
                     type="button"
@@ -295,15 +295,15 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     className="field-input-sm w-full"
                     value={movieQuery}
                     onChange={(e) => searchMovies(e.target.value)}
-                    placeholder="Píš názov filmu alebo seriálu…"
+                    placeholder="Piš název filmu nebo seriálu…"
                   />
                 )}
                 {movieQuery.trim().length >= 2 && !movieLabel && (
                   <div className="absolute left-4 right-4 mt-1 bg-card border border-line rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
                     {movieSearching ? (
-                      <p className="text-xs text-muted p-3">Hľadám…</p>
+                      <p className="text-xs text-muted p-3">Hledám…</p>
                     ) : movieResults.length === 0 ? (
-                      <p className="text-xs text-muted p-3">Nič sa nenašlo.</p>
+                      <p className="text-xs text-muted p-3">Nic se nenašlo.</p>
                     ) : (
                       movieResults.map((m) => (
                         <button
@@ -318,7 +318,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     )}
                   </div>
                 )}
-                <p className="text-[11px] text-muted mt-1.5">Zobrazí sa aj v profiloch hercov, ktorí v ňom hrali.</p>
+                <p className="text-[11px] text-muted mt-1.5">Zobrazí se i v profilech herců, kteří v něm hráli.</p>
               </div>
             </div>
           </div>

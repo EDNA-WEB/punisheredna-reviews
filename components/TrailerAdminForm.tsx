@@ -62,7 +62,7 @@ export default function TrailerAdminForm() {
   return (
     <form onSubmit={submit} className="max-w-lg space-y-4 border border-line rounded-xl p-5 bg-surface">
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Náhľadová fotka (nepovinné)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Náhledová fotka (nepovinné)</label>
         <label
           htmlFor="trailer-poster"
           className="block border-2 border-dashed border-line rounded-xl p-4 text-center text-muted text-xs cursor-pointer bg-cover bg-center min-h-[80px] flex items-center justify-center bg-card"

@@ -145,7 +145,7 @@ export default async function UsaBoxOfficePage() {
           {data?.updatedAt && (
             <>
               {' '}
-              · {t('boxoffice_usa.aktualizovane')} {new Date(data.updatedAt).toLocaleDateString('sk-SK')}
+              · {t('boxoffice_usa.aktualizovane')} {new Date(data.updatedAt).toLocaleDateString('cs-CZ')}
             </>
           )}
         </span>

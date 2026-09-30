@@ -11,7 +11,7 @@ export default async function GuestSiteCount() {
     <div className="flex justify-center pb-10 -mt-4">
       <div className="inline-flex items-baseline gap-2 rounded-full border border-line bg-card/80 backdrop-blur-sm px-5 py-2.5 shadow-sm">
         <span className="text-xs text-muted">{t('guest.na_webe_mame')}</span>
-        <span className="font-display font-extrabold text-xl text-ink tabular-nums">{new Intl.NumberFormat('sk-SK').format(totalMovies)}</span>
+        <span className="font-display font-extrabold text-xl text-ink tabular-nums">{new Intl.NumberFormat('cs-CZ').format(totalMovies)}</span>
         <span className="text-xs text-muted">{t('guest.filmov_a_serialov')}</span>
       </div>
     </div>

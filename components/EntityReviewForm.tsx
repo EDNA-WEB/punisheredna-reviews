@@ -35,7 +35,7 @@ export default function EntityReviewForm({ apiBase }: { apiBase: string }) {
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-accent-dark">
-        + Napísať recenziu
+        + Napsat recenzi
       </button>
     );
   }

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const qrSession = await prisma.qrLoginSession.findUnique({ where: { id } });
   if (!qrSession) return NextResponse.json({ error: 'Tento QR kód už neplatí.' }, { status: 404 });
   if (qrSession.status !== 'pending' || qrSession.expiresAt < new Date()) {
-    return NextResponse.json({ error: 'Tento QR kód už vypršal alebo bol už použitý.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento QR kód už vypršel nebo byl už použit.' }, { status: 400 });
   }
 
   // Atomická zmena "pending" → "approved" (WHERE sa vyhodnotí na úrovni
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     data: { status: 'approved', userId: (session.user as any).id }
   });
   if (count === 0) {
-    return NextResponse.json({ error: 'Tento QR kód už vypršal alebo bol už použitý.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento QR kód už vypršel nebo byl už použit.' }, { status: 400 });
   }
 
   await logAudit({

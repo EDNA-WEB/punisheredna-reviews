@@ -71,7 +71,7 @@ export async function ensureMyKeyPair(userId: string): Promise<CryptoKey> {
       });
       if (!res.ok) {
         localStorage.removeItem(storageKey);
-        throw new Error('Nepodarilo sa nahrať šifrovací kľúč na server.');
+        throw new Error('Nepodařilo se nahrát šifrovací klíč na server.');
       }
 
       return pair.privateKey;

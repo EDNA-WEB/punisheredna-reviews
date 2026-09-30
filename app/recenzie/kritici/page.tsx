@@ -31,13 +31,13 @@ export default async function CriticReviewsPage({ searchParams }: { searchParams
 
   return (
     <div className="pt-8">
-      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Späť na hlavnú stránku</Link>
+      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na hlavní stránku</Link>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Recenzie overených kritikov</h1>
-      <p className="text-muted mb-8">Recenzie od používateľov s odznakom Overený kritik.</p>
+      <p className="text-muted mb-8">Recenze od uživatelů s odznakem Ověřený kritik.</p>
 
       {reviews.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">
-          Zatiaľ žiadne recenzie od overených kritikov.
+          Zatím žádné recenze od ověřených kritiků.
         </div>
       ) : (
         <>

@@ -35,7 +35,7 @@ const CZECHOSLOVAKIA_END = new Date('1993-01-01T00:00:00Z');
 export async function GET(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const viewerId = me.id;
     const isAdmin = me.role === 'ADMIN';
 

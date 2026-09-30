@@ -27,7 +27,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
   }
 
   async function restore(revisionId: string) {
-    if (!confirm('Naozaj sa chceš vrátiť k tejto staršej verzii? Súčasný stav sa uloží ako nová história, takže sa dá vrátiť aj sem naspäť.')) return;
+    if (!confirm('Opravdu se chceš vrátit k této starší verzi? Současný stav se uloží jako nová historie, takže se dá vrátit i sem zpátky.')) return;
     setRestoring(revisionId);
     try {
       const res = await fetch(`${apiBase}/revisions`, {
@@ -36,10 +36,10 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
         body: JSON.stringify({ revisionId })
       });
       if (!res.ok) throw new Error();
-      alert('Obnovené. Stránka sa teraz znovu načíta s touto verziou.');
+      alert('Obnoveno. Stránka se teď znovu načte s touto verzí.');
       window.location.reload();
     } catch {
-      alert('Obnovenie zlyhalo. Skús to prosím znova.');
+      alert('Obnovení se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setRestoring(null);
     }
@@ -56,7 +56,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
           {loading ? (
             <p className="text-xs text-muted">Načítavam…</p>
           ) : !revisions || revisions.length === 0 ? (
-            <p className="text-xs text-muted">Zatiaľ žiadna staršia verzia — história sa začne ukladať po prvej úprave.</p>
+            <p className="text-xs text-muted">Zatím žádná starší verze — historie se začne ukládat po první úpravě.</p>
           ) : (
             <ul className="space-y-2">
               {revisions.map((r) => (
@@ -64,7 +64,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="text-xs text-ink">
                       <span className="font-semibold">{r.title}</span>
-                      <span className="text-muted"> · upravil(a) {r.editedBy?.name || 'neznámy'} · {new Date(r.createdAt).toLocaleString('sk-SK')}</span>
+                      <span className="text-muted"> · upravil(a) {r.editedBy?.name || 'neznámy'} · {new Date(r.createdAt).toLocaleString('cs-CZ')}</span>
                     </div>
                     <div className="flex items-center gap-2 flex-none">
                       <button

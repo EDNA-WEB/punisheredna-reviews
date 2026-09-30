@@ -53,12 +53,12 @@ export default async function PeopleResultsPage({ searchParams }: { searchParams
   return (
     <div className="pt-8">
       <Link href="/tvorcovia/filter" className="text-sm text-muted hover:text-accent inline-block mb-5">← Upraviť filter</Link>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Výsledky vyhľadávania</h1>
-      <p className="text-muted mb-8">{filtered.length} nájdených osôb.</p>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Výsledky vyhledávání</h1>
+      <p className="text-muted mb-8">{filtered.length} nalezených osob.</p>
 
       {filtered.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">
-          Nič sa nenašlo. Skús upraviť filter.
+          Nic se nenašlo. Zkus upravit filtr.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -71,7 +71,7 @@ export default async function PeopleResultsPage({ searchParams }: { searchParams
                 </div>
                 <div className="text-xs text-muted mt-0.5">{p.subRole || (p.role === 'ACTOR' ? 'Herec/herečka' : 'Tvorca')}</div>
               </div>
-              <div className="text-xs font-semibold text-muted flex-none">{p._count.followers} sledovateľov</div>
+              <div className="text-xs font-semibold text-muted flex-none">{p._count.followers} sledujících</div>
             </Link>
           ))}
         </div>

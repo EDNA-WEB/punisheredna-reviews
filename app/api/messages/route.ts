@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const senderId = (session.user as any).id;
     const sender = await prisma.user.findUnique({ where: { id: senderId } });
     if (!sender || sender.banned) {
-      return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     }
 
     const { receiverId, body, image } = await req.json();
@@ -26,10 +26,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Neplatný príjemca.' }, { status: 400 });
     }
     if ((!body || !String(body).trim()) && !image) {
-      return NextResponse.json({ error: 'Správa nemôže byť prázdna.' }, { status: 400 });
+      return NextResponse.json({ error: 'Zpráva nemůže být prázdná.' }, { status: 400 });
     }
     if (body && String(body).length > 3000) {
-      return NextResponse.json({ error: 'Správa je príliš dlhá.' }, { status: 400 });
+      return NextResponse.json({ error: 'Zpráva je příliš dlouhá.' }, { status: 400 });
     }
     if (body) {
       const spamReason = looksLikeSpam(String(body));
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
     const receiver = await prisma.user.findUnique({ where: { id: receiverId } });
-    if (!receiver) return NextResponse.json({ error: 'Príjemca sa nenašiel.' }, { status: 404 });
+    if (!receiver) return NextResponse.json({ error: 'Příjemce se nenašel.' }, { status: 404 });
 
     const blocked = await prisma.blockedUser.findFirst({
       where: {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       }
     });
     if (blocked) {
-      const message = blocked.blockerId === senderId ? 'Tohto používateľa si zablokoval.' : 'Tento používateľ ťa zablokoval.';
+      const message = blocked.blockerId === senderId ? 'Tohoto uživatele jsi zablokoval.' : 'Tento uživatel tě zablokoval.';
       return NextResponse.json({ error: message }, { status: 403 });
     }
 
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       });
       if (recentImage) {
         const waitMinutes = Math.ceil((recentImage.createdAt.getTime() + 20 * 60 * 1000 - Date.now()) / 60000);
-        return NextResponse.json({ error: `Fotku môžeš poslať len raz za 20 minút. Skús to znova o ${waitMinutes} min.` }, { status: 429 });
+        return NextResponse.json({ error: `Fotku můžeš poslat jen jednou za 20 minut. Zkus to znovu za ${waitMinutes} min.` }, { status: 429 });
       }
     }
 
@@ -120,9 +120,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ...message, body: body ? String(body).trim() : null, conversationStatus: conversation.status }, { status: 201 });
   } catch (err: any) {
     if (err?.code === 'P2002') {
-      return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });
+      return NextResponse.json({ error: 'Tato akce se už zpracovává nebo byla provedena.' }, { status: 409 });
     }
     console.error(err);
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

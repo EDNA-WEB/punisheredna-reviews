@@ -13,10 +13,10 @@ export async function POST(req: Request) {
 
   const { title, body, coverImage, isDraft, tags: rawTags } = await req.json();
   const trimmedTitle = String(title || '').trim();
-  if (!trimmedTitle) return NextResponse.json({ error: 'Vyplň prosím názov článku.' }, { status: 400 });
-  if (trimmedTitle.length > 150) return NextResponse.json({ error: 'Názov je príliš dlhý (max. 150 znakov).' }, { status: 400 });
-  if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text článku nemôže byť prázdny.' }, { status: 400 });
-  if (String(body).length > 30000) return NextResponse.json({ error: 'Text je príliš dlhý (max. 30 000 znakov).' }, { status: 400 });
+  if (!trimmedTitle) return NextResponse.json({ error: 'Vyplň prosím název článku.' }, { status: 400 });
+  if (trimmedTitle.length > 150) return NextResponse.json({ error: 'Název je příliš dlouhý (max. 150 znaků).' }, { status: 400 });
+  if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text článku nemůže být prázdný.' }, { status: 400 });
+  if (String(body).length > 30000) return NextResponse.json({ error: 'Text je příliš dlouhý (max. 30 000 znaků).' }, { status: 400 });
   const tags = Array.isArray(rawTags) ? rawTags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
   if (tags.length < 5) return NextResponse.json({ error: 'Musíš pridať aspoň 5 tagov.' }, { status: 400 });
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   }
 
   const count = await prisma.blogPost.count({ where: { authorId: userId } });
-  if (count >= 100) return NextResponse.json({ error: 'Máš už maximálny počet vlastných článkov (100).' }, { status: 400 });
+  if (count >= 100) return NextResponse.json({ error: 'Máš už maximální počet vlastních článků (100).' }, { status: 400 });
 
   const post = await prisma.blogPost.create({
     data: { authorId: userId, title: trimmedTitle, body: String(body).trim(), coverImage: coverUrl, isDraft: !!isDraft, tags }

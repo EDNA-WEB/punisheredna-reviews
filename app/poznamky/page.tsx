@@ -22,12 +22,12 @@ export default async function NotesPage() {
   return (
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Poznámky</h1>
-      <p className="text-muted mb-8">Súkromné poznámky, ktoré si napísal k filmom — vidíš ich len ty.</p>
+      <p className="text-muted mb-8">Soukromé poznámky, které sis napsal k filmům — vidíš je jen ty.</p>
 
       {notes.length === 0 ? (
         <EmptyState
           icon={<IconNote className="w-5 h-5" />}
-          title="Zatiaľ žiadne poznámky"
+          title="Zatím žádné poznámky"
           description="Pridaj si nejakú priamo na stránke filmu."
           actionLabel="Prezrieť filmy"
           actionHref="/recenzie"
@@ -50,7 +50,7 @@ export default async function NotesPage() {
                 </div>
                 <p className="text-sm text-muted mt-1.5 whitespace-pre-wrap line-clamp-3">{n.body}</p>
                 <div className="text-[11px] text-muted mt-2">
-                  Upravené {new Date(n.updatedAt).toLocaleDateString('sk-SK')}
+                  Upravené {new Date(n.updatedAt).toLocaleDateString('cs-CZ')}
                 </div>
               </div>
             </Link>

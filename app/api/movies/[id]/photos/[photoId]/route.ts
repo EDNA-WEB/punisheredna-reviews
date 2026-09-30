@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: { id: string; phot
     where: { id: params.photoId, movieId: params.id },
     select: { full: true }
   });
-  if (!photo) return NextResponse.json({ error: 'Fotka sa nenašla.' }, { status: 404 });
+  if (!photo) return NextResponse.json({ error: 'Fotka se nenašla.' }, { status: 404 });
   return NextResponse.json({ full: photo.full });
 }
 

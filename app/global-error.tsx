@@ -5,9 +5,9 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html lang="sk">
       <body style={{ fontFamily: 'system-ui, sans-serif' }}>
         <div style={{ paddingTop: '80px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Niečo sa pokazilo</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Něco se pokazilo</h1>
           <p style={{ color: '#6B6F76', marginBottom: '24px' }}>
-            Ospravedlňujeme sa, stránka sa nepodarilo správne načítať.
+            Omlouváme se, stránku se nepodařilo správně načíst.
           </p>
           <button
             onClick={reset}

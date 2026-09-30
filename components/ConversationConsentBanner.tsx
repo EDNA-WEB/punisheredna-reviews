@@ -30,7 +30,7 @@ export default function ConversationConsentBanner({ otherId, otherName }: { othe
   return (
     <div className="border border-line rounded-xl bg-surface p-4 mb-4 text-center">
       <p className="text-sm text-ink mb-3">
-        <strong>{otherName}</strong> ti chce napísať. Chceš s ňou/ním komunikovať?
+        <strong>{otherName}</strong> ti chce napsat. Chceš s ní/ním komunikovat?
       </p>
       <div className="flex items-center justify-center gap-2">
         <button

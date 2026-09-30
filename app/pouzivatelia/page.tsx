@@ -27,22 +27,22 @@ export default async function UsersPage({ searchParams }: { searchParams: { sort
         <h1 className="font-display font-extrabold text-3xl text-ink">Používatelia</h1>
         <div className="flex gap-2">
           <Link href="/pouzivatelia?sort=activity" className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border ${sortMode === 'activity' ? 'bg-night text-white border-night' : 'text-muted border-line hover:border-night'}`}>
-            Podľa aktivity
+            Podle aktivity
           </Link>
           <Link href="/pouzivatelia?sort=karma" className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border ${sortMode === 'karma' ? 'bg-night text-white border-night' : 'text-muted border-line hover:border-night'}`}>
-            Podľa karmy
+            Podle karmy
           </Link>
         </div>
       </div>
       <p className="text-muted mb-8">
         {sortMode === 'karma'
-          ? 'Rebríček podľa karmy — súčtu lajkov, ktoré dostali ich recenzie, komentáre a diskusné príspevky.'
-          : 'Rebríček podľa počtu príspevkov, komentárov a recenzií na stránke.'}
+          ? 'Žebříček podle karmy — součtu lajků, které dostaly jejich recenze, komentáře a diskuzní příspěvky.'
+          : 'Žebříček podle počtu příspěvků, komentářů a recenzí na webu.'}
       </p>
 
       {ranked.length === 0 ? (
         <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">
-          Zatiaľ nikto neprispel.
+          Zatím nikdo nepřispěl.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -63,7 +63,7 @@ export default async function UsersPage({ searchParams }: { searchParams: { sort
                   
                 </div>
                 <div className="text-xs text-muted mt-0.5">
-                  {u._count.reviews > 0 && `${u._count.reviews} recenzií · `}
+                  {u._count.reviews > 0 && `${u._count.reviews} recenzí · `}
                   {u._count.comments} komentárov · {u._count.posts + u._count.threads} príspevkov v diskusii
                 </div>
               </div>

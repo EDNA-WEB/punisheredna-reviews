@@ -24,7 +24,7 @@ export default function WatchlistButton({ movieId, initialInWatchlist }: { movie
       setInWatchlist(data.inWatchlist);
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }

@@ -23,7 +23,7 @@ export default function OnlineReportsList({ initialReports }: { initialReports: 
       if (!res.ok) throw new Error();
       setReports((prev) => prev.filter((r) => r.id !== id));
     } catch {
-      alert('Označenie ako vyriešené zlyhalo. Skús to prosím znova.');
+      alert('Označení jako vyřešené se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setResolvingId(null);
     }
@@ -45,7 +45,7 @@ export default function OnlineReportsList({ initialReports }: { initialReports: 
               </Link>
               {r.note && <p className="text-xs text-ink mt-1">„{r.note}"</p>}
               <p className="text-[11px] text-muted mt-1">
-                {r.reporterName ? `Nahlásil: ${r.reporterName}` : 'Anonymne'} · {new Date(r.createdAt).toLocaleDateString('sk-SK')}
+                {r.reporterName ? `Nahlásil: ${r.reporterName}` : 'Anonymne'} · {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
               </p>
             </div>
             <button

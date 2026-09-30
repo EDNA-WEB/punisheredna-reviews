@@ -15,9 +15,7 @@ export default async function NotificationSettingsPage() {
       <SettingsTabs />
       <div className="max-w-md border border-line rounded-xl bg-surface p-5">
         <p className="text-sm text-muted leading-relaxed">
-          Notifikácie (zvonček v navbare) sú aktívne pre všetkých automaticky — odpovede na komentáre, nové sledovanie a
-          podobne. Podrobné nastavenie, ktoré typy notifikácií chceš dostávať, tu zatiaľ nie je k dispozícii — pridáme ho
-          v budúcnosti.
+          Oznámení (zvoneček v navigaci) jsou aktivní pro všechny automaticky — odpovědi na komentáře, nové sledování a podobně. Podrobné nastavení, které typy oznámení chceš dostávat, tu zatím není k dispozici — přidáme ho v budoucnu.
         </p>
       </div>
     </div>

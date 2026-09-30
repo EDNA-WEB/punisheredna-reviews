@@ -82,7 +82,7 @@ export default async function KinoRocnyPrehladPage({ searchParams }: { searchPar
                 <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line overflow-hidden">
                   {sortedDays.map((dayKey) => {
                     const dayMovies = dayMap.get(dayKey)!;
-                    const dayLabel = new Date(dayKey).toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit' });
+                    const dayLabel = new Date(dayKey).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit' });
 
                     return dayMovies.map((m, i) => {
                       const percent = computePercent(m.ratings);

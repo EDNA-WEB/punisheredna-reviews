@@ -19,7 +19,7 @@ export default function MovieExportForm() {
       params.set('approvedOnly', String(approvedOnly));
 
       const res = await fetch(`/api/admin/movies/export?${params.toString()}`);
-      if (!res.ok) throw new Error('Export zlyhal.');
+      if (!res.ok) throw new Error('Export se nezdařil.');
 
       // Súbor príde priamo v tele odpovede (CSV) — vytvoríme z neho dočasný
       // odkaz na stiahnutie a hneď ho "klikneme", nič sa nezobrazuje v okne.
@@ -33,7 +33,7 @@ export default function MovieExportForm() {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err: any) {
-      alert(err.message || 'Export zlyhal. Skús to prosím znova.');
+      alert(err.message || 'Export se nezdařil. Zkus to prosím znovu.');
     } finally {
       setDownloading(false);
     }
@@ -42,8 +42,7 @@ export default function MovieExportForm() {
   return (
     <div className="bg-card border border-line rounded-xl p-6 max-w-xl">
       <p className="text-sm text-muted mb-6">
-        Vygeneruje zoznam filmov a seriálov vo formáte CSV (otvárateľné v Exceli), s možnosťou obmedziť
-        výsledok na konkrétny rozsah rokov alebo typ obsahu.
+        Vygeneruje seznam filmů a seriálů ve formátu CSV (otevíratelné v Excelu), s možností omezit výsledek na konkrétní rozsah let nebo typ obsahu.
       </p>
 
       <div className="grid grid-cols-2 gap-4 mb-4">

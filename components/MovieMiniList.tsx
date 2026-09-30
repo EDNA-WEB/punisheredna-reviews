@@ -10,7 +10,7 @@ export default function MovieMiniList({ title, items }: { title: string; items: 
       </div>
       <div className="p-3">
         {items.length === 0 ? (
-          <p className="text-sm text-muted p-1">Zatiaľ nič na zobrazenie.</p>
+          <p className="text-sm text-muted p-1">Zatím nic k zobrazení.</p>
         ) : (
           <div className="space-y-1">
             {items.map((m) => (

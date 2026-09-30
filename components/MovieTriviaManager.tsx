@@ -148,7 +148,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
                 className="field-input-sm w-full min-h-[160px] font-mono text-xs"
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
-                placeholder={'Vlož celý blok textu naraz (napr. skopírovaný z ČSFD) — koniec každej položky rozpoznám podľa mena prispievateľa v zátvorke na konci (napr. "(vojtaruzek)").'}
+                placeholder={'Vlož celý blok textu najednou (např. zkopírovaný z ČSFD) — konec každé položky rozpoznám podle jména přispěvatele v závorce na konci (např. "(vojtaruzek)").'}
               />
               <button
                 type="button"
@@ -180,10 +180,10 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
                   disabled={bulkSaving || bulkPreview.length === 0}
                   className="bg-accent text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50"
                 >
-                  {bulkSaving ? `Ukladám… (${bulkProgress}/${bulkPreview.length})` : `Potvrdiť a pridať všetkých ${bulkPreview.length}`}
+                  {bulkSaving ? `Ukladám… (${bulkProgress}/${bulkPreview.length})` : `Potvrdit a přidat všechny ${bulkPreview.length}`}
                 </button>
                 <button type="button" onClick={() => setBulkPreview(null)} disabled={bulkSaving} className="text-xs text-muted hover:underline">
-                  Späť na úpravu textu
+                  Zpět na úpravu textu
                 </button>
               </div>
             </>
@@ -210,7 +210,7 @@ export default function MovieTriviaManager({ movieId, initialTrivia }: { movieId
       )}
 
       {error && <div className="text-danger text-xs">{error}</div>}
-      <p className="text-xs text-muted">Ukladá sa okamžite, nezávisle od uloženia formulára nižšie.</p>
+      <p className="text-xs text-muted">Ukládá se okamžitě, nezávisle na uložení formuláře níže.</p>
     </div>
   );
 }

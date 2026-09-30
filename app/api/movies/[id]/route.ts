@@ -13,7 +13,7 @@ async function requireAdmin() {
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const movie = await prisma.movie.findUnique({ where: { id: params.id } });
-  if (!movie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
   return NextResponse.json(movie);
 }
 
@@ -23,7 +23,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
-    return NextResponse.json({ error: 'Názov filmu je povinný.' }, { status: 400 });
+    return NextResponse.json({ error: 'Název filmu je povinný.' }, { status: 400 });
   }
   const posterError = validateImageDataUrl(data.poster);
   if (posterError) {
@@ -45,7 +45,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       posterUrl = await uploadImage(posterUrl, 'movies/posters');
     } catch (err: any) {
       console.error('[Cloudinary] NAHRÁVANIE ZLYHALO:', err?.message || err);
-      return NextResponse.json({ error: `Nahratie obrázka na Cloudinary zlyhalo: ${err?.message || 'neznáma chyba'}` }, { status: 500 });
+      return NextResponse.json({ error: `Nahratie obrázka na Cloudinary zlyhalo: ${err?.message || 'neznámá chyba'}` }, { status: 500 });
     }
   }
 
@@ -115,7 +115,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         userId: before.submittedById,
         actorName: 'KrálFilmu',
         type: 'APPROVED',
-        text: `Tvoj návrh filmu "${before.title}" bol schválený a je teraz na webe! Ďakujeme za príspevok.`,
+        text: `Tvůj návrh filmu "${before.title}" byl schválen a je teď na webu! Děkujeme za příspěvek.`,
         link: `/movie/${updated.slug}`
       }
     });

@@ -46,7 +46,7 @@ export default function MobileLogoForm({ initial }: { initial: string | null }) 
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      setError('Uloženie zlyhalo. Skús to prosím znova.');
+      setError('Uložení se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export default function MobileLogoForm({ initial }: { initial: string | null }) 
         {logo ? (
           <img src={logo} alt="Logo appky" className="max-h-32 max-w-full object-contain" />
         ) : (
-          'Klikni a vyber obrázok loga (odporúčame štvorcový, min. 400×400, s priehľadným alebo tmavým pozadím)'
+          'Klikni a vyber obrázek loga (doporučujeme čtvercový, min. 400×400, s průhledným nebo tmavým pozadím)'
         )}
       </label>
       <input id="mobile-logo-upload" type="file" accept="image/*" className="hidden" onChange={handleUpload} />

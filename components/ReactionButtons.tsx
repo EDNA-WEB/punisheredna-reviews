@@ -59,7 +59,7 @@ export default function ReactionButtons({
       <button
         onClick={() => react(1)}
         disabled={loading}
-        aria-label="Páči sa mi"
+        aria-label="Líbí se mi"
         className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-full border transition-colors disabled:opacity-60 ${
           myValue === 1 ? 'text-white bg-emerald-600 border-emerald-600' : 'text-muted border-line hover:border-emerald-600 hover:text-emerald-600'
         }`}
@@ -70,7 +70,7 @@ export default function ReactionButtons({
       <button
         onClick={() => react(-1)}
         disabled={loading}
-        aria-label="Nepáči sa mi"
+        aria-label="Nelíbí se mi"
         className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-full border transition-colors disabled:opacity-60 ${
           myValue === -1 ? 'text-white bg-danger border-danger' : 'text-muted border-line hover:border-danger hover:text-danger'
         }`}

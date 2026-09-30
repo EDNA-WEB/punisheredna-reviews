@@ -49,17 +49,17 @@ export default function SiteStatsPanelClient({
           <div className="text-[11px] font-bold uppercase tracking-widest text-accent mb-4">Na webe máme</div>
 
           <div className="mb-5">
-            <div className="font-display font-extrabold text-4xl text-ink leading-none tabular-nums">{czechCount.toLocaleString('sk-SK')}</div>
-            <div className="text-sm text-muted mt-1.5 leading-snug">profilov filmov<br />v češtine</div>
+            <div className="font-display font-extrabold text-4xl text-ink leading-none tabular-nums">{czechCount.toLocaleString('cs-CZ')}</div>
+            <div className="text-sm text-muted mt-1.5 leading-snug">profilů filmů<br />v češtine</div>
           </div>
 
           <div className="mb-1">
-            <div className="font-display font-extrabold text-4xl text-ink leading-none tabular-nums">{onlineCount.toLocaleString('sk-SK')}</div>
-            <div className="text-sm text-muted mt-1.5 leading-snug">filmov a seriálov<br />dostupných online</div>
+            <div className="font-display font-extrabold text-4xl text-ink leading-none tabular-nums">{onlineCount.toLocaleString('cs-CZ')}</div>
+            <div className="text-sm text-muted mt-1.5 leading-snug">filmů a seriálů<br />dostupných online</div>
           </div>
 
           <div className="text-xs text-muted mt-4 pt-4 border-t border-line">
-            z celkovo <span className="font-semibold text-ink">{totalMovies.toLocaleString('sk-SK')}</span> titulov
+            z celkovo <span className="font-semibold text-ink">{totalMovies.toLocaleString('cs-CZ')}</span> titulov
           </div>
         </div>
       </div>

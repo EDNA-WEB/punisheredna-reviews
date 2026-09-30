@@ -90,7 +90,7 @@ export default async function ConversationPage({ params }: { params: { userId: s
   const isDeclined = conversation?.status === 'DECLINED';
 
   let disabledReason: string | null = null;
-  if (iBlockedThem) disabledReason = `Zablokoval/-a si ${other.name}. Cez "⋮" hore ho/ju môžeš odblokovať.`;
+  if (iBlockedThem) disabledReason = `Zablokoval/-a sis uživatele ${other.name}. Přes "⋮" nahoře ho/ji můžeš odblokovat.`;
   else if (isDeclined) disabledReason = `${other.name} odmietol/-la s tebou komunikovať.`;
   else if (isPendingForMe) disabledReason = 'Najprv rozhodni o žiadosti o komunikáciu vyššie.';
   else if (isPendingWaiting) disabledReason = 'Čakáš, kým druhá strana potvrdí, že s tebou chce komunikovať.';

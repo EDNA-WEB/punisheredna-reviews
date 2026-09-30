@@ -19,7 +19,7 @@ async function getOrCreateFavoritesList(userId: string) {
 export async function GET(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const list = await prisma.movieList.findFirst({
       where: { authorId: me.id, title: FAVORITES_LIST_TITLE },
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { movieId } = await req.json();
     if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const movieId = searchParams.get('movieId');

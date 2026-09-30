@@ -22,7 +22,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
     try {
       const res = await fetch(`/api/movies/${movieId}/seasons/import-tmdb`, { method: 'POST' });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+      if (!res.ok) throw new Error(data.error || 'Import se nezdařil.');
       router.refresh();
     } catch (err: any) {
       setImportError(err.message);
@@ -39,7 +39,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
       const res = await fetch(`/api/movies/${movieId}/sync-all-dates`, { method: 'POST' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Aktualizácia zlyhala.');
-      alert(`Hotovo — aktualizovaný dátum pri ${data.updatedSeasons} sériách a ${data.updatedEpisodes} epizódach. Obnov stránku, nech sa to prejaví.`);
+      alert(`Hotovo — aktualizovaný dátum pri ${data.updatedSeasons} sériách a ${data.updatedEpisodes} epizodách. Obnov stránku, ať se to projeví.`);
       router.refresh();
     } catch (err: any) {
       alert(err.message || 'Aktualizácia zlyhala.');
@@ -117,7 +117,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
       setSeasons((prev) => prev.map((s) => (s.id === seasonId ? { ...s, synopsis: synopsisDrafts[seasonId] ?? '' } : s)));
       setSynopsisFor(null);
     } catch {
-      alert('Uloženie obsahu zlyhalo. Skús to prosím znova.');
+      alert('Uložení obsahu se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setSavingSynopsis(null);
     }
@@ -185,7 +185,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
       setSeasons((prev) => prev.map((x) => (x.id === s.id ? { ...x, released: next } : x)));
       router.refresh();
     } catch {
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     } finally {
       setTogglingId(null);
     }
@@ -206,8 +206,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
     <div className="border border-line rounded-xl p-4 bg-surface space-y-3">
       <div className="text-xs font-bold uppercase tracking-wide text-muted">Série ({seasons.length})</div>
       <p className="text-xs text-muted -mt-2">
-        Seriál sa dá hodnotiť až od poslednej (najnovšej) série označenej ako "Vydaná". Nová séria je predvolene
-        nastavená bezpečne — kým ju ručne neoznačíš ako vydanú, hodnotenia zostávajú zamknuté.
+        Seriál lze hodnotit až od poslední (nejnovější) série označené jako "Vydaná". Nová série je ve výchozím stavu nastavená bezpečně — dokud ji ručně neoznačíš jako vydanou, hodnocení zůstávají zamčená.
       </p>
 
       {seasons.length > 0 && (
@@ -345,7 +344,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                           onClick={() => setOpenEpisodeFor((cur) => (cur === e.id ? null : e.id))}
                           className="text-[11px] text-accent hover:underline flex-none whitespace-nowrap"
                         >
-                          {openEpisodeFor === e.id ? 'Skryť' : 'Viac'}
+                          {openEpisodeFor === e.id ? 'Skryť' : 'Více'}
                         </button>
                       </div>
                       {openEpisodeFor === e.id && (
@@ -379,7 +378,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
             {importingTmdb ? 'Importujem série a epizódy…' : 'Importovať všetky série a epizódy z TMDb'}
           </button>
           <p className="text-[11px] text-muted mt-1.5">
-            Doplní chýbajúce série s ich epizódami (názov, obsah). Série, čo už máš pridané, sa nepreprepíšu.
+            Doplní chybějící série s jejich epizodami (název, obsah). Série, které už máš přidané, se nepřepíšou.
           </p>
           {importError && <p className="text-danger text-xs mt-1.5">{importError}</p>}
 
@@ -393,7 +392,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
               {syncingAllDates ? 'Aktualizujem dátumy…' : '📅 Aktualizovať dátumy vysielania pre celý seriál'}
             </button>
             <p className="text-[11px] text-muted mt-1.5">
-              Jedným kliknutím doplní/opraví dátum vysielania pri VŠETKÝCH sériách aj epizódach naraz — nemusíš klikať sériu po sérii.
+              Jedním kliknutím doplní/opraví datum vysílání u VŠECH sérií i epizod najednou — nemusíš klikat sérii po sérii.
             </p>
           </div>
         </div>
@@ -401,7 +400,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
 
       {!drafts ? (
         <div className="flex items-center gap-2">
-          <label className="text-xs text-ink">Koľko sérií chceš pridať?</label>
+          <label className="text-xs text-ink">Kolik sérií chceš přidat?</label>
           <input type="number" min="1" max="50" className="field-input-sm w-16" value={howMany} onChange={(e) => setHowMany(e.target.value)} />
           <button type="button" onClick={startAdding} className="text-xs font-semibold text-accent hover:underline">
             Pokračovať
@@ -419,7 +418,7 @@ export default function SeasonManager({ movieId, tmdbId, initialSeasons }: { mov
                 className="field-input-sm"
                 value={d.episodeCount}
                 onChange={(e) => updateDraft(i, 'episodeCount', e.target.value)}
-                placeholder="Počet epizód"
+                placeholder="Počet epizod"
               />
             </div>
           ))}

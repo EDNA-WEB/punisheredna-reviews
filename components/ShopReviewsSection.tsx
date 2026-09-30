@@ -41,7 +41,7 @@ export default function ShopReviewsSection({
       });
       setShowForm(false);
     } catch {
-      alert('Uloženie recenzie zlyhalo. Skús to prosím znova.');
+      alert('Uložení recenze se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setSaving(false);
     }
@@ -59,7 +59,7 @@ export default function ShopReviewsSection({
               <span className="text-muted">({reviews.length})</span>
             </div>
           ) : (
-            <p className="text-sm text-muted mt-1">Zatiaľ žiadne recenzie.</p>
+            <p className="text-sm text-muted mt-1">Zatím žádné recenze.</p>
           )}
         </div>
         {isLoggedIn ? (
@@ -67,11 +67,11 @@ export default function ShopReviewsSection({
             onClick={() => setShowForm((v) => !v)}
             className="text-sm font-semibold text-accent hover:underline flex-none"
           >
-            {myExistingReview ? 'Upraviť moju recenziu' : 'Napísať recenziu'}
+            {myExistingReview ? 'Upraviť moju recenziu' : 'Napsat recenzi'}
           </button>
         ) : (
           <Link href="/login" className="text-sm font-semibold text-accent hover:underline flex-none">
-            Prihlás sa a napíš recenziu
+            Přihlas se a napiš recenzi
           </Link>
         )}
       </div>
@@ -90,7 +90,7 @@ export default function ShopReviewsSection({
             className="field-input-sm w-full min-h-[70px]"
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Ako si bol spokojný so službou? (voliteľné)"
+            placeholder="Jak jsi byl spokojený se službou? (volitelné)"
           />
           <button
             onClick={submitReview}

@@ -22,7 +22,7 @@ async function freshStats(movieId: string) {
 export async function POST(req: Request) {
   try {
     const user = await getMobileUser(req);
-    if (!user) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!user) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     if (user.ratingsDisabled) {
       return NextResponse.json({ error: 'Administrátor ti omezil možnost hodnotit filmy.' }, { status: 403 });
     }
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const user = await getMobileUser(req);
-    if (!user) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!user) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const movieId = searchParams.get('movieId');

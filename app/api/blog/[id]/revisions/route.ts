@@ -39,7 +39,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const { revisionId } = await req.json();
   const revision = await prisma.articleRevision.findUnique({ where: { id: revisionId } });
   if (!revision || revision.blogPostId !== params.id) {
-    return NextResponse.json({ error: 'Verzia sa nenašla.' }, { status: 404 });
+    return NextResponse.json({ error: 'Verze se nenašla.' }, { status: 404 });
   }
 
   await prisma.articleRevision.create({

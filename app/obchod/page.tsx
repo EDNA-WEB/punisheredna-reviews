@@ -121,7 +121,7 @@ export default async function ShopPage({ searchParams }: { searchParams: { kateg
 
           {sorted.length === 0 && (
             <div className="border border-line rounded-xl p-10 text-center">
-              <p className="text-sm text-muted">V tejto kategórii zatiaľ nie sú žiadne produkty.</p>
+              <p className="text-sm text-muted">V této kategorii zatím nejsou žádné produkty.</p>
             </div>
           )}
         </div>

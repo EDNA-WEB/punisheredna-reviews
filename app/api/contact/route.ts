@@ -13,15 +13,15 @@ export async function POST(req: Request) {
     const senderId = (session.user as any).id;
     const sender = await prisma.user.findUnique({ where: { id: senderId } });
     if (!sender || sender.banned) {
-      return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     }
 
     const { body } = await req.json();
     if (!body || !String(body).trim()) {
-      return NextResponse.json({ error: 'Správa nemôže byť prázdna.' }, { status: 400 });
+      return NextResponse.json({ error: 'Zpráva nemůže být prázdná.' }, { status: 400 });
     }
     if (String(body).length > 3000) {
-      return NextResponse.json({ error: 'Správa je príliš dlhá (max. 3000 znakov).' }, { status: 400 });
+      return NextResponse.json({ error: 'Zpráva je příliš dlouhá (max. 3000 znaků).' }, { status: 400 });
     }
     const spamReason = looksLikeSpam(String(body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
@@ -29,13 +29,13 @@ export async function POST(req: Request) {
     // Vlastný, prísnejší limit len pre tento formulár: max. 2 správy za hodinu.
     if (!checkKeyRateLimit(`contact-form:${senderId}`, 60 * 60_000, 2)) {
       return NextResponse.json(
-        { error: 'Cez tento formulár môžeš poslať najviac 2 správy za hodinu. Skús to prosím neskôr.' },
+        { error: 'Přes tento formulář můžeš poslat nejvýše 2 zprávy za hodinu. Zkus to prosím později.' },
         { status: 429 }
       );
     }
 
     const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
-    if (!admin) return NextResponse.json({ error: 'Príjemcu sa nepodarilo nájsť.' }, { status: 500 });
+    if (!admin) return NextResponse.json({ error: 'Příjemce se nepodařilo najít.' }, { status: 500 });
 
     await prisma.message.create({
       data: { senderId, receiverId: admin.id, body: String(body).trim() }
@@ -44,6 +44,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err: any) {
     console.error(err);
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

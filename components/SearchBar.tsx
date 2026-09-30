@@ -92,9 +92,9 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
       {open && query.trim().length >= 2 && (
         <div className="absolute z-50 mt-2 w-full rounded-xl border border-line bg-card shadow-lg overflow-hidden text-ink max-h-[70vh] overflow-y-auto">
           {loading ? (
-            <div className="px-4 py-3 text-sm text-muted">Hľadám…</div>
+            <div className="px-4 py-3 text-sm text-muted">Hledám…</div>
           ) : !hasResults ? (
-            <div className="px-4 py-3 text-sm text-muted">Nič sa nenašlo pre „{query}“.</div>
+            <div className="px-4 py-3 text-sm text-muted">Nic se nenašlo pro „{query}“.</div>
           ) : (
             <>
               {movies.length > 0 && (

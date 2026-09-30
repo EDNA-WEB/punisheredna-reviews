@@ -12,7 +12,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
 
   const movie = await prisma.movie.findUnique({ where: { id: params.id }, select: { tmdbId: true } });
   if (!movie?.tmdbId) {
-    return NextResponse.json({ error: 'Tento seriál nie je prepojený s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento seriál není propojený s TMDb.' }, { status: 400 });
   }
 
   const existingSeasons = await prisma.season.findMany({ where: { movieId: params.id }, select: { number: true } });

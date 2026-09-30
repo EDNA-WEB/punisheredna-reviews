@@ -44,7 +44,7 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
       if (!res.ok) throw new Error();
       setSubmissions((prev) => prev.filter((s) => s.id !== id));
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setWorking(null);
     }
@@ -66,7 +66,7 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
               </Link>
               <div className="text-xs text-muted">
                 Od: <Link href={`/profile/${s.author.id}`} className="text-accent hover:underline">{s.author.name}</Link>
-                {' · '}{new Date(s.createdAt).toLocaleDateString('sk-SK')}
+                {' · '}{new Date(s.createdAt).toLocaleDateString('cs-CZ')}
               </div>
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wide text-accent bg-accent/10 px-2 py-1 rounded-full flex-none ml-auto">
@@ -75,7 +75,7 @@ export default function ContentSubmissionsAdmin({ initialSubmissions }: { initia
           </div>
           {MANUAL_TYPES.has(s.type) && (
             <p className="text-xs text-amber-600 mb-2">
-              ⚠ Tento typ sa neukladá automaticky nikam na web — schválenie len označí návrh ako vybavený. Údaj priraď ručne inde (napr. cez Administrácia → Odkazy), ak treba.
+              ⚠ Tento typ se neukládá automaticky nikam na web — schválení jen označí návrh jako vyřízený. Údaj přiřaď ručně jinde (např. přes Administrace → Odkazy), pokud je potřeba.
             </p>
           )}
           <textarea

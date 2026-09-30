@@ -48,7 +48,7 @@ export default function MobileWallpaperForm({ initial }: { initial: string | nul
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      setError('Uloženie zlyhalo. Skús to prosím znova.');
+      setError('Uložení se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }

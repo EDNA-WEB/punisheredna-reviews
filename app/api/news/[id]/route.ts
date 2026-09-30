@@ -17,7 +17,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
-    return NextResponse.json({ error: 'Názov je povinný.' }, { status: 400 });
+    return NextResponse.json({ error: 'Název je povinný.' }, { status: 400 });
   }
   const tags = Array.isArray(data.tags) ? data.tags.map((t: string) => String(t).trim().toLowerCase()).filter(Boolean) : [];
   if (tags.length < 5) {
@@ -25,7 +25,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 
   const before = await prisma.newsPost.findUnique({ where: { id: params.id } });
-  if (!before) return NextResponse.json({ error: 'Novinka sa nenašla.' }, { status: 404 });
+  if (!before) return NextResponse.json({ error: 'Novinka se nenašla.' }, { status: 404 });
 
   await prisma.articleRevision.create({
     data: {
@@ -75,7 +75,7 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
 
   const news = await prisma.newsPost.findUnique({ where: { id: params.id } });
-  if (!news) return NextResponse.json({ error: 'Novinka sa nenašla.' }, { status: 404 });
+  if (!news) return NextResponse.json({ error: 'Novinka se nenašla.' }, { status: 404 });
 
   await prisma.newsPost.delete({ where: { id: params.id } });
 

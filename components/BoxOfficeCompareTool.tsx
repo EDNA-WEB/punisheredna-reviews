@@ -68,7 +68,7 @@ function MoviePicker({ label, onPick, picked }: { label: string; onPick: (m: Mov
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        placeholder="Hľadaj film podľa názvu…"
+        placeholder="Hledej film podle názvu…"
       />
       {open && results.length > 0 && (
         <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-card border border-line rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
@@ -162,7 +162,7 @@ export default function BoxOfficeCompareTool() {
 
           {data.a.releaseYear !== data.b.releaseYear && (
             <p className="text-xs text-muted text-center mb-3 pb-3 border-b border-line">
-              Filmy vznikli v rôznych rokoch — pre férové porovnanie sú sumy nižšie prepočítané na dnešnú hodnotu peňazí (inflácia).
+              Filmy vznikly v různých letech — pro férové porovnání jsou částky níže přepočtené na dnešní hodnotu peněz (inflace).
             </p>
           )}
 
@@ -209,8 +209,8 @@ export default function BoxOfficeCompareTool() {
             {data.a.profitRatio !== null && data.b.profitRatio !== null ? (
               <p className="text-sm font-semibold text-ink">
                 {data.a.profitRatio === data.b.profitRatio
-                  ? 'Oba filmy dosiahli rovnakú návratnosť vzhľadom na svoje náklady.'
-                  : `${data.a.profitRatio > data.b.profitRatio ? data.a.movie.title : data.b.movie.title} bol úspešnejší — vyššia návratnosť vzhľadom na náklady${
+                  ? 'Oba filmy dosáhly stejné návratnosti vzhledem ke svým nákladům.'
+                  : `${data.a.profitRatio > data.b.profitRatio ? data.a.movie.title : data.b.movie.title} byl úspěšnější — vyšší návratnost vzhledem k nákladům${
                       data.a.releaseYear !== data.b.releaseYear ? ', prepočítané na dnešnú hodnotu peňazí' : ''
                     }.`}
               </p>

@@ -56,8 +56,8 @@ export async function applyReaction(
   const v = Number(value) === -1 ? -1 : 1;
 
   const target = await resolveReactionTarget(targetKey);
-  if (!target) return { status: 404, body: { error: 'Obsah sa nenašiel.' } };
-  if (target.ownerId === user.id) return { status: 403, body: { error: 'Na vlastný obsah nemôžeš reagovať.' } };
+  if (!target) return { status: 404, body: { error: 'Obsah se nenašel.' } };
+  if (target.ownerId === user.id) return { status: 403, body: { error: 'Na vlastní obsah nemůžeš reagovat.' } };
 
   const rateLimitError = await checkRateLimit('like', user.id, user.createdAt);
   if (rateLimitError) return { status: 429, body: { error: rateLimitError } };

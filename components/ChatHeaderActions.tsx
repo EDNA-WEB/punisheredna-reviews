@@ -22,7 +22,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
       router.push('/messages');
       router.refresh();
     } catch {
-      alert('Zmazanie zlyhalo. Skús to prosím znova.');
+      alert('Smazání se nezdařilo. Zkus to prosím znovu.');
       setDeleting(false);
     }
   }
@@ -49,7 +49,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
       setShowConfirm(false);
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
               }}
               className="w-full text-left px-4 py-3 text-sm font-medium text-ink hover:bg-surface transition-colors border-b border-line"
             >
-              🎨 Prispôsobiť vzhľad
+              🎨 Přizpůsobit vzhled
             </button>
             <button
               type="button"
@@ -92,7 +92,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
               }}
               className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-surface transition-colors border-b border-line ${blocked ? 'text-ink' : 'text-danger'}`}
             >
-              {blocked ? 'Odblokovať používateľa' : 'Zablokovať používateľa'}
+              {blocked ? 'Odblokovat uživatele' : 'Zablokovat uživatele'}
             </button>
             <button
               type="button"
@@ -125,7 +125,7 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
           <div className="bg-card border border-line rounded-xl p-5 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-display font-bold text-ink mb-2">Vymazať celú konverzáciu?</h3>
             <p className="text-sm text-muted mb-4">
-              Zmažú sa všetky správy medzi tebou a {otherName}, u oboch. Táto akcia sa nedá vrátiť späť.
+              Smažou se všechny zprávy mezi tebou a {otherName}, u obou. Tuto akci nelze vrátit zpět.
             </p>
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowDeleteConfirm(false)} className="text-sm font-semibold text-muted hover:text-ink px-4 py-2">
@@ -152,8 +152,8 @@ export default function ChatHeaderActions({ otherId, otherName, initiallyBlocked
             </h3>
             <p className="text-sm text-muted mb-4">
               {blocked
-                ? 'Táto osoba ti bude môcť opäť napísať a ty jej.'
-                : 'Táto osoba ti už nebude môcť napísať a ani ty jej. Kedykoľvek to môžeš vrátiť späť.'}
+                ? 'Tato osoba ti bude moci znovu napsat a ty jí.'
+                : 'Tato osoba ti už nebude moci napsat a ani ty jí. Kdykoli to můžeš vrátit zpět.'}
             </p>
             {blocked ? (
               <div className="flex justify-end gap-2">

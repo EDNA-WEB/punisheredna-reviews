@@ -52,7 +52,7 @@ export default function LikeButton({ target, initialLiked, initialCount }: { tar
       }`}
     >
       <IconHeart className="w-3.5 h-3.5" filled={liked} />
-      {count > 0 ? count : 'Páči sa mi'}
+      {count > 0 ? count : 'Líbí se mi'}
     </button>
   );
 }

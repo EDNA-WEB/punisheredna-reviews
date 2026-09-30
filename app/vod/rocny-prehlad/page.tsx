@@ -54,7 +54,7 @@ export default async function VodRocnyPrehladPage({ searchParams }: { searchPara
   return (
     <div className="pt-8 grid lg:grid-cols-[1fr_280px] gap-8 items-start">
       <div className="min-w-0">
-      <h1 className="font-display font-extrabold text-xl sm:text-3xl text-ink mb-6 text-center">Ročný prehľad VOD premiér</h1>
+      <h1 className="font-display font-extrabold text-xl sm:text-3xl text-ink mb-6 text-center">Roční přehled VOD premiér</h1>
 
       <VodTabs />
 
@@ -63,7 +63,7 @@ export default async function VodRocnyPrehladPage({ searchParams }: { searchPara
       </div>
 
       {sortedMonths.length === 0 ? (
-        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">V tomto roku zatiaľ nie sú žiadne VOD premiéry.</div>
+        <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">V tomto roce zatím nejsou žádné VOD premiéry.</div>
       ) : (
         <div className="space-y-6">
           {sortedMonths.map((monthIdx) => {
@@ -80,7 +80,7 @@ export default async function VodRocnyPrehladPage({ searchParams }: { searchPara
                 <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line overflow-hidden">
                   {sortedDays.map((dayKey) => {
                     const dayMovies = dayMap.get(dayKey)!;
-                    const dayLabel = new Date(dayKey).toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit' });
+                    const dayLabel = new Date(dayKey).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit' });
 
                     return dayMovies.map((m, i) => {
                       const percent = computePercent(m.ratings);

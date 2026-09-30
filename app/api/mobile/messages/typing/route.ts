@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const otherId = new URL(req.url).searchParams.get('userId');
     if (!otherId) return NextResponse.json({ error: 'Chýba userId.' }, { status: 400 });
 
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const { userId, typing } = await req.json();
     if (!userId) return NextResponse.json({ error: 'Chýba userId.' }, { status: 400 });
 

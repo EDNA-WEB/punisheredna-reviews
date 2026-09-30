@@ -16,7 +16,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!CATEGORIES.includes(category)) return NextResponse.json({ error: 'Neplatná kategória.' }, { status: 400 });
 
   const count = await prisma.movieVideo.count({ where: { movieId: params.id } });
-  if (count >= 30) return NextResponse.json({ error: 'Videí môže byť najviac 30.' }, { status: 400 });
+  if (count >= 30) return NextResponse.json({ error: 'Videí může být nejvýše 30.' }, { status: 400 });
 
   const video = await prisma.movieVideo.create({
     data: { movieId: params.id, url: String(url).trim(), category, title: title ? String(title).trim() : null, order: count }

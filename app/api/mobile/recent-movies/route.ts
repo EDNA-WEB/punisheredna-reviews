@@ -42,6 +42,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ movies: withRating, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(120) });
   } catch (error) {
     console.error('[api/mobile/recent-movies]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní filmov.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání filmů.' }, { status: 500 });
   }
 }

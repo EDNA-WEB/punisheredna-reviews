@@ -78,6 +78,6 @@ export async function GET(req: Request) {
       }, { status: 200, headers: cdnHeaders(60) });
   } catch (error) {
     console.error('[api/mobile/reviews]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní recenzí.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání recenzí.' }, { status: 500 });
   }
 }

@@ -19,7 +19,7 @@ export default function WatchedEyeToggle({ apiBase, initialWatched }: { apiBase:
       router.refresh();
     } catch {
       setWatched(!next);
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -30,8 +30,8 @@ export default function WatchedEyeToggle({ apiBase, initialWatched }: { apiBase:
       type="button"
       onClick={toggle}
       disabled={loading}
-      title={watched ? 'Označené ako videné — klikni pre zrušenie' : 'Označiť ako videné'}
-      aria-label={watched ? 'Označené ako videné' : 'Označiť ako videné'}
+      title={watched ? 'Označeno jako viděné — klikni pro zrušení' : 'Označit jako viděné'}
+      aria-label={watched ? 'Označeno jako viděné' : 'Označit jako viděné'}
       className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors disabled:opacity-50 ${
         watched ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-card/90 border-line text-ink hover:border-accent hover:text-accent'
       }`}

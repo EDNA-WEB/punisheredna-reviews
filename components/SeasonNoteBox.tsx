@@ -18,7 +18,7 @@ export default function SeasonNoteBox({ seasonId, initialBody }: { seasonId: str
       if (!res.ok) throw new Error();
       setSaved(true);
     } catch {
-      alert('Uloženie poznámky zlyhalo. Skús to prosím znova.');
+      alert('Uložení poznámky se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }

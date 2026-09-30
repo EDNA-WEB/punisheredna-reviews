@@ -54,7 +54,7 @@ export default function RichTextBlocks({ addMoreLabel, onChange }: { addMoreLabe
       {blocks.map((block, i) => (
         <div key={i} className="mb-3">
           <div className="flex items-center gap-1 border border-line border-b-0 rounded-t-xl px-2 py-1.5 bg-surface">
-            <button type="button" onClick={undo} disabled={historyIndex === 0} title="Späť" className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card disabled:opacity-30">↶</button>
+            <button type="button" onClick={undo} disabled={historyIndex === 0} title="Zpět" className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card disabled:opacity-30">↶</button>
             <button type="button" onClick={redo} disabled={historyIndex >= history.length - 1} title="Vpred" className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card disabled:opacity-30">↷</button>
             <span className="w-px h-5 bg-line mx-1" />
             <button

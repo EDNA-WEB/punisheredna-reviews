@@ -40,7 +40,7 @@ export async function PATCH(req: Request) {
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
 
   const { items } = await req.json();
-  if (!Array.isArray(items)) return NextResponse.json({ error: 'Neplatné dáta.' }, { status: 400 });
+  if (!Array.isArray(items)) return NextResponse.json({ error: 'Neplatná data.' }, { status: 400 });
 
   await Promise.all(
     items.map((item: { key: string; en?: string; cs?: string }) =>

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, deleted: true });
   }
   if (text.length > 2000) {
-    return NextResponse.json({ error: 'Poznámka môže mať najviac 2000 znakov.' }, { status: 400 });
+    return NextResponse.json({ error: 'Poznámka může mít nejvýše 2000 znaků.' }, { status: 400 });
   }
 
   const note = await prisma.seasonNote.upsert({

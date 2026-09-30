@@ -8,13 +8,13 @@ export default async function ActorsPage() {
 
   return (
     <div className="pt-8">
-      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Späť na hlavnú stránku</Link>
+      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na hlavní stránku</Link>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Herci a herečky</h1>
-      <p className="text-muted mb-8">Zoradení podľa počtu sledovateľov.</p>
+      <p className="text-muted mb-8">Seřazení podle počtu sledujících.</p>
 
       {actors.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">
-          Zatiaľ žiadni herci.
+          Zatím žádní herci.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -25,7 +25,7 @@ export default async function ActorsPage() {
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-ink truncate">{p.name}</div>
               </div>
-              <div className="text-xs font-semibold text-muted flex-none">{p._count.followers} sledovateľov</div>
+              <div className="text-xs font-semibold text-muted flex-none">{p._count.followers} sledujících</div>
             </Link>
           ))}
         </div>

@@ -12,10 +12,10 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
 
   const message = await prisma.message.findUnique({ where: { id: params.id } });
   if (!message || message.receiverId !== myId) {
-    return NextResponse.json({ error: 'Správa sa nenašla.' }, { status: 404 });
+    return NextResponse.json({ error: 'Zpráva se nenašla.' }, { status: 404 });
   }
   if (!message.image) {
-    return NextResponse.json({ error: 'Táto fotka už bola zobrazená a je nedostupná.' }, { status: 410 });
+    return NextResponse.json({ error: 'Tato fotka už byla zobrazena a je nedostupná.' }, { status: 410 });
   }
 
   // Prvé otvorenie spustí 1-minútové okno — počas neho sa fotka dá zobraziť aj
@@ -30,7 +30,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   const elapsed = Date.now() - message.imageViewedAt.getTime();
   if (elapsed > GRACE_PERIOD_MS) {
     await prisma.message.update({ where: { id: params.id }, data: { image: null } });
-    return NextResponse.json({ error: 'Táto fotka už bola zobrazená a je nedostupná.' }, { status: 410 });
+    return NextResponse.json({ error: 'Tato fotka už byla zobrazena a je nedostupná.' }, { status: 410 });
   }
 
   return NextResponse.json({ image: message.image });

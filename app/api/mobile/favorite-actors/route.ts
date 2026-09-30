@@ -11,7 +11,7 @@ const MAX_FAVORITE_ACTORS = 10;
 export async function GET(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const follows = await prisma.personFollow.findMany({
       where: { userId: me.id },
@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { personId } = await req.json();
     if (!personId) return NextResponse.json({ error: 'Chýba personId.' }, { status: 400 });

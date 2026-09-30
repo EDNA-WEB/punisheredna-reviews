@@ -17,7 +17,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const comment = await prisma.comment.findUnique({ where: { id: params.id } });
-  if (!comment) return NextResponse.json({ error: 'Komentár sa nenašiel.' }, { status: 404 });
+  if (!comment) return NextResponse.json({ error: 'Komentář se nenašel.' }, { status: 404 });
 
   const { emoji } = await req.json();
   if (!ALLOWED_EMOJIS.includes(emoji)) {

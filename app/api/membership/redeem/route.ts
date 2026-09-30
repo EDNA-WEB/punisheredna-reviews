@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const userId = (session.user as any).id;
   const { code } = await req.json();
   if (!code || typeof code !== 'string') {
-    return NextResponse.json({ error: 'Zadaj prosím kód.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej prosím kód.' }, { status: 400 });
   }
 
   const result = await redeemMembershipCode(userId, code);

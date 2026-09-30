@@ -9,7 +9,7 @@ export default function UserBanToggle({ id, banned }: { id: string; banned: bool
 
   async function toggle() {
     const action = banned ? 'odblokovať' : 'zablokovať';
-    if (!confirm(`Naozaj chceš tohto používateľa ${action}?`)) return;
+    if (!confirm(`Opravdu chceš tohoto uživatele ${action}?`)) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/users/${id}`, {
@@ -20,7 +20,7 @@ export default function UserBanToggle({ id, banned }: { id: string; banned: bool
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }

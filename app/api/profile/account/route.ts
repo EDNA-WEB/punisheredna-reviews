@@ -15,7 +15,7 @@ export async function PATCH(req: Request) {
   const userId = (session.user as any).id;
 
   if (!checkKeyRateLimit(`account-settings:${userId}`, 60_000, 15)) {
-    return NextResponse.json({ error: 'Príliš veľa zmien za krátky čas.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho změn za krátkou dobu.' }, { status: 429 });
   }
 
   const body = await req.json();
@@ -25,14 +25,14 @@ export async function PATCH(req: Request) {
     if (field in body) {
       const value = body[field];
       if (value && String(value).length > 100) {
-        return NextResponse.json({ error: 'Jedna z hodnôt je príliš dlhá.' }, { status: 400 });
+        return NextResponse.json({ error: 'Jedna z hodnot je příliš dlouhá.' }, { status: 400 });
       }
       data[field] = value ? String(value).trim() : null;
     }
   }
 
   if ('tagline' in body && body.tagline && String(body.tagline).length > 50) {
-    return NextResponse.json({ error: '"Kto som / čím som" môže mať najviac 50 znakov.' }, { status: 400 });
+    return NextResponse.json({ error: '"Kdo jsem / čím jsem" může mít nejvýše 50 znaků.' }, { status: 400 });
   }
 
   for (const field of URL_FIELDS) {

@@ -11,7 +11,7 @@ export default function ThankYouPersonPage() {
       <p className="text-muted mb-8">
         Osobu sme prijali a čaká na schválenie administrátorom. Kým ju schváli, ostatní návštevníci ju na webe neuvidia.
       </p>
-      <Link href="/" className="text-accent font-semibold hover:underline">Späť na hlavnú stránku</Link>
+      <Link href="/" className="text-accent font-semibold hover:underline">Zpět na hlavní stránku</Link>
     </div>
   );
 }

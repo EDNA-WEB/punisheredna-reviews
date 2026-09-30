@@ -16,15 +16,15 @@ async function requireAuthorOrAdmin(reviewId: string) {
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
-  if (!existing) return NextResponse.json({ error: 'Recenzia sa nenašla.' }, { status: 404 });
+  if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
 
   const data = await req.json();
   if (!data.body || !String(data.body).trim()) {
-    return NextResponse.json({ error: 'Text recenzie nemôže byť prázdny.' }, { status: 400 });
+    return NextResponse.json({ error: 'Text recenze nemůže být prázdný.' }, { status: 400 });
   }
   if (String(data.body).length > 20000) {
-    return NextResponse.json({ error: 'Text recenzie je príliš dlhý (max. 20 000 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
   }
 
   const updated = await prisma.review.update({
@@ -46,7 +46,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
-  if (!existing) return NextResponse.json({ error: 'Recenzia sa nenašla.' }, { status: 404 });
+  if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
 
   await prisma.review.delete({ where: { id: params.id } });

@@ -45,15 +45,15 @@ export default async function FavoritesPage() {
 
   return (
     <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Obľúbení používatelia</h1>
-      <p className="text-muted mb-8">Čo hodnotili a k čomu napísali recenziu ľudia, ktorých sleduješ.</p>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Oblíbení uživatelé</h1>
+      <p className="text-muted mb-8">Co hodnotili a k čemu napsali recenzi lidé, které sleduješ.</p>
 
       {withActivity.length === 0 ? (
         <EmptyState
           icon={<IconHeartOutline className="w-5 h-5" />}
-          title="Zatiaľ nikoho nemáš v obľúbených"
+          title="Zatím nikoho nemáš v oblíbených"
           description="Pridaj si niekoho cez tlačidlo na jeho profile."
-          actionLabel="Prezrieť používateľov"
+          actionLabel="Prohlédnout uživatele"
           actionHref="/pouzivatelia"
         />
       ) : (
@@ -76,13 +76,13 @@ export default async function FavoritesPage() {
               </Link>
 
               {ratings.length === 0 && reviews.length === 0 ? (
-                <p className="text-sm text-muted">Zatiaľ žiadna aktivita.</p>
+                <p className="text-sm text-muted">Zatím žádná aktivita.</p>
               ) : (
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-2.5">Ohodnotil</div>
                     {ratings.length === 0 ? (
-                      <p className="text-sm text-muted">Zatiaľ nič.</p>
+                      <p className="text-sm text-muted">Zatím nic.</p>
                     ) : (
                       <div className="space-y-2.5">
                         {ratings.map((r) => (
@@ -101,7 +101,7 @@ export default async function FavoritesPage() {
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-2.5">Napísal recenziu</div>
                     {reviews.length === 0 ? (
-                      <p className="text-sm text-muted">Zatiaľ žiadna.</p>
+                      <p className="text-sm text-muted">Zatím žádná.</p>
                     ) : (
                       <div className="space-y-2.5">
                         {reviews.map((r) => (
@@ -109,7 +109,7 @@ export default async function FavoritesPage() {
                             <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={r.movie.poster ? { backgroundImage: `url('${r.movie.poster}')` } : undefined} />
                             <div className="min-w-0">
                               <div className="text-sm font-semibold text-ink truncate">{r.movie.title}</div>
-                              <div className="text-[11px] text-muted">{new Date(r.createdAt).toLocaleDateString('sk-SK')}</div>
+                              <div className="text-[11px] text-muted">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
                             </div>
                           </Link>
                         ))}

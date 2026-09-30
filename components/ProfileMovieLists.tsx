@@ -64,7 +64,7 @@ export default function ProfileMovieLists({ lists: initialLists, isOwn }: { list
       )}
 
       {lists.length === 0 ? (
-        <p className="text-sm text-muted">Zatiaľ žiadne zoznamy.</p>
+        <p className="text-sm text-muted">Zatím žádné seznamy.</p>
       ) : (
         <div className="space-y-4">
           {lists.map((l) => (

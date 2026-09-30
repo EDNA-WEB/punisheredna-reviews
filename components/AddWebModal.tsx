@@ -9,7 +9,7 @@ export default function AddWebModal({ movieId, movieTitle, movieYear, onClose }:
 
   async function handleSubmit() {
     if (!url.trim() || !/^https?:\/\//i.test(url.trim())) {
-      return { ok: false, error: 'Zadaj platný odkaz (musí začínať na http:// alebo https://).' };
+      return { ok: false, error: 'Zadej platný odkaz (musí začínat na http:// nebo https://).' };
     }
     const body = name.trim() ? `${name.trim()}: ${url.trim()}` : url.trim();
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {

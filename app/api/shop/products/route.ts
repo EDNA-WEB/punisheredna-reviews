@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   const data = await req.json();
   if (!data.title?.trim() || !data.categoryId) {
-    return NextResponse.json({ error: 'Chýba názov alebo kategória.' }, { status: 400 });
+    return NextResponse.json({ error: 'Chybí název nebo kategorie.' }, { status: 400 });
   }
 
   let slug = slugify(data.title) || 'produkt';

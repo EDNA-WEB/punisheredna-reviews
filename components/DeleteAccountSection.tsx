@@ -10,7 +10,7 @@ export default function DeleteAccountSection() {
   const [loading, setLoading] = useState(false);
 
   async function deleteAccount() {
-    if (!confirm('Toto naozaj nezvratne zmaže tvoj účet — prihlásiť sa ním už nepôjde. Tvoje recenzie a príspevky zostanú zachované, ale bez tvojho mena a fotky. Pokračovať?')) {
+    if (!confirm('Toto opravdu nevratně smaže tvůj účet — přihlásit se jím už nepůjde. Tvoje recenze a příspěvky zůstanou zachované, ale bez tvého jména a fotky. Pokračovat?')) {
       return;
     }
     setLoading(true);
@@ -41,11 +41,10 @@ export default function DeleteAccountSection() {
       ) : (
         <div className="space-y-3 max-w-xs">
           <p className="text-xs text-muted leading-relaxed">
-            Tvoje recenzie, komentáre a príspevky zostanú na webe zachované, ale namiesto tvojej prezývky sa pri nich
-            zobrazí "Zmazaný používateľ" — bez fotky a bez akýchkoľvek osobných údajov. Túto akciu nejde vrátiť späť.
+            Tvoje recenze, komentáře a příspěvky zůstanou na webu zachované, ale místo tvé přezdívky se u nich zobrazí "Smazaný uživatel" — bez fotky a bez jakýchkoli osobních údajů. Tuto akci nelze vrátit zpět.
           </p>
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1">Zadaj svoje heslo pre potvrdenie</label>
+            <label className="block text-xs font-semibold text-ink mb-1">Zadej své heslo pro potvrzení</label>
             <input
               type="password"
               className="field-input-sm"

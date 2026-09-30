@@ -29,7 +29,7 @@ export default function EditReviewModal({
         >
           ✕
         </button>
-        <h2 className="font-display font-extrabold text-2xl text-ink mb-1">{reviewId ? 'Upraviť recenziu' : 'Napísať recenziu'}</h2>
+        <h2 className="font-display font-extrabold text-2xl text-ink mb-1">{reviewId ? 'Upraviť recenziu' : 'Napsat recenzi'}</h2>
         <p className="text-muted mb-6">{title}</p>
         <ReviewForm
           initial={{ id: reviewId || undefined, movieId, body: initialBody, rating: initialRating }}

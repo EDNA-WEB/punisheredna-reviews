@@ -61,7 +61,7 @@ export default function MovieGallery({ movieId, photos, noHeading }: { movieId: 
             <>
               <button
                 onClick={() => step(-1)}
-                aria-label="Predchádzajúca"
+                aria-label="Předchozí"
                 className="absolute left-2 sm:left-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center text-xl z-10 hover:bg-white/20"
               >
                 ‹

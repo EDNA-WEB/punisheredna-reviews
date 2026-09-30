@@ -68,7 +68,7 @@ export default function BoxOfficeStatus({
   );
   if (!stats) return null;
 
-  const l = labels || { ciel: 'cieľ', ziskovy: 'Ziskový', nedosiahnute: 'Stratový' };
+  const l = labels || { ciel: 'cíl', ziskovy: 'Ziskový', nedosiahnute: 'Ztrátový' };
   const pct = Math.min(100, Math.round((stats.ratio || 0) * 100));
   const hasBreakdown = !!(domesticBoxOfficeN || internationalBoxOfficeN);
 
@@ -140,8 +140,8 @@ export default function BoxOfficeStatus({
           type="button"
           onClick={() => setShowInfo((v) => !v)}
           className="text-muted hover:text-accent flex-none"
-          aria-label="Ako sa to počíta?"
-          title="Ako sa to počíta?"
+          aria-label="Jak se to počítá?"
+          title="Jak se to počítá?"
         >
           <IconInfo className="w-3.5 h-3.5" />
         </button>
@@ -149,9 +149,9 @@ export default function BoxOfficeStatus({
 
       {showInfo && (
         <div className="mb-2 p-2.5 rounded-lg bg-surface border border-line text-[11px] text-ink space-y-1.5 leading-snug">
-          <p className="font-semibold text-ink">Ako sa počíta zisk štúdia</p>
+          <p className="font-semibold text-ink">Jak se počítá zisk studia</p>
           <p className="text-muted">
-            Kiná si nechávajú väčšinu z predaných lístkov — štúdiu sa vracia len jeho podiel, ktorý sa líši podľa regiónu.
+            Kina si nechávají většinu z prodaných vstupenek — studiu se vrací jen jeho podíl, který se liší podle regionu.
           </p>
           <div className="space-y-0.5 pt-1 border-t border-line">
             {hasCountryBreakdown ? (
@@ -163,7 +163,7 @@ export default function BoxOfficeStatus({
                 )}
               </>
             ) : (
-              <div className="flex justify-between"><span>Celosvetové tržby × 40 % (odhad, bez rozpadu podľa krajín)</span><span className="font-semibold">{formatMoney(stats.earned)} → {formatMoney(stats.studioTheatricalRevenue)}</span></div>
+              <div className="flex justify-between"><span>Celosvětové tržby × 40 % (odhad, bez rozpadu podle zemí)</span><span className="font-semibold">{formatMoney(stats.earned)} → {formatMoney(stats.studioTheatricalRevenue)}</span></div>
             )}
             <div className="flex justify-between font-semibold pt-1 border-t border-line"><span>Podiel štúdia z kín</span><span>{formatMoney(stats.studioTheatricalRevenue)}</span></div>
             {stats.ancillaryRevenue > 0 && (
@@ -176,7 +176,7 @@ export default function BoxOfficeStatus({
             </div>
           </div>
           <p className="text-muted pt-1 border-t border-line">
-            Rýchly orientačný ukazovateľ: film musí celosvetovo v kinách zarobiť aspoň 2,5-násobok rozpočtu ({formatMoney(stats.target)}), aby sa rátal za úspešný pri prvom pohľade — momentálne na {pct}%.
+            Rychlý orientační ukazatel: film musí celosvětově v kinech vydělat alespoň 2,5násobek rozpočtu ({formatMoney(stats.target)}), aby se počítal za úspěšný na první pohled — momentálně na {pct}%.
           </p>
         </div>
       )}

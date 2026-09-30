@@ -8,7 +8,7 @@ const VALID = ['ONLY_ME', 'EVERYONE', 'LOGGED_IN', 'ONLY_FAVORITES'];
 
 export async function GET(req: Request) {
   const me = await getMobileUser(req);
-  if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+  if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
   const user = await prisma.user.findUnique({ where: { id: me.id }, select: { favoritesVisibility: true } });
   return NextResponse.json({ visibility: user?.favoritesVisibility || 'EVERYONE' }, { status: 200 });
 }
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { visibility } = await req.json();
     if (!VALID.includes(visibility)) return NextResponse.json({ error: 'Neplatná hodnota.' }, { status: 400 });

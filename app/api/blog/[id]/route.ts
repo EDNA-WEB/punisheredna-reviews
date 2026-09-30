@@ -13,7 +13,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const isAdmin = (session.user as any).role === 'ADMIN';
 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
-  if (!post) return NextResponse.json({ error: 'Článok sa nenašiel.' }, { status: 404 });
+  if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
   if (post.authorId !== userId && !isAdmin) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }
@@ -23,13 +23,13 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
   if (title !== undefined) {
     const trimmedTitle = String(title || '').trim();
-    if (!trimmedTitle) return NextResponse.json({ error: 'Vyplň prosím názov článku.' }, { status: 400 });
-    if (trimmedTitle.length > 150) return NextResponse.json({ error: 'Názov je príliš dlhý (max. 150 znakov).' }, { status: 400 });
+    if (!trimmedTitle) return NextResponse.json({ error: 'Vyplň prosím název článku.' }, { status: 400 });
+    if (trimmedTitle.length > 150) return NextResponse.json({ error: 'Název je příliš dlouhý (max. 150 znaků).' }, { status: 400 });
     data.title = trimmedTitle;
   }
   if (body !== undefined) {
-    if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text článku nemôže byť prázdny.' }, { status: 400 });
-    if (String(body).length > 30000) return NextResponse.json({ error: 'Text je príliš dlhý (max. 30 000 znakov).' }, { status: 400 });
+    if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text článku nemůže být prázdný.' }, { status: 400 });
+    if (String(body).length > 30000) return NextResponse.json({ error: 'Text je příliš dlouhý (max. 30 000 znaků).' }, { status: 400 });
     data.body = String(body).trim();
   }
   if (coverImage !== undefined) {
@@ -93,7 +93,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   const isAdmin = (session.user as any).role === 'ADMIN';
 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
-  if (!post) return NextResponse.json({ error: 'Článok sa nenašiel.' }, { status: 404 });
+  if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
   if (post.authorId !== userId && !isAdmin) {
     return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
   }

@@ -25,7 +25,7 @@ export default function Pagination({ page, totalPages, basePath }: { page: numbe
       {page > 1 ? (
         <Link
           href={hrefFor(page - 1)}
-          aria-label="Predchádzajúca strana"
+          aria-label="Předchozí strana"
           className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent"
         >
           <IconChevronLeft className="w-4 h-4" />

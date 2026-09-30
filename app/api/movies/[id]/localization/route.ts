@@ -15,7 +15,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if ('hasDubbing' in body) data.hasDubbing = !!body.hasDubbing;
 
   const movie = await prisma.movie.updateMany({ where: { id: params.id }, data });
-  if (movie.count === 0) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (movie.count === 0) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
 
   return NextResponse.json({ ok: true });
 }

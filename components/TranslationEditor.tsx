@@ -36,7 +36,7 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
       if (!res.ok) throw new Error();
       setSaved(true);
     } catch {
-      alert('Uloženie zlyhalo. Skús to prosím znova.');
+      alert('Uložení se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
                           className="field-input-sm"
                           value={row.en || ''}
                           onChange={(e) => updateField(row.key, 'en', e.target.value)}
-                          placeholder="Zatiaľ nepreložené"
+                          placeholder="Zatím nepřeloženo"
                         />
                       </div>
                       <div>
@@ -89,7 +89,7 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
                           className="field-input-sm"
                           value={row.cs || ''}
                           onChange={(e) => updateField(row.key, 'cs', e.target.value)}
-                          placeholder="Zatiaľ nepreložené"
+                          placeholder="Zatím nepřeloženo"
                         />
                       </div>
                     </div>

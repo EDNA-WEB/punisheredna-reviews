@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const PRESETS = [
-  { label: '+1 mesiac', days: 30 },
+  { label: '+1 měsíc', days: 30 },
   { label: '+3 mesiace', days: 90 },
   { label: '+1 rok', days: 365 }
 ];
@@ -25,7 +25,7 @@ export default function MembershipDirectSetForm() {
 
   async function apply(until: string) {
     if (!username.trim()) {
-      setError('Zadaj prosím prezývku používateľa.');
+      setError('Zadej prosím přezdívku uživatele.');
       return;
     }
     setLoading(true);
@@ -39,7 +39,7 @@ export default function MembershipDirectSetForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Nastavenie zlyhalo.');
-      setSuccess(`Členstvo pre "${data.name}" nastavené do ${new Date(data.membershipUntil).toLocaleDateString('sk-SK')}.`);
+      setSuccess(`Členstvo pre "${data.name}" nastaveno do ${new Date(data.membershipUntil).toLocaleDateString('cs-CZ')}.`);
       setUsername('');
       setCustomDate('');
       router.refresh();
@@ -60,7 +60,7 @@ export default function MembershipDirectSetForm() {
         className="field-input-sm w-full"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="Prezývka používateľa"
+        placeholder="Přezdívka uživatele"
       />
       <div className="flex items-center gap-2 flex-wrap">
         {PRESETS.map((p) => (

@@ -13,12 +13,12 @@ export async function GET(_req: Request, { params }: { params: { seasonId: strin
   const episode = await prisma.episode.findUnique({ where: { id: params.episodeId }, select: { number: true } });
   const season = await prisma.season.findUnique({ where: { id: params.seasonId }, select: { number: true, movie: { select: { tmdbId: true } } } });
   if (!episode || !season?.movie.tmdbId) {
-    return NextResponse.json({ error: 'Táto epizóda nie je prepojená s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tato epizoda není propojená s TMDb.' }, { status: 400 });
   }
 
   const imageUrl = await tmdbGetEpisodeStillUrl(season.movie.tmdbId, season.number, episode.number);
   if (!imageUrl) {
-    return NextResponse.json({ error: 'Na TMDb sa nenašiel žiadny vhodný obrázok pre túto epizódu.' }, { status: 404 });
+    return NextResponse.json({ error: 'Na TMDb se nenašel žádný vhodný obrázek pro tuto epizodu.' }, { status: 404 });
   }
 
   return NextResponse.json({ imageUrl });

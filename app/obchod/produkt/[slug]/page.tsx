@@ -48,7 +48,7 @@ export default async function ShopProductPage({ params }: { params: { slug: stri
               </>
             );
           })()}
-          <span className="text-muted">{product.reviews.length} recenzií</span>
+          <span className="text-muted">{product.reviews.length} recenzí</span>
         </div>
       )}
 

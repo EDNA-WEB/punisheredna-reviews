@@ -10,10 +10,10 @@ export async function POST(req: Request) {
   const myId = (session.user as any).id;
 
   const { otherId } = await req.json();
-  if (!otherId) return NextResponse.json({ error: 'Neplatný používateľ.' }, { status: 400 });
+  if (!otherId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   const other = await prisma.user.findUnique({ where: { id: otherId }, select: { name: true } });
-  if (!other) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+  if (!other) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
 
   // Zachytíme dešifrovaný odpis celej konverzácie v momente nahlásenia — admin
   // ho vie posúdiť aj bez schopnosti dešifrovať priamo databázu neskôr.

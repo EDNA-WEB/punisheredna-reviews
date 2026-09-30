@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   const movie = await prisma.movie.findUnique({ where: { id: params.id }, select: { tmdbId: true, contentType: true } });
   if (!movie?.tmdbId) {
-    return NextResponse.json({ error: 'Tento film/seriál nie je prepojený s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento film/seriál není propojený s TMDb.' }, { status: 400 });
   }
 
   const mediaType = movie.contentType === 'Seriál' ? 'tv' : 'movie';
@@ -20,7 +20,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`, accept: 'application/json' }
   });
-  if (!res.ok) return NextResponse.json({ error: 'Načítanie kľúčových slov z TMDb zlyhalo.' }, { status: 500 });
+  if (!res.ok) return NextResponse.json({ error: 'Načtení klíčových slov z TMDb selhalo.' }, { status: 500 });
 
   const data = await res.json();
   const keywordList = mediaType === 'movie' ? data.keywords : data.results;

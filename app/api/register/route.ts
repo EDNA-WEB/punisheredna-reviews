@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true } });
     if (settings && settings.registrationsEnabled === false) {
-      return NextResponse.json({ error: 'Registrácie sú momentálne pozastavené. Skús to prosím neskôr.' }, { status: 403 });
+      return NextResponse.json({ error: 'Registrace jsou momentálně pozastavené. Zkus to prosím později.' }, { status: 403 });
     }
 
     const { nickname, email, password, website, elapsedMs, captchaToken, captchaAnswer } = await req.json();
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     if (!nickname || !email || !password) {
-      return NextResponse.json({ error: 'Vyplň prosím prezývku, e-mail aj heslo.' }, { status: 400 });
+      return NextResponse.json({ error: 'Vyplň prosím přezdívku, e-mail i heslo.' }, { status: 400 });
     }
 
     const trimmedNickname = String(nickname).trim();
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Účet s týmto e-mailom už existuje.' }, { status: 409 });
     }
     if (existingNickname) {
-      return NextResponse.json({ error: 'Táto prezývka je už obsadená, skús inú.' }, { status: 409 });
+      return NextResponse.json({ error: 'Tato přezdívka je už obsazená, zkus jinou.' }, { status: 409 });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -94,11 +94,11 @@ export async function POST(req: Request) {
     if (err?.code === 'P2002') {
       // Dvaja ľudia sa pokúsili zaregistrovať s rovnakou prezývkou/e-mailom v tom istom okamihu.
       return NextResponse.json(
-        { error: 'Táto prezývka alebo e-mail sa medzitým už použili. Skús to prosím s inými údajmi.' },
+        { error: 'Tato přezdívka nebo e-mail se mezitím už použily. Zkus to prosím s jinými údaji.' },
         { status: 409 }
       );
     }
     console.error(err);
-    return NextResponse.json({ error: 'Registrácia zlyhala. Skús to prosím znova.' }, { status: 500 });
+    return NextResponse.json({ error: 'Registrace se nezdařila. Zkus to prosím znovu.' }, { status: 500 });
   }
 }

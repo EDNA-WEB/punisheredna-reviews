@@ -17,7 +17,7 @@ export default function ReviewActions({ id, movieSlug, showEdit = true }: { id: 
       if (!res.ok) throw new Error();
       router.refresh();
     } catch {
-      alert('Zmazanie zlyhalo. Skús to prosím znova.');
+      alert('Smazání se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }

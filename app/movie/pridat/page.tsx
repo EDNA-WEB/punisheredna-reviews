@@ -13,7 +13,7 @@ export default async function SuggestMoviePage() {
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Pridať film</h1>
       {!isAdmin && (
         <p className="text-muted mb-8">
-          Tvoj návrh sa uloží, no na webe sa ukáže ostatným až po tom, čo ho schváli administrátor. Do schválenia ho uvidíš len ty.
+          Tvůj návrh se uloží, ale na webu se ostatním ukáže až poté, co ho schválí administrátor. Do schválení ho uvidíš jen ty.
         </p>
       )}
       <MovieForm redirectTo="/movie/pridat/dakujeme" />

@@ -17,10 +17,10 @@ export async function POST(req: Request, { params }: { params: { episodeId: stri
   if (fullError) return NextResponse.json({ error: fullError }, { status: 400 });
 
   const episode = await prisma.episode.findUnique({ where: { id: params.episodeId }, include: { season: true } });
-  if (!episode) return NextResponse.json({ error: 'Epizóda sa nenašla.' }, { status: 404 });
+  if (!episode) return NextResponse.json({ error: 'Epizoda se nenašla.' }, { status: 404 });
 
   const count = await prisma.moviePhoto.count({ where: { episodeId: params.episodeId } });
-  if (count >= 20) return NextResponse.json({ error: 'Galéria epizódy môže mať najviac 20 fotiek.' }, { status: 400 });
+  if (count >= 20) return NextResponse.json({ error: 'Galerie epizody může mít nejvýše 20 fotek.' }, { status: 400 });
 
   let fullUrl = full;
   if (fullUrl.startsWith('data:image')) {

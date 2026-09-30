@@ -67,7 +67,7 @@ export default function WatchlistDropdown() {
             {!loaded ? (
               <div className="px-4 py-4 text-sm text-muted">Načítavam…</div>
             ) : items.length === 0 ? (
-              <div className="px-4 py-4 text-sm text-muted">Zatiaľ nič v zozname.</div>
+              <div className="px-4 py-4 text-sm text-muted">Zatím nic v seznamu.</div>
             ) : (
               items.slice(0, 5).map((m) => (
                 <Link
@@ -92,7 +92,7 @@ export default function WatchlistDropdown() {
               onClick={() => setOpen(false)}
               className="block text-center text-xs font-semibold text-accent py-3 border-t border-line hover:bg-surface"
             >
-              viac
+              více
             </Link>
           </div>
         </div>

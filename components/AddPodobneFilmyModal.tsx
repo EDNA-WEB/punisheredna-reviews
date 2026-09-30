@@ -7,7 +7,7 @@ export default function AddPodobneFilmyModal({ movieId, movieTitle, movieYear, o
   const [value, setValue] = useState('');
 
   async function handleSubmit() {
-    if (!value.trim()) return { ok: false, error: 'Napíš prosím aspoň jeden názov filmu.' };
+    if (!value.trim()) return { ok: false, error: 'Napiš prosím alespoň jeden název filmu.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,7 +30,7 @@ export default function AddPodobneFilmyModal({ movieId, movieTitle, movieYear, o
         </button>
         <SubmissionModalShell
           title="Přidat podobné filmy"
-          explanation="Napíš názvy filmov/seriálov, čo sú tomuto podobné — oddeľ ich čiarkou. Admin ich priradí po overení."
+          explanation="Napiš názvy filmů/seriálů, které jsou tomuto podobné — odděl je čárkou. Admin je přiřadí po ověření."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat filmy ke schválení"

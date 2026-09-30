@@ -18,7 +18,7 @@ export default function RegistrationsToggle({ initialEnabled }: { initialEnabled
       if (!res.ok) throw new Error();
       setEnabled(next);
     } catch {
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -27,11 +27,11 @@ export default function RegistrationsToggle({ initialEnabled }: { initialEnabled
   return (
     <div className="border border-line rounded-xl p-4 bg-surface flex items-center justify-between gap-4 max-w-xl">
       <div>
-        <div className="text-sm font-semibold text-ink">Registrácie nových účtov</div>
+        <div className="text-sm font-semibold text-ink">Registrace nových účtů</div>
         <p className="text-xs text-muted mt-0.5">
           {enabled
-            ? 'Registrácia je momentálne povolená — kdokoľvek si môže vytvoriť nový účet.'
-            : 'Registrácia je momentálne vypnutá. Existujúci používatelia sa naďalej prihlásia bez obmedzenia.'}
+            ? 'Registrace je momentálně povolená — kdokoli si může vytvořit nový účet.'
+            : 'Registrace je momentálně vypnutá. Stávající uživatelé se nadále přihlásí bez omezení.'}
         </p>
       </div>
       <button
@@ -42,7 +42,7 @@ export default function RegistrationsToggle({ initialEnabled }: { initialEnabled
           enabled ? 'border border-line text-muted hover:border-danger hover:text-danger' : 'bg-accent text-white hover:bg-accent-dark'
         }`}
       >
-        {loading ? '…' : enabled ? 'Vypnúť registrácie' : 'Zapnúť registrácie'}
+        {loading ? '…' : enabled ? 'Vypnout registrace' : 'Zapnout registrace'}
       </button>
     </div>
   );

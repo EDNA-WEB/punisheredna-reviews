@@ -29,7 +29,7 @@ export default function CollapsibleReviewComments({
         className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-accent transition-colors"
       >
         <IconComment className="w-4 h-4" />
-        {totalCount > 0 ? `Komentáre (${totalCount})` : 'Pridať komentár'}
+        {totalCount > 0 ? `Komentáre (${totalCount})` : 'Přidat komentář'}
       </button>
 
       {open && (

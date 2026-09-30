@@ -21,7 +21,7 @@ export default function FollowButton({ targetId, initialFollowing }: { targetId:
       setFollowing(data.following);
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ export default function FollowButton({ targetId, initialFollowing }: { targetId:
         following ? 'bg-surface text-ink border-line hover:border-danger hover:text-danger' : 'bg-accent text-white border-accent hover:bg-accent-dark'
       }`}
     >
-      {following ? 'Obľúbený ♥ (odobrať)' : '+ Pridať do obľúbených'}
+      {following ? 'Oblíbený ♥ (odebrat)' : '+ Přidat do oblíbených'}
     </button>
   );
 }

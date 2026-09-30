@@ -96,7 +96,7 @@ export default function NotificationsBell() {
                 className={`block px-4 py-3 text-sm border-b border-line last:border-b-0 hover:bg-surface ${!n.read ? 'bg-orange-50' : ''}`}
               >
                 <div className="text-ink">{n.text}</div>
-                <div className="text-xs text-muted mt-1">{new Date(n.createdAt).toLocaleString('sk-SK')}</div>
+                <div className="text-xs text-muted mt-1">{new Date(n.createdAt).toLocaleString('cs-CZ')}</div>
               </Link>
             ))
           )}

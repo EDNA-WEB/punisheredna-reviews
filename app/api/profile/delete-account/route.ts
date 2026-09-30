@@ -12,11 +12,11 @@ export async function POST(req: Request) {
 
   const { password } = await req.json();
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return NextResponse.json({ error: 'Účet sa nenašiel.' }, { status: 404 });
+  if (!user) return NextResponse.json({ error: 'Účet se nenašel.' }, { status: 404 });
 
   const passwordOk = await bcrypt.compare(String(password || ''), user.passwordHash);
   if (!passwordOk) {
-    return NextResponse.json({ error: 'Nesprávne heslo.' }, { status: 400 });
+    return NextResponse.json({ error: 'Nesprávné heslo.' }, { status: 400 });
   }
 
   // Jedinečná, nikam neprihlásiteľná náhrada za meno/e-mail — recenzie a príspevky
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     where: { id: userId },
     data: {
       deleted: true,
-      name: `Zmazaný používateľ ${suffix}`,
+      name: `Smazaný uživatel ${suffix}`,
       email: `deleted-${suffix}@deleted.punisheredna.internal`,
       passwordHash,
       avatar: null,

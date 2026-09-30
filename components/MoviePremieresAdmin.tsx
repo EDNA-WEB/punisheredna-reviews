@@ -89,7 +89,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       setAllUndoStatus('done');
     } catch {
       setAllUndoStatus('idle');
-      alert('Vrátenie späť zlyhalo.');
+      alert('Vrácení zpět se nezdařilo.');
     }
   }
 
@@ -176,7 +176,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       setSelectedUndoStatus('done');
     } catch {
       setSelectedUndoStatus('idle');
-      alert('Vrátenie späť zlyhalo.');
+      alert('Vrácení zpět se nezdařilo.');
     }
   }
 
@@ -290,17 +290,15 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
   return (
     <div className="max-w-3xl">
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Aktualizovať premiéry vybraných filmov</div>
+        <div className="text-sm font-semibold text-ink mb-1">Aktualizovat premiéry vybraných filmů</div>
         <div className="text-xs text-muted mb-3">
-          Zaškrtni filmy v zozname nižšie (napr. tie s chybnou/starou premiérou) a klikni na tlačidlo — ich premiéry sa
-          nahradia čerstvo natiahnutými z TMDb (len najskoršia ČR/USA, žiadne anachronické "CZ" premiéry spred roku
-          1993).
+          Zaškrtni filmy v seznamu níže (např. ty s chybnou/starou premiérou) a klikni na tlačítko — jejich premiéry se nahradí čerstvě načtenými z TMDb (jen nejdřívější ČR/USA, žádné anachronické "CZ" premiéry před rokem 1993).
         </div>
         <label className="flex items-center gap-2 text-xs text-ink mb-3 cursor-pointer">
           <input type="checkbox" checked={selectedIncludeVod} onChange={(e) => setSelectedIncludeVod(e.target.checked)} />
           Zahrnúť aj VOD premiéru
         </label>
-        <div className="text-xs text-ink mb-2">Vybraných filmov: <strong>{selectedIds.size}</strong></div>
+        <div className="text-xs text-ink mb-2">Vybraných filmů: <strong>{selectedIds.size}</strong></div>
 
         {!selectedPreview && !selectedDone && (
           <button
@@ -309,14 +307,14 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
             disabled={selectedBusy || selectedIds.size === 0}
             className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {selectedBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+            {selectedBusy ? 'Načítavam…' : 'Zobrazit náhled'}
           </button>
         )}
 
         {selectedPreview && !selectedDone && (
           <div>
             <div className="text-xs text-ink mb-2">
-              Aktualizuje sa <strong>{selectedPreview.count}</strong> vybraných filmov:
+              Aktualizuje se <strong>{selectedPreview.count}</strong> vybraných filmů:
             </div>
             <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{selectedPreview.sample.join(', ')}</div>
             <div className="flex items-center gap-2">
@@ -338,7 +336,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         {selectedDone && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {selectedDone.checked} filmov.</div>
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {selectedDone.checked} filmů.</div>
               {selectedDone.batchId && selectedUndoStatus !== 'done' && (
                 <button
                   type="button"
@@ -346,10 +344,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                   disabled={selectedUndoStatus === 'undoing'}
                   className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
                 >
-                  {selectedUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                  {selectedUndoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
                 </button>
               )}
-              {selectedUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+              {selectedUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
             </div>
             <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
               {selectedDone.results.map((r, i) => (
@@ -366,12 +364,11 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
         <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — všetky filmy</div>
         <div className="text-xs text-muted mb-3">
-          Prejde všetky filmy/seriály bez akejkoľvek premiéry a doplní z TMDb len <strong>najskoršiu</strong> českú a
-          americkú premiéru — žiadne opakované neskoršie uvedenia. Filmy, čo už premiéru majú, sa nedotknú.
+          Projde všechny filmy/seriály bez jakékoli premiéry a doplní z TMDb jen <strong>najskoršiu</strong> českou a americkou premiéru — žádná opakovaná pozdější uvedení. Filmů, které už premiéru mají, se to nedotkne.
         </div>
         <label className="flex items-center gap-2 text-xs text-ink mb-3 cursor-pointer">
           <input type="checkbox" checked={includeVod} onChange={(e) => setIncludeVod(e.target.checked)} />
-          Zahrnúť aj VOD premiéru (bez zaškrtnutia sa doplní len kino premiéra)
+          Zahrnout i VOD premiéru (bez zaškrtnutí se doplní jen kinopremiéra)
         </label>
 
         {!allPreview && !allDone && (
@@ -381,14 +378,14 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
             disabled={allBusy}
             className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {allBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+            {allBusy ? 'Načítavam…' : 'Zobrazit náhled'}
           </button>
         )}
 
         {allPreview && !allDone && (
           <div>
             <div className="text-xs text-ink mb-2">
-              Doplní sa <strong>{allPreview.count}</strong> filmov/seriálov. Ukážka prvých {allPreview.sample.length}:
+              Doplní se <strong>{allPreview.count}</strong> filmů/seriálů. Ukázka prvních {allPreview.sample.length}:
             </div>
             <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{allPreview.sample.join(', ')}</div>
             <div className="flex items-center gap-2">
@@ -410,7 +407,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         {allDone && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {allDone.checked} filmov/seriálov.</div>
+              <div className="text-xs font-semibold text-ink">Hotovo — skontrolovaných {allDone.checked} filmů/seriálů.</div>
               {allDone.batchId && allUndoStatus !== 'done' && (
                 <button
                   type="button"
@@ -418,10 +415,10 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                   disabled={allUndoStatus === 'undoing'}
                   className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
                 >
-                  {allUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                  {allUndoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
                 </button>
               )}
-              {allUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+              {allUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
             </div>
             <div className="text-xs space-y-1 max-h-48 overflow-y-auto">
               {allDone.results.map((r, i) => (
@@ -438,8 +435,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
         <div className="text-sm font-semibold text-ink mb-1">Doplniť premiéry z TMDb — filmy za poslednú hodinu</div>
         <div className="text-xs text-muted mb-3">
-          Prejde filmy pridané za posledných 60 minút, čo ešte nemajú žiadnu premiéru, a doplní ich automaticky z TMDb
-          (ČR + USA). Staršie filmy ani tie, čo už premiéru majú, sa nedotknú.
+          Projde filmy přidané za posledních 60 minut, které ještě nemají žádnou premiéru, a doplní je automaticky z TMDb (ČR + USA). Starších filmů ani těch, které už premiéru mají, se to nedotkne.
         </div>
         <button
           type="button"
@@ -451,7 +447,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
         </button>
         {recentResults && (
           <div className="mt-3 text-xs space-y-1 max-h-64 overflow-y-auto">
-            <div className="text-muted mb-1">Skontrolovaných filmov: {recentChecked}</div>
+            <div className="text-muted mb-1">Zkontrolovaných filmů: {recentChecked}</div>
             {recentResults.map((r, i) => (
               <div key={i} className={r.status === 'OK' ? 'text-ink' : 'text-danger'}>
                 <span className="font-semibold">{r.status}</span> — {r.title}: {r.detail}
@@ -464,7 +460,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
       <BulkImportRunner
         endpoint="/api/admin/movies/bulk-import-distributors"
         title="Hromadne priradiť distribútorov"
-        description={'Vlož zoznam v tvare "Názov filmu – Distribútor ČR, Distribútor pôvodnej premiéry", jeden riadok na film. Prvý distribútor sa priradí k domácej premiére (ČR, potom SR), ďalší k nasledujúcej krajine v poradí — film musí mať dátumy premiér už pridané.'}
+        description={'Vlož seznam ve tvaru "Název filmu – Distributor ČR, Distributor původní premiéry", jeden řádek na film. První distributor se přiřadí k domácí premiéře (ČR, pak SR), další k následující zemi v pořadí — film musí mít data premiér už přidaná.'}
         placeholder={'Together – Bontonfilm, Neon'}
         buttonLabel="Priradiť distribútorov"
       />
@@ -476,7 +472,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
           setSearch(e.target.value);
           setPage(1);
         }}
-        placeholder="Hľadať film…"
+        placeholder="Hledat film…"
       />
 
       {saveError && <p className="text-danger text-xs mb-3">{saveError}</p>}
@@ -500,7 +496,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                       {m.premiereDates.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú premiéry" />}
                       {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                     </div>
-                    <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastavených` : 'Zatiaľ žiadne premiéry'}</div>
+                    <div className="text-xs text-muted">{m.premiereDates.length > 0 ? `${m.premiereDates.length} premiér nastaveno` : 'Zatím žádné premiéry'}</div>
                   </div>
                 </button>
                 {m.tmdbId && (
@@ -528,7 +524,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-ink">Premiéry v jednotlivých krajinách</label>
+                    <label className="block text-xs font-semibold text-ink">Premiéry v jednotlivých zemích</label>
                     {rows.map((r, i) => (
                       <div key={i} className="flex flex-wrap items-center gap-2">
                         <select
@@ -560,7 +556,7 @@ export default function MoviePremieresAdmin({ initialMovies }: { initialMovies: 
                           className="field-input-sm flex-1 min-w-[160px]"
                           value={r.distributor}
                           onChange={(e) => updateRow(m.id, i, 'distributor', e.target.value)}
-                          placeholder="Distribútor (voliteľné)"
+                          placeholder="Distributor (volitelné)"
                         />
                         <button onClick={() => removeRow(m.id, i)} className="text-muted hover:text-danger text-xs flex-none px-1">✕</button>
                       </div>

@@ -44,7 +44,7 @@ export default function CookiesPolicyForm({ initial }: { initial: string | null 
         maxLength={20000}
       />
       <p className="text-xs text-muted">
-        Riadky napísané VEĽKÝMI PÍSMENAMI (napr. "ZÁSADY COOKIES") sa na stránke zobrazia ako nadpisy. Prázdny riadok oddeľuje odseky.
+        Řádky napsané VELKÝMI PÍSMENY (např. "ZÁSADY COOKIES") se na stránce zobrazí jako nadpisy. Prázdný řádek odděluje odstavce.
       </p>
       {error && <div className="text-danger text-sm">{error}</div>}
       {saved && !error && <div className="text-emerald-600 text-sm font-semibold">Uložené.</div>}

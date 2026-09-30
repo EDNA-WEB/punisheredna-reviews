@@ -61,7 +61,7 @@ export async function verifyCaptcha(token: unknown, answer: unknown): Promise<st
   const { prisma } = await import('./prisma');
 
   if (!token || typeof token !== 'string' || !answer || typeof answer !== 'string') {
-    return 'Vyplň prosím kód z obrázka.';
+    return 'Vyplň prosím kód z obrázku.';
   }
 
   const challenge = await prisma.captchaChallenge.findUnique({ where: { id: token } });
@@ -73,16 +73,16 @@ export async function verifyCaptcha(token: unknown, answer: unknown): Promise<st
   }
 
   if (!challenge || challenge.used) {
-    return 'Kód z obrázka vypršal. Načítaj si prosím nový.';
+    return 'Kód z obrázku vypršel. Načti si prosím nový.';
   }
 
   const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000);
   if (challenge.createdAt < fifteenMinAgo) {
-    return 'Kód z obrázka vypršal. Načítaj si prosím nový.';
+    return 'Kód z obrázku vypršel. Načti si prosím nový.';
   }
 
   if (challenge.code.toUpperCase() !== answer.trim().toUpperCase()) {
-    return 'Kód z obrázka nesedí. Skús to prosím znova.';
+    return 'Kód z obrázku nesedí. Zkus to prosím znovu.';
   }
 
   return null;

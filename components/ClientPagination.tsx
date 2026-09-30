@@ -32,7 +32,7 @@ export default function ClientPagination({
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1 || loading}
-        aria-label="Predchádzajúca strana"
+        aria-label="Předchozí strana"
         className="w-8 h-8 rounded-lg border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent disabled:opacity-40 disabled:hover:border-line disabled:hover:text-ink"
       >
         <IconChevronLeft className="w-4 h-4" />

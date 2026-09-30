@@ -55,7 +55,7 @@ export default function PostItem({
           <div className="flex items-center gap-2 text-xs text-muted">
             <Link href={`/profile/${post.authorId}`} className="text-accent font-semibold hover:underline">{post.author.name}</Link>
             {post.author.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
-            <span>{new Date(post.createdAt).toLocaleDateString('sk-SK')}</span>
+            <span>{new Date(post.createdAt).toLocaleDateString('cs-CZ')}</span>
           </div>
           {canDelete && (
             <button onClick={handleDelete} disabled={loading} className="text-xs text-muted hover:text-danger disabled:opacity-50">Zmazať</button>

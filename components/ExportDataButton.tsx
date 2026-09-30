@@ -11,7 +11,7 @@ export default function ExportDataButton() {
     setError('');
     try {
       const res = await fetch('/api/profile/export-data');
-      if (!res.ok) throw new Error('Sťahovanie zlyhalo. Skús to prosím znova.');
+      if (!res.ok) throw new Error('Stahování se nezdařilo. Zkus to prosím znovu.');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -32,8 +32,7 @@ export default function ExportDataButton() {
     <div className="border border-line rounded-xl p-5">
       <h2 className="font-display font-bold text-lg text-ink mb-1">Stiahnuť moje údaje</h2>
       <p className="text-sm text-muted mb-4">
-        Stiahni si kópiu svojich osobných údajov a obsahu, čo si na webe vytvoril (recenzie, hodnotenia, komentáre,
-        watchlist, poznámky a ďalšie) — v čitateľnom JSON formáte.
+        Stáhni si kopii svých osobních údajů a obsahu, který jsi na webu vytvořil (recenze, hodnocení, komentáře, watchlist, poznámky a další) — v čitelném formátu JSON.
       </p>
       {error && <p className="text-danger text-sm mb-3">{error}</p>}
       <button

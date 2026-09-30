@@ -81,7 +81,7 @@ export default function BulkImportRunner({
         // jedno zlyhanie (napr. dočasný výpadok siete, alebo vypršanie
         // časového limitu) nesmie zastaviť spracovanie zvyšku zoznamu.
         const firstLine = batches[i].split('\n')[0]?.slice(0, 60) || '';
-        const message = err.name === 'AbortError' ? `vypršal časový limit (${BATCH_TIMEOUT_MS / 1000}s)` : err.message || 'neznáma chyba';
+        const message = err.name === 'AbortError' ? `vypršal časový limit (${BATCH_TIMEOUT_MS / 1000}s)` : err.message || 'neznámá chyba';
         batchErrors.push(`Dávka ${i + 1}/${batches.length} (začína "${firstLine}…") zlyhala: ${message}`);
       } finally {
         clearTimeout(timeoutId);
@@ -114,10 +114,10 @@ export default function BulkImportRunner({
         body: JSON.stringify({ batchId })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Vrátenie späť zlyhalo.');
+      if (!res.ok) throw new Error(data.error || 'Vrácení zpět se nezdařilo.');
       setUndoStatus('done');
     } catch (err: any) {
-      setError(err.message || 'Vrátenie späť zlyhalo.');
+      setError(err.message || 'Vrácení zpět se nezdařilo.');
       setUndoStatus('idle');
     }
   }
@@ -152,7 +152,7 @@ export default function BulkImportRunner({
           disabled={busy || !text.trim()}
           className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
         >
-          {busy && mode !== 'previewed' ? 'Načítavam…' : 'Zobraziť náhľad'}
+          {busy && mode !== 'previewed' ? 'Načítavam…' : 'Zobrazit náhled'}
         </button>
 
         {mode === 'previewed' && (
@@ -191,7 +191,7 @@ export default function BulkImportRunner({
       {mode === 'previewed' && results && (
         <div className="mt-4">
           <div className="text-xs font-semibold text-ink mb-2">
-            Náhľad — {changedCount} zmien sa uloží po kliknutí na "Potvrdiť a uložiť". Nič sa zatiaľ nezapísalo do databázy.
+            Náhled — {changedCount} změn se uloží po kliknutí na "Potvrdit a uložit". Nic se zatím nezapsalo do databáze.
           </div>
           <div className="border border-line rounded-lg overflow-hidden divide-y divide-line max-h-80 overflow-y-auto">
             {results.map((r, i) => (
@@ -221,10 +221,10 @@ export default function BulkImportRunner({
                 disabled={undoStatus === 'undoing'}
                 className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
               >
-                {undoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                {undoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
               </button>
             )}
-            {undoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            {undoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
           </div>
           <div className="border border-line rounded-lg overflow-hidden divide-y divide-line max-h-80 overflow-y-auto">
             {results.map((r, i) => (

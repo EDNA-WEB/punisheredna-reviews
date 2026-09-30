@@ -94,7 +94,7 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
           )}
           {post.author.name}
         </Link>
-        <span className="text-xs text-muted">{new Date(post.createdAt).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+        <span className="text-xs text-muted">{new Date(post.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
         {post.isDraft && (
           <span className="text-[11px] font-semibold bg-surface text-accent border border-accent/40 px-2.5 py-1 rounded-full">📝 Rozpísané</span>
         )}
@@ -146,7 +146,7 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
 
       {isOwn && !post.isDraft && !post.published && !post.publicationRequested && <RequestPublishButton postId={post.id} />}
       {isOwn && post.publicationRequested && !post.published && (
-        <p className="text-sm text-muted">Žiadosť o publikáciu už bola odoslaná, čaká sa na schválenie administrátorom.</p>
+        <p className="text-sm text-muted">Žádost o publikaci už byla odeslána, čeká se na schválení administrátorem.</p>
       )}
       {isAdmin && post.publicationRequested && !post.published && <ApproveBlogPostButton postId={post.id} />}
     </div>

@@ -41,7 +41,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
           price: v.price.toString(),
           originalPrice: v.originalPrice?.toString() || ''
         }))
-      : [{ label: '1 mesiac', price: '', originalPrice: '' }]
+      : [{ label: '1 měsíc', price: '', originalPrice: '' }]
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -155,13 +155,13 @@ export default function ShopProductForm({ categories, initial }: { categories: C
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Meno predajcu (voliteľné)</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Jméno prodejce (volitelné)</label>
         <input className="field-input" value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="napr. KrálFilmu" />
       </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">
         <input type="checkbox" checked={approved} onChange={(e) => setApproved(e.target.checked)} />
-        Viditeľné na webe
+        Viditelné na webu
       </label>
 
       <div>
@@ -172,7 +172,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
           </button>
         </div>
         <p className="text-xs text-muted mb-2">
-          Každý balík je jedna možnosť dĺžky predplatného (napr. 1 mesiac, 3 mesiace, 12 mesiacov…), ku každému patrí vlastná cena.
+          Každý balíček je jedna možnost délky předplatného (např. 1 měsíc, 3 měsíce, 12 měsíců…), ke každému patří vlastní cena.
         </p>
         <div className="space-y-2">
           {variants.map((v, i) => (
@@ -181,7 +181,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
                 className="field-input-sm flex-1"
                 value={v.label}
                 onChange={(e) => updateVariant(i, 'label', e.target.value)}
-                placeholder="napr. 1 mesiac"
+                placeholder="např. 1 měsíc"
               />
               <input
                 className="field-input-sm w-28"
@@ -195,7 +195,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
                 className="field-input-sm w-28"
                 value={v.originalPrice}
                 onChange={(e) => updateVariant(i, 'originalPrice', e.target.value)}
-                placeholder="Pôvodná cena"
+                placeholder="Původní cena"
                 type="number"
                 step="0.01"
               />

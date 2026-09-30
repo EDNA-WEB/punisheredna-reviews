@@ -23,10 +23,10 @@ export default async function VisitorsPage() {
   return (
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Návštevníci</h1>
-      <p className="text-muted mb-8">Kto si pozrel tvoj profil, s dátumom a časom.</p>
+      <p className="text-muted mb-8">Kdo si prohlédl tvůj profil, s datem a časem.</p>
 
       {visits.length === 0 ? (
-        <EmptyState icon={<IconEye className="w-5 h-5" />} title="Zatiaľ ťa nikto nenavštívil" />
+        <EmptyState icon={<IconEye className="w-5 h-5" />} title="Zatím tě nikdo nenavštívil" />
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
           {visits.map((v) => (
@@ -42,8 +42,8 @@ export default async function VisitorsPage() {
                 <div className="font-semibold text-ink truncate">{v.visitor.name}</div>
               </div>
               <div className="text-xs text-muted flex-none text-right">
-                <div>{new Date(v.visitedAt).toLocaleDateString('sk-SK')}</div>
-                <div>{new Date(v.visitedAt).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}</div>
+                <div>{new Date(v.visitedAt).toLocaleDateString('cs-CZ')}</div>
+                <div>{new Date(v.visitedAt).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}</div>
               </div>
             </Link>
           ))}

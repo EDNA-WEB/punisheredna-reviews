@@ -71,7 +71,7 @@ export default function MovieVideoManager({ movieId, initialVideos }: { movieId:
           <option value="tv_spot">TV spot</option>
           <option value="ukazka">Ukážka z filmu</option>
         </select>
-        <input className="field-input-sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Názov (voliteľné)" />
+        <input className="field-input-sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Název (volitelné)" />
       </div>
       <div className="flex items-center gap-2">
         <input
@@ -91,7 +91,7 @@ export default function MovieVideoManager({ movieId, initialVideos }: { movieId:
       </div>
 
       {error && <div className="text-danger text-xs">{error}</div>}
-      <p className="text-xs text-muted">Ukladá sa okamžite, nezávisle od uloženia formulára nižšie.</p>
+      <p className="text-xs text-muted">Ukládá se okamžitě, nezávisle na uložení formuláře níže.</p>
     </div>
   );
 }

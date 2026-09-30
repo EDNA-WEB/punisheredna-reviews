@@ -20,7 +20,7 @@ async function generateUniqueCode(): Promise<string> {
     const existing = await prisma.user.findUnique({ where: { recoveryCode: code } });
     if (!existing) return code;
   }
-  throw new Error('Nepodarilo sa vygenerovať jedinečný bezpečnostný kód.');
+  throw new Error('Nepodařilo se vygenerovat jedinečný bezpečnostní kód.');
 }
 
 // Samostatný, technický účet "Systém" — nie je to osobný účet administrátora.

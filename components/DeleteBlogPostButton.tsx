@@ -17,7 +17,7 @@ export default function DeleteBlogPostButton({ postId }: { postId: string }) {
       router.push('/');
       router.refresh();
     } catch {
-      alert('Zmazanie zlyhalo. Skús to prosím znova.');
+      alert('Smazání se nezdařilo. Zkus to prosím znovu.');
       setLoading(false);
     }
   }

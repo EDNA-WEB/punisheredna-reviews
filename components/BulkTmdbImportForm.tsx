@@ -32,8 +32,8 @@ export default function BulkTmdbImportForm() {
 
       const searchRes = await fetch(`/api/admin/tmdb-search?query=${encodeURIComponent(title)}`);
       const searchData = await searchRes.json();
-      if (!searchRes.ok) throw new Error(searchData.error || 'Vyhľadávanie zlyhalo.');
-      if (!searchData.length) return { title: rawTitle, status: 'notfound', message: 'Na TMDb sa nenašiel žiadny výsledok.' };
+      if (!searchRes.ok) throw new Error(searchData.error || 'Vyhledávání se nezdařilo.');
+      if (!searchData.length) return { title: rawTitle, status: 'notfound', message: 'Na TMDb se nenašel žádný výsledek.' };
 
       const best = explicitYear ? searchData.find((r: any) => r.year === explicitYear) || searchData[0] : searchData[0];
 
@@ -71,7 +71,7 @@ export default function BulkTmdbImportForm() {
 
       return { title: rawTitle, status: 'done', slug: created.slug, message: `${details.title} (${details.year || '?'})` };
     } catch (err: any) {
-      return { title: rawTitle, status: 'error', message: err.message || 'Neznáma chyba.' };
+      return { title: rawTitle, status: 'error', message: err.message || 'Neznámá chyba.' };
     }
   }
 
@@ -106,9 +106,7 @@ export default function BulkTmdbImportForm() {
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
         <h2 className="text-sm font-bold text-ink mb-1">Hromadný import z TMDb</h2>
         <p className="text-xs text-muted mb-3">
-          Napíš názvy filmov/seriálov, každý na nový riadok. Pre každý sa použije najlepšia
-          zhoda na TMDb a automaticky sa vytvorí film — vrátane trailera a fotiek. Odporúčame potom každý skontrolovať
-          v administrácii.
+          Napiš názvy filmů/seriálů, každý na nový řádek. Pro každý se použije nejlepší shoda na TMDb a automaticky se vytvoří film — včetně traileru a fotek. Doporučujeme pak každý zkontrolovat v administraci.
         </p>
         <textarea
           value={namesText}
@@ -161,7 +159,7 @@ export default function BulkTmdbImportForm() {
                       {r.message}
                     </Link>
                   ) : (
-                    r.message || (r.status === 'pending' ? 'Čaká…' : r.status === 'searching' ? 'Hľadám na TMDb…' : '')
+                    r.message || (r.status === 'pending' ? 'Čaká…' : r.status === 'searching' ? 'Hledám na TMDb…' : '')
                   )}
                 </span>
               </div>

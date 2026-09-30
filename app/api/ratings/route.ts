@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const userId = (session.user as any).id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || user.banned) {
-    return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+    return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
   }
   if (user.ratingsDisabled) {
     return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť hodnotiť filmy.' }, { status: 403 });
@@ -26,9 +26,9 @@ export async function POST(req: Request) {
   }
 
   const movie = await prisma.movie.findUnique({ where: { id: movieId }, select: { releaseDate: true } });
-  if (!movie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
   if (movie.releaseDate && movie.releaseDate > new Date()) {
-    return NextResponse.json({ error: 'Film ešte nemal premiéru, zatiaľ ho nemôžeš hodnotiť.' }, { status: 403 });
+    return NextResponse.json({ error: 'Film ještě neměl premiéru, zatím ho nemůžeš hodnotit.' }, { status: 403 });
   }
 
   const existingRating = await prisma.rating.findFirst({ where: { movieId, userId, seasonId: null, episodeId: null } });

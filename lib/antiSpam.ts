@@ -10,17 +10,17 @@ export function isNewAccount(createdAt: Date): boolean {
 // Rýchla heuristika na odchytenie zjavného spamu (odkazy, veľké písmená, opakujúce sa znaky).
 export function looksLikeSpam(text: string): string | null {
   const urlMatches = text.match(/https?:\/\/\S+/gi) || [];
-  if (urlMatches.length >= 3) return 'Príspevok obsahuje príliš veľa odkazov.';
+  if (urlMatches.length >= 3) return 'Příspěvek obsahuje příliš mnoho odkazů.';
 
   if (text.length > 25) {
     const letters = text.replace(/[^a-zA-ZáäčďéíĺľňóôŕšťúýžÁÄČĎÉÍĹĽŇÓÔŔŠŤÚÝŽ]/g, '');
     const upper = letters.replace(/[^A-ZÁÄČĎÉÍĹĽŇÓÔŔŠŤÚÝŽ]/g, '');
     if (letters.length > 15 && upper.length / letters.length > 0.75) {
-      return 'Príspevok pôsobí ako spam (samé veľké písmená).';
+      return 'Příspěvek působí jako spam (samá velká písmena).';
     }
   }
 
-  if (/(.)\1{9,}/.test(text)) return 'Príspevok obsahuje príliš veľa opakujúcich sa znakov.';
+  if (/(.)\1{9,}/.test(text)) return 'Příspěvek obsahuje příliš mnoho opakujících se znaků.';
 
   return null;
 }
@@ -73,7 +73,7 @@ export async function checkRateLimit(table: RateLimitTable, userId: string, user
   }
 
   if (count >= max) {
-    return 'Príliš veľa príspevkov za krátky čas. Skús to prosím o pár minút.';
+    return 'Příliš mnoho příspěvků za krátkou dobu. Zkus to prosím za pár minut.';
   }
   return null;
 }

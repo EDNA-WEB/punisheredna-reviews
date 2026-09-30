@@ -6,8 +6,8 @@ const OPTIONS = [
   { value: 'najnovsie', label: 'Najnovšie' },
   { value: 'najstarsie', label: 'Najstaršie' },
   { value: 'najnovsie-pridane', label: 'Najnovšie pridané' },
-  { value: 'najlepsie', label: 'Najlepšie hodnotené' },
-  { value: 'najhorsie', label: 'Najhoršie hodnotené' }
+  { value: 'najlepsie', label: 'Nejlépe hodnocené' },
+  { value: 'najhorsie', label: 'Nejhůře hodnocené' }
 ];
 
 export default function SortDropdown() {

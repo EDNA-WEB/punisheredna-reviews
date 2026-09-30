@@ -20,7 +20,7 @@ export default async function DiskusiePage() {
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Diskusie</h1>
-          <p className="text-muted">Založ vlastnú tému alebo sa pridaj do rozprávania o filmoch.</p>
+          <p className="text-muted">Založ vlastní téma nebo se přidej do povídání o filmech.</p>
         </div>
         <Link href="/diskusie/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark flex-none">
           + Nová téma
@@ -29,7 +29,7 @@ export default async function DiskusiePage() {
 
       {threads.length === 0 ? (
         <div className="border border-line rounded-xl p-8 text-center text-muted bg-surface">
-          Zatiaľ tu nie je žiadna téma. Založ prvú.
+          Zatím tu není žádné téma. Založ první.
         </div>
       ) : (
         <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
@@ -49,7 +49,7 @@ export default async function DiskusiePage() {
                   {t.author.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
                   
                   {t.movie && <span>· o filme {t.movie.title}</span>}
-                  <span>· {new Date(t.createdAt).toLocaleDateString('sk-SK')}</span>
+                  <span>· {new Date(t.createdAt).toLocaleDateString('cs-CZ')}</span>
                 </div>
               </div>
               <div className="text-xs font-semibold text-muted flex-none">{t._count.posts} príspevkov</div>

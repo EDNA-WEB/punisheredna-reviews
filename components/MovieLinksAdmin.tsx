@@ -57,7 +57,7 @@ export default function MovieLinksAdmin({
           body: JSON.stringify({ excludeIds })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+        if (!res.ok) throw new Error(data.error || 'Import se nezdařil.');
 
         totalAdded += data.added;
         totalNotFound += data.notFound;
@@ -127,7 +127,7 @@ export default function MovieLinksAdmin({
   }
 
   async function deleteLinkType(id: string) {
-    if (!confirm('Naozaj zmazať tento typ odkazu z katalógu? Zmizne aj zo všetkých filmov, čo ho majú priradený.')) return;
+    if (!confirm('Opravdu smazat tento typ odkazu z katalogu? Zmizí i ze všech filmů, které ho mají přiřazený.')) return;
     const res = await fetch(`/api/admin/link-types/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setLinkTypes((prev) => prev.filter((s) => s.id !== id));
@@ -206,10 +206,9 @@ export default function MovieLinksAdmin({
     <div className="max-w-3xl space-y-8">
       {/* Stiahnutie zoznamu filmov s menej než 2 odkazmi */}
       <div className="border border-line rounded-xl p-4 bg-surface">
-        <div className="text-sm font-semibold text-ink mb-1">Stiahnuť zoznam filmov bez 2 odkazov</div>
+        <div className="text-sm font-semibold text-ink mb-1">Stáhnout seznam filmů bez 2 odkazů</div>
         <div className="text-xs text-muted mb-3">
-          Vygeneruje textový súbor so všetkými filmami, čo majú priradený menej než dva odkazy (žiadny alebo len jeden),
-          jeden na riadok v tvare "Názov (Rok)".
+          Vygeneruje textový soubor se všemi filmy, které mají přiřazeno méně než dva odkazy (žádný nebo jen jeden), jeden na řádek ve tvaru "Název (Rok)".
         </div>
         <a
           href="/api/admin/movies/export-missing-links"
@@ -225,9 +224,7 @@ export default function MovieLinksAdmin({
           <div>
             <div className="text-sm font-semibold text-ink">Hromadne pridať IMDb odkazy</div>
             <div className="text-xs text-muted">
-              Prejde všetky filmy prepojené na TMDb, čo ešte nemajú uložený IMDb odkaz, a automaticky ho doplní. Typ odkazu "IMDb" sa
-              pri prvom spustení sám vytvorí, ak ešte neexistuje. Spracúva sa po dávkach automaticky za sebou — stačí kliknúť raz,
-              beží to samo, kým nespracuje všetky filmy.
+              Projde všechny filmy propojené s TMDb, které ještě nemají uložený IMDb odkaz, a automaticky ho doplní. Typ odkazu "IMDb" se při prvním spuštění sám vytvoří, pokud ještě neexistuje. Zpracovává se po dávkách automaticky za sebou — stačí kliknout jednou, běží to samo, dokud nezpracuje všechny filmy.
             </div>
           </div>
           <button
@@ -253,7 +250,7 @@ export default function MovieLinksAdmin({
       <BulkImportRunner
         endpoint="/api/admin/link-types/bulk-import-csfd"
         title="Hromadne pridať ČSFD odkazy"
-        description={'Vlož zoznam v tvare "Názov filmu – https://www.csfd.cz/...", jeden riadok na film. Ak máte vo filmotéke dva filmy s rovnakým názvom, pridaj rok do zátvorky, napr. "Street Fighter (2026)".'}
+        description={'Vlož seznam ve tvaru "Název filmu – https://www.csfd.cz/...", jeden řádek na film. Pokud máte ve filmotéce dva filmy se stejným názvem, přidej rok do závorky, např. "Street Fighter (2026)".'}
         placeholder={'Kmotr – https://www.csfd.cz/film/1644-kmotr/prehled/\nStreet Fighter (2026) – https://www.csfd.cz/film/1721046-street-fighter/prehled/'}
         buttonLabel="Priradiť odkazy"
       />
@@ -310,7 +307,7 @@ export default function MovieLinksAdmin({
           className="field-input mb-4"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Hľadať film…"
+          placeholder="Hledat film…"
         />
 
         {saveError && <p className="text-danger text-xs mb-3">{saveError}</p>}
@@ -327,7 +324,7 @@ export default function MovieLinksAdmin({
                       {m.links.length === 0 && <span className="w-2 h-2 rounded-full bg-danger flex-none animate-pulse" title="Chýbajú odkazy" />}
                       {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                     </div>
-                    <div className="text-xs text-muted">{m.links.length > 0 ? `${m.links.length} odkazov priradených` : 'Zatiaľ žiadne odkazy'}</div>
+                    <div className="text-xs text-muted">{m.links.length > 0 ? `${m.links.length} odkazov priradených` : 'Zatím žádné odkazy'}</div>
                   </div>
                   <span className="text-muted text-xs flex-none">{openFor === m.id ? '▲' : '▼'}</span>
                 </button>
@@ -375,7 +372,7 @@ export default function MovieLinksAdmin({
           })}
         </div>
         {filteredMovies.length > 50 && (
-          <p className="text-xs text-muted mt-2">Zobrazených prvých 50 výsledkov — hľadaj presnejšie, ak nevidíš svoj film.</p>
+          <p className="text-xs text-muted mt-2">Zobrazeno prvních 50 výsledků — hledej přesněji, pokud nevidíš svůj film.</p>
         )}
       </div>
     </div>

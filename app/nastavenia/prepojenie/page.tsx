@@ -15,8 +15,7 @@ export default async function ConnectionsSettingsPage() {
       <SettingsTabs />
       <div className="max-w-md border border-line rounded-xl bg-surface p-5">
         <p className="text-sm text-muted leading-relaxed">
-          KrálFilmu.cz sa momentálne prihlasuje len cez prezývku a heslo — prepojenie s Googlom, Facebookom
-          a podobnými účtami zatiaľ nepodporujeme. Ak by si o túto možnosť mal záujem, napíš nám o tom cez{' '}
+          KrálFilmu.cz se momentálně přihlašuje jen přes přezdívku a heslo — propojení s Googlem, Facebookem a podobnými účty zatím nepodporujeme. Pokud bys o tuto možnost měl zájem, napiš nám o tom přes{' '}
           <a href="/napis-nam" className="text-accent font-semibold hover:underline">kontaktný formulár</a>.
         </p>
       </div>

@@ -12,12 +12,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   const movie = await prisma.movie.findUnique({ where: { id: params.id }, select: { tmdbId: true, contentType: true } });
   if (!movie?.tmdbId) {
-    return NextResponse.json({ error: 'Tento film/seriál nie je prepojený s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tento film/seriál není propojený s TMDb.' }, { status: 400 });
   }
 
   const imageUrl = await tmdbGetBackdropUrl(movie.tmdbId, movie.contentType === 'Seriál' ? 'tv' : 'movie');
   if (!imageUrl) {
-    return NextResponse.json({ error: 'Na TMDb sa nenašiel žiadny vhodný obrázok.' }, { status: 404 });
+    return NextResponse.json({ error: 'Na TMDb se nenašel žádný vhodný obrázek.' }, { status: 404 });
   }
 
   return NextResponse.json({ imageUrl });

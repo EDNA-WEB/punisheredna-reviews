@@ -33,7 +33,7 @@ export default function MovieGalleryManager({ movieId, initialPhotos }: { movieI
 
     files.forEach((file) => {
       if (file.size > 12 * 1024 * 1024) {
-        setError('Niektorý súbor je príliš veľký (max. 12 MB na fotku) a bol preskočený.');
+        setError('Některý soubor je příliš velký (max. 12 MB na fotku) a byl přeskočen.');
         done();
         return;
       }
@@ -104,7 +104,7 @@ export default function MovieGalleryManager({ movieId, initialPhotos }: { movieI
           ))}
         </div>
       ) : (
-        <p className="text-xs text-muted">Zatiaľ žiadne fotky. Fotky sa ukladajú a mažú okamžite, nezávisle od uloženia formulára.</p>
+        <p className="text-xs text-muted">Zatím žádné fotky. Fotky se ukládají a mažou okamžitě, nezávisle na uložení formuláře.</p>
       )}
     </div>
   );

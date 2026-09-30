@@ -110,7 +110,7 @@ export default function PrivacyModalTextForm({
               </label>
             </div>
           ))}
-          {categories.length === 0 && <p className="text-sm text-muted">Zatiaľ žiadne kategórie.</p>}
+          {categories.length === 0 && <p className="text-sm text-muted">Zatím žádné kategorie.</p>}
         </div>
       </div>
 

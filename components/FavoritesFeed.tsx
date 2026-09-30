@@ -21,7 +21,7 @@ function timeAgo(date: string | Date, t: T) {
   if (diffMin < 60) return t('feed.pred_min').replace('{n}', String(diffMin));
   const diffH = Math.floor(diffMin / 60);
   if (diffH < 24) return t('feed.pred_h').replace('{n}', String(diffH));
-  return d.toLocaleDateString('sk-SK');
+  return d.toLocaleDateString('cs-CZ');
 }
 
 function movieHref(m: any) {

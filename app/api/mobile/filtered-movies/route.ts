@@ -54,6 +54,6 @@ export async function GET(req: Request) {
     return NextResponse.json(result.slice(0, 40), { status: 200, headers: cdnHeaders(60) });
   } catch (error) {
     console.error('[api/mobile/filtered-movies]', error);
-    return NextResponse.json({ error: 'Chyba pri filtrovaní filmov.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při filtrování filmů.' }, { status: 500 });
   }
 }

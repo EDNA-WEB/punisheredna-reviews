@@ -6,31 +6,31 @@ export type PrivacyCategory = {
 };
 
 export const DEFAULT_PRIVACY_TEXT =
-  'Na tejto stránke spracúvame údaje potrebné na jej prevádzku a na to, aby sme ti vedeli ponúknuť lepší zážitok. Nižšie si môžeš nastaviť, s čím súhlasíš.';
+  'Na této stránce zpracováváme údaje potřebné k jejímu provozu a k tomu, abychom ti mohli nabídnout lepší zážitek. Níže si můžeš nastavit, s čím souhlasíš.';
 
 export const DEFAULT_PRIVACY_CATEGORIES: PrivacyCategory[] = [
   {
     key: 'necessary',
     title: 'Nevyhnutné technické súbory',
-    description: 'Prihlásenie, bezpečnosť účtu a základná prevádzka webu. Bez tohto web nemôže fungovať.',
+    description: 'Přihlášení, bezpečnost účtu a základní provoz webu. Bez tohoto web nemůže fungovat.',
     mandatory: true
   },
   {
     key: 'preferences',
     title: 'Uloženie preferencií',
-    description: 'Zapamätanie jazyka, vzhľadu (svetlý/tmavý režim) a časového pásma. Ak toto vypneš, tvoje voľby sa nebudú ukladať na ďalšiu návštevu.',
+    description: 'Zapamatování jazyka, vzhledu (světlý/tmavý režim) a časového pásma. Pokud toto vypneš, tvoje volby se nebudou ukládat na další návštěvu.',
     mandatory: false
   },
   {
     key: 'analytics',
     title: 'Štatistika návštevnosti',
-    description: 'Anonymné meranie návštevnosti stránok, ktoré nám pomáha web vylepšovať.',
+    description: 'Anonymní měření návštěvnosti stránek, které nám pomáhá web vylepšovat.',
     mandatory: false
   },
   {
     key: 'personalization',
     title: 'Personalizovaný obsah',
-    description: 'Odporúčania filmov a recenzií na základe tvojej aktivity na webe (napr. sekcia "Recenzie obľúbených"). Ak toto vypneš, tieto sekcie sa ti prestanú zobrazovať.',
+    description: 'Doporučení filmů a recenzí na základě tvé aktivity na webu (např. sekce "Recenze oblíbených"). Pokud toto vypneš, tyto sekce se ti přestanou zobrazovat.',
     mandatory: false
   }
 ];
@@ -55,75 +55,4 @@ export function isConsentGranted(consent: Record<string, boolean> | null, key: s
   return consent[key] !== false;
 }
 
-export const DEFAULT_COOKIES_TEXT = `ZÁSADY COOKIES
-
-Tieto zásady cookies popisujú, ako webová stránka KrálFilmu.cz získava a spracúva informácie o návštevníkoch pomocou súborov cookies.
-
-CO SÚ COOKIES?
-
-Pojmom cookies sa myslia súbory cookies a ďalšie podobné technológie (napríklad pixelové značky, webové signály alebo identifikátory zariadení), ktoré môžu automaticky zhromažďovať údaje pri návšteve webovej stránky.
-
-Cookies sú obsahovo malé súbory vo vašom internetovom prehliadači, ktoré slúžia na ukladanie a prijímanie identifikátorov a ďalších informácií o zariadeniach, z ktorých pristupujete na webovú stránku, a pomáhajú nám tak poskytovať, chrániť a zlepšovať ponúkané služby.
-
-ÚČEL COOKIES
-
-Používanie cookies nám umožňuje ponúknuť vám tie funkcie, ktoré najlepšie zodpovedajú vašim potrebám. Cookies umožňujú zaznamenať informácie o vašej návšteve, vďaka čomu je vaša ďalšia návšteva jednoduchšia a rýchlejšia.
-
-Súbory cookies najmä:
-
-slúžia k efektívnej navigácii na stránke, k personalizácii, ukladaniu predvolieb a celkovo k vylepšeniu používateľského prostredia stránky.
-umožňujú rozlíšiť, či konkrétny používateľ už v minulosti navštívil stránku, alebo či je novým návštevníkom.
-
-DRUHY COOKIES
-
-Podľa toho, kto cookies vytvára, ich delíme na dve kategórie:
-
-Cookie prvej strany vytvára priamo táto webová stránka. Slúžia najmä na zaistenie základnej funkčnosti stránky.
-Cookie tretích strán sú vytvárané inými webmi či službami (napríklad vloženými videami).
-
-Cookies možno tiež rozdeliť podľa ich trvanlivosti na:
-
-Relačné cookies (session cookies) sú dočasné. Ukladajú sa do vášho zariadenia len do doby, než ukončíte prácu s internetovým prehliadačom, a po jeho zatvorení sa vymažú. Sú nevyhnutné pre riadnu funkčnosť stránky.
-Permanentné cookies zostávajú vo vašom prehliadači po dlhšie obdobie alebo dokým ich ručne neodstránite.
-
-Podľa účelu použitia na stránke delíme cookies na:
-
-Nezbytné cookies, ktoré sú potrebné na prevádzku webovej stránky. Zahŕňajú napríklad cookies, ktoré vám umožňujú prihlásiť sa do zabezpečených častí stránky.
-Funkčné cookies používame na zlepšenie fungovania stránky — pomáhajú nám anonymne sledovať, ako návštevníci stránku používajú, a vďaka tomu ju vieme postupne vylepšovať.
-
-POUŽÍVANÉ COOKIES
-
-Webová stránka využíva tieto cookies:
-
-next-auth.session-token — Technická cookie nutná pre prihlásenie a udržanie relácie
-theme — Technická cookie na uloženie voľby svetlého/tmavého vzhľadu
-privacy_consent — Technická cookie na uloženie tvojich volieb z okna "Nastavenie súkromia"
-
-ODMIETNUTIE COOKIES
-
-Súbory cookies si môžeš nastaviť prostredníctvom okna "Nastavenie súkromia", ktoré je trvalo umiestnené v pätičke hlavnej stránky. Svoju voľbu môžeš kedykoľvek zmeniť.
-
-Súbory cookies môžeš tiež úplne odmietnuť v nastaveniach svojho internetového prehliadača, prípadne si nastaviť používanie len niektorých. Ak však vypneš všetky cookies (vrátane nevyhnutných), nemusí sa ti podariť získať prístup na stránku alebo do niektorých jej častí.
-
-Nastavenie cookies v najčastejšie používaných prehliadačoch nájdeš na týchto stránkach:
-
-Chrome - https://support.google.com/accounts/answer/61416
-Firefox - https://support.mozilla.org/sk/kb/vymazanie-cookies
-Safari - https://support.apple.com/sk-sk/HT201265
-Opera - https://www.opera.com/help/tutorials/security/privacy/
-
-K dispozícii je tiež mnoho aplikácií tretích strán, ktoré umožňujú blokovať alebo spravovať cookies. Cookies uložené vo svojom zariadení môžeš tiež vymazať vymazaním histórie prehliadania.
-
-ODKAZY
-
-Ďalšie užitočné informácie o súboroch cookies môžeš nájsť na týchto stránkach:
-
-www.aboutcookies.org
-www.allaboutcookies.org
-www.youronlinechoices.eu
-
-KONTAKTNÉ ÚDAJE
-
-Ak máš otázky týkajúce sa cookies alebo spracovania údajov, napíš nám prostredníctvom správy administrátorovi KrálFilmu priamo na webe.
-
-Prevádzkovateľ webovej stránky KrálFilmu.cz je oprávnený tieto Zásady cookies kedykoľvek jednostranne meniť alebo dopĺňať.`;
+export const DEFAULT_COOKIES_TEXT = `ZÁSADY COOKIES\n\nTyto zásady cookies popisují, jak webová stránka KrálFilmu.cz získává a zpracovává informace o návštěvnících pomocí souborů cookies.\n\nCO JSOU COOKIES?\n\nPojmem cookies se rozumí soubory cookies a další podobné technologie (například pixelové značky, webové signály nebo identifikátory zařízení), které mohou automaticky shromažďovat údaje při návštěvě webové stránky.\n\nCookies jsou obsahově malé soubory ve vašem internetovém prohlížeči, které slouží k ukládání a přijímání identifikátorů a dalších informací o zařízeních, ze kterých na webovou stránku přistupujete, a pomáhají nám tak poskytovat, chránit a zlepšovat nabízené služby.\n\nÚČEL COOKIES\n\nPoužívání cookies nám umožňuje nabídnout vám ty funkce, které nejlépe odpovídají vašim potřebám. Cookies umožňují zaznamenat informace o vaší návštěvě, díky čemuž je vaše další návštěva jednodušší a rychlejší.\n\nSoubory cookies zejména:\n\nslouží k efektivní navigaci na stránce, k personalizaci, ukládání předvoleb a celkově ke zlepšení uživatelského prostředí stránky.\numožňují rozlišit, zda konkrétní uživatel už v minulosti stránku navštívil, nebo zda je novým návštěvníkem.\n\nDRUHY COOKIES\n\nPodle toho, kdo cookies vytváří, je dělíme do dvou kategorií:\n\nCookie první strany vytváří přímo tato webová stránka. Slouží hlavně k zajištění základní funkčnosti stránky.\nCookie třetích stran jsou vytvářeny jinými weby či službami (například vloženými videi).\n\nCookies lze také rozdělit podle jejich trvanlivosti na:\n\nRelační cookies (session cookies) jsou dočasné. Ukládají se do vašeho zařízení jen do doby, než ukončíte práci s internetovým prohlížečem, a po jeho zavření se vymažou. Jsou nezbytné pro řádnou funkčnost stránky.\nPermanentní cookies zůstávají ve vašem prohlížeči po delší dobu nebo dokud je ručně neodstraníte.\n\nPodle účelu použití na stránce dělíme cookies na:\n\nNezbytné cookies, které jsou potřebné pro provoz webové stránky. Zahrnují například cookies, které vám umožňují přihlásit se do zabezpečených částí stránky.\nFunkční cookies používáme ke zlepšení fungování stránky — pomáhají nám anonymně sledovat, jak návštěvníci stránku používají, a díky tomu ji můžeme postupně vylepšovat.\n\nPOUŽÍVANÉ COOKIES\n\nWebová stránka využívá tyto cookies:\n\nnext-auth.session-token — Technická cookie nutná pro přihlášení a udržení relace\ntheme — Technická cookie pro uložení volby světlého/tmavého vzhledu\nprivacy_consent — Technická cookie pro uložení tvých voleb z okna "Nastavení soukromí"\n\nODMÍTNUTÍ COOKIES\n\nSoubory cookies si můžeš nastavit prostřednictvím okna "Nastavení soukromí", které je trvale umístěné v patičce hlavní stránky. Svou volbu můžeš kdykoli změnit.\n\nSoubory cookies můžeš také úplně odmítnout v nastavení svého internetového prohlížeče, případně si nastavit používání jen některých. Pokud však vypneš všechny cookies (včetně nezbytných), nemusí se ti podařit získat přístup na stránku nebo do některých jejích částí.\n\nNastavení cookies v nejčastěji používaných prohlížečích najdeš na těchto stránkách:\n\nChrome - https://support.google.com/accounts/answer/61416\nFirefox - https://support.mozilla.org/cs/kb/vymazani-cookies\nSafari - https://support.apple.com/cs-cz/HT201265\nOpera - https://www.opera.com/help/tutorials/security/privacy/\n\nK dispozici je také mnoho aplikací třetích stran, které umožňují blokovat nebo spravovat cookies. Cookies uložené ve svém zařízení můžeš také vymazat vymazáním historie prohlížení.\n\nODKAZY\n\nDalší užitečné informace o souborech cookies můžeš najít na těchto stránkách:\n\nwww.aboutcookies.org\nwww.allaboutcookies.org\nwww.youronlinechoices.eu\n\nKONTAKTNÍ ÚDAJE\n\nPokud máš otázky týkající se cookies nebo zpracování údajů, napiš nám prostřednictvím zprávy administrátorovi KrálFilmu přímo na webu.\n\nProvozovatel webové stránky KrálFilmu.cz je oprávněn tyto Zásady cookies kdykoli jednostranně měnit nebo doplňovat.`;

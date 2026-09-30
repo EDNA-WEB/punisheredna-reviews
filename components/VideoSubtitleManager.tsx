@@ -142,7 +142,7 @@ export default function VideoSubtitleManager({
             disabled={!ready}
             className="text-xs font-semibold border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            Nastaviť ako začiatok {start !== null && `(${formatTime(start)})`}
+            Nastavit jako začátek {start !== null && `(${formatTime(start)})`}
           </button>
           <button
             type="button"
@@ -150,7 +150,7 @@ export default function VideoSubtitleManager({
             disabled={!ready}
             className="text-xs font-semibold border border-line rounded-full px-3 py-1.5 hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            Nastaviť ako koniec {end !== null && `(${formatTime(end)})`}
+            Nastavit jako konec {end !== null && `(${formatTime(end)})`}
           </button>
         </div>
 

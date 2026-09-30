@@ -14,21 +14,21 @@ export async function PATCH(req: Request) {
   const userId = (session.user as any).id;
   const { currentPassword, newPassword } = await req.json();
   if (!currentPassword || !newPassword) {
-    return NextResponse.json({ error: 'Vyplň súčasné aj nové heslo.' }, { status: 400 });
+    return NextResponse.json({ error: 'Vyplň současné i nové heslo.' }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+  if (!user) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
 
   // Ochrana proti hádaniu súčasného hesla dokola (napr. ak sa niekto dostal
   // k prihlásenému zariadeniu, no heslo nepozná).
   const rateLimitError = !checkKeyRateLimit(`password-change:${userId}`, 5 * 60_000, 5)
-    ? 'Príliš veľa pokusov o zmenu hesla. Skús to prosím o pár minút.'
+    ? 'Příliš mnoho pokusů o změnu hesla. Zkus to prosím za pár minut.'
     : null;
   if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
   const valid = await bcrypt.compare(currentPassword, user.passwordHash);
-  if (!valid) return NextResponse.json({ error: 'Súčasné heslo nie je správne.' }, { status: 400 });
+  if (!valid) return NextResponse.json({ error: 'Současné heslo není správné.' }, { status: 400 });
 
   const passwordError = validatePassword(String(newPassword));
   if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });

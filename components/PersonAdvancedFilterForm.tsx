@@ -72,7 +72,7 @@ export default function PersonAdvancedFilterForm({ birthPlaces, deathPlaces }: {
               {birthPlaces.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
 
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1 mt-3">Dátum narodenia (rok)</div>
+            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1 mt-3">Datum narození (rok)</div>
             <div className="flex items-center gap-1">
               <input type="number" className="field-input-sm" placeholder="od" value={birthYearFrom} onChange={(e) => setBirthYearFrom(e.target.value)} />
               <input type="number" className="field-input-sm" placeholder="do" value={birthYearTo} onChange={(e) => setBirthYearTo(e.target.value)} />
@@ -86,7 +86,7 @@ export default function PersonAdvancedFilterForm({ birthPlaces, deathPlaces }: {
               {deathPlaces.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
 
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1 mt-3">Dátum úmrtia (rok)</div>
+            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1 mt-3">Datum úmrtí (rok)</div>
             <div className="flex items-center gap-1">
               <input type="number" className="field-input-sm" placeholder="od" value={deathYearFrom} onChange={(e) => setDeathYearFrom(e.target.value)} />
               <input type="number" className="field-input-sm" placeholder="do" value={deathYearTo} onChange={(e) => setDeathYearTo(e.target.value)} />
@@ -105,10 +105,10 @@ export default function PersonAdvancedFilterForm({ birthPlaces, deathPlaces }: {
 
       <div className="bg-surface px-4 py-3 border-t border-line flex items-center justify-center gap-2.5">
         <button type="submit" className="bg-accent text-white px-5 py-2 rounded-full text-xs font-semibold hover:bg-accent-dark">
-          Hľadať
+          Hledat
         </button>
         <button type="button" onClick={reset} className="border border-line text-muted px-5 py-2 rounded-full text-xs font-semibold hover:text-ink hover:border-ink">
-          Resetovať voľby
+          Resetovat volby
         </button>
       </div>
     </form>

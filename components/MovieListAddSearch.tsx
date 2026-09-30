@@ -70,7 +70,7 @@ export default function MovieListAddSearch({ listId, onAdded }: { listId: string
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Hľadaj film na pridanie do zoznamu…"
+          placeholder="Hledej film pro přidání do seznamu…"
         />
       </div>
 

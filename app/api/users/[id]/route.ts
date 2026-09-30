@@ -10,9 +10,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 
   const target = await prisma.user.findUnique({ where: { id: params.id } });
-  if (!target) return NextResponse.json({ error: 'Používateľ sa nenašiel.' }, { status: 404 });
+  if (!target) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
   if (target.role === 'ADMIN') {
-    return NextResponse.json({ error: 'Administrátorský účet nemôže byť zablokovaný.' }, { status: 400 });
+    return NextResponse.json({ error: 'Administrátorský účet nemůže být zablokován.' }, { status: 400 });
   }
 
   const body = await req.json();

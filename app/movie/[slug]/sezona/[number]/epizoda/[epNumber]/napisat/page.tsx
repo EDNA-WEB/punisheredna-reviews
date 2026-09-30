@@ -28,7 +28,7 @@ export default async function WriteEpisodeReviewPage({ params }: { params: { slu
 
   return (
     <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-1">Napísať recenziu</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-1">Napsat recenzi</h1>
       <p className="text-muted mb-8">{movie.title} — {episode.title || `Epizóda ${episode.number}`}</p>
       <ReviewForm
         initial={{ movieId: movie.id }}

@@ -20,7 +20,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string; vi
     // adrese — netreba žiadne API ani kľúč, len ID videa, čo už v databáze máme.
     const current = await prisma.movieVideo.findUnique({ where: { id: params.videoId }, select: { previewImage: true, url: true } });
     const videoId = current?.url?.match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-    if (!videoId) return NextResponse.json({ error: 'Nepodarilo sa zistiť ID YouTube videa.' }, { status: 400 });
+    if (!videoId) return NextResponse.json({ error: 'Nepodařilo se zjistit ID YouTube videa.' }, { status: 400 });
 
     try {
       oldImage = current?.previewImage || null;
@@ -36,7 +36,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string; vi
       }
       data.previewImage = await uploadImage(thumbnailUrl, 'videos/previews');
     } catch {
-      return NextResponse.json({ error: 'Stiahnutie náhľadu z YouTube zlyhalo.' }, { status: 500 });
+      return NextResponse.json({ error: 'Stažení náhledu z YouTube selhalo.' }, { status: 500 });
     }
   } else if ('previewImage' in body) {
     const imageError = validateImageDataUrl(body.previewImage);
@@ -57,7 +57,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string; vi
     where: { id: params.videoId, movieId: params.id },
     data
   });
-  if (video.count === 0) return NextResponse.json({ error: 'Video sa nenašlo.' }, { status: 404 });
+  if (video.count === 0) return NextResponse.json({ error: 'Video se nenašlo.' }, { status: 404 });
   if (oldImage && oldImage !== data.previewImage) await deleteImageByUrl(oldImage);
 
   return NextResponse.json({ ok: true, previewImage: data.previewImage });

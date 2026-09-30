@@ -72,7 +72,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
       <div className="flex items-center justify-between">
         {wasDraft ? (
           <div className="text-xs font-semibold text-accent border border-accent/40 px-3 py-1.5 rounded-full w-fit">
-            📝 Rozpísané — viditeľné iba tebe, kým to nezverejníš
+            📝 Rozepsané — viditelné jen tobě, dokud to nezveřejníš
           </div>
         ) : (
           <span />
@@ -82,14 +82,14 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
           onClick={() => setPreviewMode((p) => !p)}
           className="text-sm font-semibold text-ink border border-line px-4 py-2 rounded-full hover:border-accent hover:text-accent"
         >
-          {previewMode ? '← Späť na úpravu' : '👁️ Zobraziť náhľad'}
+          {previewMode ? '← Zpět na úpravu' : '👁️ Zobrazit náhled'}
         </button>
       </div>
 
       {previewMode ? (
         <div className="border border-line rounded-xl p-6 bg-card">
           <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">
-            Takto bude článok vyzerať na webe
+            Takto bude článek vypadat na webu
           </div>
 
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
@@ -98,12 +98,12 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
 
           <div className="flex items-center gap-3 mb-6 text-sm text-muted">
             <span className="flex items-center gap-2"><IconUser className="w-5 h-5" />Ty</span>
-            <span>{new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <span>{new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </div>
 
           <div
             className="article-body text-lg leading-relaxed text-ink font-body mb-6"
-            dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatiaľ nič nenapísané…</p>' }}
+            dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatím nic nenapsáno…</p>' }}
           />
 
           {tags.length > 0 && (
@@ -172,7 +172,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
           disabled={loading !== null}
           className="text-sm font-semibold text-ink border border-line px-6 py-3 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
         >
-          {loading === 'draft' ? 'Ukladám…' : 'Uložiť ako koncept'}
+          {loading === 'draft' ? 'Ukladám…' : 'Uložit jako koncept'}
         </button>
       </div>
     </form>

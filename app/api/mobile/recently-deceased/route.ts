@@ -27,6 +27,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ people, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(1800) });
   } catch (error) {
     console.error('[api/mobile/recently-deceased]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání.' }, { status: 500 });
   }
 }

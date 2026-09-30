@@ -20,7 +20,7 @@ export default function RelatedNewsBox({ items }: { items: NewsItem[] }) {
           href="/novinky"
           className="text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-accent hover:bg-accent-dark transition-colors flex-none"
         >
-          viac
+          více
         </Link>
       </div>
       <div className="divide-y divide-line sm:grid sm:grid-cols-2 sm:divide-y-0">
@@ -36,9 +36,9 @@ export default function RelatedNewsBox({ items }: { items: NewsItem[] }) {
             />
             <div className="min-w-0 flex-1">
               <div className="font-display font-bold text-sm text-accent leading-snug mb-1 line-clamp-2">{n.title}</div>
-              <div className="text-xs text-muted mb-1">{new Date(n.createdAt).toLocaleDateString('sk-SK')}</div>
+              <div className="text-xs text-muted mb-1">{new Date(n.createdAt).toLocaleDateString('cs-CZ')}</div>
               <p className="text-xs text-muted line-clamp-2">
-                {n.summary} <span className="text-accent font-semibold">viac</span>
+                {n.summary} <span className="text-accent font-semibold">více</span>
               </p>
             </div>
           </Link>

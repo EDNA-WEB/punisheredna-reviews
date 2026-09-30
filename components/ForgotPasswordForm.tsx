@@ -16,7 +16,7 @@ export default function ForgotPasswordForm() {
 
   const checks = [
     { label: 'aspoň 8 znakov', valid: newPassword.length >= 8 },
-    { label: 'veľké písmeno', valid: /[A-Z]/.test(newPassword) },
+    { label: 'velké písmeno', valid: /[A-Z]/.test(newPassword) },
     { label: 'malé písmeno', valid: /[a-z]/.test(newPassword) },
     { label: 'číslicu', valid: /[0-9]/.test(newPassword) }
   ];
@@ -26,11 +26,11 @@ export default function ForgotPasswordForm() {
     setError('');
 
     if (newPassword !== confirmPassword) {
-      setError('Nové heslá sa nezhodujú.');
+      setError('Nová hesla se neshodují.');
       return;
     }
     if (checks.some((c) => !c.valid)) {
-      setError('Nové heslo nespĺňa všetky požiadavky nižšie.');
+      setError('Nové heslo nesplňuje všechny požadavky níže.');
       return;
     }
 

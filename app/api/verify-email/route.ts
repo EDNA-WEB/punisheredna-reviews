@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({ where: { verificationToken: token } });
   if (!user) {
-    return NextResponse.json({ error: 'Overovací odkaz je neplatný alebo už bol použitý.' }, { status: 404 });
+    return NextResponse.json({ error: 'Ověřovací odkaz je neplatný nebo už byl použit.' }, { status: 404 });
   }
   if (user.emailVerified) {
     return NextResponse.json({ ok: true, alreadyVerified: true });

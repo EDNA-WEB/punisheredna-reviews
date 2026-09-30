@@ -38,7 +38,7 @@ export default async function AllNewsPage({ searchParams }: { searchParams: { pa
 
       {news.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">
-          Zatiaľ žiadne novinky.
+          Zatím žádné novinky.
         </div>
       ) : (
         <>

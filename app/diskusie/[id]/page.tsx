@@ -28,7 +28,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
 
   return (
     <div className="pt-6 max-w-2xl">
-      <Link href="/diskusie" className="text-sm text-muted hover:text-accent inline-block mb-5">← Späť na diskusie</Link>
+      <Link href="/diskusie" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na diskuze</Link>
 
       {thread.movie && (
         <Link href={`/movie/${thread.movie.slug}`} className="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full mb-3 hover:underline">
@@ -49,7 +49,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
         </Link>
         {thread.author.role === 'ADMIN' && <CriticBadge size="w-4 h-4" label={false} />}
         
-        <span>· {new Date(thread.createdAt).toLocaleDateString('sk-SK')}</span>
+        <span>· {new Date(thread.createdAt).toLocaleDateString('cs-CZ')}</span>
       </div>
 
       <p className="text-[16px] text-ink leading-relaxed whitespace-pre-wrap mb-10">{thread.body}</p>
@@ -60,7 +60,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
 
       <div className="space-y-5 mb-7">
         {thread.posts.length === 0 ? (
-          <p className="text-sm text-muted">Zatiaľ žiadne odpovede. Buď prvý.</p>
+          <p className="text-sm text-muted">Zatím žádné odpovědi. Buď první.</p>
         ) : (
           thread.posts.map((p) => (
             <PostItem

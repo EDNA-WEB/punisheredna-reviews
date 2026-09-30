@@ -9,7 +9,7 @@ export default function AddExternalReviewModal({ movieId, movieTitle, movieYear,
 
   async function handleSubmit() {
     if (!url.trim() || !/^https?:\/\//i.test(url.trim())) {
-      return { ok: false, error: 'Zadaj platný odkaz (musí začínať na http:// alebo https://).' };
+      return { ok: false, error: 'Zadej platný odkaz (musí začínat na http:// nebo https://).' };
     }
     const body = site.trim() ? `${site.trim()}: ${url.trim()}` : url.trim();
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
@@ -34,7 +34,7 @@ export default function AddExternalReviewModal({ movieId, movieTitle, movieYear,
         </button>
         <SubmissionModalShell
           title="Přidat externí recenzi"
-          explanation="Máš odkaz na recenziu tohto filmu/seriálu na inom webe? Podeľ sa oň — po overení ju pridáme medzi externé recenzie."
+          explanation="Máš odkaz na recenzi tohoto filmu/seriálu na jiném webu? Poděl se o něj — po ověření ji přidáme mezi externí recenze."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat recenzi ke schválení"

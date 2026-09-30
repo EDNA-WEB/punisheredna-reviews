@@ -235,7 +235,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
               <div>
                 <p className="text-sm font-semibold text-ink mb-1">Ďalšie stránky sú dostupné len pre Golden Ticket členov.</p>
                 <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-                  Zistiť viac o členstve →
+                  Zjistit více o členství →
                 </Link>
               </div>
             </div>

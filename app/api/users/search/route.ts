@@ -6,7 +6,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 
 export async function GET(req: Request) {
   if (!checkIpRateLimit(req, 'search-users', 10_000, 20)) {
-    return NextResponse.json({ error: 'Príliš veľa vyhľadávaní za krátky čas.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho vyhledávání za krátkou dobu.' }, { status: 429 });
   }
 
   const session = await getServerSession(authOptions);

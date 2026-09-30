@@ -42,11 +42,11 @@ export default function EntityRatingWidget({
         body: JSON.stringify({ value: newValue })
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Hodnotenie sa nepodarilo uložiť.');
+      if (!res.ok) throw new Error(data.error || 'Hodnocení se nepodařilo uložit.');
       setValue(newValue);
       router.refresh();
     } catch (err: any) {
-      alert(err.message || 'Hodnotenie sa nepodarilo uložiť.');
+      alert(err.message || 'Hodnocení se nepodařilo uložit.');
     } finally {
       setLoading(false);
     }

@@ -30,7 +30,7 @@ export default function ProfileEditForm({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      setError('Súbor je príliš veľký (max. 8 MB). Vyber prosím menší obrázok.');
+      setError('Soubor je příliš velký (max. 8 MB). Vyber prosím menší obrázek.');
       return;
     }
     setError('');
@@ -43,7 +43,7 @@ export default function ProfileEditForm({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Meno nemôže byť prázdne.');
+      setError('Jméno nemůže být prázdné.');
       return;
     }
     setLoading(true);
@@ -84,7 +84,7 @@ export default function ProfileEditForm({
         <label className="block text-sm font-semibold text-ink mb-2">Fotka profilu</label>
         <div className="flex items-center gap-4">
           {avatar ? (
-            <img src={avatar} alt="Náhľad" className="w-20 h-20 rounded-full object-cover bg-surface" />
+            <img src={avatar} alt="Náhled" className="w-20 h-20 rounded-full object-cover bg-surface" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center">
               <IconUser className="w-8 h-8 text-muted" />
@@ -98,7 +98,7 @@ export default function ProfileEditForm({
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Meno</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Jméno</label>
         <input className="field-input" value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
 

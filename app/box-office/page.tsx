@@ -31,9 +31,9 @@ export default async function BoxOfficePage({ searchParams }: { searchParams: { 
         <div className="border border-line rounded-xl p-6 bg-card flex items-start gap-4">
           <img src="/golden-ticket-badge.svg" alt="" width={40} height={40} className="flex-none" />
           <div>
-            <p className="text-sm font-semibold text-ink mb-1">Box Office rebríček je dostupný len pre Golden Ticket členov.</p>
+            <p className="text-sm font-semibold text-ink mb-1">Box Office žebříček je dostupný jen pro Golden Ticket členy.</p>
             <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-              Zistiť viac o členstve →
+              Zjistit více o členství →
             </Link>
           </div>
         </div>

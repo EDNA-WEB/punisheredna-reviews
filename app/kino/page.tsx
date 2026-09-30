@@ -55,7 +55,7 @@ export default async function KinoPage({ searchParams }: { searchParams: { month
         <div className="space-y-6">
           {sortedGroupKeys.map((dateKey) => {
             const dateObj = new Date(dateKey);
-            const dateLabel = dateObj.toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const dateLabel = dateObj.toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const dayMovies = groups.get(dateKey)!;
 
             return (

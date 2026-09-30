@@ -16,7 +16,7 @@ function timeAgo(date: Date) {
   if (diffMin < 60) return `pred ${diffMin} min`;
   const diffH = Math.floor(diffMin / 60);
   if (diffH < 24) return `pred ${diffH} h`;
-  return date.toLocaleDateString('sk-SK');
+  return date.toLocaleDateString('cs-CZ');
 }
 
 export default async function ActivityPage({ searchParams }: { searchParams?: { feed?: string; strana?: string } }) {
@@ -117,12 +117,12 @@ export default async function ActivityPage({ searchParams }: { searchParams?: { 
       </div>
 
       <div className="mb-8">
-        <h2 className="font-display font-bold text-lg text-ink mb-3">Ja a moji obľúbení používatelia</h2>
+        <h2 className="font-display font-bold text-lg text-ink mb-3">Já a moji oblíbení uživatelé</h2>
         <div className="border border-line rounded-xl overflow-hidden grid grid-cols-1 sm:grid-cols-3 gap-px bg-line">
           {mine.length === 0 ? (
             <p className="text-sm text-muted p-4 flex items-center gap-2 col-span-full bg-card">
               <IconActivity className="w-4 h-4 flex-none" />
-              Zatiaľ žiadna aktivita.
+              Zatím žádná aktivita.
             </p>
           ) : (
             mine.map((a) => <Row key={a.id} a={a} />)
@@ -136,7 +136,7 @@ export default async function ActivityPage({ searchParams }: { searchParams?: { 
           {others.length === 0 ? (
             <p className="text-sm text-muted p-4 flex items-center gap-2 col-span-full bg-card">
               <IconActivity className="w-4 h-4 flex-none" />
-              Zatiaľ žiadna aktivita.
+              Zatím žádná aktivita.
             </p>
           ) : (
             others.map((a) => <Row key={a.id} a={a} />)

@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const myId = (session.user as any).id;
 
   const { userId } = await req.json();
-  if (!userId || userId === myId) return NextResponse.json({ error: 'Neplatný používateľ.' }, { status: 400 });
+  if (!userId || userId === myId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   await prisma.blockedUser.upsert({
     where: { blockerId_blockedId: { blockerId: myId, blockedId: userId } },
@@ -26,7 +26,7 @@ export async function DELETE(req: Request) {
   const myId = (session.user as any).id;
 
   const { userId } = await req.json();
-  if (!userId) return NextResponse.json({ error: 'Neplatný používateľ.' }, { status: 400 });
+  if (!userId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   await prisma.blockedUser.deleteMany({ where: { blockerId: myId, blockedId: userId } });
 

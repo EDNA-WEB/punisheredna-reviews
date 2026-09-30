@@ -115,7 +115,7 @@ export async function buildCareerMilestones(tmdbId: number, role: 'ACTOR' | 'CRE
     add(
       'most-voted',
       t('person.najznamejsi_film', 'Najznámejší film'),
-      fill(t('person.milestone_most_voted_text', '{count} hodnotení na TMDb — najviac zo všetkých jeho filmov.'), { count: mostVoted.voteCount.toLocaleString('sk-SK') }),
+      fill(t('person.milestone_most_voted_text', '{count} hodnotení na TMDb — najviac zo všetkých jeho filmov.'), { count: mostVoted.voteCount.toLocaleString('cs-CZ') }),
       mostVoted
     );
   }

@@ -52,7 +52,7 @@ export default function LanguageTimezoneForm({ initialLanguage, initialTimezone 
         </select>
         {language === 'en' && (
           <p className="text-xs text-muted mt-1.5">
-            Preklad webu do tohto jazyka postupne pribúda — zatiaľ sa ti uloží tvoja voľba, obsah sa dopĺňa priebežne.
+            Překlad webu do tohoto jazyka postupně přibývá — zatím se ti uloží tvoje volba, obsah se doplňuje průběžně.
           </p>
         )}
       </div>

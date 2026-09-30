@@ -12,13 +12,13 @@ export async function POST(_req: Request, { params }: { params: { seasonId: stri
 
   const season = await prisma.season.findUnique({ where: { id: params.seasonId }, select: { number: true, movieId: true, movie: { select: { tmdbId: true } } } });
   if (!season?.movie.tmdbId) {
-    return NextResponse.json({ error: 'Táto séria nie je prepojená s TMDb.' }, { status: 400 });
+    return NextResponse.json({ error: 'Tato série není propojená s TMDb.' }, { status: 400 });
   }
 
   const existingCount = await prisma.moviePhoto.count({ where: { seasonId: params.seasonId } });
   const urls = await tmdbGetSeasonImages(season.movie.tmdbId, season.number);
   if (urls.length === 0) {
-    return NextResponse.json({ error: 'Na TMDb sa nenašli žiadne fotky pre túto sériu.' }, { status: 404 });
+    return NextResponse.json({ error: 'Na TMDb se nenašly žádné fotky pro tuto sérii.' }, { status: 404 });
   }
 
   const photos = await prisma.$transaction(

@@ -7,29 +7,29 @@ import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 export async function POST(req: Request, { params }: { params: { seasonId: string } }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Na napísanie recenzie sa musíš prihlásiť.' }, { status: 401 });
+    if (!session) return NextResponse.json({ error: 'Pro napsání recenze se musíš přihlásit.' }, { status: 401 });
 
     const authorId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: authorId } });
-    if (!user || user.banned) return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+    if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     if (user.reviewsDisabled) return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať recenzie.' }, { status: 403 });
     const rateLimitError = await checkRateLimit('review', authorId, user.createdAt);
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
     const data = await req.json();
     if (!data.body || !String(data.body).trim()) {
-      return NextResponse.json({ error: 'Text recenzie nemôže byť prázdny.' }, { status: 400 });
+      return NextResponse.json({ error: 'Text recenze nemůže být prázdný.' }, { status: 400 });
     }
     if (String(data.body).length > 20000) {
-      return NextResponse.json({ error: 'Text recenzie je príliš dlhý (max. 20 000 znakov).' }, { status: 400 });
+      return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
     }
     const spamReason = looksLikeSpam(String(data.body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
 
     const season = await prisma.season.findUnique({ where: { id: params.seasonId } });
-    if (!season) return NextResponse.json({ error: 'Séria sa nenašla.' }, { status: 404 });
+    if (!season) return NextResponse.json({ error: 'Série se nenašla.' }, { status: 404 });
     if (!season.released) {
-      return NextResponse.json({ error: 'Táto séria ešte nevyšla, zatiaľ na ňu nemôžeš napísať recenziu.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tato série ještě nevyšla, zatím na ni nemůžeš napsat recenzi.' }, { status: 403 });
     }
 
     const existing = await prisma.review.findFirst({
@@ -58,7 +58,7 @@ export async function POST(req: Request, { params }: { params: { seasonId: strin
 
     return NextResponse.json(review, { status: 201 });
   } catch (err: any) {
-    if (err?.code === 'P2002') return NextResponse.json({ error: 'Táto akcia už bola vykonaná.' }, { status: 409 });
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    if (err?.code === 'P2002') return NextResponse.json({ error: 'Tato akce už byla provedena.' }, { status: 409 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

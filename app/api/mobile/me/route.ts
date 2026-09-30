@@ -6,7 +6,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 // medzičasom zmeniť a pod.), bez nutnosti opäť zadávať heslo.
 export async function GET(req: Request) {
   const user = await getMobileUser(req);
-  if (!user) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+  if (!user) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
   return NextResponse.json({
     user: { id: user.id, name: user.name, role: user.role, avatar: user.avatar, membershipUntil: user.membershipUntil }

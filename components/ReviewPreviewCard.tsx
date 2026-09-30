@@ -48,7 +48,7 @@ export default function ReviewPreviewCard({ slug, body, author, rating, movieTit
 
       <p className="text-xs text-muted leading-relaxed mt-2.5">
         {excerpt(body, 110)}{' '}
-        <Link href={`/movie/${slug}`} className="text-accent font-semibold hover:underline">viac</Link>
+        <Link href={`/movie/${slug}`} className="text-accent font-semibold hover:underline">více</Link>
       </p>
     </div>
   );

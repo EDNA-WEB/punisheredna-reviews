@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   const userId = (session.user as any).id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.banned) return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+  if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
 
   const { personId } = await req.json();
   if (!personId) return NextResponse.json({ error: 'Neplatná požiadavka.' }, { status: 400 });
@@ -20,12 +20,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ following: false });
   } else {
     const targetPerson = await prisma.person.findUnique({ where: { id: personId }, select: { role: true } });
-    if (!targetPerson) return NextResponse.json({ error: 'Osoba sa nenašla.' }, { status: 404 });
+    if (!targetPerson) return NextResponse.json({ error: 'Osoba se nenašla.' }, { status: 404 });
     const currentFollows = await prisma.personFollow.findMany({ where: { userId }, select: { person: { select: { role: true } } } });
     const sameRoleCount = currentFollows.filter((f) => f.person.role === targetPerson.role).length;
     if (sameRoleCount >= 10) {
       const label = targetPerson.role === 'CREATOR' ? 'tvorcov' : 'hercov';
-      return NextResponse.json({ error: `Môžeš mať maximálne 10 obľúbených ${label}.` }, { status: 400 });
+      return NextResponse.json({ error: `Můžeš mít maximálně 10 oblíbených ${label}.` }, { status: 400 });
     }
     await prisma.personFollow.create({ data: { userId, personId } });
     return NextResponse.json({ following: true });

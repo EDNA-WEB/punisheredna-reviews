@@ -57,7 +57,7 @@ function tmdbHeaders() {
 export async function tmdbSearchMovie(query: string) {
   const url = `${TMDB_BASE}/search/multi?query=${encodeURIComponent(query)}&language=cs-CZ&include_adult=false`;
   const res = await fetch(url, { headers: tmdbHeaders() });
-  if (!res.ok) throw new Error('Vyhľadávanie na TMDb zlyhalo.');
+  if (!res.ok) throw new Error('Vyhledávání na TMDb se nezdařilo.');
   const data = await res.json();
   return (data.results || [])
     .filter((r: any) => r.media_type === 'movie' || r.media_type === 'tv')
@@ -146,7 +146,7 @@ export async function tmdbGetLiveBoxOffice(tmdbId: number): Promise<{ budget: nu
 export async function tmdbSearchPerson(query: string) {
   const url = `${TMDB_BASE}/search/person?query=${encodeURIComponent(query)}&language=cs-CZ&include_adult=false`;
   const res = await fetch(url, { headers: tmdbHeaders() });
-  if (!res.ok) throw new Error('Vyhľadávanie na TMDb zlyhalo.');
+  if (!res.ok) throw new Error('Vyhledávání na TMDb se nezdařilo.');
   const data = await res.json();
   return (data.results || []).slice(0, 10).map((r: any) => ({
     id: r.id,

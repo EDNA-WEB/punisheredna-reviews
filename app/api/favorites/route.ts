@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
 
   const targetMovie = await prisma.movie.findUnique({ where: { id: movieId }, select: { contentType: true } });
-  if (!targetMovie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+  if (!targetMovie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
 
   // Nájdi (alebo vytvor) automatický zoznam "Obľúbené" tohto používateľa.
   let list = await prisma.movieList.findFirst({ where: { authorId: userId, title: FAVORITES_LIST_TITLE } });
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
     });
     const sameTypeCount = currentItems.filter((i) => i.movie.contentType === targetMovie.contentType).length;
     if (sameTypeCount >= MAX_FAVORITES) {
-      const label = targetMovie.contentType === 'Seriál' ? 'seriálov' : 'filmov';
-      return NextResponse.json({ error: `Môžeš mať maximálne ${MAX_FAVORITES} obľúbených ${label}.` }, { status: 400 });
+      const label = targetMovie.contentType === 'Seriál' ? 'seriálů' : 'filmov';
+      return NextResponse.json({ error: `Můžeš mít maximálně ${MAX_FAVORITES} oblíbených ${label}.` }, { status: 400 });
     }
     await prisma.movieListItem.create({ data: { listId: list.id, movieId } });
     return NextResponse.json({ inFavorites: true });

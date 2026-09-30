@@ -13,10 +13,10 @@ export async function POST(req: Request, { params }: { params: { episodeId: stri
   if (!url || !String(url).trim()) return NextResponse.json({ error: 'Vlož odkaz na video.' }, { status: 400 });
 
   const episode = await prisma.episode.findUnique({ where: { id: params.episodeId }, include: { season: true } });
-  if (!episode) return NextResponse.json({ error: 'Epizóda sa nenašla.' }, { status: 404 });
+  if (!episode) return NextResponse.json({ error: 'Epizoda se nenašla.' }, { status: 404 });
 
   const count = await prisma.movieVideo.count({ where: { episodeId: params.episodeId } });
-  if (count >= 10) return NextResponse.json({ error: 'Epizóda môže mať najviac 10 videí.' }, { status: 400 });
+  if (count >= 10) return NextResponse.json({ error: 'Epizoda může mít nejvýše 10 videí.' }, { status: 400 });
 
   const video = await prisma.movieVideo.create({
     data: {

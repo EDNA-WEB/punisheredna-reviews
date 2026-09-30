@@ -29,10 +29,10 @@ export default function CommentForm({
   if (!session) {
     return (
       <div className="border border-line rounded-xl p-5 text-center text-muted text-sm bg-surface">
-        <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>
-        {' '}alebo{' '}
-        <Link href="/register" className="text-accent font-semibold hover:underline">zaregistruj sa</Link>
-        {' '}a napíš komentár.
+        <Link href="/login" className="text-accent font-semibold hover:underline">Přihlas se</Link>
+        {' '}nebo{' '}
+        <Link href="/register" className="text-accent font-semibold hover:underline">zaregistruj se</Link>
+        {' '}a napiš komentář.
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function CommentForm({
         body: JSON.stringify({ ...target, parentId, body: text })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Komentár sa nepodarilo pridať.');
+      if (!res.ok) throw new Error(data.error || 'Komentář se nepodařilo přidat.');
       setText('');
       onDone?.();
       router.refresh();
@@ -66,7 +66,7 @@ export default function CommentForm({
         autoFocus={autoFocus}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder={parentId ? 'Napíš odpoveď…' : 'Napíš svoj názor…'}
+        placeholder={parentId ? 'Napiš odpověď…' : 'Napíš svoj názor…'}
         className={`field-input ${compact ? 'min-h-[70px] text-sm' : 'min-h-[100px]'}`}
         maxLength={2000}
       />
@@ -77,7 +77,7 @@ export default function CommentForm({
           disabled={loading}
           className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50"
         >
-          {loading ? 'Odosielam…' : parentId ? 'Odpovedať' : 'Pridať komentár'}
+          {loading ? 'Odosielam…' : parentId ? 'Odpovedať' : 'Přidat komentář'}
         </button>
         {onDone && (
           <button type="button" onClick={onDone} className="text-sm text-muted hover:text-ink">

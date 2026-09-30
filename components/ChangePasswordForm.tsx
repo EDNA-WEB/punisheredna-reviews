@@ -12,7 +12,7 @@ export default function ChangePasswordForm() {
 
   const checks = [
     { label: 'aspoň 8 znakov', valid: newPassword.length >= 8 },
-    { label: 'veľké písmeno', valid: /[A-Z]/.test(newPassword) },
+    { label: 'velké písmeno', valid: /[A-Z]/.test(newPassword) },
     { label: 'malé písmeno', valid: /[a-z]/.test(newPassword) },
     { label: 'číslicu', valid: /[0-9]/.test(newPassword) }
   ];
@@ -23,11 +23,11 @@ export default function ChangePasswordForm() {
     setSuccess(false);
 
     if (newPassword !== confirmPassword) {
-      setError('Nové heslá sa nezhodujú.');
+      setError('Nová hesla se neshodují.');
       return;
     }
     if (checks.some((c) => !c.valid)) {
-      setError('Nové heslo nespĺňa všetky požiadavky nižšie.');
+      setError('Nové heslo nesplňuje všechny požadavky níže.');
       return;
     }
 
@@ -56,7 +56,7 @@ export default function ChangePasswordForm() {
       <h2 className="font-display font-bold text-lg text-ink">Zmena hesla</h2>
 
       <div>
-        <label className="block text-sm font-semibold text-ink mb-2">Súčasné heslo</label>
+        <label className="block text-sm font-semibold text-ink mb-2">Současné heslo</label>
         <input type="password" className="field-input" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
       </div>
 
@@ -78,14 +78,14 @@ export default function ChangePasswordForm() {
       </div>
 
       {error && <div className="text-danger text-sm">{error}</div>}
-      {success && <div className="text-emerald-600 text-sm font-semibold">Heslo bolo úspešne zmenené.</div>}
+      {success && <div className="text-emerald-600 text-sm font-semibold">Heslo bylo úspěšně změněno.</div>}
 
       <button
         type="submit"
         disabled={loading}
         className="bg-night text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-night/85 disabled:opacity-50"
       >
-        {loading ? 'Ukladám…' : 'Zmeniť heslo'}
+        {loading ? 'Ukladám…' : 'Změnit heslo'}
       </button>
     </form>
   );

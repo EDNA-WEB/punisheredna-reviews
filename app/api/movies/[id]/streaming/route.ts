@@ -20,7 +20,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: 'Každá zaškrtnutá služba musí mať vyplnený odkaz.' }, { status: 400 });
     }
     if (!/^https?:\/\//i.test(s.url)) {
-      return NextResponse.json({ error: 'Odkaz musí začínať na http:// alebo https://' }, { status: 400 });
+      return NextResponse.json({ error: 'Odkaz musí začínat na http:// nebo https://' }, { status: 400 });
     }
   }
 

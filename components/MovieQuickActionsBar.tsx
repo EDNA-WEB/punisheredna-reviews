@@ -81,7 +81,7 @@ export default function MovieQuickActionsBar({
       setInWatchlist(data.inWatchlist);
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setSavingWatchlist(false);
     }
@@ -101,7 +101,7 @@ export default function MovieQuickActionsBar({
       setInFavorites(data.inFavorites);
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setSavingFavorites(false);
     }

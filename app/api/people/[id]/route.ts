@@ -16,7 +16,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnenie na túto akciu.' }, { status: 403 });
 
   const { name, role, subRole, photo, bio, birthDate, deathDate, birthPlace, deathPlace } = await req.json();
-  if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadaj meno.' }, { status: 400 });
+  if (!name || !String(name).trim()) return NextResponse.json({ error: 'Zadej jméno.' }, { status: 400 });
   const photoError = validateImageDataUrl(photo);
   if (photoError) return NextResponse.json({ error: photoError }, { status: 400 });
 
@@ -67,7 +67,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         userId: before.submittedById,
         actorName: 'KrálFilmu',
         type: 'APPROVED',
-        text: `Tvoj návrh osoby "${before.name}" bol schválený a je teraz na webe! Ďakujeme za príspevok.`,
+        text: `Tvůj návrh osoby "${before.name}" byl schválen a je teď na webu! Děkujeme za příspěvek.`,
         link: `/osobnost/${updated.slug}`
       }
     });

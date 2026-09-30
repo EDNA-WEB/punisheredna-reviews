@@ -15,13 +15,13 @@ export async function PATCH(req: Request) {
   const userId = (session.user as any).id;
 
   if (!checkKeyRateLimit(`preferences:${userId}`, 60_000, 20)) {
-    return NextResponse.json({ error: 'Príliš veľa zmien za krátky čas.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho změn za krátkou dobu.' }, { status: 429 });
   }
 
   const consent = parseConsentCookie(cookies().get('privacy_consent')?.value);
   if (!isConsentGranted(consent, 'preferences')) {
     return NextResponse.json(
-      { error: 'Vypol/-a si "Uloženie preferencií" v Nastavení súkromia, takže sa táto zmena neuloží natrvalo.', saved: false },
+      { error: 'Vypnul/-a sis "Ukládání preferencí" v Nastavení soukromí, takže se tato změna neuloží natrvalo.', saved: false },
       { status: 200 }
     );
   }

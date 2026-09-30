@@ -162,7 +162,7 @@ export default function EpisodeContentManager({
           value={synopsis}
           onChange={(e) => setSynopsis(e.target.value)}
           onBlur={saveSynopsis}
-          placeholder="O čom epizóda je…"
+          placeholder="O čem epizoda je…"
         />
       </div>
 
@@ -235,7 +235,7 @@ export default function EpisodeContentManager({
       </div>
 
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Náhľadový obrázok pre Online</label>
+        <label className="block text-[11px] font-semibold text-ink mb-1">Náhledový obrázek pro Online</label>
         <label htmlFor={`ep-online-img-${episodeId}`} className="block cursor-pointer w-fit">
           {onlineImage ? (
             <img src={onlineImage} alt="" className="w-32 h-18 object-cover rounded-lg bg-surface" />

@@ -5,7 +5,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 export async function POST(req: Request) {
   try {
     if (!checkIpRateLimit(req, 'trailer-view', 60_000, 30)) {
-      return NextResponse.json({ error: 'Príliš veľa požiadaviek.' }, { status: 429 });
+      return NextResponse.json({ error: 'Příliš mnoho požadavků.' }, { status: 429 });
     }
 
     const { trailerId } = await req.json();
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     const video = await prisma.movieVideo.findUnique({ where: { id: trailerId } });
-    if (!video) return NextResponse.json({ error: 'Trailer sa nenašiel.' }, { status: 404 });
+    if (!video) return NextResponse.json({ error: 'Trailer se nenašel.' }, { status: 404 });
 
     await prisma.trailerView.create({ data: { movieVideoId: trailerId } });
     return NextResponse.json({ ok: true });

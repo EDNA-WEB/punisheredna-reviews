@@ -9,22 +9,22 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 // Jediný rozdiel: namiesto cookie session appka dostane podpísaný token.
 export async function POST(req: Request) {
   if (!checkIpRateLimit(req, 'mobile-login', 15 * 60_000, 15)) {
-    return NextResponse.json({ error: 'Príliš veľa pokusov. Skús to prosím o 15 minút znova.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho pokusů. Zkus to prosím znovu za 15 minut.' }, { status: 429 });
   }
 
   const { nickname, password } = await req.json();
   if (!nickname || !password) {
-    return NextResponse.json({ error: 'Zadaj prezývku aj heslo.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej přezdívku i heslo.' }, { status: 400 });
   }
 
   const user = await prisma.user.findFirst({
     where: { name: { equals: String(nickname).trim(), mode: 'insensitive' } }
   });
-  if (!user) return NextResponse.json({ error: 'Nesprávna prezývka alebo heslo.' }, { status: 401 });
+  if (!user) return NextResponse.json({ error: 'Nesprávná přezdívka nebo heslo.' }, { status: 401 });
 
   if (user.lockedUntil && user.lockedUntil > new Date()) {
     return NextResponse.json(
-      { error: 'Príliš veľa nesprávnych pokusov. Účet je dočasne uzamknutý — skús to znova o 15 minút.' },
+      { error: 'Příliš mnoho nesprávných pokusů. Účet je dočasně uzamčen — zkus to znovu za 15 minut.' },
       { status: 423 }
     );
   }
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
         lockedUntil: attempts >= LOCK_THRESHOLD ? new Date(Date.now() + LOCK_MINUTES * 60_000) : null
       }
     });
-    return NextResponse.json({ error: 'Nesprávna prezývka alebo heslo.' }, { status: 401 });
+    return NextResponse.json({ error: 'Nesprávná přezdívka nebo heslo.' }, { status: 401 });
   }
 
   if (user.failedLoginAttempts > 0 || user.lockedUntil) {
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
   }
 
   if (user.banned) {
-    return NextResponse.json({ error: 'Tento účet bol zablokovaný administrátorom.' }, { status: 403 });
+    return NextResponse.json({ error: 'Tento účet byl zablokován administrátorem.' }, { status: 403 });
   }
 
   const token = signMobileToken({ userId: user.id, name: user.name, role: user.role });

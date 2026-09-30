@@ -37,7 +37,7 @@ export default function MovieRatingWidget({ movieId, initialValue }: { movieId: 
       setValue(newValue);
       router.refresh();
     } catch {
-      alert('Hodnotenie sa nepodarilo uložiť.');
+      alert('Hodnocení se nepodařilo uložit.');
     } finally {
       setLoading(false);
     }

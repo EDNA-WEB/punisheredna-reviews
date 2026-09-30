@@ -34,7 +34,7 @@ export default function BuyMeACoffeeLinkForm({ initial }: { initial: string | nu
   return (
     <div className="border border-line rounded-xl p-4 space-y-3">
       <h2 className="text-sm font-bold text-ink">Odkaz na BuyMeACoffee</h2>
-      <p className="text-xs text-muted">Zobrazí sa ako tlačidlo "Kúpiť členstvo" na webe. Prázdne pole = tlačidlo sa nezobrazí.</p>
+      <p className="text-xs text-muted">Zobrazí se jako tlačítko "Koupit členství" na webu. Prázdné pole = tlačítko se nezobrazí.</p>
       <input
         className="field-input-sm w-full"
         value={url}

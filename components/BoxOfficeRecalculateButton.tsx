@@ -14,7 +14,7 @@ export default function BoxOfficeRecalculateButton() {
     try {
       const res = await fetch('/api/admin/box-office/recalculate-rank', { method: 'POST' });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Prepočet zlyhal.');
+      if (!res.ok) throw new Error(data.error || 'Přepočet se nezdařil.');
       setResult(`Hotovo — ${data.ranked} filmov dostalo označenie z ${data.total} celkovo posúdených.`);
       router.refresh();
     } catch (err: any) {

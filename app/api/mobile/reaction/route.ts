@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const me = await getMobileUser(req);
-    if (!me) return NextResponse.json({ error: 'Neplatné alebo vypršané prihlásenie.' }, { status: 401 });
+    if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const body = await req.json();
     const targetKey = reactionTargetKey(body);

@@ -54,21 +54,21 @@ export default function PersonFormWithTmdbImport() {
       <div className="border border-line rounded-xl p-4 mb-6 bg-surface">
         <h2 className="text-sm font-bold text-ink mb-1">Importovať z TMDb</h2>
         <p className="text-xs text-muted mb-3">
-          Nájdi herca/tvorcu a formulár nižšie sa automaticky predvyplní. Zdroj dát: TMDb — pred uložením si to prosím skontroluj (napr. rolu Herec/Tvorca).
+          Najdi herce/tvůrce a formulář níže se automaticky předvyplní. Zdroj dat: TMDb — před uložením to prosím zkontroluj (např. roli Herec/Tvůrce).
         </p>
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
             className="field-input-sm flex-1"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Zadaj meno herca/tvorcu…"
+            placeholder="Zadej jméno herce/tvůrce…"
           />
           <button
             type="submit"
             disabled={searching}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
-            {searching ? 'Hľadám…' : 'Hľadať'}
+            {searching ? 'Hledám…' : 'Hledat'}
           </button>
         </form>
         {error && <p className="text-danger text-xs mt-2">{error}</p>}

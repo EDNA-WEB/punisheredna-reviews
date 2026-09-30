@@ -35,8 +35,8 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
     const t = setTimeout(() => {
       if (!body) return;
       try {
-        localStorage.setItem(draftKey, JSON.stringify({ movieId, rating, body, savedAt: new Date().toLocaleTimeString('sk-SK') }));
-        setSavedNote(`Návrh uložený v prehliadači ${new Date().toLocaleTimeString('sk-SK')}`);
+        localStorage.setItem(draftKey, JSON.stringify({ movieId, rating, body, savedAt: new Date().toLocaleTimeString('cs-CZ') }));
+        setSavedNote(`Návrh uložený v prehliadači ${new Date().toLocaleTimeString('cs-CZ')}`);
       } catch {}
     }, 800);
     return () => clearTimeout(t);
@@ -72,11 +72,11 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!apiBase && !movieId) {
-      setError('Vyber prosím film, ku ktorému recenzia patrí.');
+      setError('Vyber prosím film, ke kterému recenze patří.');
       return;
     }
     if (!body.trim()) {
-      setError('Text recenzie nemôže byť prázdny.');
+      setError('Text recenze nemůže být prázdný.');
       return;
     }
     setLoading(true);
@@ -160,13 +160,13 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
             <button type="button" onClick={() => wrapSelection('**')} className="w-8 h-8 rounded-lg border border-line text-sm font-bold hover:border-night">B</button>
             <button type="button" onClick={() => wrapSelection('*')} className="w-8 h-8 rounded-lg border border-line text-sm italic hover:border-night">I</button>
             <button type="button" onClick={() => setPreview((p) => !p)} className={`h-8 px-3 rounded-lg border text-xs font-semibold ${preview ? 'bg-night text-white border-night' : 'border-line hover:border-night'}`}>
-              {preview ? 'Upraviť' : 'Náhľad'}
+              {preview ? 'Upraviť' : 'Náhled'}
             </button>
           </div>
         </div>
 
         {preview ? (
-          <div className="field-input min-h-[260px] leading-relaxed article-body overflow-auto" dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatiaľ nič nenapísané…</p>' }} />
+          <div className="field-input min-h-[260px] leading-relaxed article-body overflow-auto" dangerouslySetInnerHTML={{ __html: mdToHtml(body) || '<p class="text-muted">Zatím nic nenapsáno…</p>' }} />
         ) : (
           <textarea ref={textareaRef} className="field-input min-h-[260px] leading-relaxed" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Napíš svoju recenziu…" />
         )}
@@ -181,7 +181,7 @@ export default function ReviewForm({ initial, movieLocked, redirectTo, apiBase, 
         <div className="text-danger text-sm">
           {error}
           {existingReviewId && (
-            <> Nájdeš a upravíš ju priamo pod ceruzkou vedľa nej na profile.</>
+            <> Najdeš a upravíš ji přímo pod tužkou vedle ní na profilu.</>
           )}
         </div>
       )}

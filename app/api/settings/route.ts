@@ -41,10 +41,10 @@ export async function PATCH(req: Request) {
     if (urlError) return NextResponse.json({ error: urlError }, { status: 400 });
   }
   if (privacyModalText && String(privacyModalText).length > 10000) {
-    return NextResponse.json({ error: 'Text je príliš dlhý (max. 10 000 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Text je příliš dlouhý (max. 10 000 znaků).' }, { status: 400 });
   }
   if (cookiesPolicyText && String(cookiesPolicyText).length > 20000) {
-    return NextResponse.json({ error: 'Text je príliš dlhý (max. 20 000 znakov).' }, { status: 400 });
+    return NextResponse.json({ error: 'Text je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
   }
   if (privacyCategories) {
     try {

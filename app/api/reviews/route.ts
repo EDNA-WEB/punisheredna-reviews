@@ -10,15 +10,15 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Na napísanie recenzie sa musíš prihlásiť.' }, { status: 401 });
+      return NextResponse.json({ error: 'Pro napsání recenze se musíš přihlásit.' }, { status: 401 });
     }
     if (!checkIpRateLimit(req, 'reviews-create', 60_000, 5)) {
-      return NextResponse.json({ error: 'Príliš veľa recenzií za krátky čas. Skús to prosím o chvíľu znova.' }, { status: 429 });
+      return NextResponse.json({ error: 'Příliš mnoho recenzí za krátkou dobu. Zkus to prosím za chvíli znovu.' }, { status: 429 });
     }
     const authorId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: authorId } });
     if (!user || user.banned) {
-      return NextResponse.json({ error: 'Tvoj účet bol zablokovaný, nemôžeš pridávať recenzie.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tvůj účet byl zablokován, nemůžeš přidávat recenze.' }, { status: 403 });
     }
     if (user.reviewsDisabled) {
       return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať recenzie.' }, { status: 403 });
@@ -31,19 +31,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Vyber prosím film.' }, { status: 400 });
     }
     if (!data.body || !String(data.body).trim()) {
-      return NextResponse.json({ error: 'Text recenzie nemôže byť prázdny.' }, { status: 400 });
+      return NextResponse.json({ error: 'Text recenze nemůže být prázdný.' }, { status: 400 });
     }
     if (String(data.body).length > 20000) {
-      return NextResponse.json({ error: 'Text recenzie je príliš dlhý (max. 20 000 znakov).' }, { status: 400 });
+      return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
     }
 
     const spamReason = looksLikeSpam(String(data.body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
 
     const movie = await prisma.movie.findUnique({ where: { id: data.movieId } });
-    if (!movie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+    if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
     if (movie.releaseDate && movie.releaseDate > new Date()) {
-      return NextResponse.json({ error: 'Film ešte nemal premiéru, zatiaľ naň nemôžeš napísať recenziu.' }, { status: 403 });
+      return NextResponse.json({ error: 'Film ještě neměl premiéru, zatím na něj nemůžeš napsat recenzi.' }, { status: 403 });
     }
 
     const existing = await prisma.review.findFirst({
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     });
     if (existing) {
       return NextResponse.json(
-        { error: 'K tomuto filmu už recenziu máš. Môžeš ju iba upraviť, nie pridať druhú.', existingId: existing.id },
+        { error: 'K tomuto filmu už recenzi máš. Můžeš ji jen upravit, ne přidat druhou.', existingId: existing.id },
         { status: 409 }
       );
     }
@@ -92,9 +92,9 @@ export async function POST(req: Request) {
     return NextResponse.json(review, { status: 201 });
   } catch (err: any) {
     if (err?.code === 'P2002') {
-      return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });
+      return NextResponse.json({ error: 'Tato akce se už zpracovává nebo byla provedena.' }, { status: 409 });
     }
     console.error(err);
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

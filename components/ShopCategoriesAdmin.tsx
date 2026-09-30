@@ -47,7 +47,7 @@ export default function ShopCategoriesAdmin({ initialCategories }: { initialCate
   }
 
   async function removeCategory(id: string) {
-    if (!confirm('Naozaj zmazať túto kategóriu? Zmažú sa aj všetky produkty v nej.')) return;
+    if (!confirm('Opravdu smazat tuto kategorii? Smažou se i všechny produkty v ní.')) return;
     setCategories((prev) => prev.filter((c) => c.id !== id));
     await fetch(`/api/shop/categories/${id}`, { method: 'DELETE' }).catch(() => {});
   }
@@ -109,7 +109,7 @@ export default function ShopCategoriesAdmin({ initialCategories }: { initialCate
             )}
           </div>
         ))}
-        {categories.length === 0 && <p className="text-sm text-muted p-4">Zatiaľ žiadne kategórie.</p>}
+        {categories.length === 0 && <p className="text-sm text-muted p-4">Zatím žádné kategorie.</p>}
       </div>
     </div>
   );

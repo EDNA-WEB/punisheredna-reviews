@@ -28,12 +28,12 @@ export async function POST(req: Request) {
   const isAdmin = (session.user as any).role === 'ADMIN';
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || user.banned) {
-    return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+    return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
   }
 
   const data = await req.json();
   if (!data.title || !String(data.title).trim()) {
-    return NextResponse.json({ error: 'Názov filmu je povinný.' }, { status: 400 });
+    return NextResponse.json({ error: 'Název filmu je povinný.' }, { status: 400 });
   }
 
   const duplicate = await prisma.movie.findFirst({

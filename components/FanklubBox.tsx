@@ -12,7 +12,7 @@ export default function FanklubBox({ karma, isAdmin, fans }: { karma: number; is
         <div className="flex items-center justify-center gap-1.5">
           <span className="font-display font-extrabold text-2xl leading-none">{isAdmin ? '∞' : karma}</span>
           <span className="text-sm opacity-90">karmy</span>
-          <span title="Karma — súčet lajkov mínus dislajkov na recenzie, komentáre, novinky a diskusné príspevky">
+          <span title="Karma — součet lajků mínus dislajků na recenze, komentáře, novinky a diskuzní příspěvky">
             <IconInfo className="w-3.5 h-3.5 opacity-80" />
           </span>
         </div>
@@ -24,7 +24,7 @@ export default function FanklubBox({ karma, isAdmin, fans }: { karma: number; is
           <div className="space-y-1.5">
             {shown.map((f) => (
               <Link key={f.id} href={`/profile/${f.id}`} className="block text-sm text-accent hover:underline truncate">
-                {f.name.startsWith('Zmazaný používateľ ') ? 'Zmazaný používateľ' : f.name}
+                {f.name.startsWith('Zmazaný používateľ ') ? 'Smazaný uživatel' : f.name}
               </Link>
             ))}
           </div>

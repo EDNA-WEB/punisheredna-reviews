@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   // relácií za sebou a zbytočne tak zaťažovať server. 20 za 10 minút je pre
   // bežné použitie (vrátane opakovaného obnovenia vypršaného kódu) viac než dosť.
   if (!checkIpRateLimit(req, 'qr-login-create', 10 * 60_000, 20)) {
-    return NextResponse.json({ error: 'Príliš veľa pokusov. Skús to prosím o chvíľu znova.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho pokusů. Zkus to prosím za chvíli znovu.' }, { status: 429 });
   }
 
   const expiresAt = new Date(Date.now() + EXPIRY_MINUTES * 60_000);

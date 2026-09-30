@@ -16,14 +16,14 @@ export async function PATCH(req: Request) {
 
   const [userAId, userBId] = sortedPair(myId, otherId);
   const conversation = await prisma.conversation.findUnique({ where: { userAId_userBId: { userAId, userBId } } });
-  if (!conversation) return NextResponse.json({ error: 'Konverzácia sa nenašla.' }, { status: 404 });
+  if (!conversation) return NextResponse.json({ error: 'Konverzace se nenašla.' }, { status: 404 });
 
   // Rozhodnúť môže len ten, kto konverzáciu nezačal.
   if (conversation.initiatorId === myId) {
-    return NextResponse.json({ error: 'Vlastnú požiadavku nemôžeš schváliť ani zamietnuť.' }, { status: 403 });
+    return NextResponse.json({ error: 'Vlastní žádost nemůžeš schválit ani zamítnout.' }, { status: 403 });
   }
   if (conversation.status !== 'PENDING') {
-    return NextResponse.json({ error: 'O tejto konverzácii sa už rozhodlo.' }, { status: 409 });
+    return NextResponse.json({ error: 'O této konverzaci už bylo rozhodnuto.' }, { status: 409 });
   }
 
   const updated = await prisma.conversation.update({

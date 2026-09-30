@@ -45,8 +45,7 @@ export default function MembershipAdminPanel({ initialCodes }: { initialCodes: C
       <form onSubmit={generate} className="border border-line rounded-xl p-4 mb-6 space-y-3">
         <h2 className="text-sm font-bold text-ink">Vygenerovať nový kód</h2>
         <p className="text-xs text-muted">
-          Skúšobné 4-dňové kódy sa generujú automaticky pri registrácii — tu vieš vygenerovať len platené kódy,
-          typicky po overení prijatej platby.
+          Zkušební 4denní kódy se generují automaticky při registraci — tady můžeš vygenerovat jen placené kódy, typicky po ověření přijaté platby.
         </p>
         <div className="flex items-center gap-3 flex-wrap">
           <select value={type} onChange={(e) => setType(e.target.value as 'month' | 'year')} className="field-input-sm w-auto">
@@ -57,7 +56,7 @@ export default function MembershipAdminPanel({ initialCodes }: { initialCodes: C
             className="field-input-sm flex-1 min-w-[180px]"
             value={targetUsername}
             onChange={(e) => setTargetUsername(e.target.value)}
-            placeholder="Prezývka používateľa (nepovinné — pošle kód rovno do Pošty)"
+            placeholder="Přezdívka uživatele (nepovinné — pošle kód rovnou do Pošty)"
           />
           <button
             type="submit"
@@ -78,14 +77,14 @@ export default function MembershipAdminPanel({ initialCodes }: { initialCodes: C
       <h2 className="text-sm font-bold text-ink mb-3">História kódov</h2>
       <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
         {codes.length === 0 ? (
-          <p className="text-sm text-muted p-4">Zatiaľ žiadne kódy.</p>
+          <p className="text-sm text-muted p-4">Zatím žádné kódy.</p>
         ) : (
           codes.map((c) => (
             <div key={c.id} className="flex items-center gap-3 p-3 text-sm flex-wrap">
               <span className="font-mono font-semibold text-ink tracking-widest">{c.code}</span>
               <span className="text-xs text-muted border border-line rounded-full px-2 py-0.5">{TYPE_LABELS[c.type] || c.type}</span>
               <span className="ml-auto text-xs text-muted">
-                {c.usedByName ? `Uplatnil: ${c.usedByName}` : 'Zatiaľ nepoužitý'}
+                {c.usedByName ? `Uplatnil: ${c.usedByName}` : 'Zatím nepoužitý'}
               </span>
             </div>
           ))

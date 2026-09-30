@@ -11,8 +11,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
-  if (!post) return NextResponse.json({ error: 'Článok sa nenašiel.' }, { status: 404 });
-  if (post.published) return NextResponse.json({ error: 'Tento článok je už publikovaný.' }, { status: 400 });
+  if (!post) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
+  if (post.published) return NextResponse.json({ error: 'Tento článek je už publikovaný.' }, { status: 400 });
 
   // Jedinečný slug — ak je názov už obsadený, pridá číselnú príponu.
   const baseSlug = slugify(post.title);
@@ -46,7 +46,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       userId: post.authorId,
       actorName: 'Systém',
       type: 'BLOG_PUBLISHED',
-      text: `Tvoj článok "${post.title}" bol schválený a zverejnený na hlavnej stránke`,
+      text: `Tvůj článek "${post.title}" byl schválen a zveřejněn na hlavní stránce`,
       link: `/news/${slug}`
     }
   });

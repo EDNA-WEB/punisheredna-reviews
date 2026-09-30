@@ -32,7 +32,7 @@ export default function TagsBox({ tags }: { tags: string[] }) {
             onClick={() => setShowAll(true)}
             className="text-xs font-semibold text-accent hover:underline px-1.5 py-1.5"
           >
-            viac
+            více
           </button>
         )}
       </div>

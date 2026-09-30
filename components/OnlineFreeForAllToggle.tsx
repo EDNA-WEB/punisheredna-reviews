@@ -18,7 +18,7 @@ export default function OnlineFreeForAllToggle({ initialEnabled }: { initialEnab
       if (!res.ok) throw new Error();
       setEnabled(next);
     } catch {
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoading(false);
     }
@@ -27,11 +27,11 @@ export default function OnlineFreeForAllToggle({ initialEnabled }: { initialEnab
   return (
     <div className="border border-line rounded-xl p-4 bg-surface flex items-center justify-between gap-4 max-w-xl">
       <div>
-        <div className="text-sm font-semibold text-ink">Online sledovanie zdarma pre všetkých</div>
+        <div className="text-sm font-semibold text-ink">Online sledování zdarma pro všechny</div>
         <p className="text-xs text-muted mt-0.5">
           {enabled
-            ? 'Momentálne zapnuté — sekciu "Online" vidí a môže kliknúť ktokoľvek, aj neprihlásení návštevníci, bez ohľadu na členstvo.'
-            : 'Momentálne vypnuté — sekcia "Online" je dostupná len prihláseným Golden Ticket členom, tak ako obvykle.'}
+            ? 'Momentálně zapnuto — sekci "Online" vidí a může kliknout kdokoli, i nepřihlášení návštěvníci, bez ohledu na členství.'
+            : 'Momentálně vypnuto — sekce "Online" je dostupná jen přihlášeným Golden Ticket členům, tak jako obvykle.'}
         </p>
       </div>
       <button
@@ -42,7 +42,7 @@ export default function OnlineFreeForAllToggle({ initialEnabled }: { initialEnab
           enabled ? 'border border-line text-muted hover:border-danger hover:text-danger' : 'bg-accent text-white hover:bg-accent-dark'
         }`}
       >
-        {loading ? '…' : enabled ? 'Vypnúť' : 'Zapnúť pre všetkých'}
+        {loading ? '…' : enabled ? 'Vypnúť' : 'Zapnout pro všechny'}
       </button>
     </div>
   );

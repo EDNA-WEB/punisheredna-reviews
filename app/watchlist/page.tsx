@@ -23,12 +23,12 @@ export default async function WatchlistPage() {
   return (
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Chcem vidieť</h1>
-      <p className="text-muted mb-8">Filmy, ktoré si si odložil na neskôr.</p>
+      <p className="text-muted mb-8">Filmy, které sis odložil na později.</p>
 
       {items.length === 0 ? (
         <EmptyState
           icon={<IconBookmark className="w-5 h-5" />}
-          title="Zatiaľ nič v zozname"
+          title="Zatím nic v seznamu"
           description="Pridaj si film tlačidlom „Chcem vidieť“ na jeho stránke."
           actionLabel="Prezrieť filmy"
           actionHref="/recenzie"

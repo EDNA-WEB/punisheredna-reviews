@@ -96,7 +96,7 @@ export default function AppAndSocialLinksForm({ initial }: { initial: Initial })
       <button onClick={save} disabled={loading} className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark disabled:opacity-50">
         {loading ? 'Ukladám…' : 'Uložiť odkazy'}
       </button>
-      <p className="text-xs text-muted">Prázdne pole = daná ikonka/tlačidlo sa na hlavnej stránke jednoducho nezobrazí.</p>
+      <p className="text-xs text-muted">Prázdné pole = daná ikonka/tlačítko se na hlavní stránce jednoduše nezobrazí.</p>
     </div>
   );
 }

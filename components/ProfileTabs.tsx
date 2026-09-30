@@ -53,7 +53,7 @@ export default function ProfileTabs({
   movieLists?: { id: string; title: string; itemCount: number; items: { slug: string; title: string; poster: string | null; year: string | null }[] }[];
 }) {
   const primaryTabs = [
-    { key: 'prehlad', label: 'Prehľad' },
+    { key: 'prehlad', label: 'Přehled' },
     { key: 'o_mne', label: 'O mne' },
     { key: 'hodnotenie', label: 'Hodnotenie' },
     { key: 'reviews', label: 'Recenzie' },
@@ -195,13 +195,13 @@ export default function ProfileTabs({
               <span className="text-sm font-bold text-ink">Posledné recenzie{reviews.length > 0 ? ` (${reviews.length})` : ''}</span>
               {reviews.length > 3 && (
                 <button onClick={() => setActive('reviews')} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
-                  VIAC
+                  VÍCE
                 </button>
               )}
             </div>
             <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line">
               {reviews.length === 0 ? (
-                <p className="text-sm text-muted p-4">Zatiaľ žiadne recenzie.</p>
+                <p className="text-sm text-muted p-4">Zatím žádné recenze.</p>
               ) : (
                 reviews.slice(0, 3).map((r) => (
                   <Link key={r.id} href={`/movie/${r.movie.slug}`} className="flex gap-3 p-4 hover:bg-surface transition-colors">
@@ -211,7 +211,7 @@ export default function ProfileTabs({
                         {r.movie.title} {r.movie.year && <span className="text-muted font-normal">{r.movie.year}</span>}
                       </div>
                       {r.body && <p className="text-xs text-muted line-clamp-2 mt-1">{r.body.replace(/[#*_`>]/g, '')}</p>}
-                      <div className="text-[11px] text-muted mt-1">{new Date(r.createdAt).toLocaleDateString('sk-SK')}</div>
+                      <div className="text-[11px] text-muted mt-1">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
                     </div>
                   </Link>
                 ))
@@ -224,13 +224,13 @@ export default function ProfileTabs({
               <span className="text-sm font-bold text-ink">Posledné hodnotenia</span>
               {latestRatings.length > 0 && (
                 <button onClick={() => setActive('hodnotenie')} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
-                  VIAC
+                  VÍCE
                 </button>
               )}
             </div>
             <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line">
               {latestRatings.length === 0 ? (
-                <p className="text-sm text-muted p-4">Zatiaľ žiadne hodnotenia.</p>
+                <p className="text-sm text-muted p-4">Zatím žádná hodnocení.</p>
               ) : (
                 latestRatings.map((r) => (
                   <Link key={r.id} href={`/movie/${r.movie.slug}`} className="flex items-center gap-3 p-3 hover:bg-surface transition-colors">
@@ -299,7 +299,7 @@ export default function ProfileTabs({
           ) : (
             <div>
               <p className="text-sm text-muted">
-                {isOwn ? 'Ešte si o sebe nič nenapísal(a).' : 'Zatiaľ o sebe nič nenapísal(a).'}
+                {isOwn ? 'Ještě jsi o sobě nic nenapsal(a).' : 'Zatím o sobě nic nenapsal(a).'}
               </p>
               {isOwn && (
                 <button
@@ -307,7 +307,7 @@ export default function ProfileTabs({
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline mt-2"
                 >
                   <IconEdit className="w-3.5 h-3.5" />
-                  Napísať o sebe
+                  Napsat o sobě
                 </button>
               )}
             </div>
@@ -318,7 +318,7 @@ export default function ProfileTabs({
       {active === 'hodnotenie' && (
         <div className="space-y-2">
           {ratingList.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne hodnotenia.</p>
+            <p className="text-sm text-muted">Zatím žádná hodnocení.</p>
           ) : (
             ratingList.map((r) => {
               const days = daysSincePremiere(r.createdAt, r.movie.releaseDate);
@@ -330,7 +330,7 @@ export default function ProfileTabs({
                       {r.movie.title} {r.movie.year && <span className="text-muted font-normal">{r.movie.year}</span>}
                     </div>
                     <div className="text-[11px] text-muted mt-0.5">
-                      Ohodnotené {new Date(r.createdAt).toLocaleDateString('sk-SK')}
+                      Ohodnotené {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
                       {days !== null && (
                         <> · {days === 0 ? 'v deň premiéry' : days > 0 ? `${days}. deň od premiéry` : `${Math.abs(days)} dní pred premiérou`}</>
                       )}
@@ -348,7 +348,7 @@ export default function ProfileTabs({
       {active === 'reviews' && (
         <div className="space-y-4">
           {reviewList.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne recenzie.</p>
+            <p className="text-sm text-muted">Zatím žádné recenze.</p>
           ) : (
             reviewList.map((r) => (
               <div key={r.id} className="border border-line rounded-xl p-3.5">
@@ -357,7 +357,7 @@ export default function ProfileTabs({
                     <div className="w-10 h-10 rounded-md bg-surface bg-cover bg-center flex-none" style={r.movie.poster ? { backgroundImage: `url('${r.movie.poster}')` } : undefined} />
                     <div className="min-w-0">
                       <div className="font-semibold text-ink text-sm group-hover:text-accent transition-colors truncate">{r.movie.title}</div>
-                      <div className="text-xs text-muted mt-0.5">{new Date(r.createdAt).toLocaleDateString('sk-SK')}</div>
+                      <div className="text-xs text-muted mt-0.5">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
                     </div>
                   </Link>
                   {isOwn && (
@@ -386,11 +386,11 @@ export default function ProfileTabs({
               href="/blog/novy"
               className="inline-block bg-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent-dark mb-2"
             >
-              + Napísať článok
+              + Napsat článek
             </Link>
           )}
           {blogPosts.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne články.</p>
+            <p className="text-sm text-muted">Zatím žádné články.</p>
           ) : (
             blogPosts.map((p) => (
               <Link key={p.id} href={`/blog/${p.id}`} className="flex gap-3 border border-line rounded-xl p-3.5 hover:border-accent">
@@ -398,7 +398,7 @@ export default function ProfileTabs({
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-ink truncate">{p.title}</div>
                   <div className="text-[11px] text-muted mt-0.5">
-                    {new Date(p.createdAt).toLocaleDateString('sk-SK')}
+                    {new Date(p.createdAt).toLocaleDateString('cs-CZ')}
                     {p.isDraft && <span className="text-accent font-semibold"> · 📝 rozpísané</span>}
                     {p.published && <span className="text-emerald-600 font-semibold"> · publikované na hlavnej stránke</span>}
                   </div>
@@ -414,7 +414,7 @@ export default function ProfileTabs({
       {active === 'comments' && (
         <div className="space-y-3">
           {comments.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne komentáre.</p>
+            <p className="text-sm text-muted">Zatím žádné komentáře.</p>
           ) : (
             comments.map((c) => (
               <Link
@@ -432,7 +432,7 @@ export default function ProfileTabs({
                   )}
                 </div>
                 <p className="text-sm text-ink line-clamp-2">{c.body}</p>
-                <div className="text-[11px] text-muted mt-1.5">{new Date(c.createdAt).toLocaleDateString('sk-SK')}</div>
+                <div className="text-[11px] text-muted mt-1.5">{new Date(c.createdAt).toLocaleDateString('cs-CZ')}</div>
               </Link>
             ))
           )}
@@ -442,7 +442,7 @@ export default function ProfileTabs({
       {active === 'fans' && (
         <div className="space-y-2">
           {fans.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ nemá žiadnych fanúšikov.</p>
+            <p className="text-sm text-muted">Zatím nemá žádné fanoušky.</p>
           ) : (
             fans.map((f) => (
               <Link key={f.id} href={`/profile/${f.id}`} className="flex items-center gap-3 border border-line rounded-xl p-2.5 hover:border-accent">

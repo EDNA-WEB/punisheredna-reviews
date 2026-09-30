@@ -9,10 +9,9 @@ export default async function NewBlogPostPage() {
 
   return (
     <div className="pt-10">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Napísať článok</h1>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Napsat článek</h1>
       <p className="text-sm text-muted mb-8">
-        Článok sa zobrazí len na tvojom profile. Ak by si chcel(a), aby sa objavil aj na hlavnej stránke, priamo v
-        článku potom môžeš požiadať o publikáciu.
+        Článek se zobrazí jen na tvém profilu. Pokud bys chtěl(a), aby se objevil i na hlavní stránce, přímo v článku pak můžeš požádat o publikaci.
       </p>
       <BlogPostForm />
     </div>

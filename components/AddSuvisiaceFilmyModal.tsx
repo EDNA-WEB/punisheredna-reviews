@@ -7,7 +7,7 @@ export default function AddSuvisiaceFilmyModal({ movieId, movieTitle, movieYear,
   const [value, setValue] = useState('');
 
   async function handleSubmit() {
-    if (!value.trim()) return { ok: false, error: 'Napíš prosím aspoň jeden názov filmu.' };
+    if (!value.trim()) return { ok: false, error: 'Napiš prosím alespoň jeden název filmu.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,7 +30,7 @@ export default function AddSuvisiaceFilmyModal({ movieId, movieTitle, movieYear,
         </button>
         <SubmissionModalShell
           title="Přidat související filmy"
-          explanation="Napíš názvy filmov/seriálov, čo s týmto súvisia — oddeľ ich čiarkou. Admin ich priradí po overení."
+          explanation="Napiš názvy filmů/seriálů, které s tímto souvisí — odděl je čárkou. Admin je přiřadí po ověření."
           movieTitle={movieTitle}
           movieYear={movieYear}
           submitLabel="Poslat filmy ke schválení"

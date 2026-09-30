@@ -16,11 +16,11 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum) || yearNum < 1900 || yearNum > 2100) {
-    return NextResponse.json({ error: 'Zadaj platný rok.' }, { status: 400 });
+    return NextResponse.json({ error: 'Zadej platný rok.' }, { status: 400 });
   }
   const epCount = Number(episodeCount) || 0;
   if (epCount < 0 || epCount > 200) {
-    return NextResponse.json({ error: 'Neplatný počet epizód.' }, { status: 400 });
+    return NextResponse.json({ error: 'Neplatný počet epizod.' }, { status: 400 });
   }
 
   const existing = await prisma.season.findUnique({ where: { movieId_number: { movieId: params.id, number: num } } }).catch(() => null);
@@ -76,7 +76,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           userId: w.userId,
           actorName: 'KrálFilmu',
           type: 'NEW_EPISODE',
-          text: `Pribudla nová séria ${num} pri seriáli "${movie.title}", ktorý máš v Chcem vidieť!`,
+          text: `Pribudla nová séria ${num} pri seriáli "${movie.title}", který máš v Chci vidět!`,
           link: `/movie/${movie.slug}/sezona/${num}`
         }))
       });

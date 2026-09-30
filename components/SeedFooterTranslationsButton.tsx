@@ -32,7 +32,7 @@ export default function SeedFooterTranslationsButton() {
         disabled={loading}
         className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
       >
-        {loading ? 'Dopĺňam…' : '✅ Doplniť pripravené EN/CS preklady (pätička, štatistický panel)'}
+        {loading ? 'Doplňuji…' : '✅ Doplnit připravené EN/CS překlady (patička, statistický panel)'}
       </button>
       {result && <span className="text-xs text-muted">{result}</span>}
     </div>

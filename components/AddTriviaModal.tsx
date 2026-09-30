@@ -8,7 +8,7 @@ export default function AddTriviaModal({ movieId, movieTitle, movieYear, onClose
   const [combined, setCombined] = useState('');
 
   async function handleSubmit() {
-    if (!combined) return { ok: false, error: 'Napíš prosím aspoň jednu zaujímavosť.' };
+    if (!combined) return { ok: false, error: 'Napiš prosím alespoň jednu zajímavost.' };
     const res = await fetch(`/api/movies/${movieId}/content-submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

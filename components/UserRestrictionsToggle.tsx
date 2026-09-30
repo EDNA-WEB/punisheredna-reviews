@@ -23,7 +23,7 @@ export default function UserRestrictionsToggle({ id, initial }: { id: string; in
       setState((prev) => ({ ...prev, [key]: next }));
       router.refresh();
     } catch {
-      alert('Akcia zlyhala. Skús to prosím znova.');
+      alert('Akce se nezdařila. Zkus to prosím znovu.');
     } finally {
       setLoadingKey(null);
     }

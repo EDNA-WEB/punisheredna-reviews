@@ -88,7 +88,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
     try {
       const res = await fetch(`/api/admin/movies/${initial.id}/import-cast`, { method: 'POST' });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Import zlyhal.');
+      if (!res.ok) throw new Error(data.error || 'Import se nezdařil.');
       setDirector(data.director || '');
       setScreenplay(data.screenplay || '');
       setCinematography(data.cinematography || '');
@@ -128,7 +128,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
-      setError('Zadaj prosím názov filmu.');
+      setError('Zadej prosím název filmu.');
       return;
     }
     setLoading(true);
@@ -197,7 +197,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             <input type="number" min="0" className="field-input-sm" value={marketingBudget} onChange={(e) => setMarketingBudget(e.target.value)} placeholder="napr. 100000000" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5">Tržby spolu ($)</label>
+            <label className="block text-xs font-semibold text-ink mb-1.5">Tržby celkem ($)</label>
             <input type="number" min="0" className="field-input-sm" value={boxOffice} onChange={(e) => setBoxOffice(e.target.value)} placeholder="napr. 400000000" />
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
           </div>
         </div>
         <p className="text-xs text-muted">
-          Čína má nižší podiel pre štúdio (25 % namiesto bežných 40 %) — preto ju uveď zvlášť, ak je súčasťou medzinárodných tržieb. Sekundárne príjmy (predaj práv na VOD, streaming, TV) sa pripočítajú k zisku štúdia.
+          Čína má nižší podíl pro studio (25 % místo běžných 40 %) — proto ji uveď zvlášť, pokud je součástí mezinárodních tržeb. Sekundární příjmy (prodej práv na VOD, streaming, TV) se připočítají k zisku studia.
         </p>
       </div>
       )}
@@ -230,7 +230,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Dátum premiéry</label>
         <input type="date" className="field-input" value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} />
-        <p className="text-xs text-muted mt-1.5">Kým tento dátum nenastane, používatelia nemôžu film hodnotiť ani naň písať recenziu.</p>
+        <p className="text-xs text-muted mt-1.5">Dokud toto datum nenastane, uživatelé nemohou film hodnotit ani na něj psát recenzi.</p>
       </div>
 
       {contentType === 'Seriál' && (
@@ -243,7 +243,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             placeholder="napr. Netflix, HBO Max, Disney+…"
           />
           <p className="text-xs text-muted mt-1.5">
-            Streamovacia služba, káblovka alebo kde seriál vychádza.
+            Streamovací služba, kabelovka nebo kde seriál vychází.
           </p>
         </div>
       )}
@@ -251,7 +251,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Tagy</label>
         <p className="text-xs text-muted">
-          Tagy sa nastavujú výhradne v <a href="/admin/tagy" className="text-accent hover:underline">Administrácia → Tagy</a>, nie tu.
+          Tagy se nastavují výhradně v <a href="/admin/tagy" className="text-accent hover:underline">Administrácia → Tagy</a>, ne tady.
         </p>
       </div>
 
@@ -262,7 +262,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
-        <p className="text-xs text-muted mt-1.5">Dabing a titulky sa nastavujú hromadne v Administrácia → Lokalizácia.</p>
+        <p className="text-xs text-muted mt-1.5">Dabing a titulky se nastavují hromadně v Administrace → Lokalizace.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -284,14 +284,14 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
       <div className="grid grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Krajina</label>
-          <input className="field-input" value={countries} onChange={(e) => setCountries(e.target.value)} placeholder="USA / Veľká Británia" />
+          <input className="field-input" value={countries} onChange={(e) => setCountries(e.target.value)} placeholder="USA / Velká Británie" />
         </div>
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Rok</label>
           <input className="field-input" value={year} onChange={(e) => setYear(e.target.value)} placeholder="2026" />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Dĺžka (min)</label>
+          <label className="block text-sm font-semibold text-ink mb-2">Délka (min)</label>
           <input type="number" className="field-input" value={runtimeMinutes} onChange={(e) => setRuntimeMinutes(e.target.value)} placeholder="172" />
         </div>
       </div>
@@ -301,7 +301,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <div className="text-sm font-semibold text-ink">Automatický import obsadenia</div>
-              <div className="text-xs text-muted">Natiahne réžiu, scenár, kameru, hudbu a hercov priamo z TMDb — nové osoby sa automaticky vytvoria, existujúce sa len použijú.</div>
+              <div className="text-xs text-muted">Načte režii, scénář, kameru, hudbu a herce přímo z TMDb — nové osoby se automaticky vytvoří, existující se jen použijí.</div>
             </div>
             <button
               type="button"
@@ -313,7 +313,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             </button>
           </div>
           {importError && <p className="text-danger text-xs mt-2">{importError}</p>}
-          {importSuccessCount !== null && <p className="text-accent text-xs mt-2 font-semibold">Hotovo — spracovaných {importSuccessCount} osôb.</p>}
+          {importSuccessCount !== null && <p className="text-accent text-xs mt-2 font-semibold">Hotovo — spracovaných {importSuccessCount} osob.</p>}
         </div>
       )}
 
@@ -343,7 +343,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
 
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Obsah / synopsis</label>
-        <textarea className="field-input min-h-[140px]" value={synopsis} onChange={(e) => setSynopsis(e.target.value)} placeholder={contentType === 'Seriál' ? 'O čom seriál je…' : 'O čom film je…'} />
+        <textarea className="field-input min-h-[140px]" value={synopsis} onChange={(e) => setSynopsis(e.target.value)} placeholder={contentType === 'Seriál' ? 'O čem seriál je…' : 'O čem film je…'} />
       </div>
 
       {(!year || Number(year) >= 2026) && (
@@ -355,7 +355,7 @@ export default function MovieForm({ initial, redirectTo, onSuccess }: { initial?
             className="w-4 h-4 accent-accent"
           />
           <span className="text-sm font-semibold text-ink">V kinách teraz</span>
-          <span className="text-xs text-muted">— zobrazí sa v pruhu hore na stránke</span>
+          <span className="text-xs text-muted">— zobrazí se v pruhu nahoře na stránce</span>
         </label>
       )}
 

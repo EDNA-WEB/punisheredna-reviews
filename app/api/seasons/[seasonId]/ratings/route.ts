@@ -10,7 +10,7 @@ export async function POST(req: Request, { params }: { params: { seasonId: strin
 
   const userId = (session.user as any).id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.banned) return NextResponse.json({ error: 'Tvoj účet bol zablokovaný.' }, { status: 403 });
+  if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
   if (user.ratingsDisabled) return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť hodnotiť.' }, { status: 403 });
   const rateLimitError = await checkRateLimit('rating', userId, user.createdAt);
   if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
@@ -22,9 +22,9 @@ export async function POST(req: Request, { params }: { params: { seasonId: strin
   }
 
   const season = await prisma.season.findUnique({ where: { id: params.seasonId } });
-  if (!season) return NextResponse.json({ error: 'Séria sa nenašla.' }, { status: 404 });
+  if (!season) return NextResponse.json({ error: 'Série se nenašla.' }, { status: 404 });
   if (!season.released) {
-    return NextResponse.json({ error: 'Táto séria ešte nevyšla, zatiaľ ju nemôžeš hodnotiť.' }, { status: 403 });
+    return NextResponse.json({ error: 'Tato série ještě nevyšla, zatím ji nemůžeš hodnotit.' }, { status: 403 });
   }
 
   const existingRating = await prisma.rating.findFirst({

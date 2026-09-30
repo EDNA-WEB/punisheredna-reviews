@@ -9,13 +9,13 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Na pridanie komentára sa musíš prihlásiť.' }, { status: 401 });
+      return NextResponse.json({ error: 'Pro přidání komentáře se musíš přihlásit.' }, { status: 401 });
     }
 
     const userId = (session.user as any).id;
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user || user.banned) {
-      return NextResponse.json({ error: 'Tvoj účet bol zablokovaný, nemôžeš pridávať komentáre.' }, { status: 403 });
+      return NextResponse.json({ error: 'Tvůj účet byl zablokován, nemůžeš přidávat komentáře.' }, { status: 403 });
     }
     if (user.commentsDisabled) {
       return NextResponse.json({ error: 'Administrátor ti obmedzil možnosť pridávať komentáre.' }, { status: 403 });
@@ -23,10 +23,10 @@ export async function POST(req: Request) {
 
     const { reviewId, newsId, movieId, parentId, body } = await req.json();
     if ((!reviewId && !newsId && !movieId) || !body || !String(body).trim()) {
-      return NextResponse.json({ error: 'Komentár nemôže byť prázdny.' }, { status: 400 });
+      return NextResponse.json({ error: 'Komentář nemůže být prázdný.' }, { status: 400 });
     }
     if (String(body).length > 2000) {
-      return NextResponse.json({ error: 'Komentár je príliš dlhý (max. 2000 znakov).' }, { status: 400 });
+      return NextResponse.json({ error: 'Komentář je příliš dlouhý (max. 2000 znaků).' }, { status: 400 });
     }
 
     const spamReason = looksLikeSpam(String(body));
@@ -39,15 +39,15 @@ export async function POST(req: Request) {
     let movieSlugForFollowers: string | null = null;
     if (reviewId) {
       const review = await prisma.review.findUnique({ where: { id: reviewId }, include: { movie: { select: { slug: true } } } });
-      if (!review) return NextResponse.json({ error: 'Recenzia sa nenašla.' }, { status: 404 });
+      if (!review) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
       link = `/movie/${review.movie.slug}`;
     } else if (newsId) {
       const news = await prisma.newsPost.findUnique({ where: { id: newsId }, select: { slug: true } });
-      if (!news) return NextResponse.json({ error: 'Novinka sa nenašla.' }, { status: 404 });
+      if (!news) return NextResponse.json({ error: 'Novinka se nenašla.' }, { status: 404 });
       link = `/news/${news.slug}`;
     } else if (movieId) {
       const movie = await prisma.movie.findUnique({ where: { id: movieId }, select: { slug: true } });
-      if (!movie) return NextResponse.json({ error: 'Film sa nenašiel.' }, { status: 404 });
+      if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
       link = `/movie/${movie.slug}`;
       movieSlugForFollowers = movie.slug;
     }
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
             userId: parent.userId,
             actorName: user.name,
             type: 'REPLY',
-            text: `${user.name} odpovedal(a) na tvoj komentár`,
+            text: `${user.name} odpověděl(a) na tvůj komentář`,
             link: `${link}#comment-${comment.id}`
           }
         });
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
             userId: f.userId,
             actorName: user.name,
             type: 'MOVIE_DISCUSSION',
-            text: `${user.name} napísal(a) príspevok do diskusie, ktorú sleduješ`,
+            text: `${user.name} napsal(a) příspěvek do diskuze, kterou sleduješ`,
             link: `${link}#comment-${comment.id}`
           }))
         });
@@ -111,7 +111,7 @@ export async function POST(req: Request) {
           userId: f.followerId,
           actorName: user.name,
           type: 'COMMENT',
-          text: `${user.name} napísal(a) komentár`,
+          text: `${user.name} napsal(a) komentář`,
           link: `${link}#comment-${comment.id}`
         }))
       });
@@ -120,9 +120,9 @@ export async function POST(req: Request) {
     return NextResponse.json(comment, { status: 201 });
   } catch (err: any) {
     if (err?.code === 'P2002') {
-      return NextResponse.json({ error: 'Táto akcia sa už spracováva alebo bola vykonaná.' }, { status: 409 });
+      return NextResponse.json({ error: 'Tato akce se už zpracovává nebo byla provedena.' }, { status: 409 });
     }
     console.error(err);
-    return NextResponse.json({ error: 'Požiadavka zlyhala. Skús to prosím znova.' }, { status: 400 });
+    return NextResponse.json({ error: 'Požadavek selhal. Zkus to prosím znovu.' }, { status: 400 });
   }
 }

@@ -38,15 +38,15 @@ export default async function FavoriteReviewsPage({ searchParams }: { searchPara
 
   return (
     <div className="pt-8">
-      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Späť na hlavnú stránku</Link>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Recenzie obľúbených</h1>
-      <p className="text-muted mb-8">Všetky recenzie od ľudí, ktorých sleduješ.</p>
+      <Link href="/" className="text-sm text-muted hover:text-accent inline-block mb-5">← Zpět na hlavní stránku</Link>
+      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Recenze oblíbených</h1>
+      <p className="text-muted mb-8">Všechny recenze od lidí, které sleduješ.</p>
 
       {reviews.length === 0 ? (
         <div className="border border-line rounded-xl p-12 text-center text-muted bg-surface">
           {followingIds.length === 0
-            ? 'Zatiaľ nikoho nemáš v obľúbených.'
-            : 'Tvoji obľúbení ešte nenapísali žiadnu recenziu.'}
+            ? 'Zatím nikoho nemáš v oblíbených.'
+            : 'Tvoji oblíbení ještě nenapsali žádnou recenzi.'}
         </div>
       ) : (
         <>

@@ -69,7 +69,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
       setOldUndoStatus('done');
     } catch {
       setOldUndoStatus('idle');
-      alert('Vrátenie späť zlyhalo.');
+      alert('Vrácení zpět se nezdařilo.');
     }
   }
 
@@ -86,7 +86,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
       if (!res.ok) throw new Error();
     } catch {
       setMovies((prev) => prev.map((m) => (m.id === movieId ? { ...m, [field]: current } : m)));
-      alert('Zmena zlyhala. Skús to prosím znova.');
+      alert('Změna se nezdařila. Zkus to prosím znovu.');
     } finally {
       setSavingId(null);
     }
@@ -104,10 +104,9 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
   return (
     <div>
       <div className="border border-line rounded-xl p-4 bg-surface mb-6">
-        <div className="text-sm font-semibold text-ink mb-1">Označiť staršie filmy ako dabing + titulky</div>
+        <div className="text-sm font-semibold text-ink mb-1">Označit starší filmy jako dabing + titulky</div>
         <div className="text-xs text-muted mb-3">
-          Jednorazovo označí všetky filmy a seriály staršie ako rok 2025 (kde ešte nie je nastavené oboje), že majú
-          český dabing aj titulky. Neovplyvní filmy z roku 2025 a novšie.
+          Jednorázově označí všechny filmy a seriály starší než rok 2025 (kde ještě není nastavené obojí), že mají český dabing i titulky. Neovlivní filmy z roku 2025 a novější.
         </div>
 
         {!oldPreview && !oldDone && (
@@ -117,14 +116,14 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
             disabled={oldBusy}
             className="border border-line text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {oldBusy ? 'Načítavam…' : 'Zobraziť náhľad'}
+            {oldBusy ? 'Načítavam…' : 'Zobrazit náhled'}
           </button>
         )}
 
         {oldPreview && !oldDone && (
           <div>
             <div className="text-xs text-ink mb-2">
-              Zmení sa <strong>{oldPreview.count}</strong> filmov/seriálov. Ukážka prvých {oldPreview.sample.length}:
+              Změní se <strong>{oldPreview.count}</strong> filmů/seriálů. Ukázka prvních {oldPreview.sample.length}:
             </div>
             <div className="text-xs text-muted mb-3 max-h-32 overflow-y-auto">{oldPreview.sample.join(', ')}</div>
             <div className="flex items-center gap-2">
@@ -149,7 +148,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
 
         {oldDone && (
           <div className="flex items-center justify-between">
-            <div className="text-xs font-semibold text-ink">Hotovo — upravených {oldDone.count} filmov/seriálov.</div>
+            <div className="text-xs font-semibold text-ink">Hotovo — upravených {oldDone.count} filmů/seriálů.</div>
             {oldDone.batchId && oldUndoStatus !== 'done' && (
               <button
                 type="button"
@@ -157,10 +156,10 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
                 disabled={oldUndoStatus === 'undoing'}
                 className="text-xs font-semibold text-danger border border-danger/40 rounded-full px-3 py-1.5 hover:bg-danger/10 disabled:opacity-50"
               >
-                {oldUndoStatus === 'undoing' ? 'Vraciam späť…' : 'Vrátiť túto dávku späť'}
+                {oldUndoStatus === 'undoing' ? 'Vracím zpět…' : 'Vrátit tuto dávku zpět'}
               </button>
             )}
-            {oldUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vrátené späť ✓</span>}
+            {oldUndoStatus === 'done' && <span className="text-xs font-semibold text-emerald-600">Vráceno zpět ✓</span>}
           </div>
         )}
       </div>
@@ -172,7 +171,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
           setQuery(e.target.value);
           setPage(1);
         }}
-        placeholder="Hľadať podľa názvu…"
+        placeholder="Hledat podle názvu…"
       />
 
       <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
@@ -215,7 +214,7 @@ export default function LocalizationAdminList({ movies: initialMovies }: { movie
           </div>
         ))}
 
-        {filtered.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted">Nič sa nenašlo.</div>}
+        {filtered.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted">Nic se nenašlo.</div>}
       </div>
       <div className="mt-4">
         <ClientPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />

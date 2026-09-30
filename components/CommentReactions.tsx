@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 const REACTIONS: { key: string; label: string; color: string; icon: JSX.Element }[] = [
   {
     key: 'like',
-    label: 'Páči sa mi',
+    label: 'Líbí se mi',
     color: '#2563EB',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

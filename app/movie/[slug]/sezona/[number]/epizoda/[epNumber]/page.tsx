@@ -226,7 +226,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
           {authorRatingByUserId.has(review.authorId) && <StarRating rating={authorRatingByUserId.get(review.authorId)!} size="w-4 h-4" />}
           <span className="text-xs text-muted flex items-center gap-1.5 ml-auto">
             <IconClock className="w-3.5 h-3.5" />
-            {new Date(review.createdAt).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {new Date(review.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
           </span>
         </div>
 
@@ -277,7 +277,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                 {prevEpisode ? (
                   <Link
                     href={`/movie/${movie.slug}/sezona/${prevEpisode.seasonNumber}/epizoda/${prevEpisode.number}`}
-                    aria-label="Predchádzajúca epizóda"
+                    aria-label="Předchozí epizoda"
                     className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
                   >
                     <IconChevronLeft className="w-4 h-4" />
@@ -337,7 +337,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
             {!season.released && (
               <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
-                Séria ešte nevyšla
+                Série ještě nevyšla
               </div>
             )}
 
@@ -385,18 +385,18 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
           </div>
           {episode.ratings.length > 0 && (
             <div className="px-4 pt-4 pb-2 border-b border-line bg-card">
-              <RatingDistributionChart values={episode.ratings.map((r) => r.value)} label="Rozloženie hodnotení" />
+              <RatingDistributionChart values={episode.ratings.map((r) => r.value)} label="Rozložení hodnocení" />
             </div>
           )}
           <div className="p-4 bg-card">
             <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
             {!season.released ? (
-              <p className="text-sm text-muted">Séria ešte nemala premiéru — hodnotiť a písať recenzie sa dá až po jej vydaní.</p>
+              <p className="text-sm text-muted">Série ještě neměla premiéru — hodnotit a psát recenze lze až po jejím vydání.</p>
             ) : viewerId ? (
               <EntityRatingWidget apiBase={`/api/episodes/${episode.id}`} initialValue={myRating} />
             ) : (
               <p className="text-sm text-muted">
-                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a ohodnoť epizódu.
+                <Link href="/login" className="text-accent font-semibold hover:underline">Přihlas se</Link> a ohodnoť epizódu.
               </p>
             )}
           </div>
@@ -430,7 +430,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                   <Link
                     href={`/movie/${movie.slug}/sezona/${prevEpisode.seasonNumber}/epizoda/${prevEpisode.number}`}
                     title={`${prevEpisode.seasonNumber !== season.number ? `Séria ${prevEpisode.seasonNumber} · ` : ''}${prevEpisode.title || `Epizóda ${prevEpisode.number}`}`}
-                    aria-label="Predchádzajúca epizóda"
+                    aria-label="Předchozí epizoda"
                     className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink hover:border-accent hover:text-accent transition-colors"
                   >
                     <IconChevronLeft className="w-4 h-4" />
@@ -473,7 +473,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
 
             {!season.released && (
               <div className="inline-block bg-surface border border-line text-ink text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
-                Séria ešte nevyšla
+                Série ještě nevyšla
               </div>
             )}
 
@@ -516,7 +516,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
           primaryTabs={[
             {
               key: 'prehlad',
-              label: 'Prehľad',
+              label: 'Přehled',
               content: (
                 <div className="space-y-8">
                   <div>
@@ -526,7 +526,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                     </div>
                     <div className="border border-t-0 border-line rounded-b-xl divide-y divide-line">
                       {episode.reviews.length === 0 ? (
-                        <p className="text-sm text-muted p-4">Zatiaľ žiadna recenzia.</p>
+                        <p className="text-sm text-muted p-4">Zatím žádná recenze.</p>
                       ) : (
                         episode.reviews.slice(0, 5).map((review) => (
                           <div key={review.id} className="p-4">{renderReviewCard(review, false)}</div>
@@ -554,9 +554,9 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                     )}
                   </div>
                   {!season.released ? (
-                    <p className="text-muted text-sm">Séria ešte nevyšla — recenzie budú dostupné po jej vydaní.</p>
+                    <p className="text-muted text-sm">Série ještě nevyšla — recenze budou dostupné po jejím vydání.</p>
                   ) : episode.reviews.length === 0 ? (
-                    <p className="text-muted text-sm">K tejto epizóde zatiaľ nie je žiadna recenzia.</p>
+                    <p className="text-muted text-sm">K této epizodě zatím není žádná recenze.</p>
                   ) : (
                     episode.reviews.map((review, i) => (
                       <div key={review.id} className={i < episode.reviews.length - 1 ? 'mb-12 pb-10 border-b border-line' : ''}>
@@ -584,7 +584,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie sú doplnené žiadne zaujímavosti.</p>
+                  <p className="text-sm text-muted">K tomuto seriálu zatím nejsou doplněné žádné zajímavosti.</p>
                 )
             },
             {
@@ -609,7 +609,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">K tejto epizóde zatiaľ nie je nahraté žiadne video.</p>
+                  <p className="text-sm text-muted">K této epizodě zatím není nahrané žádné video.</p>
                 )
             },
             {
@@ -620,7 +620,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                 episode.photos.length > 0 ? (
                   <MovieGallery movieId={movie.id} photos={episode.photos} noHeading />
                 ) : (
-                  <p className="text-sm text-muted">K tejto epizóde zatiaľ nie je nahratá žiadna fotka.</p>
+                  <p className="text-sm text-muted">K této epizodě zatím není nahraná žádná fotka.</p>
                 )
             },
             {
@@ -629,15 +629,15 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
               label: 'Online',
               content: !viewerId && !settings?.onlineFreeForAll ? (
                 <p className="text-sm text-muted">
-                  Pre sledovanie filmov sa musíš <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link>.
+                  Pro sledování filmů se musíš <Link href="/login" className="text-accent font-semibold hover:underline">Přihlas se</Link>.
                 </p>
               ) : !isMember ? (
                 <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
                   <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
                   <div>
-                    <p className="text-sm font-semibold text-ink">Online sledovanie je dostupné len pre Golden Ticket členov.</p>
+                    <p className="text-sm font-semibold text-ink">Online sledování je dostupné jen pro Golden Ticket členy.</p>
                     <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-                      Zistiť viac o členstve →
+                      Zjistit více o členství →
                     </Link>
                   </div>
                 </div>
@@ -659,7 +659,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                   <span className="absolute bottom-2 left-2 bg-night/70 text-white text-xs font-semibold px-2 py-1 rounded-full">{code}</span>
                 </a>
               ) : (
-                <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je nastavená možnosť sledovania online.</p>
+                <p className="text-sm text-muted">K tomuto seriálu zatím není nastavená možnost sledování online.</p>
               )
             },
           ]}
@@ -711,7 +711,7 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">K tomuto seriálu zatiaľ nie je doplnené obsadenie.</p>
+                  <p className="text-sm text-muted">K tomuto seriálu zatím není doplněné obsazení.</p>
                 )
             },
             {
@@ -747,12 +747,12 @@ export default async function EpisodePage({ params }: { params: { slug: string; 
           <div className="p-4 bg-card">
             <div className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Moje hodnotenie</div>
             {!season.released ? (
-              <p className="text-sm text-muted">Séria ešte nemala premiéru — hodnotiť a písať recenzie sa dá až po jej vydaní.</p>
+              <p className="text-sm text-muted">Série ještě neměla premiéru — hodnotit a psát recenze lze až po jejím vydání.</p>
             ) : viewerId ? (
               <EntityRatingWidget apiBase={`/api/episodes/${episode.id}`} initialValue={myRating} />
             ) : (
               <p className="text-sm text-muted">
-                <Link href="/login" className="text-accent font-semibold hover:underline">Prihlás sa</Link> a ohodnoť epizódu.
+                <Link href="/login" className="text-accent font-semibold hover:underline">Přihlas se</Link> a ohodnoť epizódu.
               </p>
             )}
           </div>

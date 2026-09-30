@@ -36,7 +36,7 @@ export default function MovieListCard({ id, title, itemCount, items }: { id: str
       <div className="p-4 bg-card">
         {copied && <div className="text-xs text-emerald-600 font-semibold mb-2">Odkaz skopírovaný.</div>}
         {items.length === 0 ? (
-          <p className="text-sm text-muted">Zatiaľ žiadne filmy v zozname.</p>
+          <p className="text-sm text-muted">Zatím žádné filmy v seznamu.</p>
         ) : (
           <div className="grid grid-cols-5 sm:grid-cols-10 gap-2.5">
             {items.map((m) => (
@@ -49,7 +49,7 @@ export default function MovieListCard({ id, title, itemCount, items }: { id: str
         )}
         {itemCount > items.length && (
           <Link href={`/zoznam/${id}`} className="inline-block mt-3 text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
-            VIAC ({itemCount - items.length})
+            VÍCE ({itemCount - items.length})
           </Link>
         )}
       </div>

@@ -18,6 +18,6 @@ export async function GET() {
     return NextResponse.json(news, { status: 200, headers: cdnHeaders(120) });
   } catch (error) {
     console.error('[api/mobile/news]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní noviniek.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání novinek.' }, { status: 500 });
   }
 }

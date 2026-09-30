@@ -36,7 +36,7 @@ async function generateUniqueCode(): Promise<string> {
     const existing = await prisma.membershipCode.findUnique({ where: { code } });
     if (!existing) return code;
   }
-  throw new Error('Nepodarilo sa vygenerovať jedinečný kód členstva.');
+  throw new Error('Nepodařilo se vygenerovat jedinečný kód členství.');
 }
 
 function durationForType(type: MembershipType): number {
@@ -66,7 +66,7 @@ export async function issueTrialCode(userId: string) {
     data: {
       senderId: system.id,
       receiverId: userId,
-      body: `Vitaj na KrálFilmu.cz! Tu je tvoj kód na 4-dňovú skúšobnú verziu Golden Ticket členstva: ${code}\n\nUplatniť ho môžeš v nastaveniach profilu, v sekcii "Členstvo".`
+      body: `Vítej na KrálFilmu.cz! Tady je tvůj kód na 4denní zkušební verzi Golden Ticket členství: ${code}\n\nUplatnit ho můžeš v nastavení profilu, v sekci "Členství".`
     }
   });
 }
@@ -85,7 +85,7 @@ export async function generatePaidCode(type: 'month' | 'year', adminId: string, 
       data: {
         senderId: system.id,
         receiverId: targetUserId,
-        body: `Ďakujeme za tvoju platbu! Tu je tvoj kód na ${labelForType(type)} Golden Ticket členstvo: ${code}\n\nUplatniť ho môžeš v nastaveniach profilu, v sekcii "Členstvo".`
+        body: `Děkujeme za tvou platbu! Tady je tvůj kód na ${labelForType(type)} Golden Ticket členstvo: ${code}\n\nUplatnit ho můžeš v nastavení profilu, v sekci "Členství".`
       }
     });
   }
@@ -103,7 +103,7 @@ export async function redeemMembershipCode(userId: string, rawCode: string) {
 
   const record = await prisma.membershipCode.findUnique({ where: { code } });
   if (!record) return { ok: false as const, error: 'Tento kód neexistuje.' };
-  if (record.usedByUserId) return { ok: false as const, error: 'Tento kód už bol uplatnený.' };
+  if (record.usedByUserId) return { ok: false as const, error: 'Tento kód už byl uplatněn.' };
   if (record.type === 'trial4d' && record.forUserId !== userId) {
     return { ok: false as const, error: 'Tento skúšobný kód patrí inému účtu.' };
   }

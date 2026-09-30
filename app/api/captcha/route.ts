@@ -5,7 +5,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 
 export async function GET(req: Request) {
   if (!checkIpRateLimit(req, 'captcha', 60_000, 20)) {
-    return NextResponse.json({ error: 'Príliš veľa požiadaviek.' }, { status: 429 });
+    return NextResponse.json({ error: 'Příliš mnoho požadavků.' }, { status: 429 });
   }
 
   // Priebežné upratovanie starých/nepoužitých výziev (staršie ako 15 minút)

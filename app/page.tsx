@@ -189,7 +189,7 @@ export default async function HomePage() {
           <Link href="/sutaz/hbo" className="block mt-4 relative rounded-xl overflow-hidden group">
             <img
               src="/sutaz-hbo-banner.jpg"
-              alt="Súťaž o HBO predplatné na celý rok"
+              alt="Soutěž o předplatné HBO na celý rok"
               className="w-full block"
             />
             <img
@@ -207,7 +207,7 @@ export default async function HomePage() {
             <div>
               <h2 className="font-display font-extrabold text-xl text-ink">Odporúčame pre teba</h2>
               <p className="text-xs text-muted mt-0.5">
-                Podľa toho, čo si doteraz hodnotil vysoko — najmä {recommendations.topGenres.join(', ').toLowerCase()}
+                Podle toho, co jsi dosud hodnotil vysoko — hlavně {recommendations.topGenres.join(', ').toLowerCase()}
               </p>
             </div>
           </div>
@@ -245,12 +245,12 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-display font-bold text-sm text-ink">{t('home.novinky')}</h3>
             <Link href="/novinky" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              viac
+              více
             </Link>
           </div>
 
           {news.length === 0 ? (
-            <p className="text-sm text-muted">Zatiaľ žiadne novinky.</p>
+            <p className="text-sm text-muted">Zatím žádné novinky.</p>
           ) : (
             <div className="space-y-4">
               {news.map((n) => (
@@ -261,7 +261,7 @@ export default async function HomePage() {
                   />
                   <div className="min-w-0">
                     <div className="text-[11px] text-muted mb-0.5">
-                      {new Date(n.createdAt).toLocaleDateString('sk-SK')}
+                      {new Date(n.createdAt).toLocaleDateString('cs-CZ')}
                     </div>
                     <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
                       {n.title}
@@ -296,7 +296,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-bold text-base text-ink">{t('home.nove_recenzie')}</h2>
             <Link href="/recenzie/nove" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              viac
+              více
             </Link>
           </div>
           <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">
@@ -324,7 +324,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-bold text-base text-ink">{t('home.recenzie_oblubenych')}</h2>
             <Link href="/recenzie/oblubencov" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              viac
+              více
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -351,7 +351,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-bold text-base text-ink">{t('home.recenzie_kritikov')}</h2>
             <Link href="/recenzie/kritici" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              viac
+              více
             </Link>
           </div>
           <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">

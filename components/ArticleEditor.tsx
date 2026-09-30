@@ -164,7 +164,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      alert('Súbor je príliš veľký (max. 8 MB).');
+      alert('Soubor je příliš velký (max. 8 MB).');
       return;
     }
     setUploading(true);
@@ -200,7 +200,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
 
       insertText(`\n\n![${file.name}](${finalUrl})\n\n`);
     } catch {
-      alert('Nahratie obrázka zlyhalo. Skús to prosím znova.');
+      alert('Nahrání obrázku se nezdařilo. Zkus to prosím znovu.');
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -245,7 +245,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
   return (
     <div>
       <div className="flex items-center gap-1 flex-wrap border border-line border-b-0 rounded-t-xl bg-surface p-1.5">
-        <button type="button" title="Späť (Ctrl+Z)" onClick={undo} disabled={!canUndo} className="toolbar-btn disabled:opacity-30">
+        <button type="button" title="Zpět (Ctrl+Z)" onClick={undo} disabled={!canUndo} className="toolbar-btn disabled:opacity-30">
           ↶
         </button>
         <button type="button" title="Vpred (Ctrl+Y)" onClick={redo} disabled={!canRedo} className="toolbar-btn disabled:opacity-30">
@@ -282,13 +282,13 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
         <button type="button" title="Vložiť YouTube video" onClick={() => setLinkPicker('youtube')} className="toolbar-btn">
           🎥 Video
         </button>
-        <button type="button" title="Odkaz na film alebo seriál" onClick={() => openLinkPicker('movie')} className="toolbar-btn">
+        <button type="button" title="Odkaz na film nebo seriál" onClick={() => openLinkPicker('movie')} className="toolbar-btn">
           🎬 Film
         </button>
         <button type="button" title="Odkaz na osobnosť" onClick={() => openLinkPicker('person')} className="toolbar-btn">
           👤 Osobnosť
         </button>
-        <button type="button" title="Označ text a priraď mu odkaz na web alebo obrázok" onClick={openUrlLinkPicker} className="toolbar-btn">
+        <button type="button" title="Označ text a přiřaď mu odkaz na web nebo obrázek" onClick={openUrlLinkPicker} className="toolbar-btn">
           🔗 Odkaz
         </button>
       </div>
@@ -309,7 +309,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               placeholder="https://…"
               readOnly={urlInput.startsWith('data:')}
             />
-            <label className="toolbar-btn cursor-pointer flex-none" title="Alebo nahraj obrázok, na ktorý odkaz povedie">
+            <label className="toolbar-btn cursor-pointer flex-none" title="Nebo nahraj obrázek, na který odkaz povede">
               🖼️
               <input type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
             </label>
@@ -340,7 +340,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
 
       {linkPicker === 'youtube' && (
         <div className="border border-line border-b-0 bg-card p-3 space-y-2">
-          <p className="text-xs text-muted">Vlož odkaz na YouTube video — vloží sa priamo do textu, prehrateľné na mieste.</p>
+          <p className="text-xs text-muted">Vlož odkaz na YouTube video — vloží se přímo do textu, přehratelné na místě.</p>
           <input
             autoFocus
             className="field-input-sm"
@@ -372,13 +372,13 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               className="field-input-sm flex-1"
               value={query}
               onChange={(e) => runSearch(e.target.value, linkPicker)}
-              placeholder={linkPicker === 'movie' ? 'Hľadať film alebo seriál…' : 'Hľadať osobnosť…'}
+              placeholder={linkPicker === 'movie' ? 'Hledat film nebo seriál…' : 'Hledat osobnost…'}
             />
             <button type="button" onClick={() => setLinkPicker(null)} className="text-xs text-muted hover:text-ink">
               Zrušiť
             </button>
           </div>
-          {searching && <p className="text-xs text-muted">Hľadám…</p>}
+          {searching && <p className="text-xs text-muted">Hledám…</p>}
           {linkPicker === 'movie' && movies.length > 0 && (
             <div className="space-y-1 max-h-48 overflow-y-auto">
               {movies.map((m) => (
@@ -419,7 +419,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
         onChange={(e) => handleChange(e.target.value)}
         onKeyDown={handleKeyDown}
         maxLength={30000}
-        placeholder="Píš pokojne v markdowne — **tučné**, *kurzíva*, ## nadpis, > citácia, - zoznam… alebo použi tlačidlá vyššie."
+        placeholder="Piš klidně v markdownu — **tučné**, *kurzíva*, ## nadpis, > citace, - seznam… nebo použij tlačítka výše."
         required
       />
 

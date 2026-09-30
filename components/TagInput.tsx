@@ -56,8 +56,8 @@ export default function TagInput({ tags, onChange }: { tags: string[]; onChange:
       />
       <p className={`text-xs mt-1.5 ${remaining > 0 ? 'text-danger font-semibold' : 'text-muted'}`}>
         {remaining > 0
-          ? `Povinné — pridaj ešte aspoň ${remaining} ${remaining === 1 ? 'tag' : remaining < 5 ? 'tagy' : 'tagov'} (minimum ${MIN_TAGS}).`
-          : `${tags.length} ${tags.length === 1 ? 'tag' : tags.length < 5 ? 'tagy' : 'tagov'} — vďaka nim sa článok objaví aj medzi súvisiacimi článkami.`}
+          ? `Povinné — přidej ještě alespoň ${remaining} ${remaining === 1 ? 'tag' : remaining < 5 ? 'tagy' : 'tagov'} (minimum ${MIN_TAGS}).`
+          : `${tags.length} ${tags.length === 1 ? 'tag' : tags.length < 5 ? 'tagy' : 'tagov'} — díky nim se článek objeví i mezi souvisejícími články.`}
       </p>
     </div>
   );

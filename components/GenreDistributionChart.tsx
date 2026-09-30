@@ -52,7 +52,7 @@ export default function GenreDistributionChart({ genreCounts }: { genreCounts: {
               {top[active].genre} — {top[active].count} ({Math.round((top[active].count / total) * 100)}%)
             </span>
           ) : (
-            <span className="text-[11px] text-muted">Podľa hodnotených filmov</span>
+            <span className="text-[11px] text-muted">Podle hodnocených filmů</span>
           )}
         </div>
       </div>

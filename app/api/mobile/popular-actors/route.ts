@@ -28,6 +28,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ people, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(600) });
   } catch (error) {
     console.error('[api/mobile/popular-actors]', error);
-    return NextResponse.json({ error: 'Chyba pri načítaní hercov.' }, { status: 500 });
+    return NextResponse.json({ error: 'Chyba při načítání herců.' }, { status: 500 });
   }
 }
