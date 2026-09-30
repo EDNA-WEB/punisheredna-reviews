@@ -20,7 +20,7 @@ export default async function LanguageSettingsPage() {
     <div className="pt-10">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Nastavenia</h1>
       <SettingsTabs />
-      <LanguageTimezoneForm initialLanguage={user?.language || 'sk'} initialTimezone={user?.timezone || null} />
+      <LanguageTimezoneForm initialLanguage={user?.language || 'cs'} initialTimezone={user?.timezone || null} />
     </div>
   );
 }

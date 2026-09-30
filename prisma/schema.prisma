@@ -52,7 +52,7 @@ model User {
   blueskyUrl          String?
   country             String?
   region              String?
-  language            String   @default("sk")
+  language            String   @default("cs")
   createdAt    DateTime  @default(now())
   reviews      Review[]
   ratings      Rating[]

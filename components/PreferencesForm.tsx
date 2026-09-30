@@ -6,9 +6,9 @@ import ThemeToggle from './ThemeToggle';
 import { useT } from './TranslationProvider';
 
 const LANGUAGES = [
+  { code: 'cs', label: 'Čeština' },
   { code: 'sk', label: 'Slovenčina' },
-  { code: 'en', label: 'English' },
-  { code: 'cs', label: 'Čeština' }
+  { code: 'en', label: 'English' }
 ];
 
 export default function PreferencesForm({ initialLanguage, initialTimezone }: { initialLanguage: string; initialTimezone: string | null }) {
@@ -51,7 +51,7 @@ export default function PreferencesForm({ initialLanguage, initialTimezone }: { 
             <option key={l.code} value={l.code}>{l.label}</option>
           ))}
         </select>
-        {language !== 'sk' && (
+        {language === 'en' && (
           <p className="text-xs text-muted mt-1.5">
             Preklad webu do tohto jazyka postupne pribúda — zatiaľ sa ti uloží tvoja voľba, obsah sa dopĺňa priebežne.
           </p>

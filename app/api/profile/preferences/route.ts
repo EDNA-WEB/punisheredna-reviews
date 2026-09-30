@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { memoForget } from '@/lib/memoCache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -40,5 +41,7 @@ export async function PATCH(req: Request) {
   }
 
   const updated = await prisma.user.update({ where: { id: userId }, data });
+  // Nový jazyk sa má prejaviť hneď, nie až po vypršaní pamäte (lib/i18n.ts).
+  memoForget(`lang:${userId}`);
   return NextResponse.json({ timezone: updated.timezone, language: updated.language });
 }

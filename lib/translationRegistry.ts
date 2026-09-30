@@ -1,6 +1,7 @@
 // Zoznam základných textov webu (navigácia, tlačidlá, popisky) — NIE obsah
-// článkov/recenzií. Toto je zdroj pravdy pre slovenčinu; anglický a český
-// preklad sa dopĺňa ručne v administrácii.
+// článkov/recenzií. Slovenské znenie je tu; ČEŠTINA (hlavný jazyk webu
+// KrálFilmu.cz) je v lib/translationRegistryCs.ts — nový text pridaj do OBOCH.
+// Angličtina sa dopĺňa v administrácii.
 export type TranslationEntry = { key: string; group: string; sk: string };
 
 export const TRANSLATION_REGISTRY: TranslationEntry[] = [
@@ -213,7 +214,7 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'contact.odoslana_popis', group: 'Napíš nám', sk: 'Ďakujeme, ozveme sa čo najskôr.' },
   { key: 'contact.dalsia_sprava', group: 'Napíš nám', sk: 'Poslať ďalšiu správu' },
   { key: 'contact.info_nadpis', group: 'Napíš nám', sk: 'K čomu formulár slúži?' },
-  { key: 'contact.info_text1', group: 'Napíš nám', sk: 'Cez tento formulár nám môžeš poslať svoje názory, dotazy alebo priania týkajúce sa PunisherEDNA reviews.' },
+  { key: 'contact.info_text1', group: 'Napíš nám', sk: 'Cez tento formulár nám môžeš poslať svoje názory, dotazy alebo priania týkajúce sa KrálFilmu.cz.' },
   { key: 'contact.info_text2', group: 'Napíš nám', sk: 'Ak máš konkrétnu otázku týkajúcu sa fungovania webu, uisti sa prosím najprv, že odpoveď na tvoju otázku sa nenachádza v Návode na použitie (čoskoro).' },
   { key: 'contact.info_limit', group: 'Napíš nám', sk: 'Cez tento formulár môžeš poslať najviac 2 správy za hodinu.' },
   { key: 'contact.info_dakujeme', group: 'Napíš nám', sk: 'Ďakujeme za pochopenie.' },

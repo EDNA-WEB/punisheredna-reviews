@@ -9,8 +9,8 @@ type T = (key: string) => string;
 
 // "(a)" a "mu/jej" podľa pohlavia autora — bez vyplneného pohlavia ostane neutrálny tvar.
 function g(text: string, gender: string | null | undefined) {
-  if (gender === 'MALE') return text.replace(/\(a\)/g, '').replace(/mu\/jej/g, 'mu');
-  if (gender === 'FEMALE') return text.replace(/\(a\)/g, 'a').replace(/mu\/jej/g, 'jej');
+  if (gender === 'MALE') return text.replace(/\(a\)/g, '').replace(/mu\/(jej|jí)/g, 'mu');
+  if (gender === 'FEMALE') return text.replace(/\(a\)/g, 'a').replace(/mu\/jej/g, 'jej').replace(/mu\/jí/g, 'jí');
   return text;
 }
 

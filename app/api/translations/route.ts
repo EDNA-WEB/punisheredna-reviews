@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { REGISTRY_CS } from '@/lib/translationRegistryCs';
 import { revalidateTag } from 'next/cache';
 import { memoForget } from '@/lib/memoCache';
 import { getServerSession } from 'next-auth';
@@ -23,7 +24,7 @@ export async function GET() {
       prisma.translationString.upsert({
         where: { key: entry.key },
         update: { sk: entry.sk, group: entry.group },
-        create: { key: entry.key, group: entry.group, sk: entry.sk }
+        create: { key: entry.key, group: entry.group, sk: entry.sk, cs: REGISTRY_CS[entry.key] ?? null }
       })
     )
   );
