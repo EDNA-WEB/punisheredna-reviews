@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 async function canAccess(postId: string, userId: string, isAdmin: boolean) {
   const post = await prisma.blogPost.findUnique({ where: { id: postId } });
   if (!post) return null;
@@ -39,6 +40,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   if (!current) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 
   const { revisionId } = await req.json();
+  if (hasInjectedObject(revisionId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   const revision = await prisma.articleRevision.findUnique({ where: { id: revisionId } });
   if (!revision || revision.blogPostId !== params.id) {
     return NextResponse.json({ error: 'Verze se nenašla.' }, { status: 404 });

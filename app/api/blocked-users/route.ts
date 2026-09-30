@@ -3,12 +3,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const myId = (session.user as any).id;
 
   const { userId } = await req.json();
+  if (hasInjectedObject(userId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!userId || userId === myId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   await prisma.blockedUser.upsert({
@@ -26,6 +28,7 @@ export async function DELETE(req: Request) {
   const myId = (session.user as any).id;
 
   const { userId } = await req.json();
+  if (hasInjectedObject(userId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!userId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   await prisma.blockedUser.deleteMany({ where: { blockerId: myId, blockedId: userId } });

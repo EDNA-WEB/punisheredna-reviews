@@ -7,6 +7,7 @@ import { validateImageDataUrl } from '@/lib/validateUpload';
 import { uploadImage } from '@/lib/cloudinary';
 import { validateSafeUrl } from '@/lib/validateUpload';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const limit = Number(searchParams.get('limit')) || 100;
@@ -32,6 +33,7 @@ export async function POST(req: Request) {
   }
 
   const data = await req.json();
+  if (hasInjectedObject(data?.year)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!data.title || !String(data.title).trim()) {
     return NextResponse.json({ error: 'Název filmu je povinný.' }, { status: 400 });
   }

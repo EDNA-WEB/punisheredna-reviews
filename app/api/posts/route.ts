@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
     }
 
     const { threadId, body } = await req.json();
+    if (hasInjectedObject(threadId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!threadId || !body || !String(body).trim()) {
       return NextResponse.json({ error: 'Příspěvek nemůže být prázdný.' }, { status: 400 });
     }

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { deleteImageByUrl } from '@/lib/cloudinary';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
   }
 
   const { keepId, mergeId } = await req.json();
+  if (hasInjectedObject(keepId, mergeId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!keepId || !mergeId || keepId === mergeId) {
     return NextResponse.json({ error: 'Chýba platná dvojica služieb na zlúčenie.' }, { status: 400 });
   }

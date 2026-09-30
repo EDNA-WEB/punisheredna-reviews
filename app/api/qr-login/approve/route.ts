@@ -5,11 +5,13 @@ import { prisma } from '@/lib/prisma';
 import { logAudit } from '@/lib/auditLog';
 import { describeUserAgent } from '@/lib/userAgent';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
 
   const { id } = await req.json();
+  if (hasInjectedObject(id)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!id) return NextResponse.json({ error: 'Chýba id relácie.' }, { status: 400 });
 
   const qrSession = await prisma.qrLoginSession.findUnique({ where: { id } });

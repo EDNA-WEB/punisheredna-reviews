@@ -4,12 +4,14 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const myId = (session.user as any).id;
 
   const { otherId } = await req.json();
+  if (hasInjectedObject(otherId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!otherId) return NextResponse.json({ error: 'Neplatný uživatel.' }, { status: 400 });
 
   const other = await prisma.user.findUnique({ where: { id: otherId }, select: { name: true } });

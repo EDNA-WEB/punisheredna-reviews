@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
@@ -10,6 +11,7 @@ export async function POST(req: Request) {
   }
 
   const { userId, isEditor } = await req.json();
+  if (hasInjectedObject(userId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!userId || typeof isEditor !== 'boolean') {
     return NextResponse.json({ error: 'Chýbajú potrebné údaje.' }, { status: 400 });
   }

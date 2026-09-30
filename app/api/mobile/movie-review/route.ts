@@ -5,6 +5,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 import { logActivity } from '@/lib/logActivity';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 // Jednotný endpoint appky — sám zistí, či autor už na tento film recenziu
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
     if (user.reviewsDisabled) return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat recenze.' }, { status: 403 });
 
     const { movieId, body, rating } = await req.json();
+    if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!movieId) return NextResponse.json({ error: 'Vyber prosím film.' }, { status: 400 });
     if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text recenze nemůže být prázdný.' }, { status: 400 });
     if (String(body).length > 20000) return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });

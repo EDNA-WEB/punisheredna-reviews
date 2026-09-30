@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 const MAX_FAVORITE_ACTORS = 10;
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
     if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { personId } = await req.json();
+    if (hasInjectedObject(personId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!personId) return NextResponse.json({ error: 'Chýba personId.' }, { status: 400 });
 
     const existing = await prisma.personFollow.findUnique({ where: { userId_personId: { userId: me.id, personId } } });

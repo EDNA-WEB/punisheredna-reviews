@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 // Registrácia zariadenia pre push notifikácie + jeho nastavenia
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
     const me = await getMobileUser(req);
     if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
     const { token, platform, notifyMessages, sound } = await req.json();
+    if (hasInjectedObject(token)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!token || typeof token !== 'string' || token.length > 300) {
       return NextResponse.json({ error: 'Neplatný token.' }, { status: 400 });
     }

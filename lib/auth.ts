@@ -35,6 +35,9 @@ export const authOptions: NextAuthOptions = {
         qrToken: { label: 'QR prihlásenie', type: 'text' }
       },
       async authorize(credentials) {
+        // Prihlasovacie údaje môžu prísť aj ako JSON — povolíme len obyčajný text,
+        // aby sa do dopytu nedal podstrčiť objekt (napr. qrToken: { not: '' }).
+        if (credentials && Object.values(credentials).some((v) => v !== undefined && v !== null && typeof v !== 'string')) return null;
         // Prihlásenie cez QR kód — namiesto prezývky/hesla len id už POTVRDENEJ
         // QR relácie (potvrdenie prebehlo na mobile, viď /api/qr-login/approve).
         if (credentials?.qrToken) {

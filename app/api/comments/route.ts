@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { logActivity } from '@/lib/logActivity';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
     }
 
     const { reviewId, newsId, movieId, parentId, body } = await req.json();
+    if (hasInjectedObject(reviewId, newsId, movieId, parentId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if ((!reviewId && !newsId && !movieId) || !body || !String(body).trim()) {
       return NextResponse.json({ error: 'Komentář nemůže být prázdný.' }, { status: 400 });
     }

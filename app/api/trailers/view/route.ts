@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     if (!checkIpRateLimit(req, 'trailer-view', 60_000, 30)) {
@@ -9,6 +10,7 @@ export async function POST(req: Request) {
     }
 
     const { trailerId } = await req.json();
+    if (hasInjectedObject(trailerId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!trailerId) return NextResponse.json({ error: 'Chýba trailerId.' }, { status: 400 });
 
     // Tá istá IP adresa sa do rebríčka jedného trailera započíta najviac raz za 5 minút —

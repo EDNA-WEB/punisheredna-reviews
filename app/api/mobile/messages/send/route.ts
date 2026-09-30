@@ -6,6 +6,7 @@ import { getOrCreateConversation } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 // Appková verzia webu — rovnaký systém súhlasu s komunikáciou, spamový
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
     }
 
     const { receiverId, body } = await req.json();
+    if (hasInjectedObject(receiverId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
     if (!receiverId || receiverId === senderId) {
       return NextResponse.json({ error: 'Neplatný příjemce.' }, { status: 400 });

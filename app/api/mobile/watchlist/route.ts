@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 const WATCHLIST_LIST_TITLE = 'Chcem vidieť';
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
     if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { movieId } = await req.json();
+    if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
 
     let list = await prisma.movieList.findFirst({ where: { authorId: me.id, title: WATCHLIST_LIST_TITLE } });

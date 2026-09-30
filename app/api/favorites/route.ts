@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 const FAVORITES_LIST_TITLE = 'Obľúbené';
 const MAX_FAVORITES = 10;
 
@@ -12,6 +13,7 @@ export async function POST(req: Request) {
   const userId = (session.user as any).id;
 
   const { movieId } = await req.json();
+  if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
 
   const targetMovie = await prisma.movie.findUnique({ where: { id: movieId }, select: { contentType: true } });

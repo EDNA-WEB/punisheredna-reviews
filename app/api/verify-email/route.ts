@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const { token } = await req.json();
+  if (hasInjectedObject(token)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!token) return NextResponse.json({ error: 'Chýba overovací token.' }, { status: 400 });
 
   const user = await prisma.user.findUnique({ where: { verificationToken: token } });

@@ -6,6 +6,7 @@ import { logActivity } from '@/lib/logActivity';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
     const data = await req.json();
+    if (hasInjectedObject(data?.movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!data.movieId) {
       return NextResponse.json({ error: 'Vyber prosím film.' }, { status: 400 });
     }

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 const WATCHLIST_LIST_TITLE = 'Chcem vidieť';
 
 export async function POST(req: Request) {
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
   const userId = (session.user as any).id;
 
   const { movieId } = await req.json();
+  if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!movieId) return NextResponse.json({ error: 'Chýba movieId.' }, { status: 400 });
 
   let list = await prisma.movieList.findFirst({ where: { authorId: userId, title: WATCHLIST_LIST_TITLE } });

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/antiSpam';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
@@ -20,6 +21,7 @@ export async function POST(req: Request) {
   if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
   const { movieId, value } = await req.json();
+  if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   const v = Number(value);
   if (!movieId || !(v >= 0.5 && v <= 5 && v % 0.5 === 0)) {
     return NextResponse.json({ error: 'Neplatné hodnocení.' }, { status: 400 });
@@ -45,6 +47,7 @@ export async function DELETE(req: Request) {
 
   const userId = (session.user as any).id;
   const { movieId } = await req.json();
+  if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
   await prisma.rating.deleteMany({ where: { movieId, userId, seasonId: null, episodeId: null } });
   return NextResponse.json({ ok: true });

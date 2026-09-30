@@ -9,6 +9,7 @@ import { encryptMessageBody } from '@/lib/serverCrypto';
 
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
     }
 
     const { receiverId, body, image } = await req.json();
+    if (hasInjectedObject(receiverId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
     if (!receiverId || receiverId === senderId) {
       return NextResponse.json({ error: 'Neplatný príjemca.' }, { status: 400 });

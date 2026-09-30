@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
@@ -12,6 +13,7 @@ export async function POST(req: Request) {
   if (!user || user.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
 
   const { personId } = await req.json();
+  if (hasInjectedObject(personId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!personId) return NextResponse.json({ error: 'Neplatná požiadavka.' }, { status: 400 });
 
   const existing = await prisma.personFollow.findUnique({ where: { userId_personId: { userId, personId } } });

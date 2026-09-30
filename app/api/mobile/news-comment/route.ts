@@ -4,6 +4,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { logActivity } from '@/lib/logActivity';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 // Mobilná verzia /api/comments (obmedzená na newsId, appka zatiaľ
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
     if (user.commentsDisabled) return NextResponse.json({ error: 'Administrátor ti omezil možnost přidávat komentáře.' }, { status: 403 });
 
     const { newsId, parentId, body } = await req.json();
+    if (hasInjectedObject(newsId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!newsId || !body || !String(body).trim()) return NextResponse.json({ error: 'Text komentáře nemůže být prázdný.' }, { status: 400 });
     if (String(body).length > 3000) return NextResponse.json({ error: 'Komentář je příliš dlouhý.' }, { status: 400 });
 

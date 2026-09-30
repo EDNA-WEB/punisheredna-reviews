@@ -6,6 +6,7 @@ import { tmdbGetPremieresAndRating } from '@/lib/tmdb';
 import { logBulkImportBatch, LoggedChange } from '@/lib/bulkImportLog';
 import { logBulkAction } from '@/lib/auditLog';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
@@ -13,6 +14,7 @@ export async function POST(req: Request) {
   }
 
   const { movieIds, includeVod, preview } = await req.json();
+  if (hasInjectedObject(movieIds)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
   if (!Array.isArray(movieIds) || movieIds.length === 0) {
     return NextResponse.json({ error: 'Nevybral jsi žádný film.' }, { status: 400 });
   }

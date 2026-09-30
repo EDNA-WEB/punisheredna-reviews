@@ -4,6 +4,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 import { checkRateLimit } from '@/lib/antiSpam';
 import { computeBlendedPercent, scoreColorStyle } from '@/lib/rating';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
 
 // Rovnaké pravidlá ako web (app/api/ratings): 0,5–5 po polovičkách, blokovaný
@@ -30,6 +31,7 @@ export async function POST(req: Request) {
     if (rateLimitError) return NextResponse.json({ error: rateLimitError }, { status: 429 });
 
     const { movieId, value } = await req.json();
+    if (hasInjectedObject(movieId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     const v = Number(value);
     if (!movieId || !(v >= 0.5 && v <= 5 && v % 0.5 === 0)) {
       return NextResponse.json({ error: 'Neplatné hodnocení.' }, { status: 400 });

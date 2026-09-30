@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
@@ -27,6 +28,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
   const { revisionId } = await req.json();
+  if (hasInjectedObject(revisionId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
   const [current, revision] = await Promise.all([
     prisma.newsPost.findUnique({ where: { id: params.id } }),

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/antiSpam';
 
+import { hasInjectedObject } from '@/lib/inputGuard';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,6 +15,7 @@ export async function POST(req: Request) {
     if (!me || me.banned) return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
 
     const { targetId } = await req.json();
+    if (hasInjectedObject(targetId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
     if (!targetId || targetId === myId) {
       return NextResponse.json({ error: 'Neplatná požiadavka.' }, { status: 400 });
     }
