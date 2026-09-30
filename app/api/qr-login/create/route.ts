@@ -25,10 +25,14 @@ export async function POST(req: Request) {
   // Priebežné čistenie starých relácií — bez tohto by tabuľka rástla
   // donekonečna. Nie je to kritická operácia, tak ju spustíme "na pozadí"
   // (bez čakania) a prípadnú chybu len potichu zalogujeme.
-  // Výkon: stačí to občas (každé ~10. vytvorenie), nie pri každom kóde.
-  if (Math.random() < 0.1) prisma.qrLoginSession
-    .deleteMany({ where: { expiresAt: { lt: new Date(Date.now() - 60 * 60_000) } } })
+  // Po dávkach max. 500 riadkov a najviac raz za 10 minút na inštanciu — jedno
+  // veľké mazanie (po starej chybe s tisíckami kódov) inak blokovalo tabuľku
+  // aj desiatky sekúnd.
+  if (Date.now() - ((globalThis as any).__qrCleanupAt || 0) > 10 * 60_000) {
+    (globalThis as any).__qrCleanupAt = Date.now();
+    prisma.$executeRaw`DELETE FROM "QrLoginSession" WHERE "id" IN (SELECT "id" FROM "QrLoginSession" WHERE "expiresAt" < ${new Date(Date.now() - 60 * 60_000)} LIMIT 500)`
     .catch((err) => console.error('[qr-login] Čistenie starých relácií zlyhalo:', err));
+  }
 
   const confirmUrl = `${process.env.NEXTAUTH_URL}/qr-prihlasenie/${session.id}`;
   const qrSvg = await QRCode.toString(confirmUrl, { type: 'svg', margin: 1, width: 256 });

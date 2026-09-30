@@ -178,8 +178,25 @@ export const getCachedMovieCatalog = unstable_cache(
         ...(minLength ? { runtimeMinutes: { gte: minLength } } : {}),
         ...(maxLength ? { runtimeMinutes: { lte: maxLength } } : {})
       },
-      include: {
-        ratings: { where: { seasonId: null, episodeId: null } },
+      // Výkon: len stĺpce, ktoré stránka /recenzie naozaj zobrazuje/filtruje.
+      // Predtým sa načítaval celý film (dej, obsadenie, rozpočty…) — výsledok
+      // bol taký veľký, že sa nezmestil do cache (limit 2 MB) a počítal sa znova.
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        poster: true,
+        year: true,
+        genres: true,
+        countries: true,
+        contentType: true,
+        hasSubtitles: true,
+        hasDubbing: true,
+        releaseDate: true,
+        isCamVersion: true,
+        tmdbVoteAverage: true,
+        tmdbVoteCount: true,
+        ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } },
         premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } },
         _count: {
           select: {
@@ -192,7 +209,7 @@ export const getCachedMovieCatalog = unstable_cache(
       }
     });
   },
-  ['movie-catalog'],
+  ['movie-catalog-v2'],
   { revalidate: 900 }
 );
 
