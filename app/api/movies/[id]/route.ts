@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma';
 import { validateImageDataUrl, validateSafeUrl } from '@/lib/validateUpload';
 import { uploadImage, deleteImageByUrl } from '@/lib/cloudinary';
 
+import { getSessionOrMobile } from '@/lib/adminAuth'; // web aj natívna administrácia v appke
 async function requireAdmin() {
-  const session = await getServerSession(authOptions);
+  const session = await getSessionOrMobile();
   if (!session || (session.user as any).role !== 'ADMIN') return null;
   return session;
 }

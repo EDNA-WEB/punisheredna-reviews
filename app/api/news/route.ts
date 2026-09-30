@@ -8,10 +8,11 @@ import { logAudit } from '@/lib/auditLog';
 import { uploadImage } from '@/lib/cloudinary';
 import { isActiveMember } from '@/lib/membership';
 
+import { getSessionOrMobile } from '@/lib/adminAuth'; // web aj natívna administrácia v appke
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const limit = Number(searchParams.get('limit')) || 20;
-  const session = await getServerSession(authOptions);
+  const session = await getSessionOrMobile();
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isMember = isAdmin || (await isActiveMember((session?.user as any)?.id));
   const news = await prisma.newsPost.findMany({
@@ -24,7 +25,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getSessionOrMobile();
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isEditor = (session?.user as any)?.isEditor;
   if (!session || (!isAdmin && !isEditor)) {

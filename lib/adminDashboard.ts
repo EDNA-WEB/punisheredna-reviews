@@ -39,7 +39,7 @@ async function loadDashboard() {
     prisma.person.count({ where: { approved: false } }),
     prisma.contentSubmission.count({ where: { status: 'PENDING' } }),
     prisma.onlineReport.count({ where: { resolved: false } }),
-    prisma.messageReport.count({ where: { createdAt: { gte: d7 } } }),
+    prisma.messageReport.count({ where: { reviewed: false } }),
     prisma.blogPost.count({ where: { publicationRequested: true, published: false } }),
     prisma.review.findMany({
       orderBy: { createdAt: 'desc' },
@@ -99,7 +99,7 @@ export const getAdminBadges = unstable_cache(
     const [submissions, onlineReports, chatReports, pendingMovies, pendingPeople] = await Promise.all([
       prisma.contentSubmission.count({ where: { status: 'PENDING' } }),
       prisma.onlineReport.count({ where: { resolved: false } }),
-      prisma.messageReport.count({ where: { createdAt: { gte: new Date(Date.now() - 7 * DAY) } } }),
+      prisma.messageReport.count({ where: { reviewed: false } }),
       prisma.movie.count({ where: { approved: false } }),
       prisma.person.count({ where: { approved: false } })
     ]);

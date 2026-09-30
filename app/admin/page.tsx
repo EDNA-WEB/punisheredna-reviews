@@ -138,7 +138,7 @@ export default async function AdminDashboard() {
     { label: 'Osobnosti čekající na schválení', count: d.queue.pendingPeople, href: '/admin/people', icon: 'user' },
     { label: 'Návrhy obsahu od uživatelů', count: d.queue.pendingSubmissions, href: '/admin/navrhy-obsahu', icon: 'inbox' },
     { label: 'Nahlášené nefunkční online odkazy', count: d.queue.onlineReports, href: '/admin/online', icon: 'tv' },
-    { label: 'Nahlášené chaty (7 dní)', count: d.queue.chatReports, href: '/admin/nahlasenia', icon: 'flag' }
+    { label: 'Nahlášené chaty', count: d.queue.chatReports, href: '/admin/nahlasenia', icon: 'flag' }
   ];
   const openItems = queue.reduce((s, q) => s + q.count, 0);
 
