@@ -10,7 +10,6 @@ export default async function NewReviewPage(props: { searchParams: Promise<{ mov
 
   return (
     <div className="pt-8">
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Nová recenzia</h1>
       <ReviewForm initial={searchParams.movieId ? { movieId: searchParams.movieId } : undefined} />
     </div>

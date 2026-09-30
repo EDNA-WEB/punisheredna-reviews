@@ -200,7 +200,6 @@ export default async function AdminPerfPage(props: { searchParams?: Promise<{ ro
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
         <h1 className="font-display font-extrabold text-3xl text-ink">Výkon a náklady databázy</h1>
         <div className="flex gap-2">

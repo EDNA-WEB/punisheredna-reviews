@@ -25,7 +25,6 @@ export default async function AdminMembershipPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Členství — Golden Ticket</h1>
       <p className="text-muted mb-6">
         Členství ověřuješ a nastavuješ ručně — po přijetí platby (např. přes BuyMeACoffee) porovnáš jméno plátce s přezdívkou na webu a nastavíš mu členství přímo níže.

@@ -83,6 +83,7 @@ export async function proxy(req: NextRequest) {
   const csp = buildCsp(nonce);
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-nonce', nonce);
+  requestHeaders.set('x-pathname', pathname); // layout podľa toho skryje verejné menu v administrácii
   requestHeaders.set('Content-Security-Policy', csp); // Next.js si odtiaľ vezme nonce pre svoje skripty
   const pass = () => securityHeaders(NextResponse.next({ request: { headers: requestHeaders } }), csp);
 

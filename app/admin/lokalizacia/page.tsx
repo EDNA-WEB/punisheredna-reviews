@@ -29,7 +29,6 @@ export default async function AdminLocalizationPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Lokalizace</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
         Rychlé hromadné nastavení, které filmy a seriály mají dabing, titulky, nebo ani jedno — bez nutnosti otevírat každý film zvlášť přes "Upravit film".

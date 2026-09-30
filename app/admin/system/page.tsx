@@ -21,7 +21,6 @@ export default async function AdminSystemPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Systém</h1>
 
       <div className="mb-4">

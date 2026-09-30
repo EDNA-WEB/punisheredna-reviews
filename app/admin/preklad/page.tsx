@@ -32,7 +32,6 @@ export default async function AdminTranslationsPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Překlad</h1>
       <p className="text-muted mb-6 max-w-2xl">
         Základní texty webu (navigace, tlačítka, popisky) — ne obsah recenzí ani článků, ten se nepřekládá. Čeština je hlavní jazyk webu a její výchozí znění je přímo v kódu; tady ho můžeš upravit a doplnit slovenský a anglický překlad.

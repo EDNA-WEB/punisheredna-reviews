@@ -70,7 +70,6 @@ export default async function AdminAlertsPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Upozornění</h1>
       <p className="text-sm text-muted mb-6">
         Přehled všeho, co ještě chybí doplnit. Tato stránka vždy zobrazí aktuální stav — kontroluj ji pravidelně, dokud na web nepřibudou pravidelná upozornění.

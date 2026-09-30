@@ -196,6 +196,7 @@ export const getCachedMovieCatalog = unstable_cache(
         isCamVersion: true,
         tmdbVoteAverage: true,
         tmdbVoteCount: true,
+        createdAt: true, // radenie "Naposledy přidané"
         ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } },
         premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } },
         _count: {

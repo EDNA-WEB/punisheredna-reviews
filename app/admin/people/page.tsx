@@ -32,7 +32,6 @@ export default async function AdminPeoplePage() {
       <AdminTabs />
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
           <h1 className="font-display font-extrabold text-3xl text-ink">Herci a tvůrci</h1>
         </div>
         <div className="flex items-center gap-2">

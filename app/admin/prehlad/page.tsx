@@ -56,7 +56,6 @@ export default async function AdminOverviewPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Přehled</h1>
       <p className="text-sm text-muted mb-6 max-w-2xl">
         Rychlý přehled, kolik z {totalApproved} schválených filmů a seriálů je doplněných v jednotlivých oblastech — klikni na řádek pro přímý přechod do dané sekce.

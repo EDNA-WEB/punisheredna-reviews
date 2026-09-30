@@ -63,7 +63,6 @@ export default async function EditMoviePage(props: { params: Promise<{ id: strin
 
   return (
     <div className="pt-8">
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">
         {movie.contentType === 'Seriál' ? 'Upravit seriál' : movie.contentType === 'TV film' ? 'Upravit TV film' : 'Upravit film'}
       </h1>

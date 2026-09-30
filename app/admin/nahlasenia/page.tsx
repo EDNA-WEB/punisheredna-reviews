@@ -23,7 +23,6 @@ export default async function AdminReportsPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Nahlášení z Pošty</h1>
 
       {reports.length === 0 ? (

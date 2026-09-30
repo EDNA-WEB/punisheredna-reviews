@@ -19,7 +19,6 @@ export default async function AdminNewsPage() {
       <AdminTabs />
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
           <h1 className="font-display font-extrabold text-3xl text-ink">Novinky</h1>
         </div>
         <Link href="/admin/news/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">

@@ -16,7 +16,6 @@ export default async function EditReviewPage(props: { params: Promise<{ id: stri
 
   return (
     <div className="pt-8">
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit recenzi</h1>
       <ReviewForm initial={{ id: review.id, movieId: review.movieId, body: review.body, rating: rating?.value || 0 }} movieLocked />
     </div>

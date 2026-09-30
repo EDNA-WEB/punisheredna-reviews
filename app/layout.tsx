@@ -103,6 +103,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dict = await getDictionary(language);
 
   const isTv = await detectTvMode();
+  // Administrácia má vlastné rozhranie (app/admin/layout.tsx) — bez verejného
+  // menu, lišty, bočného panelu a pätičky. Adresu posiela proxy.ts.
+  const isAdminArea = ((await headers()).get('x-pathname') || '').startsWith('/admin');
 
   return (
     <html
@@ -138,7 +141,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <TvModeToggle />
         <TranslationProvider dict={dict}>
           <Providers>
-            {session ? (
+            {session && isAdminArea ? (
+              children
+            ) : session ? (
               <>
                 <TvNavigation />
                 <SiteWallpaper />

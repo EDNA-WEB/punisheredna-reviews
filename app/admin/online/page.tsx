@@ -79,7 +79,6 @@ export default async function AdminOnlinePage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Online</h1>
       <p className="text-sm text-muted mb-1 max-w-2xl">
         Nastav odkaz, kam se diváci přesměrují, když kliknou na náhled v záložce "Online", a náhledový obrázek, který se jim při tom zobrazí. U seriálů můžeš rozkliknout i jednotlivé epizody a nastavit totéž pro každou zvlášť.

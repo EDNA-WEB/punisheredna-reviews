@@ -9,7 +9,6 @@ export default async function BulkImportPage() {
 
   return (
     <div className="pt-8">
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Hromadný import z TMDb</h1>
       <BulkTmdbImportForm />
     </div>

@@ -22,7 +22,6 @@ export default async function AdminUsersPage() {
   return (
     <div className="pt-8">
       <AdminTabs />
-      <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrácia</div>
       <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Čtenáři</h1>
 
       {users.length === 0 ? (
