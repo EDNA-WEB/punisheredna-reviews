@@ -5,7 +5,8 @@ import { redirect, notFound } from 'next/navigation';
 import AdminTabs from '@/components/AdminTabs';
 import PersonForm from '@/components/PersonForm';
 
-export default async function EditPersonPage({ params }: { params: { id: string } }) {
+export default async function EditPersonPage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

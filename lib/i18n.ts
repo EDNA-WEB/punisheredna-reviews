@@ -50,7 +50,7 @@ async function buildDictionary(language: string): Promise<Record<string, string>
 export async function getUserLanguage(): Promise<string> {
   // Dočasný prepínač jazyka z navbaru (funguje len do zatvorenia prehliadača —
   // je to session cookie bez max-age) má prednosť pred natrvalo uloženou voľbou.
-  const sessionLang = cookies().get('lang')?.value;
+  const sessionLang = (await cookies()).get('lang')?.value;
   if (sessionLang && SUPPORTED_LANGUAGES.includes(sessionLang)) return sessionLang;
 
   const session = await getServerSession(authOptions);

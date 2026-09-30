@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   }
   try {
     const refresh = new URL(req.url).searchParams.get('obnovit') === '1';
-    if (refresh) revalidateTag('weekend-box-office');
+    if (refresh) revalidateTag('weekend-box-office', 'max');
     return NextResponse.json({ cacheCleared: refresh, ...(await debugWeekendBoxOffice()) });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || String(e) }, { status: 500 });

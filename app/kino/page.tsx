@@ -9,7 +9,8 @@ import Badge from '@/components/Badge';
 import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 export const dynamic = 'force-dynamic';
 
-export default async function KinoPage({ searchParams }: { searchParams: { month?: string; year?: string } }) {
+export default async function KinoPage(props: { searchParams: Promise<{ month?: string; year?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const now = new Date();
   const month = Math.min(12, Math.max(1, Number(searchParams.month) || now.getMonth() + 1));
   const year = Number(searchParams.year) || now.getFullYear();

@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 
 const PAGE_SIZE = 10;
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
 

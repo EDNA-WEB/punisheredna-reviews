@@ -62,7 +62,8 @@ import { valueLabel, valueListLabel } from '@/lib/valueLabels';
 import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { params } = { ...props, params: await props.params };
   const movie = await prisma.movie.findUnique({
     where: { slug: params.slug },
     select: { title: true, synopsis: true, poster: true, year: true, genres: true, contentType: true }
@@ -91,11 +92,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function MoviePage({ params, searchParams }: { params: { slug: string }; searchParams: { sort?: string } }) {
+export default async function MoviePage(props: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: string }> }) {
+  const { params, searchParams } = { ...props, params: await props.params, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
-  const isTv = detectTvMode();
+  const isTv = await detectTvMode();
   const sortMode = ['likes', 'newest', 'oldest', 'rating', 'karma'].includes(searchParams?.sort || '') ? searchParams!.sort! : 'rating';
 
   // Tieto štyri dopyty na sebe navzájom nezávisia (ani jeden nepotrebuje
@@ -407,7 +409,7 @@ export default async function MoviePage({ params, searchParams }: { params: { sl
   return (
     <div className="pt-6">
       <script
-        nonce={headers().get('x-nonce') ?? undefined}
+        nonce={(await headers()).get('x-nonce') ?? undefined}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: movieJsonLd({

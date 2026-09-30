@@ -10,7 +10,8 @@ import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
-export default async function RebrickyPage({ searchParams }: { searchParams: { typ?: string } }) {
+export default async function RebrickyPage(props: { searchParams: Promise<{ typ?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const dict = await getDictionary(await getUserLanguage());

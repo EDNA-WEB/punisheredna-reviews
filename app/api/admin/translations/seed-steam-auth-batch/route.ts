@@ -46,7 +46,7 @@ const SEED: Record<string, { en: string; cs: string }> = {
 export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
-    revalidateTag('translations');
+    revalidateTag('translations', 'max');
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
   }
 
@@ -72,7 +72,7 @@ export async function POST() {
     }
   }
 
-  revalidateTag('translations');
+  revalidateTag('translations', 'max');
 
   return NextResponse.json({ ok: true, created, updated, total: Object.keys(SEED).length });
 }

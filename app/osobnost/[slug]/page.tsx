@@ -24,7 +24,8 @@ import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { params } = { ...props, params: await props.params };
   const person = await prisma.person.findUnique({ where: { slug: params.slug }, select: { name: true, bio: true, photo: true, role: true } });
   if (!person) return {};
   const description = person.bio
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PersonPage({ params }: { params: { slug: string } }) {
+export default async function PersonPage(props: { params: Promise<{ slug: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
@@ -119,7 +121,7 @@ export default async function PersonPage({ params }: { params: { slug: string } 
     <div className="pt-8">
       {person.approved && (
         <script
-          nonce={headers().get('x-nonce') ?? undefined}
+          nonce={(await headers()).get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: personJsonLd({ name: person.name, slug: person.slug, bio: person.bio, photo: person.photo, role: person.role })

@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Příliš mnoho změn za krátkou dobu.' }, { status: 429 });
   }
 
-  const consent = parseConsentCookie(cookies().get('privacy_consent')?.value);
+  const consent = parseConsentCookie((await cookies()).get('privacy_consent')?.value);
   if (!isConsentGranted(consent, 'preferences')) {
     return NextResponse.json(
       { error: 'Vypnul/-a sis "Ukládání preferencí" v Nastavení soukromí, takže se tato změna neuloží natrvalo.', saved: false },

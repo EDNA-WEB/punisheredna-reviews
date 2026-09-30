@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+
+import type React from 'react';import { useState, useRef, useEffect } from 'react';
 
 // Vlastné, ploché SVG ikonky namiesto štandardného emoji písma — vyzerajú
 // rovnako a čisto na každom zariadení/prehliadači, nie "stráckovo" ako
 // natívne emoji (tie sa navyše na rôznych systémoch zobrazujú inak).
-const REACTIONS: { key: string; label: string; color: string; icon: JSX.Element }[] = [
+const REACTIONS: { key: string; label: string; color: string; icon: React.ReactElement }[] = [
   {
     key: 'like',
     label: 'Líbí se mi',

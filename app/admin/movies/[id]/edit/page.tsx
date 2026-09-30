@@ -8,7 +8,8 @@ import MovieTriviaManager from '@/components/MovieTriviaManager';
 import MovieVideoManager from '@/components/MovieVideoManager';
 import SeasonManager from '@/components/SeasonManager';
 
-export default async function EditMoviePage({ params }: { params: { id: string } }) {
+export default async function EditMoviePage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

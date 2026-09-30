@@ -11,7 +11,8 @@ async function requireAdmin() {
   return session;
 }
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
 

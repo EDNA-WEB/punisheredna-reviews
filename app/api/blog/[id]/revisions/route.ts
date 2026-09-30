@@ -10,7 +10,8 @@ async function canAccess(postId: string, userId: string, isAdmin: boolean) {
   return post;
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;
@@ -27,7 +28,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   return NextResponse.json(revisions);
 }
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;

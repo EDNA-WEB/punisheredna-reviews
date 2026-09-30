@@ -37,8 +37,8 @@ export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-export function generateViewport(): Viewport {
-  const isTv = detectTvMode();
+export async function generateViewport(): Promise<Viewport> {
+  const isTv = await detectTvMode();
   // Mnohé Smart TV prehliadače nesprávne vyhodnotia "width=device-width" a
   // spustia namiesto desktopového rozloženia mobilné (malá "layout" šírka
   // napriek veľkej fyzickej obrazovke). Pri TV preto vynútime pevnú,
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const theme = cookies().get('theme')?.value === 'dark' ? 'dark' : '';
+  const theme = (await cookies()).get('theme')?.value === 'dark' ? 'dark' : '';
 
   // Steam téma už nie je manuálne prepínateľná cez "?theme=steam" (to by
   // obchádzalo exkluzivitu) — je to teraz automaticky nová podoba TMAVÉHO
@@ -102,7 +102,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const language = await getUserLanguage();
   const dict = await getDictionary(language);
 
-  const isTv = detectTvMode();
+  const isTv = await detectTvMode();
 
   return (
     <html
@@ -116,7 +116,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             odporúčajú popri ňom aj tento novší, štandardizovaný ekvivalent. */}
         <meta name="mobile-web-app-capable" content="yes" />
         <script
-          nonce={headers().get('x-nonce') ?? undefined}
+          nonce={(await headers()).get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({

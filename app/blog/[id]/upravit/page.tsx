@@ -5,7 +5,8 @@ import { redirect, notFound } from 'next/navigation';
 import BlogPostForm from '@/components/BlogPostForm';
 import RevisionHistory from '@/components/RevisionHistory';
 
-export default async function EditBlogPostPage({ params }: { params: { id: string } }) {
+export default async function EditBlogPostPage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
 

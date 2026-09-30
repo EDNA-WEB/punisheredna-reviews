@@ -5,7 +5,8 @@ import { prisma } from '@/lib/prisma';
 
 // Vymazanie konverzácie je len pre toho, kto to urobil — len si zapamätáme čas,
 // odkedy on/ona nechce vidieť staršie správy. Druhej strane sa nič nezmaže.
-export async function DELETE(_req: Request, { params }: { params: { otherId: string } }) {
+export async function DELETE(_req: Request, ctx: { params: Promise<{ otherId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const myId = (session.user as any).id;

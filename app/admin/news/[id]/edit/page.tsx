@@ -5,7 +5,8 @@ import { redirect, notFound } from 'next/navigation';
 import NewsForm from '@/components/NewsForm';
 import RevisionHistory from '@/components/RevisionHistory';
 
-export default async function EditNewsPage({ params }: { params: { id: string } }) {
+export default async function EditNewsPage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

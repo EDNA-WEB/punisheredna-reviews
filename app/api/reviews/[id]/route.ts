@@ -14,7 +14,8 @@ async function requireAuthorOrAdmin(reviewId: string) {
   return { session, review };
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
   if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
@@ -44,7 +45,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   return NextResponse.json(updated);
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const { session, review: existing } = await requireAuthorOrAdmin(params.id);
   if (!existing) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
   if (!session) return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });

@@ -5,7 +5,8 @@ import CriticBadge from '@/components/CriticBadge';
 
 export const dynamic = 'force-dynamic';
 
-export default async function UsersPage({ searchParams }: { searchParams: { sort?: string } }) {
+export default async function UsersPage(props: { searchParams: Promise<{ sort?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const sortMode = searchParams?.sort === 'karma' ? 'karma' : 'activity';
 
   const withStats = await getCachedUserRankings();

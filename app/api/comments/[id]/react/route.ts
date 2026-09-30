@@ -6,7 +6,8 @@ import { isActiveMember } from '@/lib/membership';
 
 const ALLOWED_EMOJIS = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;
@@ -39,7 +40,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   return NextResponse.json({ reactions: reactions.map((r) => ({ emoji: r.emoji, count: r._count.emoji })) });
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;

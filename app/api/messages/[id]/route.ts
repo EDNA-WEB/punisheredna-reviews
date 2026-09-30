@@ -6,7 +6,8 @@ import { deleteImageByUrl } from '@/lib/cloudinary';
 
 const DELETE_WINDOW_MS = 30 * 60 * 1000;
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const myId = (session.user as any).id;

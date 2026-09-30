@@ -5,7 +5,8 @@ import { formatPrice } from '@/lib/formatCurrency';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ShopPage({ searchParams }: { searchParams: { kategoria?: string; from?: string; to?: string; sort?: string } }) {
+export default async function ShopPage(props: { searchParams: Promise<{ kategoria?: string; from?: string; to?: string; sort?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const categories = await getCachedShopCategories();
 
   const activeCategory = searchParams.kategoria ? categories.find((c) => c.slug === searchParams.kategoria) : null;

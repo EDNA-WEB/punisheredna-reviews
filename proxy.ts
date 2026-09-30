@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+// Next.js 16: tento súbor nahrádza middleware.ts (beží v prostredí Node.js).
 // ---------------------------------------------------------------------------
 // 1) Neprihlásený návštevník vidí LEN prihlásenie (a stránky potrebné na
 //    registráciu / obnovu hesla / právne texty). Iná adresa → /login.
@@ -69,7 +70,7 @@ function notFound(req: NextRequest) {
   return res;
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   // --- Admin API: len IP obmedzenie (oprávnenie kontroluje každá route sama) ---

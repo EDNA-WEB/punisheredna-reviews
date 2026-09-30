@@ -36,11 +36,12 @@ export const dynamic = 'force-dynamic';
 
 const t = (k: string) => k;
 
-export async function generateMetadata({
-  params
-}: {
-  params: { slug: string; number: string; epNumber: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string; number: string; epNumber: string }>;
 }): Promise<Metadata> {
+  const {
+  params
+} = { ...props, params: await props.params };
   const movie = await prisma.movie.findUnique({ where: { slug: params.slug }, select: { title: true, poster: true } });
   if (!movie) return {};
   const code = `S${params.number.padStart(2, '0')}E${params.epNumber.padStart(2, '0')}`;
@@ -53,14 +54,15 @@ export async function generateMetadata({
   };
 }
 
-export default async function EpisodePage({ params }: { params: { slug: string; number: string; epNumber: string } }) {
+export default async function EpisodePage(props: { params: Promise<{ slug: string; number: string; epNumber: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const viewer = viewerId ? await prisma.user.findUnique({ where: { id: viewerId }, select: { membershipUntil: true } }) : null;
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { onlineFreeForAll: true } });
   const isMember = settings?.onlineFreeForAll || !!(viewer?.membershipUntil && viewer.membershipUntil > new Date());
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
-  const isTv = detectTvMode();
+  const isTv = await detectTvMode();
 
   const movie = await prisma.movie.findUnique({
     where: { slug: params.slug },

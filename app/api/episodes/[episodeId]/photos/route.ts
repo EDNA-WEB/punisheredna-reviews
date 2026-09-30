@@ -5,7 +5,8 @@ import { prisma } from '@/lib/prisma';
 import { validateImageDataUrl } from '@/lib/validateUpload';
 import { uploadImage, cloudinaryThumbnailUrl } from '@/lib/cloudinary';
 
-export async function POST(req: Request, { params }: { params: { episodeId: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ episodeId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });

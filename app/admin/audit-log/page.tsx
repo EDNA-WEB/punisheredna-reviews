@@ -18,7 +18,8 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   'qr-login': { label: 'se přihlásil(a) přes QR kód', color: 'text-emerald-600' }
 };
 
-export default async function AuditLogPage({ searchParams }: { searchParams: { page?: string } }) {
+export default async function AuditLogPage(props: { searchParams: Promise<{ page?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

@@ -9,7 +9,8 @@ import ShopReviewsSection from '@/components/ShopReviewsSection';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ShopProductPage({ params }: { params: { slug: string } }) {
+export default async function ShopProductPage(props: { params: Promise<{ slug: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   const viewerId = session ? (session.user as any).id : null;
 

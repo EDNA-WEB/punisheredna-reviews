@@ -14,7 +14,8 @@ type SearchParams = {
   hasBio?: string;
 };
 
-export default async function PeopleResultsPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function PeopleResultsPage(props: { searchParams: Promise<SearchParams> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const types = searchParams?.types ? searchParams.types.split(',').filter(Boolean) : [];
   const birthPlace = searchParams?.birthPlace || null;
   const deathPlace = searchParams?.deathPlace || null;

@@ -4,7 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 
-export async function POST(req: Request, { params }: { params: { seasonId: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ seasonId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   try {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Pro napsání recenze se musíš přihlásit.' }, { status: 401 });

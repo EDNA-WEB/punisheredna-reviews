@@ -4,7 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/antiSpam';
 
-export async function POST(req: Request, { params }: { params: { episodeId: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ episodeId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
 
@@ -39,7 +40,8 @@ export async function POST(req: Request, { params }: { params: { episodeId: stri
   return NextResponse.json(rating);
 }
 
-export async function DELETE(req: Request, { params }: { params: { episodeId: string } }) {
+export async function DELETE(req: Request, ctx: { params: Promise<{ episodeId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
   const userId = (session.user as any).id;

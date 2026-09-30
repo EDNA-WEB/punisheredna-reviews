@@ -5,7 +5,8 @@ import { prisma } from '@/lib/prisma';
 import { validateImageDataUrl } from '@/lib/validateUpload';
 import { uploadImage, deleteImageByUrl } from '@/lib/cloudinary';
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });

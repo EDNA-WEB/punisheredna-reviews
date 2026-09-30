@@ -30,7 +30,7 @@ export async function GET() {
   );
 
   const all = await prisma.translationString.findMany({ orderBy: [{ group: 'asc' }, { key: 'asc' }] });
-  revalidateTag('translations');
+  revalidateTag('translations', 'max');
   memoForget('dict:');
   return NextResponse.json(all);
 }
@@ -51,7 +51,7 @@ export async function PATCH(req: Request) {
     )
   );
 
-  revalidateTag('translations');
+  revalidateTag('translations', 'max');
 
   memoForget('dict:');
 

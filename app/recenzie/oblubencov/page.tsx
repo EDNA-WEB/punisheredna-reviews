@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 24;
 
-export default async function FavoriteReviewsPage({ searchParams }: { searchParams: { page?: string } }) {
+export default async function FavoriteReviewsPage(props: { searchParams: Promise<{ page?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
   const viewerId = (session.user as any).id;

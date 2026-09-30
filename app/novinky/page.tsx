@@ -11,7 +11,8 @@ export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 9;
 
-export default async function AllNewsPage({ searchParams }: { searchParams: { page?: string } }) {
+export default async function AllNewsPage(props: { searchParams: Promise<{ page?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const page = Math.max(1, Number(searchParams?.page) || 1);
   const dict = await getDictionary(await getUserLanguage());
 

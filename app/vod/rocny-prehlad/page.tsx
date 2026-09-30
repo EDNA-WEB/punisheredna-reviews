@@ -6,7 +6,8 @@ import { computePercent, scoreColorStyle } from '@/lib/rating';
 
 export const dynamic = 'force-dynamic';
 
-export default async function VodRocnyPrehladPage({ searchParams }: { searchParams: { year?: string } }) {
+export default async function VodRocnyPrehladPage(props: { searchParams: Promise<{ year?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const year = Number(searchParams.year) || new Date().getFullYear();
 
   const rangeStart = new Date(year, 0, 1);

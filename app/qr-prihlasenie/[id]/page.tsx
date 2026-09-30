@@ -9,7 +9,8 @@ import { IconQrcode } from '@/components/Icons';
 
 export const dynamic = 'force-dynamic';
 
-export default async function QrLoginConfirmPage({ params }: { params: { id: string } }) {
+export default async function QrLoginConfirmPage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   // Táto stránka sa otvorí na MOBILE po naskenovaní QR kódu — vďaka tomu, že
   // celý web vyžaduje prihlásenie, sem sa dostane len niekto, kto je už
   // prihlásený (presne to potrebujeme: potvrdiť prihlásenie za SEBA na

@@ -3,7 +3,8 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import MovieFormWithTmdbImport from '@/components/MovieFormWithTmdbImport';
 
-export default async function NewMoviePage({ searchParams }: { searchParams: { type?: string } }) {
+export default async function NewMoviePage(props: { searchParams: Promise<{ type?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

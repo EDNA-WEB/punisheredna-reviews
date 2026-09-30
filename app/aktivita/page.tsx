@@ -19,7 +19,8 @@ function timeAgo(date: Date) {
   return date.toLocaleDateString('cs-CZ');
 }
 
-export default async function ActivityPage({ searchParams }: { searchParams?: { feed?: string; strana?: string } }) {
+export default async function ActivityPage(props: { searchParams?: Promise<{ feed?: string; strana?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
   const viewerId = (session.user as any).id;

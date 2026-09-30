@@ -44,7 +44,8 @@ type SearchParams = {
   sort?: string;
 };
 
-export default async function MoviesPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function MoviesPage(props: { searchParams: Promise<SearchParams> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
 

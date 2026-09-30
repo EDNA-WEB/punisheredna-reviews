@@ -17,7 +17,8 @@ import NewsSidebarList from '@/components/NewsSidebarList';
 import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { params } = { ...props, params: await props.params };
   const news = await prisma.newsPost.findUnique({ where: { slug: params.slug }, select: { title: true, summary: true, coverImage: true } });
   if (!news) return {};
   return {
@@ -35,7 +36,8 @@ function summarizeReactions(reactions: { emoji: string }[]): { emoji: string; co
   return Array.from(counts.entries()).map(([emoji, count]) => ({ emoji, count }));
 }
 
-export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
+export default async function NewsDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
@@ -153,7 +155,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
   return (
     <div className="pt-6">
       <script
-        nonce={headers().get('x-nonce') ?? undefined}
+        nonce={(await headers()).get('x-nonce') ?? undefined}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: articleJsonLd({

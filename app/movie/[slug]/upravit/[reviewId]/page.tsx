@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import ReviewForm from '@/components/ReviewForm';
 
-export default async function EditReviewPage({ params }: { params: { slug: string; reviewId: string } }) {
+export default async function EditReviewPage(props: { params: Promise<{ slug: string; reviewId: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
 

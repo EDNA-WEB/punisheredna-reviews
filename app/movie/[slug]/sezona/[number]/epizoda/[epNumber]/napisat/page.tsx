@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import ReviewForm from '@/components/ReviewForm';
 
-export default async function WriteEpisodeReviewPage({ params }: { params: { slug: string; number: string; epNumber: string } }) {
+export default async function WriteEpisodeReviewPage(props: { params: Promise<{ slug: string; number: string; epNumber: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
 

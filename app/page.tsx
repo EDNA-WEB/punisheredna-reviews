@@ -107,7 +107,7 @@ export default async function HomePage() {
     posterImage: string | null;
   }[];
 
-  const consent = parseConsentCookie(cookies().get('privacy_consent')?.value);
+  const consent = parseConsentCookie((await cookies()).get('privacy_consent')?.value);
   const personalizationAllowed = isConsentGranted(consent, 'personalization');
 
   const followingIds = following.map((f) => f.followingId);

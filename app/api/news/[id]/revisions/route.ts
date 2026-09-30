@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });
@@ -19,7 +20,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 // Vráti novinku k stavu, aký mala v danej staršej verzii — no predtým si BEZPEČNE
 // uloží aj JEJ aktuálny (teraz už "starý") stav ako ďalšiu revíziu, takže sa
 // obnovením nikdy nič nestratí, dá sa vrátiť aj sem naspäť.
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });

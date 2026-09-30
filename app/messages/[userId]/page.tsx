@@ -19,7 +19,8 @@ export const dynamic = 'force-dynamic';
 
 const IMAGE_GRACE_PERIOD_MS = 60 * 1000; // 1 minúta
 
-export default async function ConversationPage({ params }: { params: { userId: string } }) {
+export default async function ConversationPage(props: { params: Promise<{ userId: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
   const myId = (session.user as any).id;

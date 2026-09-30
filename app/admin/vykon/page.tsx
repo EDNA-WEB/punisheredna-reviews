@@ -58,7 +58,8 @@ function awakeMinutes(minuteTimestamps: number[]) {
 
 type Severity = 'critical' | 'warning' | 'info';
 
-export default async function AdminPerfPage({ searchParams }: { searchParams?: { rozsah?: string; cu?: string } }) {
+export default async function AdminPerfPage(props: { searchParams?: Promise<{ rozsah?: string; cu?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

@@ -10,7 +10,8 @@ import ApproveMovieButton from '@/components/ApproveMovieButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminMoviesPage({ searchParams }: { searchParams: { type?: string } }) {
+export default async function AdminMoviesPage(props: { searchParams: Promise<{ type?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 

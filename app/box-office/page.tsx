@@ -15,7 +15,8 @@ export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 20;
 
-export default async function BoxOfficePage({ searchParams }: { searchParams: { sort?: string; page?: string } }) {
+export default async function BoxOfficePage(props: { searchParams: Promise<{ sort?: string; page?: string }> }) {
+  const { searchParams } = { ...props, searchParams: await props.searchParams };
   const dict = await getDictionary(await getUserLanguage());
   const t = (key: string) => dict[key] || key;
   const sort = searchParams.sort || 'trzby';

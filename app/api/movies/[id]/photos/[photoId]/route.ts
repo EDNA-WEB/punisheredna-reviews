@@ -6,7 +6,8 @@ import { deleteImageByUrl } from '@/lib/cloudinary';
 
 // Vráti plnú (väčšiu) verziu fotky — na požiadanie, keď návštevník naozaj
 // klikne na náhľad. Nič sa zbytočne neposiela vopred pri načítaní stránky.
-export async function GET(req: Request, { params }: { params: { id: string; photoId: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string; photoId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const photo = await prisma.moviePhoto.findFirst({
     where: { id: params.photoId, movieId: params.id },
     select: { full: true }
@@ -15,7 +16,8 @@ export async function GET(req: Request, { params }: { params: { id: string; phot
   return NextResponse.json({ full: photo.full });
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string; photoId: string } }) {
+export async function DELETE(req: Request, ctx: { params: Promise<{ id: string; photoId: string }> }) {
+  const { params } = { ...ctx, params: await ctx.params };
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') {
     return NextResponse.json({ error: 'Nemáš oprávnění k této akci.' }, { status: 403 });

@@ -9,7 +9,8 @@ import DeleteMovieListButton from '@/components/DeleteMovieListButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function MovieListPage({ params }: { params: { id: string } }) {
+export default async function MovieListPage(props: { params: Promise<{ id: string }> }) {
+  const { params } = { ...props, params: await props.params };
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
 
