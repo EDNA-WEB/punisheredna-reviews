@@ -15,7 +15,7 @@ export default async function ConnectionsSettingsPage() {
       <SettingsTabs />
       <div className="max-w-md border border-line rounded-xl bg-surface p-5">
         <p className="text-sm text-muted leading-relaxed">
-          PunisherEDNA reviews sa momentálne prihlasuje len cez prezývku a heslo — prepojenie s Googlom, Facebookom
+          KrálFilmu.cz sa momentálne prihlasuje len cez prezývku a heslo — prepojenie s Googlom, Facebookom
           a podobnými účtami zatiaľ nepodporujeme. Ak by si o túto možnosť mal záujem, napíš nám o tom cez{' '}
           <a href="/napis-nam" className="text-accent font-semibold hover:underline">kontaktný formulár</a>.
         </p>

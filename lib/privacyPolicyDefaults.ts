@@ -1,10 +1,10 @@
 export const DEFAULT_PRIVACY_POLICY_TEXT = `ZÁSADY OCHRANY OSOBNÍCH ÚDAJŮ
 
-Respektování tvého soukromí je pro nás klíčové. Tento dokument popisuje, jak PunisherEDNA reviews (dále jen "Portál") zpracovává tvé osobní údaje a jak je chráníme.
+Respektování tvého soukromí je pro nás klíčové. Tento dokument popisuje, jak KrálFilmu.cz (dále jen "Portál") zpracovává tvé osobní údaje a jak je chráníme.
 
 SPRÁVCE OSOBNÍCH ÚDAJŮ
 
-Správcem osobních údajů ve smyslu Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR) je provozovatel Portálu, PunisherEDNA. S jakýmkoli dotazem nebo požadavkem týkajícím se svých osobních údajů se na nás můžeš obrátit prostřednictvím formuláře "Napíš nám", dostupného v patičce webu.
+Správcem osobních údajů ve smyslu Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR) je provozovatel Portálu, KrálFilmu. S jakýmkoli dotazem nebo požadavkem týkajícím se svých osobních údajů se na nás můžeš obrátit prostřednictvím formuláře "Napíš nám", dostupného v patičce webu.
 
 NAŠE SLIBY OCHRANY SOUKROMÍ
 

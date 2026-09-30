@@ -189,7 +189,7 @@ export default function AccountSettingsForm({ initial }: { initial: Initial }) {
         <div className="px-5 py-2.5 border-b border-line text-xs font-bold uppercase tracking-wide text-muted">Súhlas s podmienkami</div>
         <div className="p-5">
           <p className="text-xs text-muted leading-relaxed max-w-2xl">
-            Registráciou a používaním PunisherEDNA reviews súhlasíš so spracovaním svojich údajov v rozsahu popísanom v{' '}
+            Registráciou a používaním KrálFilmu.cz súhlasíš so spracovaním svojich údajov v rozsahu popísanom v{' '}
             <Link href="/cookies" className="text-accent font-semibold hover:underline">zásadách webu</Link>. Ak si svoj názor
             rozmyslíš, napíš nám cez{' '}
             <Link href="/napis-nam" className="text-accent font-semibold hover:underline">kontaktný formulár</Link> a účet ti

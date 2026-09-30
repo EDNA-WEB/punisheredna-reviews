@@ -20,7 +20,7 @@ export default function GuidePage() {
   return (
     <div className="pt-8">
       <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Návod k použití</h1>
-      <p className="text-muted mb-8">Odpovědi na nejčastější otázky o tom, jak PunisherEDNA reviews funguje.</p>
+      <p className="text-muted mb-8">Odpovědi na nejčastější otázky o tom, jak KrálFilmu.cz funguje.</p>
       <GuideBody items={items} />
     </div>
   );

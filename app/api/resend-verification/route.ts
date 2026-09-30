@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
   await sendEmail({
     to: user.email,
-    subject: 'Potvrď svoj e-mail — PunisherEDNA reviews',
+    subject: 'Potvrď svoj e-mail — KrálFilmu.cz',
     html: `
       <p>Ahoj ${user.name},</p>
       <p>tu je nový odkaz na potvrdenie tvojej e-mailovej adresy:</p>

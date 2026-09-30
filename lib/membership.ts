@@ -66,7 +66,7 @@ export async function issueTrialCode(userId: string) {
     data: {
       senderId: system.id,
       receiverId: userId,
-      body: `Vitaj na PunisherEDNA reviews! Tu je tvoj kód na 4-dňovú skúšobnú verziu Golden Ticket členstva: ${code}\n\nUplatniť ho môžeš v nastaveniach profilu, v sekcii "Členstvo".`
+      body: `Vitaj na KrálFilmu.cz! Tu je tvoj kód na 4-dňovú skúšobnú verziu Golden Ticket členstva: ${code}\n\nUplatniť ho môžeš v nastaveniach profilu, v sekcii "Členstvo".`
     }
   });
 }

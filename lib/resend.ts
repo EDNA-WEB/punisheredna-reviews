@@ -14,7 +14,7 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || 'PunisherEDNA reviews <onboarding@resend.dev>',
+        from: process.env.RESEND_FROM_EMAIL || 'KrálFilmu.cz <onboarding@resend.dev>',
         to: [to],
         subject,
         html

@@ -55,7 +55,7 @@ export default function PrivacyModal({ text, categories, trigger }: { text: stri
             </button>
 
             <div className="px-6 pt-8 pb-4 flex justify-center flex-none border-b border-line">
-              <Logo className="h-14 w-auto" />
+              <Logo className="h-10 w-auto" />
             </div>
 
             <div className="px-6 py-5 overflow-y-auto flex-1">

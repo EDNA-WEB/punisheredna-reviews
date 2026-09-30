@@ -64,7 +64,7 @@ export function articleJsonLd(article: {
     author: { '@type': 'Person', name: article.authorName },
     publisher: {
       '@type': 'Organization',
-      name: 'PunisherEDNA reviews',
+      name: 'KrálFilmu.cz',
       logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.svg` }
     },
     keywords: article.tags && article.tags.length > 0 ? article.tags.join(', ') : undefined

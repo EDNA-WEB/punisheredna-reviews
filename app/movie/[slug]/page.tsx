@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const description = movie.synopsis
     ? movie.synopsis.slice(0, 160)
-    : `${movie.contentType === 'Seriál' ? 'Seriál' : 'Film'}${movie.year ? ` z roku ${movie.year}` : ''}${movie.genres ? ` — ${movie.genres}` : ''}. Recenzie, hodnotenia a diskusia na PunisherEDNA reviews.`;
+    : `${movie.contentType === 'Seriál' ? 'Seriál' : 'Film'}${movie.year ? ` z roku ${movie.year}` : ''}${movie.genres ? ` — ${movie.genres}` : ''}. Recenzie, hodnotenia a diskusia na KrálFilmu.cz.`;
 
   return {
     title: movie.title,

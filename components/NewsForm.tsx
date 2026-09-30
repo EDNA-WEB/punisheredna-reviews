@@ -144,7 +144,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
           <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Názov novinky'}</h1>
           <div className="flex items-center gap-3 flex-wrap text-sm text-muted mb-6">
-            <span className="flex items-center gap-1.5"><IconUser className="w-4 h-4" />PunisherEDNA</span>
+            <span className="flex items-center gap-1.5"><IconUser className="w-4 h-4" />KrálFilmu</span>
             <span className="flex items-center gap-1.5">
               <IconClock className="w-4 h-4" />
               {new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}

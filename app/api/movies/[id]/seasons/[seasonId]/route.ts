@@ -71,7 +71,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string; se
       await prisma.notification.createMany({
         data: watchers.map((w) => ({
           userId: w.userId,
-          actorName: 'PunisherEDNA',
+          actorName: 'KrálFilmu',
           type: 'NEW_EPISODE',
           text: `Pribudla nová séria ${before.number} pri seriáli "${movie.title}", ktorý máš v Chcem vidieť!`,
           link: `/movie/${movie.slug}/sezona/${before.number}`

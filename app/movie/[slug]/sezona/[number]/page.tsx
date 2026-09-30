@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: { slug: string; num
   const movie = await prisma.movie.findUnique({ where: { slug: params.slug }, select: { title: true, poster: true } });
   if (!movie) return {};
   const title = `${movie.title} — Séria ${params.number}`;
-  const description = `Hodnotenia, recenzie a epizódy série ${params.number} seriálu ${movie.title} na PunisherEDNA reviews.`;
+  const description = `Hodnotenia, recenzie a epizódy série ${params.number} seriálu ${movie.title} na KrálFilmu.cz.`;
   return {
     title,
     description,

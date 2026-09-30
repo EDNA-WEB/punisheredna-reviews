@@ -44,7 +44,7 @@ export async function generateMetadata({
   if (!movie) return {};
   const code = `S${params.number.padStart(2, '0')}E${params.epNumber.padStart(2, '0')}`;
   const title = `${movie.title} — ${code}`;
-  const description = `Hodnotenia a recenzie epizódy ${code} seriálu ${movie.title} na PunisherEDNA reviews.`;
+  const description = `Hodnotenia a recenzie epizódy ${code} seriálu ${movie.title} na KrálFilmu.cz.`;
   return {
     title,
     description,

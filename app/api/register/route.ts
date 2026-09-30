@@ -80,10 +80,10 @@ export async function POST(req: Request) {
     // const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
     // await sendEmail({
     //   to: normalizedEmail,
-    //   subject: 'Potvrď svoj e-mail — PunisherEDNA reviews',
+    //   subject: 'Potvrď svoj e-mail — KrálFilmu.cz',
     //   html: `
     //     <p>Ahoj ${trimmedNickname},</p>
-    //     <p>ďakujeme za registráciu na PunisherEDNA reviews. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
+    //     <p>ďakujeme za registráciu na KrálFilmu.cz. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
     //     <p><a href="${verifyUrl}">${verifyUrl}</a></p>
     //     <p>Ak si sa na našom webe neregistroval, tento e-mail jednoducho ignoruj.</p>
     //   `

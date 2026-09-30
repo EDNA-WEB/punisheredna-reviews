@@ -156,7 +156,7 @@ export default function ShopProductForm({ categories, initial }: { categories: C
 
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Meno predajcu (voliteľné)</label>
-        <input className="field-input" value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="napr. PunisherEDNA" />
+        <input className="field-input" value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="napr. KrálFilmu" />
       </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">

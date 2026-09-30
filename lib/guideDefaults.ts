@@ -2,7 +2,7 @@ export type GuideItem = { question: string; answer: string };
 
 export const DEFAULT_GUIDE_ITEMS: GuideItem[] = [
   {
-    question: 'Co je PunisherEDNA reviews?',
+    question: 'Co je KrálFilmu.cz?',
     answer: `Běží v kině, na VOD službě nebo v televizi film či seriál, o kterém jsi nikdy neslyšel a nechceš riskovat zklamání?
 
 Zahlédl jsi někde zajímavý, ale neznámý titul a chceš se o něm dozvědět víc, nebo si o něm popovídat s ostatními filmovými fanoušky?
@@ -11,7 +11,7 @@ Chceš na základě vlastních hodnocení najít filmy a seriály, které by se 
 
 Chceš se k filmu vyjádřit vlastní recenzí, nebo si jen chceš přehledně vést seznam toho, co jsi viděl a co ještě vidět chceš?
 
-Přesně na tohle tu je PunisherEDNA reviews.`
+Přesně na tohle tu je KrálFilmu.cz.`
   },
   {
     question: 'Proč se registrovat?',

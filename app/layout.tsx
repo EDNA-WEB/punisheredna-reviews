@@ -52,11 +52,13 @@ export function generateViewport(): Viewport {
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: 'PunisherEDNA reviews', template: '%s | PunisherEDNA reviews' },
-  description: 'Filmové recenzie od PunisherEDNA — úprimné pohľady na filmy, ktoré stoja za reč aj za mlčanie.',
+  title: { default: 'KrálFilmu.cz — recenze a hodnocení filmů a seriálů', template: '%s | KrálFilmu.cz' },
+  description: 'KrálFilmu.cz — recenze, hodnocení a vše ze světa filmu. Premiéry v kinech i na VOD, herci, tvůrci a diskuze.',
   manifest: '/manifest.json',
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
     ],
@@ -65,17 +67,18 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'PunisherEDNA'
+    title: 'KrálFilmu'
   },
   alternates: {
-    types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'PunisherEDNA reviews — Novinky (RSS)' }] }
+    types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'KrálFilmu.cz — Novinky (RSS)' }] }
   },
   openGraph: {
-    siteName: 'PunisherEDNA reviews',
+    siteName: 'KrálFilmu.cz',
     type: 'website',
-    locale: 'sk_SK'
+    locale: 'cs_CZ',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'KrálFilmu.cz' }]
   },
-  twitter: { card: 'summary_large_image' }
+  twitter: { card: 'summary_large_image', images: ['/og-image.png'] }
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -117,7 +120,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'PunisherEDNA reviews',
+              name: 'KrálFilmu.cz',
               url: siteUrl,
               potentialAction: {
                 '@type': 'SearchAction',

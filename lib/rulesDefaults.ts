@@ -1,10 +1,10 @@
 export const DEFAULT_RULES_TEXT = `PRAVIDLA PORTÁLU
 
-Tato pravidla popisují, jak PunisherEDNA reviews funguje, co od tebe jako uživatele očekáváme, a jak zacházíme s tvými údaji. Používáním tohoto webu s těmito pravidly souhlasíš.
+Tato pravidla popisují, jak KrálFilmu.cz funguje, co od tebe jako uživatele očekáváme, a jak zacházíme s tvými údaji. Používáním tohoto webu s těmito pravidly souhlasíš.
 
 KDO JSME
 
-PunisherEDNA reviews je filmový a seriálový portál, kde uživatelé hodnotí filmy a seriály, píší k nim recenze, diskutují a vytvářejí vlastní seznamy a blogové články. Provozovatelem webu je PunisherEDNA.
+KrálFilmu.cz je filmový a seriálový portál, kde uživatelé hodnotí filmy a seriály, píší k nim recenze, diskutují a vytvářejí vlastní seznamy a blogové články. Provozovatelem webu je KrálFilmu.
 
 ZALOŽENÍ ÚČTU
 

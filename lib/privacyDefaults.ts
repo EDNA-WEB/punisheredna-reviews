@@ -57,7 +57,7 @@ export function isConsentGranted(consent: Record<string, boolean> | null, key: s
 
 export const DEFAULT_COOKIES_TEXT = `ZÁSADY COOKIES
 
-Tieto zásady cookies popisujú, ako webová stránka PunisherEDNA reviews získava a spracúva informácie o návštevníkoch pomocou súborov cookies.
+Tieto zásady cookies popisujú, ako webová stránka KrálFilmu.cz získava a spracúva informácie o návštevníkoch pomocou súborov cookies.
 
 CO SÚ COOKIES?
 
@@ -124,6 +124,6 @@ www.youronlinechoices.eu
 
 KONTAKTNÉ ÚDAJE
 
-Ak máš otázky týkajúce sa cookies alebo spracovania údajov, napíš nám prostredníctvom správy administrátorovi PunisherEDNA priamo na webe.
+Ak máš otázky týkajúce sa cookies alebo spracovania údajov, napíš nám prostredníctvom správy administrátorovi KrálFilmu priamo na webe.
 
-Prevádzkovateľ webovej stránky PunisherEDNA reviews je oprávnený tieto Zásady cookies kedykoľvek jednostranne meniť alebo dopĺňať.`;
+Prevádzkovateľ webovej stránky KrálFilmu.cz je oprávnený tieto Zásady cookies kedykoľvek jednostranne meniť alebo dopĺňať.`;

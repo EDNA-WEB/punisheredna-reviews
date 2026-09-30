@@ -65,7 +65,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     await prisma.notification.create({
       data: {
         userId: before.submittedById,
-        actorName: 'PunisherEDNA',
+        actorName: 'KrálFilmu',
         type: 'APPROVED',
         text: `Tvoj návrh osoby "${before.name}" bol schválený a je teraz na webe! Ďakujeme za príspevok.`,
         link: `/osobnost/${updated.slug}`

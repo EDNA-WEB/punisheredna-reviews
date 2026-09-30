@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!person) return {};
   const description = person.bio
     ? person.bio.slice(0, 160)
-    : `Filmografia, fotky a informácie o osobe ${person.name} na PunisherEDNA reviews.`;
+    : `Filmografia, fotky a informácie o osobe ${person.name} na KrálFilmu.cz.`;
   return {
     title: person.name,
     description,

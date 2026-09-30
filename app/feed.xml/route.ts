@@ -33,9 +33,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>PunisherEDNA reviews — Novinky</title>
+    <title>KrálFilmu.cz — Novinky</title>
     <link>${siteUrl}/novinky</link>
-    <description>Najnovšie filmové novinky z PunisherEDNA reviews.</description>
+    <description>Najnovšie filmové novinky z KrálFilmu.cz.</description>
     <language>sk</language>${items}
   </channel>
 </rss>`;
