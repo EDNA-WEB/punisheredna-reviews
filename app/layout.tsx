@@ -20,6 +20,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { isActiveMember } from '@/lib/membership';
 
+import { safeJsonLd } from '@/lib/jsonLd';
 const display = Poppins({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-display',
@@ -118,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           nonce={headers().get('x-nonce') ?? undefined}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'KrálFilmu.cz',

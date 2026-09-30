@@ -9,6 +9,7 @@ import { IconEye, IconEyeOff, IconLock } from '@/components/Icons';
 import QrLoginPanel from '@/components/QrLoginPanel';
 import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride';
 
+import { safeLocalPath } from '@/lib/safeRedirect';
 export default function LoginPage() {
   const t = useT();
   const searchParams = useSearchParams();
@@ -16,7 +17,7 @@ export default function LoginPage() {
   // Bezpečnostná poistka: "callbackUrl" je hodnota z adresy, čo si vie ktokoľvek
   // sám zostaviť — povolíme presmerovanie len na cestu v RÁMCI tohto webu
   // (začína "/"), nikdy na cudziu doménu (napr. "https://podvodny-web.sk").
-  const callbackUrl = rawCallbackUrl && rawCallbackUrl.startsWith('/') && !rawCallbackUrl.startsWith('//') ? rawCallbackUrl : null;
+  const callbackUrl = safeLocalPath(rawCallbackUrl);
   const wasRedirectedHere = !!callbackUrl;
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');

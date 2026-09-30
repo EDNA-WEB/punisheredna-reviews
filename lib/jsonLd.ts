@@ -41,7 +41,7 @@ export function movieJsonLd(movie: {
       ratingCount: movie.ratingCount
     };
   }
-  return JSON.stringify(data);
+  return safeJsonLd(data);
 }
 
 export function articleJsonLd(article: {
@@ -69,7 +69,7 @@ export function articleJsonLd(article: {
     },
     keywords: article.tags && article.tags.length > 0 ? article.tags.join(', ') : undefined
   };
-  return JSON.stringify(data);
+  return safeJsonLd(data);
 }
 
 export function personJsonLd(person: { name: string; slug: string; bio: string | null; photo: string | null; role: string | null }) {
@@ -82,11 +82,11 @@ export function personJsonLd(person: { name: string; slug: string; bio: string |
     image: person.photo || undefined,
     jobTitle: person.role || undefined
   };
-  return JSON.stringify(data);
+  return safeJsonLd(data);
 }
 
 export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
-  return JSON.stringify({
+  return safeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: items.map((item, i) => ({
@@ -96,4 +96,16 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
       item: item.url
     }))
   });
+}
+
+// Bezpečný zápis JSON-LD do <script>: znak "<" by v názve filmu/osoby
+// (napr. "</script><script>…") mohol predčasne ukončiť skript. Unicode
+// escapovanie zachová význam pre vyhľadávače, no HTML ho neprečíta ako tag.
+export function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
 }

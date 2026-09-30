@@ -1,8 +1,13 @@
+// Escapuje VŠETKY znaky nebezpečné v HTML — aj úvodzovky. Bez nich by sa dalo
+// z atribútu (napr. alt="…" pri obrázku v článku/recenzii) "vyskočiť" a vložiť
+// vlastný kód, napr. ![x" onerror="…](https://…).
 export function escapeHtml(s: string): string {
   return (s || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // Bezpečný, jednoduchý prevod markdownu na HTML. Vstup sa vždy najprv escapuje

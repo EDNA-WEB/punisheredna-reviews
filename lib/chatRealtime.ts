@@ -10,6 +10,8 @@ import { prisma } from './prisma';
 export const TYPING_TTL_MS = 6000;
 
 export async function setTyping(userId: string, otherId: string, typing: boolean) {
+  // Len obyčajný text — objekt by Prisma vzala ako podmienku (napr. {"not": ""}).
+  if (typeof userId !== 'string' || typeof otherId !== 'string' || !otherId || otherId.length > 64) return;
   if (!userId || !otherId || userId === otherId) return;
   if (typing) {
     await prisma.typingStatus.upsert({
@@ -24,6 +26,7 @@ export async function setTyping(userId: string, otherId: string, typing: boolean
 
 // Píše práve "typerId" používateľovi "toId"?
 export async function isTypingTo(typerId: string, toId: string) {
+  if (typeof typerId !== 'string' || typeof toId !== 'string' || typerId.length > 64) return false;
   const row = await prisma.typingStatus.findUnique({ where: { userId_otherId: { userId: typerId, otherId: toId } } });
   return !!row && Date.now() - row.updatedAt.getTime() < TYPING_TTL_MS;
 }

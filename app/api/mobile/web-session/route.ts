@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { encode } from 'next-auth/jwt';
 import { getMobileUser } from '@/lib/mobileAuth';
+import { safeLocalPath } from '@/lib/safeRedirect';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,7 @@ const MAX_AGE = 10 * 24 * 60 * 60; // 10 dní — ako "Zapamätať si ma" na web
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const to = url.searchParams.get('to') || '/';
-  const safeTo = to.startsWith('/') && !to.startsWith('//') ? to : '/';
+  const safeTo = safeLocalPath(to) || '/';
 
   const user = await getMobileUser(req);
   if (!user || user.banned) {

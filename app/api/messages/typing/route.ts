@@ -9,6 +9,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Musíš byť prihlásený.' }, { status: 401 });
     const { receiverId, typing } = await req.json();
+    if (typeof receiverId !== 'string' || !receiverId) return NextResponse.json({ ok: false }, { status: 400 });
     if (!receiverId) return NextResponse.json({ error: 'Chýba príjemca.' }, { status: 400 });
     await setTyping((session.user as any).id, receiverId, !!typing);
     return NextResponse.json({ ok: true });

@@ -45,6 +45,8 @@ function coerceValue(field: string, value: string | null): any {
 // Vráti celú dávku zmien späť na pôvodné hodnoty. Ak riadok vznikol novo
 // (wasCreated), pri vrátení sa rovno vymaže namiesto nastavenia na null.
 export async function undoBulkImportBatch(batchId: string): Promise<{ reverted: number; errors: string[] }> {
+  // Len obyčajný text — objekt ako {"not": ""} by inak vrátil späť VŠETKY dávky naraz.
+  if (typeof batchId !== 'string' || !batchId || batchId.length > 64) return { reverted: 0, errors: ['Neplatné ID dávky.'] };
   const changes = await prisma.bulkImportChange.findMany({ where: { batchId, undone: false } });
   const errors: string[] = [];
   let reverted = 0;
