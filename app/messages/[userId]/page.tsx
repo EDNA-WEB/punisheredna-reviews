@@ -14,6 +14,7 @@ import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { deleteImageByUrl } from '@/lib/cloudinary';
+import { VOICE_SELECT, cleanupIfAnyExpired, voiceView } from '@/lib/voiceMessages';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,8 +55,9 @@ export default async function ConversationPage(props: { params: Promise<{ userId
       ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true }
+    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true, ...VOICE_SELECT }
   });
+  cleanupIfAnyExpired(rawMessages);
 
   // Fotka sa teraz zobrazuje priamo, bez potreby na ňu klikať. "Hodiny" (1
   // minúta) sa spustia hneď, ako si ju príjemca prvýkrát otvorí túto
@@ -78,9 +80,18 @@ export default async function ConversationPage(props: { params: Promise<{ userId
 
   // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
   // na to, aké zariadenie si používateľ práve otvoril.
+  // Do prehliadača ide len to, čo treba — Cloudinary ID hlasovky nikdy nie.
+  const nowMs = Date.now();
   const messages = rawMessages.map((m) => ({
-    ...m,
-    body: m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body
+    id: m.id,
+    senderId: m.senderId,
+    receiverId: m.receiverId,
+    image: m.image,
+    imageViewedAt: m.imageViewedAt,
+    read: m.read,
+    createdAt: m.createdAt,
+    body: m.voice ? null : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body,
+    voice: voiceView(m, nowMs)
   }));
 
   const [userAId, userBId] = sortedPair(myId, other.id);

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { typersTo } from '@/lib/chatRealtime';
+import { voicePreview } from '@/lib/voiceMessages';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +29,9 @@ export async function GET(req: Request) {
     for (const m of messages) {
       const other = m.senderId === myId ? m.receiver : m.sender;
       if (!map.has(other.id)) {
-        const lastText = m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
-        map.set(other.id, { userId: other.id, name: other.name, avatar: other.avatar, lastText, lastAt: m.createdAt, unread: 0 });
+        const lastText = m.voice ? voicePreview(null) : m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+        const lastKind = m.voice ? 'voice' : m.image ? 'image' : 'text';
+        map.set(other.id, { userId: other.id, name: other.name, avatar: other.avatar, lastText, lastKind, lastAt: m.createdAt, unread: 0 });
       }
       if (m.receiverId === myId && !m.read) {
         map.get(other.id).unread += 1;

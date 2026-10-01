@@ -27,14 +27,14 @@ export async function POST(req: Request) {
       ]
     },
     orderBy: { createdAt: 'asc' },
-    select: { senderId: true, body: true, iv: true, image: true, createdAt: true }
+    select: { senderId: true, body: true, iv: true, image: true, voice: true, createdAt: true }
   });
 
   const transcript = messages
     .map((m) => {
       const who = m.senderId === myId ? 'Ja' : other.name;
       const time = m.createdAt.toISOString();
-      const text = m.image ? '[fotka]' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+      const text = m.voice ? '[hlasová zpráva]' : m.image ? '[fotka]' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       return `[${time}] ${who}: ${text}`;
     })
     .join('\n');

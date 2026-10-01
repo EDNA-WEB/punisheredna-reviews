@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ChatAutoScroll from './ChatAutoScroll';
 import { getChatTheme } from '@/lib/chatTheme';
+import VoiceMessagePlayer, { type VoiceInfo } from './VoiceMessagePlayer';
 
 type RawMessage = {
   id: string;
@@ -10,6 +11,7 @@ type RawMessage = {
   body: string | null;
   image: string | null;
   imageViewedAt: Date | null;
+  voice?: VoiceInfo | null;
   read: boolean;
   createdAt: string | Date;
 };
@@ -117,7 +119,9 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   }`}
                   style={mine && bubbleColor ? { backgroundColor: bubbleColor } : undefined}
                 >
-                  {m.image ? (
+                  {m.voice ? (
+                    <VoiceMessagePlayer id={m.id} mine={mine} voice={m.voice} />
+                  ) : m.image ? (
                     <img src={m.image} alt="Príloha" className="rounded-xl max-h-64 mb-1.5" />
                   ) : (
                     m.imageViewedAt && (

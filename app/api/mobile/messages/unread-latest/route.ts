@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
+import { voicePreview } from '@/lib/voiceMessages';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function GET(req: Request) {
       prisma.message.findFirst({
         where: { receiverId: me.id, read: false },
         orderBy: { createdAt: 'desc' },
-        select: { id: true, body: true, iv: true, image: true, createdAt: true, sender: { select: { id: true, name: true, avatar: true } } }
+        select: { id: true, body: true, iv: true, image: true, voice: true, audioDuration: true, createdAt: true, sender: { select: { id: true, name: true, avatar: true } } }
       })
     ]);
 
@@ -29,7 +30,15 @@ export async function GET(req: Request) {
               id: latest.id,
               createdAt: latest.createdAt,
               sender: latest.sender,
-              preview: latest.image ? '📷 Fotka' : latest.body && latest.iv ? tryDecryptMessageBody(latest.body, latest.iv) : latest.body || ''
+              kind: latest.voice ? 'voice' : latest.image ? 'image' : 'text',
+              voiceDuration: latest.voice ? latest.audioDuration : null,
+              preview: latest.voice
+                ? voicePreview(latest.audioDuration)
+                : latest.image
+                  ? '📷 Fotka'
+                  : latest.body && latest.iv
+                    ? tryDecryptMessageBody(latest.body, latest.iv)
+                    : latest.body || ''
             }
           : null
       },

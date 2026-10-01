@@ -17,7 +17,8 @@ export async function GET(req: Request) {
   const last = await prisma.message.findFirst({
     where: { OR: [{ senderId: me, receiverId: otherId }, { senderId: otherId, receiverId: me }] },
     orderBy: { createdAt: 'desc' },
-    select: { id: true, read: true }
+    select: { id: true, read: true, audioListenedAt: true }
   });
-  return NextResponse.json({ version: last ? `${last.id}:${last.read ? 1 : 0}` : 'none' });
+  // + či bola posledná hlasovka vypočutá (odosielateľ hneď uvidí „Poslechnuto“)
+  return NextResponse.json({ version: last ? `${last.id}:${last.read ? 1 : 0}:${last.audioListenedAt ? 1 : 0}` : 'none' });
 }

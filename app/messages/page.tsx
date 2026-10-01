@@ -7,6 +7,7 @@ import { IconUser, IconMessage } from '@/components/Icons';
 import NewMessageSearch from '@/components/NewMessageSearch';
 import ChatPolling from '@/components/ChatPolling';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
+import { voicePreview } from '@/lib/voiceMessages';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +44,7 @@ export default async function MessagesPage() {
     if (myDeletedAt && m.createdAt <= myDeletedAt) continue; // ja som si túto konverzáciu vymazal(a) po tento bod
 
     if (!conversations.has(other.id)) {
-      const lastText = m.image ? '📷 Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+      const lastText = m.voice ? voicePreview(null) : m.image ? '📷 Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       conversations.set(other.id, {
         user: other,
         lastText,

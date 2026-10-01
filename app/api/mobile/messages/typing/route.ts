@@ -21,11 +21,11 @@ export async function GET(req: Request) {
       prisma.message.findFirst({
         where: { OR: [{ senderId: me.id, receiverId: otherId }, { senderId: otherId, receiverId: me.id }] },
         orderBy: { createdAt: 'desc' },
-        select: { id: true, read: true }
+        select: { id: true, read: true, audioListenedAt: true }
       })
     ]);
     return NextResponse.json(
-      { typing, lastActiveAt: other?.lastActiveAt || null, version: last ? `${last.id}:${last.read ? 1 : 0}` : 'none' },
+      { typing, lastActiveAt: other?.lastActiveAt || null, version: last ? `${last.id}:${last.read ? 1 : 0}:${last.audioListenedAt ? 1 : 0}` : 'none' },
       { status: 200 }
     );
   } catch (error) {

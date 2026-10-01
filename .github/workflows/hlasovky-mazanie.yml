@@ -1,0 +1,22 @@
+name: Mazanie hlasoviek
+
+# Každých 5 minút zavolá web, ktorý zmaže hlasovky po ich čase
+# (5 min po vypočutí, najneskôr 5 h po odoslaní) z Cloudinary aj z DB.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Zavolaj upratovanie
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          resp=$(curl -sS --max-time 90 -X POST -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/voice-cleanup")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true'

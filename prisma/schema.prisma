@@ -916,6 +916,16 @@ model Message {
   iv         String?
   image      String?  @db.Text
   imageViewedAt DateTime?
+  // Hlasovka (nahrať sa dá len v appke). Súbor je v Cloudinary ako
+  // "authenticated" (nie verejný). Zmaže sa 5 min po vypočutí príjemcom,
+  // najneskôr 5 h po odoslaní — potom ostane len voice=true ako "vypršela".
+  voice           Boolean   @default(false)
+  audioPublicId   String?
+  audioFormat     String?
+  audioDuration   Int?
+  audioWaveform   String?   @db.Text
+  audioListenedAt DateTime?
+  audioExpiresAt  DateTime?
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
   sender     User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
@@ -923,6 +933,7 @@ model Message {
 
   @@index([senderId, createdAt])
   @@index([receiverId])
+  @@index([audioExpiresAt])
 }
 
 // Súhlas s komunikáciou medzi dvoma používateľmi — kým adresát prvú správu

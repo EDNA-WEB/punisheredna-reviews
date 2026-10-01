@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { deleteImageByUrl } from '@/lib/cloudinary';
+import { destroyVoice } from '@/lib/voiceMessages';
 
 const DELETE_WINDOW_MS = 30 * 60 * 1000;
 
@@ -25,6 +26,7 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
   }
 
   if (message.image) await deleteImageByUrl(message.image);
+  if (message.audioPublicId) await destroyVoice(message.audioPublicId);
   await prisma.message.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }
