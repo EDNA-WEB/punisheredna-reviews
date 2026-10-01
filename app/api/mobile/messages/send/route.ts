@@ -7,6 +7,7 @@ import { encryptMessageBody } from '@/lib/serverCrypto';
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
 import { hasInjectedObject } from '@/lib/inputGuard';
+import { validReplyTo } from '@/lib/messageActions';
 export const dynamic = 'force-dynamic';
 
 // Appková verzia webu — rovnaký systém súhlasu s komunikáciou, spamový
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     }
 
-    const { receiverId, body } = await req.json();
+    const { receiverId, body, replyToId: rawReplyTo } = await req.json();
     if (hasInjectedObject(receiverId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
     if (!receiverId || receiverId === senderId) {
@@ -68,9 +69,10 @@ export async function POST(req: Request) {
     }
 
     const encrypted = encryptMessageBody(String(body).trim());
+    const replyToId = await validReplyTo(rawReplyTo, senderId, receiverId);
 
     const message = await prisma.message.create({
-      data: { senderId, receiverId, body: encrypted.ciphertext, iv: encrypted.iv }
+      data: { senderId, receiverId, body: encrypted.ciphertext, iv: encrypted.iv, replyToId }
     });
 
     // Odoslaním sa "píše…" okamžite ukončí a adresát dostane push notifikáciu.

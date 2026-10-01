@@ -15,6 +15,7 @@ import { formatPresence, isOnline } from '@/lib/presence';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { VOICE_SELECT, cleanupIfAnyExpired, voiceView } from '@/lib/voiceMessages';
 import { PHOTO_SELECT, photoCleanupIfAnyExpired, photoView } from '@/lib/photoMessages';
+import { MESSAGE_EXTRA_SELECT, buildThreadExtras } from '@/lib/messageActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,7 +54,7 @@ export default async function ConversationPage(props: { params: Promise<{ userId
       ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT }
+    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT, ...MESSAGE_EXTRA_SELECT }
   });
   cleanupIfAnyExpired(rawMessages);
   photoCleanupIfAnyExpired(rawMessages);
@@ -63,6 +64,7 @@ export default async function ConversationPage(props: { params: Promise<{ userId
   // na to, aké zariadenie si používateľ práve otvoril.
   // Do prehliadača ide len to, čo treba — Cloudinary ID hlasovky nikdy nie.
   const nowMs = Date.now();
+  const extras = await buildThreadExtras(rawMessages, myId);
   const messages = rawMessages.map((m) => ({
     id: m.id,
     senderId: m.senderId,
@@ -72,7 +74,12 @@ export default async function ConversationPage(props: { params: Promise<{ userId
     read: m.read,
     createdAt: m.createdAt,
     body: m.voice ? null : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body,
-    voice: voiceView(m, nowMs)
+    voice: voiceView(m, nowMs),
+    edited: !!m.editedAt,
+    forwarded: m.forwarded,
+    pinned: !!m.pinnedAt,
+    replyTo: extras.replyTo(m.replyToId),
+    reactions: extras.reactions(m.id)
   }));
 
   const [userAId, userBId] = sortedPair(myId, other.id);

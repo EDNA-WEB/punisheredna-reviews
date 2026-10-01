@@ -921,6 +921,13 @@ model Message {
   photo          Boolean   @default(false)
   imagePublicId  String?
   imageExpiresAt DateTime?
+  // Discord-like akcie: úprava, odpoveď, preposlanie, pripnutie, reakcie.
+  editedAt       DateTime?
+  replyToId      String?
+  forwarded      Boolean   @default(false)
+  pinnedAt       DateTime?
+  pinnedById     String?
+  reactions      MessageReaction[]
   // Hlasovka (nahrať sa dá len v appke). Súbor je v Cloudinary ako
   // "authenticated" (nie verejný). Zmaže sa 5 min po vypočutí príjemcom,
   // najneskôr 5 h po odoslaní — potom ostane len voice=true ako "vypršela".
@@ -955,8 +962,25 @@ model Conversation {
   status       String    @default("PENDING") // PENDING, ACCEPTED, DECLINED
   createdAt    DateTime  @default(now())
   respondedAt  DateTime?
+  // Posledná zmena bez novej správy (reakcia, úprava, pripnutie, zmazanie) —
+  // otvorený chat podľa nej vie, že sa má obnoviť.
+  activityAt   DateTime?
 
   @@unique([userAId, userBId])
+}
+
+// Reakcia na správu (ako Discord) — jeden používateľ môže dať na jednu správu
+// viac rôznych emoji, každé najviac raz.
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
 }
 
 // Vymazanie konverzácie je "len pre mňa" — skryje staré správy len tomu, kto

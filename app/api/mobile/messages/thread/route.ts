@@ -5,6 +5,7 @@ import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { sortedPair } from '@/lib/conversation';
 import { VOICE_SELECT, cleanupIfAnyExpired, voiceView } from '@/lib/voiceMessages';
 import { PHOTO_SELECT, photoCleanupIfAnyExpired, photoView } from '@/lib/photoMessages';
+import { MESSAGE_EXTRA_SELECT, buildThreadExtras } from '@/lib/messageActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,11 +40,12 @@ export async function GET(req: Request) {
         ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
       },
       orderBy: { createdAt: 'asc' },
-      select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT }
+      select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT, ...MESSAGE_EXTRA_SELECT }
     });
     cleanupIfAnyExpired(rawMessages);
     photoCleanupIfAnyExpired(rawMessages);
     const nowMs = Date.now();
+    const extras = await buildThreadExtras(rawMessages, myId);
 
     const messages = rawMessages.map((m) => ({
       id: m.id,
@@ -52,7 +54,12 @@ export async function GET(req: Request) {
       ...photoView(m, nowMs),
       voice: voiceView(m, nowMs),
       read: m.read,
-      createdAt: m.createdAt
+      createdAt: m.createdAt,
+      editedAt: m.editedAt,
+      forwarded: m.forwarded,
+      pinned: !!m.pinnedAt,
+      replyTo: extras.replyTo(m.replyToId),
+      reactions: extras.reactions(m.id)
     }));
 
     const [userAId, userBId] = sortedPair(myId, other.id);
@@ -63,7 +70,7 @@ export async function GET(req: Request) {
     const isPendingWaiting = status === 'PENDING' && conversation?.initiatorId === myId && messages.length > 0;
     const isDeclined = status === 'DECLINED';
 
-    return NextResponse.json({ other, messages, isPendingForMe, isPendingWaiting, isDeclined }, { status: 200 });
+    return NextResponse.json({ other, messages, pinned: extras.pinned, isPendingForMe, isPendingWaiting, isDeclined }, { status: 200 });
   } catch (error) {
     console.error('[api/mobile/messages/thread]', error);
     return NextResponse.json({ error: 'Chyba při načítání konverzace.' }, { status: 500 });

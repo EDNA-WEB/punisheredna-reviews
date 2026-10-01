@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import ChatAutoScroll from './ChatAutoScroll';
 import { getChatTheme } from '@/lib/chatTheme';
 import VoiceMessagePlayer, { type VoiceInfo } from './VoiceMessagePlayer';
@@ -13,6 +14,11 @@ type RawMessage = {
   image: string | null;
   imageThumb?: string | null;
   photoExpired?: boolean;
+  edited?: boolean;
+  forwarded?: boolean;
+  pinned?: boolean;
+  replyTo?: { id: string; senderId?: string; kind?: string; text?: string; deleted?: boolean } | null;
+  reactions?: Array<{ emoji: string; count: number; mine: boolean }>;
   imageViewedAt?: Date | null;
   voice?: VoiceInfo | null;
   read: boolean;
@@ -35,6 +41,24 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingSelection, setDeletingSelection] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function toggleReaction(id: string, emoji: string) {
+    await fetch(`/api/messages/${id}/react`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emoji })
+    }).catch(() => {});
+    router.refresh();
+  }
+
+  function jumpTo(id: string) {
+    const el = document.getElementById(`msg-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('ring-2', 'ring-accent');
+    setTimeout(() => el.classList.remove('ring-2', 'ring-accent'), 1800);
+  }
 
   useEffect(() => {
     setBubbleColor(getChatTheme(otherId).bubbleColor);
@@ -69,7 +93,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
 
   async function deleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Smazat ${selectedIds.size} vybraných zpráv? Zmizí i druhé straně.`)) return;
+    if (!confirm(`Smazat ${selectedIds.size} vybraných zpráv? Zmizí tobě i druhé straně a nelze to vrátit.`)) return;
     setDeletingSelection(true);
     try {
       await Promise.all(Array.from(selectedIds).map((id) => fetch(`/api/messages/${id}`, { method: 'DELETE' })));
@@ -99,7 +123,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
           const thisDay = dayLabel(createdAt);
           const showDivider = thisDay !== lastDay;
           lastDay = thisDay;
-          const canDelete = mine && !m.read && Date.now() - createdAt.getTime() < 30 * 60 * 1000;
+          const canDelete = mine; // vlastnú správu možno zmazať kedykoľvek, zmizne obom
 
           return (
             <div key={m.id}>
@@ -117,12 +141,32 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                     className="flex-none w-4 h-4 accent-accent cursor-pointer"
                   />
                 )}
+                <div className={`flex flex-col max-w-[75%] ${mine ? 'items-end' : 'items-start'}`}>
                 <div
-                  className={`max-w-[75%] rounded-xl px-4 py-2.5 ${mine ? 'text-white' : 'bg-surface text-ink'} ${mine && !bubbleColor ? 'bg-accent' : ''} ${
+                  id={`msg-${m.id}`}
+                  className={`rounded-xl px-4 py-2.5 transition-shadow ${mine ? 'text-white' : 'bg-surface text-ink'} ${mine && !bubbleColor ? 'bg-accent' : ''} ${
                     selectionMode && !canDelete ? 'opacity-50' : ''
                   }`}
                   style={mine && bubbleColor ? { backgroundColor: bubbleColor } : undefined}
                 >
+                  {m.forwarded && (
+                    <div className={`text-[11px] italic mb-1 ${mine ? 'text-white/70' : 'text-muted'}`}>↪ Přeposláno</div>
+                  )}
+                  {m.replyTo && (
+                    <button
+                      type="button"
+                      onClick={() => m.replyTo && !m.replyTo.deleted && jumpTo(m.replyTo.id)}
+                      className={`block w-full text-left text-xs rounded-lg border-l-2 px-2 py-1 mb-1.5 ${
+                        mine ? 'bg-black/15 border-white/60 text-white/85' : 'bg-line/50 border-accent text-muted'
+                      }`}
+                    >
+                      {m.replyTo.deleted
+                        ? 'Původní zpráva byla smazána'
+                        : `${m.replyTo.senderId === myId ? 'Ty' : 'Odpověď'}: ${
+                            m.replyTo.kind === 'voice' ? '🎤 Hlasová zpráva' : m.replyTo.kind === 'image' && !m.replyTo.text ? '📷 Fotka' : m.replyTo.text
+                          }`}
+                    </button>
+                  )}
                   {m.voice ? (
                     <VoiceMessagePlayer id={m.id} mine={mine} voice={m.voice} />
                   ) : m.image ? (
@@ -139,8 +183,27 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   {m.body && <p className="text-sm whitespace-pre-wrap leading-snug">{m.body}</p>}
                   <div className={`flex items-center justify-end gap-1 mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>
                     <span className="text-[10px]">{createdAt.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>
+                    {m.pinned && <span className="text-[10px]" title="Připnuto">📌</span>}
+                    {m.edited && <span className="text-[10px] italic">(upraveno)</span>}
                     {mine && <span className={`text-[11px] ${m.read ? 'text-white' : 'text-white/60'}`}>✓✓</span>}
                   </div>
+                </div>
+                {m.reactions && m.reactions.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {m.reactions.map((r) => (
+                      <button
+                        key={r.emoji}
+                        type="button"
+                        onClick={() => toggleReaction(m.id, r.emoji)}
+                        className={`text-xs rounded-full px-2 py-0.5 border transition-colors ${
+                          r.mine ? 'border-accent bg-accent/15 text-ink' : 'border-line bg-surface text-muted hover:text-ink'
+                        }`}
+                      >
+                        {r.emoji} {r.count}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser, touchLastActive } from '@/lib/mobileAuth';
 import { isTypingTo, setTyping } from '@/lib/chatRealtime';
+import { conversationActivity } from '@/lib/messageActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,17 +16,19 @@ export async function GET(req: Request) {
 
     // "version" = posledná správa v konverzácii + či je prečítaná. Appka podľa
     // nej načíta celé vlákno LEN keď sa niečo zmenilo (namiesto každé 4 s).
-    const [typing, other, last] = await Promise.all([
+    if (otherId.length > 64) return NextResponse.json({ typing: false }, { status: 200 });
+    const [typing, other, last, activity] = await Promise.all([
       isTypingTo(otherId, me.id),
       prisma.user.findUnique({ where: { id: otherId }, select: { lastActiveAt: true } }),
       prisma.message.findFirst({
         where: { OR: [{ senderId: me.id, receiverId: otherId }, { senderId: otherId, receiverId: me.id }] },
         orderBy: { createdAt: 'desc' },
         select: { id: true, read: true, audioListenedAt: true }
-      })
+      }),
+      conversationActivity(me.id, otherId)
     ]);
     return NextResponse.json(
-      { typing, lastActiveAt: other?.lastActiveAt || null, version: last ? `${last.id}:${last.read ? 1 : 0}:${last.audioListenedAt ? 1 : 0}` : 'none' },
+      { typing, lastActiveAt: other?.lastActiveAt || null, version: `${last ? `${last.id}:${last.read ? 1 : 0}:${last.audioListenedAt ? 1 : 0}` : 'none'}:${activity}` },
       { status: 200 }
     );
   } catch (error) {

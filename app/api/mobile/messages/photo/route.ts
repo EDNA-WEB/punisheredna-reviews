@@ -5,6 +5,7 @@ import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
+import { validReplyTo } from '@/lib/messageActions';
 import { PHOTO_MAX_BYTES, PHOTO_TTL_MS, checkPhotoLimits, destroyChatPhoto, photoView, uploadChatPhoto } from '@/lib/photoMessages';
 
 export const dynamic = 'force-dynamic';
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
     const uploaded = await uploadChatPhoto(Buffer.from(await blob.arrayBuffer()), mime);
     uploadedId = uploaded.publicId;
 
+    const replyToId = await validReplyTo(form.get('replyToId'), senderId, receiverId);
     let encryptedBody: string | null = null;
     let iv: string | null = null;
     if (body) {
@@ -100,7 +102,8 @@ export async function POST(req: Request) {
         image: uploaded.url,
         imagePublicId: uploaded.publicId,
         photo: true,
-        imageExpiresAt: new Date(Date.now() + PHOTO_TTL_MS)
+        imageExpiresAt: new Date(Date.now() + PHOTO_TTL_MS),
+        replyToId
       }
     });
     uploadedId = null;

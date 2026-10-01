@@ -4,6 +4,7 @@ import { getMobileUser } from '@/lib/mobileAuth';
 import { checkRateLimit } from '@/lib/antiSpam';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
+import { validReplyTo } from '@/lib/messageActions';
 import {
   VOICE_MAX_BYTES,
   VOICE_MAX_MS,
@@ -96,6 +97,7 @@ export async function POST(req: Request) {
     }
     const durationMs = Math.min(VOICE_MAX_MS, Math.max(VOICE_MIN_MS, Math.round(realDuration)));
 
+    const replyToId = await validReplyTo(form.get('replyToId'), senderId, receiverId);
     const now = Date.now();
     const message = await prisma.message.create({
       data: {
@@ -106,7 +108,8 @@ export async function POST(req: Request) {
         audioFormat: uploaded.format,
         audioDuration: durationMs,
         audioWaveform: sanitizeWaveform(form.get('waveform')),
-        audioExpiresAt: new Date(now + VOICE_TTL_MS)
+        audioExpiresAt: new Date(now + VOICE_TTL_MS),
+        replyToId
       }
     });
     uploadedId = null; // už patrí správe — zmaže ho bežné upratovanie

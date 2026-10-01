@@ -9,6 +9,7 @@ import { encryptMessageBody } from '@/lib/serverCrypto';
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
 import { hasInjectedObject } from '@/lib/inputGuard';
+import { validReplyTo } from '@/lib/messageActions';
 import { PHOTO_TTL_MS, checkPhotoLimits, destroyChatPhoto, uploadChatPhoto } from '@/lib/photoMessages';
 export async function POST(req: Request) {
   try {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tvůj účet byl zablokován.' }, { status: 403 });
     }
 
-    const { receiverId, body, image } = await req.json();
+    const { receiverId, body, image, replyToId: rawReplyTo } = await req.json();
     if (hasInjectedObject(receiverId)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
 
     if (!receiverId || receiverId === senderId) {
@@ -99,6 +100,7 @@ export async function POST(req: Request) {
       iv = encrypted.iv;
     }
 
+    const replyToId = await validReplyTo(rawReplyTo, senderId, receiverId);
     let message;
     try {
       message = await prisma.message.create({
@@ -110,7 +112,8 @@ export async function POST(req: Request) {
           image: imageUrl,
           imagePublicId,
           photo: !!imageUrl,
-          imageExpiresAt: imageUrl ? new Date(Date.now() + PHOTO_TTL_MS) : null
+          imageExpiresAt: imageUrl ? new Date(Date.now() + PHOTO_TTL_MS) : null,
+          replyToId
         }
       });
     } catch (e) {
