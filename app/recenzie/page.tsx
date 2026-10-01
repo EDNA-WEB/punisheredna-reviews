@@ -1,12 +1,10 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
-import { getCachedMovieCatalog } from '@/lib/cachedMovieData';
 import { isActiveMember } from '@/lib/membership';
 import MovieCard from '@/components/MovieCard';
 import SortDropdown from '@/components/SortDropdown';
 import GenreDropdown from '@/components/GenreDropdown';
 import { primaryGenreLabel } from '@/lib/genreLabel';
-import { computeBlendedPercent } from '@/lib/rating';
+import { activeFilterCount, getFilterOptions, parseFilter, runFilter } from '@/lib/movieFilter';
 import { getDictionary, getUserLanguage } from '@/lib/i18n';
 import Pagination from '@/components/Pagination';
 import { IconChevronRight } from '@/components/Icons';
@@ -54,105 +52,25 @@ export default async function MoviesPage(props: { searchParams: Promise<SearchPa
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isMember = isAdmin || (await isActiveMember(userId));
 
-  // Filmy, čo prihlásený používateľ už ohodnotil alebo k nim napísal recenziu
-  // (na hlavnej úrovni filmu, nie pri konkrétnej sezóne/epizóde) — tie sa na
-  // zozname označia ako "videné" zeleným rohom.
-  let watchedMovieIds = new Set<string>();
-  if (userId) {
-    const [ratedIds, reviewedIds] = await Promise.all([
-      prisma.rating.findMany({ where: { userId, seasonId: null, episodeId: null }, select: { movieId: true } }),
-      prisma.review.findMany({ where: { authorId: userId, seasonId: null, episodeId: null }, select: { movieId: true } })
-    ]);
-    watchedMovieIds = new Set([...ratedIds.map((r) => r.movieId), ...reviewedIds.map((r) => r.movieId)]);
-  }
-
+  // Spoločné jadro filtra (rovnaké ako /recenzie/filter a appka) — filtruje
+  // CELÝ katalóg v pamäti servera, bez ďalších dopytov do databázy. Rozumie
+  // novým aj starým parametrom (genre, country, tag, nowShowing, sort=najnovsie…).
   const page = Math.max(1, Number(searchParams?.page) || 1);
   const genreFilter = searchParams?.genre || null;
-  const genresFilter = searchParams?.genres ? searchParams.genres.split(',').filter(Boolean) : [];
-  const countryFilter = searchParams?.country || null;
-  const countriesFilter = searchParams?.countries ? searchParams.countries.split(',').filter(Boolean) : [];
-  const typesFilter = searchParams?.types ? searchParams.types.split(',').filter(Boolean) : [];
-  const nowShowingFilter = searchParams?.nowShowing === '1';
-  const hasReviewsFilter = searchParams?.hasReviews === '1';
-  const hasGalleryFilter = searchParams?.hasGallery === '1';
-  const hasVideosFilter = searchParams?.hasVideos === '1';
-  const hasTriviaFilter = searchParams?.hasTrivia === '1';
-  const yearFrom = searchParams?.yearFrom ? Number(searchParams.yearFrom) : null;
-  const yearTo = searchParams?.yearTo ? Number(searchParams.yearTo) : null;
-  const ratingFrom = searchParams?.ratingFrom ? Number(searchParams.ratingFrom) : null;
-  const ratingTo = searchParams?.ratingTo ? Number(searchParams.ratingTo) : null;
-  const actorFilter = searchParams?.actor || null;
-  const directorFilter = searchParams?.director || null;
-  const screenplayFilter = searchParams?.screenplay || null;
-  const cinematographyFilter = searchParams?.cinematography || null;
-  const musicFilter = searchParams?.music || null;
-  const tagFilter = searchParams?.tag || null;
-  const minLength = searchParams?.minLength ? Number(searchParams.minLength) : null;
-  const maxLength = searchParams?.maxLength ? Number(searchParams.maxLength) : null;
+  const params = { get: (k: string) => { const v = (searchParams as any)?.[k]; return v === undefined || v === null ? null : String(v); } };
+  const spec = parseFilter(params);
+  if (!searchParams?.sort) spec.sort = 'newest'; // táto stránka: predvolene najnovšie
+  spec.page = page;
+  const hasAdvancedFilter = activeFilterCount({ ...spec, genres: genreFilter && !searchParams?.genres ? [] : spec.genres }) > 0;
 
-  const hasAdvancedFilter =
-    genresFilter.length > 0 || countryFilter || countriesFilter.length > 0 || typesFilter.length > 0 || yearFrom || yearTo || ratingFrom || ratingTo ||
-    actorFilter || directorFilter || screenplayFilter || cinematographyFilter || musicFilter || tagFilter || minLength || maxLength || nowShowingFilter || hasReviewsFilter ||
-    hasGalleryFilter || hasVideosFilter || hasTriviaFilter;
-
-  const movies = await getCachedMovieCatalog({
-    actorFilter,
-    directorFilter,
-    screenplayFilter,
-    cinematographyFilter,
-    musicFilter,
-    tagFilter,
-    countryFilter,
-    typesFilter,
-    nowShowingFilter,
-    minLength,
-    maxLength,
-    isMember
-  });
-
-  const withScore = movies.map((m) => ({
-    ...m,
-    percent: computeBlendedPercent(m.ratings, m.tmdbVoteAverage, m.tmdbVoteCount),
-    genreList: (m.genres || '').split(',').map((g) => g.trim()).filter(Boolean),
-    yearNum: m.year ? parseInt(m.year, 10) : null
-  }));
-
-  const allGenres = Array.from(new Set(withScore.flatMap((m) => m.genreList))).sort();
-
-  let filtered = withScore;
-  if (genreFilter) filtered = filtered.filter((m) => m.genreList.includes(genreFilter));
-  if (genresFilter.length > 0) filtered = filtered.filter((m) => genresFilter.some((g) => m.genreList.includes(g)));
-  if (yearFrom !== null) filtered = filtered.filter((m) => m.yearNum !== null && m.yearNum >= yearFrom);
-  if (yearTo !== null) filtered = filtered.filter((m) => m.yearNum !== null && m.yearNum <= yearTo);
-  if (ratingFrom !== null) filtered = filtered.filter((m) => m.percent !== null && m.percent >= ratingFrom);
-  if (ratingTo !== null) filtered = filtered.filter((m) => m.percent !== null && m.percent <= ratingTo);
-  if (countriesFilter.length > 0) filtered = filtered.filter((m) => countriesFilter.some((c) => (m.countries || '').includes(c)));
-  if (hasReviewsFilter) filtered = filtered.filter((m) => m._count.reviews > 0);
-  if (hasGalleryFilter) filtered = filtered.filter((m) => m._count.photos > 0);
-  if (hasVideosFilter) filtered = filtered.filter((m) => m._count.videos > 0);
-  if (hasTriviaFilter) filtered = filtered.filter((m) => m._count.trivia > 0);
-
-  const sort = searchParams?.sort || 'najnovsie';
-  filtered = [...filtered].sort((a, b) => {
-    if (sort === 'najstarsie') return (a.yearNum ?? 0) - (b.yearNum ?? 0);
-    if (sort === 'najnovsie-pridane') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    if (sort === 'najlepsie') return (b.percent ?? -1) - (a.percent ?? -1);
-    if (sort === 'najhorsie') return (a.percent ?? 101) - (b.percent ?? 101);
-    // predvolené: najnovšie (podľa roku, nie podľa dátumu pridania na web)
-    return (b.yearNum ?? 0) - (a.yearNum ?? 0);
-  });
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-
-  // Neplatiaci sa dostanú maximálne na 5. stránku — ďalšie stránkovanie je
-  // len pre Golden Ticket členov. Priame zadanie vyššieho čísla stránky v
-  // adrese sa tichoo obmedzí na stránku 5, nech sa to nedá obísť.
-  const MAX_FREE_PAGE = 5;
-  const effectivePage = isMember ? page : Math.min(page, MAX_FREE_PAGE);
-  const visibleTotalPages = isMember ? totalPages : Math.min(totalPages, MAX_FREE_PAGE);
-  const hitFreeLimit = !isMember && totalPages > MAX_FREE_PAGE && effectivePage >= MAX_FREE_PAGE;
-
-  const paged = filtered.slice((effectivePage - 1) * PAGE_SIZE, effectivePage * PAGE_SIZE);
+  const [r, options] = await Promise.all([runFilter(spec, { userId, isMember, pageSize: PAGE_SIZE }), getFilterOptions()]);
+  const allGenres = Object.keys(options.genres).sort();
+  const filtered = { length: r.total };
+  const effectivePage = r.page;
+  const visibleTotalPages = r.pages;
+  const hitFreeLimit = r.limited && effectivePage >= visibleTotalPages;
+  const watchedMovieIds = r.userSets.seen;
+  const paged = r.items.map((m) => ({ ...m, genreList: m.genres }));
 
   const qs = new URLSearchParams();
   Object.entries(searchParams || {}).forEach(([k, v]) => {
@@ -169,7 +87,7 @@ export default async function MoviesPage(props: { searchParams: Promise<SearchPa
           <div className="mt-3 flex items-center gap-2 flex-wrap text-sm">
             <span className="text-muted">{t('recenzie.filter_aktivny')}</span>
             <Link href="/recenzie" className="text-accent text-xs font-semibold hover:underline">{t('recenzie.zrusit_filter')}</Link>
-            <Link href="/recenzie/filter" className="text-accent text-xs font-semibold hover:underline">{t('recenzie.upravit_filter')}</Link>
+            <Link href={`/recenzie/filter?${qs.toString()}`} className="text-accent text-xs font-semibold hover:underline">{t('recenzie.upravit_filter')}</Link>
           </div>
         )}
       </div>
@@ -181,7 +99,7 @@ export default async function MoviesPage(props: { searchParams: Promise<SearchPa
           <SortDropdown />
 
           <Link
-            href="/recenzie/filter"
+            href={qs.toString() ? `/recenzie/filter?${qs.toString()}` : '/recenzie/filter'}
             className="group flex items-center gap-3 flex-none bg-card border border-line rounded-xl px-4 py-2.5 hover:border-accent transition-colors"
           >
             <div>
@@ -210,16 +128,16 @@ export default async function MoviesPage(props: { searchParams: Promise<SearchPa
                   title: m.title,
                   slug: m.slug,
                   poster: m.poster,
-                  year: m.year,
+                  year: m.yearRaw,
                   percent: m.percent,
-                  ratingCount: m.ratings.length,
+                  ratingCount: m.ratingCount,
                   genre: primaryGenreLabel(m.genreList),
                   hasSubtitles: m.hasSubtitles,
                   hasDubbing: m.hasDubbing,
-                  releaseDate: m.releaseDate,
+                  releaseDate: m.releaseDate ? new Date(m.releaseDate) : null,
                   isCamVersion: m.isCamVersion,
                   contentType: m.contentType,
-                  premiereType: m.premiereDates[0]?.type || null,
+                  premiereType: m.premiereType,
                   watched: watchedMovieIds.has(m.id)
                 }}
               />
