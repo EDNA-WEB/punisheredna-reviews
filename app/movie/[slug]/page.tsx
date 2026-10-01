@@ -35,6 +35,7 @@ import ReportOnlineButton from '@/components/ReportOnlineButton';
 import YouTubeSubtitlePlayer from '@/components/YouTubeSubtitlePlayer';
 import FlagCZ from '@/components/FlagCZ';
 import WhereToWatchBox from '@/components/WhereToWatchBox';
+import OnlinePlayButton from '@/components/OnlinePlayButton';
 import RelatedNewsBox from '@/components/RelatedNewsBox';
 import TagsBox from '@/components/TagsBox';
 import MovieLinksBox from '@/components/MovieLinksBox';
@@ -406,6 +407,64 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
     );
   }
 
+  // Online sledovanie: veľké tlačidlo „Přehrát online“ priamo na profile
+  // (rovnako ako v appke), obsah sa otvorí v okne.
+  const hasOnline = !!movie.watchUrl || seasons.some((s) => s.episodes.some((e) => e.onlineUrl));
+  const onlineContent = (
+      <>
+        {!viewerId && !settings?.onlineFreeForAll ? (
+          <p className="text-sm text-muted">
+            {t('movie.online_prihlasenie')}{' '}
+            <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link>.
+          </p>
+        ) : !isMember ? (
+          <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
+            <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
+            <div>
+              <p className="text-sm font-semibold text-ink">Online sledování je dostupné jen pro Golden Ticket členy.</p>
+              <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
+                Zjistit více o členství →
+              </Link>
+            </div>
+          </div>
+        ) : movie.contentType === 'Seriál' && seasons.length > 0 && (movie.watchUrl || seasons.some((s) => s.episodes.some((e) => e.onlineUrl))) ? (
+          <OnlineEpisodeBrowser
+            seasons={seasons.map((s) => ({
+              number: s.number,
+              year: s.year,
+              released: s.released,
+              episodes: s.episodes.map((e) => ({
+                number: e.number,
+                title: e.title,
+                onlineImage: e.onlineImage,
+                onlineUrl: e.onlineUrl,
+                watched: watchedEpisodeIds.has(e.id)
+              }))
+            }))}
+            watchUrl={movie.watchUrl || ''}
+            isTv={isTv}
+          />
+        ) : movie.watchUrl ? (
+          <a
+            href={movie.watchUrl}
+            {...(isTv ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+            className="relative block max-w-2xl aspect-video rounded-xl overflow-hidden bg-night group"
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center group-hover:scale-[1.03] transition-transform duration-300"
+              style={movie.onlineImage ? { backgroundImage: `url('${movie.onlineImage}')` } : undefined}
+            />
+            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+              <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <IconPlay className="w-6 h-6 ml-1 text-night" />
+              </span>
+            </div>
+          </a>
+        ) : null}
+        <ReportOnlineButton movieId={movie.id} isLoggedIn={!!viewerId} />
+      </>
+  );
+
   return (
     <div className="pt-6">
       <script
@@ -537,6 +596,13 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
               </div>
             </div>
 
+            {hasOnline && (
+              <div className="px-4 pb-3">
+                <OnlinePlayButton label="Přehrát online" title={movie.title} hasDubbing={!!movie.hasDubbing} hasSubtitles={!!movie.hasSubtitles} isCam={!!movie.isCamVersion}>
+                  {onlineContent}
+                </OnlinePlayButton>
+              </div>
+            )}
             <div className="px-4 pb-4">
               <MovieQuickActionsBar
                 movieId={movie.id}
@@ -613,6 +679,14 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
               </div>
             </div>
             </div>
+
+            {hasOnline && (
+              <div className="mt-4 max-w-md">
+                <OnlinePlayButton label="Přehrát online" title={movie.title} hasDubbing={!!movie.hasDubbing} hasSubtitles={!!movie.hasSubtitles} isCam={!!movie.isCamVersion}>
+                  {onlineContent}
+                </OnlinePlayButton>
+              </div>
+            )}
 
             <MovieQuickActionsBar
               movieId={movie.id}
@@ -811,15 +885,13 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
                   </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
-                    <span className="text-sm font-bold text-ink">{t('movie.zaujimavosti')}{trivia.length > 0 ? ` (${trivia.length})` : ''}</span>
-                    {trivia.length > 0 && <MovieGoToTabButton tabKey="zaujimavosti" />}
-                  </div>
-                  <div className="border border-t-0 border-line rounded-b-xl p-4">
-                    {trivia.length === 0 ? (
-                      <p className="text-sm text-muted">{t('movie.ziadne_zaujimavosti')}</p>
-                    ) : (
+                {trivia.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
+                      <span className="text-sm font-bold text-ink">{t('movie.zaujimavosti')} ({trivia.length})</span>
+                      <MovieGoToTabButton tabKey="zaujimavosti" />
+                    </div>
+                    <div className="border border-t-0 border-line rounded-b-xl p-4">
                       <ul className="space-y-3">
                         {trivia.slice(0, 3).map((tr) => (
                           <li key={tr.id} className="text-sm text-ink leading-relaxed bg-card border border-line rounded-lg p-3">
@@ -827,9 +899,9 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
                           </li>
                         ))}
                       </ul>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )
           },
@@ -867,30 +939,34 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
               </div>
             )
           },
-          {
-            key: 'zaujimavosti',
-            label: t('movie.zaujimavosti'),
-            content: (
-              <div>
-                <h3 className="font-display font-bold text-xl text-ink mb-5">
-                  {t('movie.zaujimavosti')} {trivia.length > 0 && `(${trivia.length})`}
-                </h3>
+          ...(trivia.length > 0
+            ? [
+              {
+                key: 'zaujimavosti',
+                label: t('movie.zaujimavosti'),
+                content: (
+                  <div>
+                    <h3 className="font-display font-bold text-xl text-ink mb-5">
+                      {t('movie.zaujimavosti')} {trivia.length > 0 && `(${trivia.length})`}
+                    </h3>
 
-                {trivia.length === 0 ? (
-                  <p className="text-sm text-muted">{t('movie.ziadne_zaujimavosti')}</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {trivia.map((tr, i) => (
-                      <li key={tr.id} className="text-sm text-ink leading-relaxed bg-surface border border-line rounded-xl p-4 flex gap-3">
-                        <span className="font-display font-bold text-accent flex-none">{i + 1}.</span>
-                        <span>{tr.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )
-          },
+                    {trivia.length === 0 ? (
+                      <p className="text-sm text-muted">{t('movie.ziadne_zaujimavosti')}</p>
+                    ) : (
+                      <ul className="space-y-3">
+                        {trivia.map((tr, i) => (
+                          <li key={tr.id} className="text-sm text-ink leading-relaxed bg-surface border border-line rounded-xl p-4 flex gap-3">
+                            <span className="font-display font-bold text-accent flex-none">{i + 1}.</span>
+                            <span>{tr.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )
+              }
+              ]
+            : []),
           ...(movie.contentType === 'Seriál' && seasons.length > 0
             ? [
                 {
@@ -986,67 +1062,6 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
               ) : (
                 <p className="text-sm text-muted">{t('movie.ziadna_fotka')}</p>
               )
-          },
-          {
-            key: 'online',
-            desktopOnly: true,
-            label: t('movie.online'),
-            content: (
-              <>
-                {!viewerId && !settings?.onlineFreeForAll ? (
-                  <p className="text-sm text-muted">
-                    {t('movie.online_prihlasenie')}{' '}
-                    <Link href="/login" className="text-accent font-semibold hover:underline">{t('movie.prihlas_sa')}</Link>.
-                  </p>
-                ) : !isMember ? (
-                  <div className="border border-line rounded-xl p-5 bg-surface flex items-center gap-4">
-                    <img src="/golden-ticket-badge.svg" alt="" width={36} height={36} className="flex-none" />
-                    <div>
-                      <p className="text-sm font-semibold text-ink">Online sledování je dostupné jen pro Golden Ticket členy.</p>
-                      <Link href="/nastavenia/clenstvo" className="text-accent text-sm font-semibold hover:underline">
-                        Zjistit více o členství →
-                      </Link>
-                    </div>
-                  </div>
-                ) : movie.contentType === 'Seriál' && seasons.length > 0 && (movie.watchUrl || seasons.some((s) => s.episodes.some((e) => e.onlineUrl))) ? (
-                  <OnlineEpisodeBrowser
-                    seasons={seasons.map((s) => ({
-                      number: s.number,
-                      year: s.year,
-                      released: s.released,
-                      episodes: s.episodes.map((e) => ({
-                        number: e.number,
-                        title: e.title,
-                        onlineImage: e.onlineImage,
-                        onlineUrl: e.onlineUrl,
-                        watched: watchedEpisodeIds.has(e.id)
-                      }))
-                    }))}
-                    watchUrl={movie.watchUrl || ''}
-                    isTv={isTv}
-                  />
-                ) : movie.watchUrl ? (
-                  <a
-                    href={movie.watchUrl}
-                    {...(isTv ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
-                    className="relative block max-w-2xl aspect-video rounded-xl overflow-hidden bg-night group"
-                  >
-                    <div
-                      className="absolute inset-0 bg-cover bg-center group-hover:scale-[1.03] transition-transform duration-300"
-                      style={movie.onlineImage ? { backgroundImage: `url('${movie.onlineImage}')` } : undefined}
-                    />
-                    <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
-                      <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <IconPlay className="w-6 h-6 ml-1 text-night" />
-                      </span>
-                    </div>
-                  </a>
-                ) : (
-                  <p className="text-sm text-muted">{t('movie.ziadny_online')}</p>
-                )}
-                <ReportOnlineButton movieId={movie.id} isLoggedIn={!!viewerId} />
-              </>
-            )
           },
         ]}
         moreTabs={[
