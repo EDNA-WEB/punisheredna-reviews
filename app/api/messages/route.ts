@@ -3,13 +3,13 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
-import { uploadImage } from '@/lib/cloudinary';
 import { getOrCreateConversation, sortedPair } from '@/lib/conversation';
 import { encryptMessageBody } from '@/lib/serverCrypto';
 
 import { sendMessagePush, setTyping } from '@/lib/chatRealtime';
 
 import { hasInjectedObject } from '@/lib/inputGuard';
+import { PHOTO_TTL_MS, checkPhotoLimits, destroyChatPhoto, uploadChatPhoto } from '@/lib/photoMessages';
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -71,22 +71,22 @@ export async function POST(req: Request) {
       }
     }
 
-    // Fotku môže poslať len raz za 20 minút (nie text, len obrázok).
+    // Fotky: max. 5 naraz, 10 za deň, zostanú 24 h (rovnako ako v appke).
+    // Prijímame LEN fotku nahratú z prehliadača (data:image…), nie cudziu URL.
+    if (image && (typeof image !== 'string' || !image.startsWith('data:image/') || image.length > 6_000_000)) {
+      return NextResponse.json({ error: 'Neplatná fotka.' }, { status: 400 });
+    }
     if (image) {
-      const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000);
-      const recentImage = await prisma.message.findFirst({
-        where: { senderId, image: { not: null }, createdAt: { gte: twentyMinutesAgo } },
-        orderBy: { createdAt: 'desc' }
-      });
-      if (recentImage) {
-        const waitMinutes = Math.ceil((recentImage.createdAt.getTime() + 20 * 60 * 1000 - Date.now()) / 60000);
-        return NextResponse.json({ error: `Fotku můžeš poslat jen jednou za 20 minut. Zkus to znovu za ${waitMinutes} min.` }, { status: 429 });
-      }
+      const limits = await checkPhotoLimits(senderId);
+      if (limits.error) return NextResponse.json({ error: limits.error }, { status: 429 });
     }
 
-    let imageUrl = image || null;
-    if (imageUrl && imageUrl.startsWith('data:image')) {
-      imageUrl = await uploadImage(imageUrl, 'messages');
+    let imageUrl: string | null = null;
+    let imagePublicId: string | null = null;
+    if (image) {
+      const uploaded = await uploadChatPhoto(image);
+      imageUrl = uploaded.url;
+      imagePublicId = uploaded.publicId;
     }
 
     // Text sa šifruje priamo tu, na serveri — spoľahlivo, bez závislosti na
@@ -99,15 +99,24 @@ export async function POST(req: Request) {
       iv = encrypted.iv;
     }
 
-    const message = await prisma.message.create({
-      data: {
-        senderId,
-        receiverId,
-        body: encryptedBody,
-        iv,
-        image: imageUrl
-      }
-    });
+    let message;
+    try {
+      message = await prisma.message.create({
+        data: {
+          senderId,
+          receiverId,
+          body: encryptedBody,
+          iv,
+          image: imageUrl,
+          imagePublicId,
+          photo: !!imageUrl,
+          imageExpiresAt: imageUrl ? new Date(Date.now() + PHOTO_TTL_MS) : null
+        }
+      });
+    } catch (e) {
+      if (imagePublicId) await destroyChatPhoto(imagePublicId);
+      throw e;
+    }
 
     // Ukončí "píše…" a pošle adresátovi push notifikáciu do appky (ak ju má).
     await Promise.all([

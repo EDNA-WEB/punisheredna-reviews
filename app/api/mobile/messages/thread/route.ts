@@ -4,6 +4,7 @@ import { getMobileUser, touchLastActive } from '@/lib/mobileAuth';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
 import { sortedPair } from '@/lib/conversation';
 import { VOICE_SELECT, cleanupIfAnyExpired, voiceView } from '@/lib/voiceMessages';
+import { PHOTO_SELECT, photoCleanupIfAnyExpired, photoView } from '@/lib/photoMessages';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,16 +39,17 @@ export async function GET(req: Request) {
         ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
       },
       orderBy: { createdAt: 'asc' },
-      select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, read: true, createdAt: true, ...VOICE_SELECT }
+      select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT }
     });
     cleanupIfAnyExpired(rawMessages);
+    photoCleanupIfAnyExpired(rawMessages);
     const nowMs = Date.now();
 
     const messages = rawMessages.map((m) => ({
       id: m.id,
       senderId: m.senderId,
-      body: m.image || m.voice ? null : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '',
-      image: m.image,
+      body: m.voice ? null : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '',
+      ...photoView(m, nowMs),
       voice: voiceView(m, nowMs),
       read: m.read,
       createdAt: m.createdAt

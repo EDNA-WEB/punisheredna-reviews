@@ -13,12 +13,10 @@ import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import { sortedPair } from '@/lib/conversation';
 import { formatPresence, isOnline } from '@/lib/presence';
 import { tryDecryptMessageBody } from '@/lib/serverCrypto';
-import { deleteImageByUrl } from '@/lib/cloudinary';
 import { VOICE_SELECT, cleanupIfAnyExpired, voiceView } from '@/lib/voiceMessages';
+import { PHOTO_SELECT, photoCleanupIfAnyExpired, photoView } from '@/lib/photoMessages';
 
 export const dynamic = 'force-dynamic';
-
-const IMAGE_GRACE_PERIOD_MS = 60 * 1000; // 1 minúta
 
 export default async function ConversationPage(props: { params: Promise<{ userId: string }> }) {
   const { params } = { ...props, params: await props.params };
@@ -55,29 +53,12 @@ export default async function ConversationPage(props: { params: Promise<{ userId
       ...(myDeletion ? { createdAt: { gt: myDeletion.deletedAt } } : {})
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true, ...VOICE_SELECT }
+    select: { id: true, senderId: true, receiverId: true, body: true, iv: true, image: true, imageViewedAt: true, read: true, createdAt: true, ...VOICE_SELECT, ...PHOTO_SELECT }
   });
   cleanupIfAnyExpired(rawMessages);
+  photoCleanupIfAnyExpired(rawMessages);
 
-  // Fotka sa teraz zobrazuje priamo, bez potreby na ňu klikať. "Hodiny" (1
-  // minúta) sa spustia hneď, ako si ju príjemca prvýkrát otvorí túto
-  // konverzáciu. Po uplynutí tej minúty sa fotka naozaj vymaže — aj z
-  // Cloudinary (nie len z databázy), nech tam nezostáva zabraté miesto navždy.
-  const now = Date.now();
-  for (const m of rawMessages) {
-    if (!m.image) continue;
-
-    if (m.receiverId === myId && !m.imageViewedAt) {
-      const viewedAt = new Date();
-      await prisma.message.update({ where: { id: m.id }, data: { imageViewedAt: viewedAt } });
-      m.imageViewedAt = viewedAt;
-    } else if (m.imageViewedAt && now - m.imageViewedAt.getTime() > IMAGE_GRACE_PERIOD_MS) {
-      await deleteImageByUrl(m.image);
-      await prisma.message.update({ where: { id: m.id }, data: { image: null } });
-      m.image = null;
-    }
-  }
-
+  // Fotky platia 24 h od odoslania (potom ich zmaže upratovanie).
   // Dešifrovanie prebieha tu, na serveri — jednoducho a spoľahlivo, bez ohľadu
   // na to, aké zariadenie si používateľ práve otvoril.
   // Do prehliadača ide len to, čo treba — Cloudinary ID hlasovky nikdy nie.
@@ -86,7 +67,7 @@ export default async function ConversationPage(props: { params: Promise<{ userId
     id: m.id,
     senderId: m.senderId,
     receiverId: m.receiverId,
-    image: m.image,
+    ...photoView(m, nowMs),
     imageViewedAt: m.imageViewedAt,
     read: m.read,
     createdAt: m.createdAt,

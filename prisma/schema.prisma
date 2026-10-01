@@ -916,6 +916,11 @@ model Message {
   iv         String?
   image      String?  @db.Text
   imageViewedAt DateTime?
+  // Fotka v chate: zostáva 24 h od odoslania, potom sa zmaže z Cloudinary aj
+  // z DB (ostane photo=true → „Fotka vypršela“). Max. 5 naraz, 10 za deň.
+  photo          Boolean   @default(false)
+  imagePublicId  String?
+  imageExpiresAt DateTime?
   // Hlasovka (nahrať sa dá len v appke). Súbor je v Cloudinary ako
   // "authenticated" (nie verejný). Zmaže sa 5 min po vypočutí príjemcom,
   // najneskôr 5 h po odoslaní — potom ostane len voice=true ako "vypršela".
@@ -934,6 +939,8 @@ model Message {
   @@index([senderId, createdAt])
   @@index([receiverId])
   @@index([audioExpiresAt])
+  @@index([imageExpiresAt])
+  @@index([senderId, photo, createdAt])
 }
 
 // Súhlas s komunikáciou medzi dvoma používateľmi — kým adresát prvú správu

@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import ChatAutoScroll from './ChatAutoScroll';
 import { getChatTheme } from '@/lib/chatTheme';
 import VoiceMessagePlayer, { type VoiceInfo } from './VoiceMessagePlayer';
+import ChatPhotoLightbox from './ChatPhotoLightbox';
 
 type RawMessage = {
   id: string;
   senderId: string;
   body: string | null;
   image: string | null;
-  imageViewedAt: Date | null;
+  imageThumb?: string | null;
+  photoExpired?: boolean;
+  imageViewedAt?: Date | null;
   voice?: VoiceInfo | null;
   read: boolean;
   createdAt: string | Date;
@@ -31,6 +34,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingSelection, setDeletingSelection] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   useEffect(() => {
     setBubbleColor(getChatTheme(otherId).bubbleColor);
@@ -122,11 +126,13 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   {m.voice ? (
                     <VoiceMessagePlayer id={m.id} mine={mine} voice={m.voice} />
                   ) : m.image ? (
-                    <img src={m.image} alt="Príloha" className="rounded-xl max-h-64 mb-1.5" />
+                    <button type="button" onClick={() => setLightbox(m.image)} className="block mb-1.5 cursor-zoom-in" aria-label="Zvětšit fotku">
+                      <img src={m.imageThumb || m.image} alt="Fotka" loading="lazy" className="rounded-xl max-h-64 max-w-full object-cover" />
+                    </button>
                   ) : (
-                    m.imageViewedAt && (
+                    m.photoExpired && (
                       <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
-                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka byla zobrazena</span>
+                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka vypršela</span>
                       </div>
                     )
                   )}
@@ -167,6 +173,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
           </div>
         </div>
       )}
+      {lightbox && <ChatPhotoLightbox src={lightbox} onClose={() => setLightbox(null)} />}
       <ChatAutoScroll dep={messages.length} />
     </>
   );

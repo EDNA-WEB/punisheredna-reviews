@@ -10,7 +10,9 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
   const t = useT();
   const router = useRouter();
   const [text, setText] = useState('');
-  const [image, setImage] = useState('');
+  // Fotky čakajúce na odoslanie (max. 5 naraz, 10 za deň, zostanú 24 h).
+  const [images, setImages] = useState<string[]>([]);
+  const [progress, setProgress] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -46,14 +48,15 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
     reader.onload = (ev) => {
       const img = new Image();
       img.onload = () => {
-        const maxW = 900;
-        const scale = Math.min(1, maxW / img.width);
+        const maxSide = 1600;
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
         const canvas = document.createElement('canvas');
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        setImage(canvas.toDataURL('image/webp', 0.8));
+        const data = canvas.toDataURL('image/webp', 0.8);
+        setImages((prev) => (prev.length >= 5 ? prev : [...prev, data]));
       };
       img.src = ev.target?.result as string;
     };
@@ -61,41 +64,53 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
   }
 
   function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) processImageFile(file);
+    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
+    const free = 5 - images.length;
+    if (files.length > free) setError('Najednou můžeš poslat maximálně 5 fotek.');
+    else setError('');
+    files.slice(0, Math.max(0, free)).forEach(processImageFile);
+    e.target.value = '';
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim() && !image) return;
+    if (!text.trim() && images.length === 0) return;
     setLoading(true);
     setError('');
+    // Každá fotka = jedna správa; text sa pripojí k poslednej fotke.
+    const queue = images.length ? [...images] : [null];
+    let sent = 0;
     try {
-      // Text sa šifruje na serveri (spoľahlivo, bez ohľadu na zariadenie) —
-      // stačí ho poslať tak, ako je, o zvyšok sa postará API.
-      const res = await fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receiverId, body: text.trim() || null, image })
-      });
-      let data: any = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(res.status === 413 ? 'Soubor je příliš velký na odeslání.' : `Server odpovedal neočakávane (${res.status}).`);
+      for (let i = 0; i < queue.length; i++) {
+        if (queue.length > 1) setProgress(`${i + 1}/${queue.length}`);
+        const isLast = i === queue.length - 1;
+        // Text sa šifruje na serveri (spoľahlivo, bez ohľadu na zariadenie).
+        const res = await fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ receiverId, body: isLast ? text.trim() || null : null, image: queue[i] })
+        });
+        let data: any = {};
+        try {
+          data = await res.json();
+        } catch {
+          throw new Error(res.status === 413 ? 'Soubor je příliš velký na odeslání.' : `Server odpovedal neočakávane (${res.status}).`);
+        }
+        if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));
+        sent++;
       }
-      if (!res.ok) throw new Error(data.error || t('spravy.odoslanie_zlyhalo'));
       setText('');
       if (stopTypingTimer.current) clearTimeout(stopTypingTimer.current);
       lastTypingPing.current = 0;
-      setImage('');
-      if (fileRef.current) fileRef.current.value = '';
-      if (cameraRef.current) cameraRef.current.value = '';
-      router.refresh();
+      setImages([]);
     } catch (err: any) {
       setError(err.message);
+      // Odoslané fotky z poradia vyhodíme, neodoslané ostanú na opakovanie.
+      if (images.length && sent > 0) setImages((prev) => prev.slice(sent));
     } finally {
       setLoading(false);
+      setProgress('');
+      if (sent > 0) router.refresh();
     }
   }
 
@@ -109,10 +124,26 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
 
   return (
     <form onSubmit={submit} className="border-t border-line pt-3">
-      {image && (
-        <div className="mb-3 relative w-fit">
-          <img src={image} alt={t('spravy.nahlad')} className="max-h-40 rounded-xl border border-line" />
-          <button type="button" onClick={() => setImage('')} className="absolute -top-2 -right-2 w-6 h-6 bg-night text-white rounded-full text-xs">✕</button>
+      {images.length > 0 && (
+        <div className="mb-3">
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {images.map((src, i) => (
+              <div key={i} className="relative flex-none">
+                <img src={src} alt={t('spravy.nahlad')} className="h-24 w-24 object-cover rounded-xl border border-line" />
+                <button
+                  type="button"
+                  onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-night text-white rounded-full text-xs"
+                  aria-label="Odebrat"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="text-[11px] text-muted mt-1">
+            {images.length}/5 · fotky zmizí za 24 h{progress ? ` · odesílám ${progress}` : ''}
+          </div>
         </div>
       )}
 
@@ -126,7 +157,7 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
         >
           <IconImage className="w-5 h-5" />
         </button>
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImage} />
 
         <button
           type="button"
@@ -157,7 +188,7 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
 
         <button
           type="submit"
-          disabled={loading || (!text.trim() && !image)}
+          disabled={loading || (!text.trim() && images.length === 0)}
           className="w-9 h-9 flex-none bg-accent text-white rounded-full flex items-center justify-center hover:bg-accent-dark disabled:opacity-40 transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
