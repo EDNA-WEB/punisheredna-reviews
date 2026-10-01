@@ -4,7 +4,7 @@ import { suggest, type SuggestKind } from '@/lib/movieFilter';
 
 export const dynamic = 'force-dynamic';
 
-const KINDS: SuggestKind[] = ['director', 'actor', 'writer', 'camera', 'music', 'keyword'];
+const KINDS: SuggestKind[] = ['director', 'actor', 'writer', 'camera', 'music', 'keyword', 'title'];
 
 // Našepkávanie mien (režisér, herec…) a kľúčových slov z celého katalógu.
 export async function GET(req: Request) {

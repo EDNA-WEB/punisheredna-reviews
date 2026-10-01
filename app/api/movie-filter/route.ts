@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 // Nový filter filmov a seriálov (web aj appka).
 // GET /api/movie-filter?genres=Komédia,Dráma&genresMode=all&yearFrom=1990&sort=rating&page=1&facets=1
 // pageSize=0 → len počet výsledkov a počty pri voľbách (tlačidlo „Zobraziť 128 výsledkov“).
+// random=1 → jeden náhodný tip z výsledkov („Neviem, čo pozerať“).
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -16,7 +17,8 @@ export async function GET(req: Request) {
     const pageSizeRaw = Number(searchParams.get('pageSize'));
     const pageSize = Number.isFinite(pageSizeRaw) && searchParams.get('pageSize') !== null ? Math.min(60, Math.max(0, pageSizeRaw)) : 24;
 
-    const r = await runFilter(spec, { ...viewer, pageSize, withFacets: searchParams.get('facets') === '1' });
+    const random = searchParams.get('random') === '1';
+    const r = await runFilter(spec, { ...viewer, pageSize: random ? 1 : pageSize, withFacets: searchParams.get('facets') === '1', random });
     const colors = r.items.length ? await getMoviePercents(r.items.map((m) => m.id)) : {};
 
     return NextResponse.json(
@@ -28,7 +30,9 @@ export async function GET(req: Request) {
         activeCount: activeFilterCount(spec),
         sort: spec.sort,
         items: r.items.map((m) => ({ ...toListItem(m, r.userSets), percentColor: (colors as any)[m.id]?.percentColor ?? null })),
-        facets: r.facets
+        facets: r.facets,
+        similarTo: r.similarTo,
+        didYouMean: r.didYouMean
       },
       { headers: { 'Cache-Control': 'private, no-store' } }
     );

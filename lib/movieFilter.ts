@@ -192,9 +192,10 @@ export type SortKey =
   | 'added'
   | 'boxoffice'
   | 'longest'
-  | 'shortest';
+  | 'shortest'
+  | 'similar';
 
-export const SORTS: SortKey[] = ['popular', 'rating', 'worst', 'newest', 'oldest', 'az', 'za', 'reviews', 'added', 'boxoffice', 'longest', 'shortest'];
+export const SORTS: SortKey[] = ['popular', 'rating', 'worst', 'newest', 'oldest', 'az', 'za', 'reviews', 'added', 'boxoffice', 'longest', 'shortest', 'similar'];
 
 export type FilterSpec = {
   q: string;
@@ -229,6 +230,11 @@ export type FilterSpec = {
   hasGallery: boolean;
   hasVideos: boolean;
   hasTrivia: boolean;
+  maxVotes: number | null; // „skryté perly“ — málo známe
+  addedDays: number | null; // pridané na web za posledných X dní
+  upcoming: boolean; // premiéra ešte len bude
+  noCam: boolean; // bez CAM verzií
+  similar: string; // id alebo slug filmu — „Podobné ako…“
   sort: SortKey;
   page: number;
 };
@@ -307,6 +313,11 @@ export function parseFilter(p: ParamSource): FilterSpec {
     hasGallery: flag(p, 'hasGallery'),
     hasVideos: flag(p, 'hasVideos'),
     hasTrivia: flag(p, 'hasTrivia'),
+    maxVotes: num(p, 'maxVotes', 0, 100_000_000),
+    addedDays: num(p, 'addedDays', 1, 3650),
+    upcoming: flag(p, 'upcoming'),
+    noCam: flag(p, 'noCam'),
+    similar: text(p, 'similar'),
     sort,
     page: Math.max(1, num(p, 'page', 1, 100000) || 1)
   };
@@ -326,7 +337,8 @@ export function activeFilterCount(f: FilterSpec) {
   n += f.ratingFrom !== null || f.ratingTo !== null ? 1 : 0;
   n += f.minVotes ? 1 : 0;
   n += f.services.length ? 1 : 0;
-  n += [f.cinema, f.online, f.subs, f.dub, f.hideSeen, f.onlySeen, f.onlyWatchlist, f.hasReviews, f.hasGallery, f.hasVideos, f.hasTrivia].filter(Boolean).length;
+  n += [f.cinema, f.online, f.subs, f.dub, f.hideSeen, f.onlySeen, f.onlyWatchlist, f.hasReviews, f.hasGallery, f.hasVideos, f.hasTrivia, f.upcoming, f.noCam].filter(Boolean).length;
+  n += (f.maxVotes ? 1 : 0) + (f.addedDays ? 1 : 0) + (f.similar ? 1 : 0);
   n += [f.director, f.writer, f.camera, f.music].filter(Boolean).length + (f.actors.length ? 1 : 0);
   n += f.keywords.length ? 1 : 0;
   return n;
@@ -403,6 +415,10 @@ function matches(m: CatalogMovie, f: FilterSpec, u: UserSets, nowMs: number, isM
   if (f.hasGallery && m.photos === 0) return false;
   if (f.hasVideos && m.videos === 0) return false;
   if (f.hasTrivia && m.trivia === 0) return false;
+  if (f.maxVotes && m.votes > f.maxVotes) return false;
+  if (f.addedDays && m.createdAt < nowMs - f.addedDays * 86400000) return false;
+  if (f.upcoming && !(m.releaseDate && new Date(m.releaseDate).getTime() > nowMs)) return false;
+  if (f.noCam && m.isCamVersion) return false;
   return true;
 }
 
@@ -427,7 +443,8 @@ function sortMovies(list: CatalogMovie[], sort: SortKey) {
     added: (a, b) => b.createdAt - a.createdAt,
     boxoffice: (a, b) => b.boxOffice - a.boxOffice || byPop(a, b),
     longest: (a, b) => (b.runtime ?? -1) - (a.runtime ?? -1),
-    shortest: (a, b) => (a.runtime ?? 99999) - (b.runtime ?? 99999)
+    shortest: (a, b) => (a.runtime ?? 99999) - (b.runtime ?? 99999),
+    similar: byPop // skutočné poradie podobnosti rieši runFilter
   };
   return [...list].sort(cmp[sort] || byPop);
 }
@@ -438,11 +455,78 @@ function countBy(list: CatalogMovie[], pick: (m: CatalogMovie) => string[]) {
   return Object.fromEntries(Array.from(map.entries()).sort((a, b) => b[1] - a[1]));
 }
 
+// Podobnosť dvoch titulov (0–100+): žánre, kľúčové slová, réžia, herci,
+// krajina, typ a blízky rok. Kvalitnejšie tituly dostanú malý bonus.
+function similarity(t: CatalogMovie, m: CatalogMovie) {
+  let s = 0;
+  const g = t.genres.filter((x) => m.genres.includes(x)).length;
+  const gUnion = new Set([...t.genres, ...m.genres]).size || 1;
+  s += (g / gUnion) * 40;
+  const kw = t.fTags.filter((x) => m.fTags.includes(x)).length;
+  s += Math.min(5, kw) * 6;
+  if (t.directors.some((d) => m.directors.includes(d))) s += 18;
+  s += Math.min(3, t.cast.slice(0, 15).filter((a) => m.cast.includes(a)).length) * 6;
+  if (t.writers.some((w) => m.writers.includes(w))) s += 6;
+  if (t.countries.some((c) => m.countries.includes(c))) s += 4;
+  if (t.contentType === m.contentType) s += 6;
+  if (t.year && m.year) s += Math.max(0, 8 - Math.abs(t.year - m.year) / 2);
+  s += (m.percent ?? 50) / 25;
+  return s;
+}
+
+function lev(a: string, b: string) {
+  if (Math.abs(a.length - b.length) > 2) return 9;
+  const dp = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = dp[0];
+    dp[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const tmp = dp[j];
+      dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = tmp;
+    }
+  }
+  return dp[b.length];
+}
+
+// „Možno ste mysleli…“ — názvy, ktoré sa líšia len preklepom.
+function didYouMean(catalog: CatalogMovie[], q: string) {
+  const words = fold(q).split(/\s+/).filter((w) => w.length >= 3);
+  if (!words.length) return [];
+  const scored: Array<{ m: CatalogMovie; d: number }> = [];
+  for (const m of catalog) {
+    const tw = m.fTitle.split(/[^a-z0-9]+/).filter(Boolean);
+    let total = 0;
+    let ok = true;
+    for (const w of words) {
+      let best = 9;
+      for (const t of tw) {
+        const d = t.startsWith(w) ? 0 : lev(w, t.slice(0, w.length + 1));
+        if (d < best) best = d;
+        if (best === 0) break;
+      }
+      const limit = w.length <= 4 ? 1 : 2;
+      if (best > limit) {
+        ok = false;
+        break;
+      }
+      total += best;
+    }
+    if (ok) scored.push({ m, d: total });
+  }
+  return scored
+    .sort((a, b) => a.d - b.d || b.m.popularity - a.m.popularity)
+    .slice(0, 5)
+    .map(({ m }) => ({ title: m.title, slug: m.slug, year: m.yearRaw }));
+}
+
 export type FilterResult = {
   total: number;
   page: number;
   pages: number;
   limited: boolean; // neplatiaci narazil na limit stránok
+  similarTo: { id: string; title: string; year: string | null } | null;
+  didYouMean: Array<{ title: string; slug: string; year: string | null }>;
   items: CatalogMovie[];
   facets: {
     types: Record<string, number>;
@@ -454,14 +538,16 @@ export type FilterResult = {
 
 export async function runFilter(
   f: FilterSpec,
-  opts: { userId: string | null; isMember: boolean; pageSize?: number; withFacets?: boolean }
+  opts: { userId: string | null; isMember: boolean; pageSize?: number; withFacets?: boolean; random?: boolean }
 ): Promise<FilterResult & { userSets: UserSets }> {
   const catalog = await getFilterCatalog();
   const needsUser = f.hideSeen || f.onlySeen || f.onlyWatchlist || !!opts.userId;
   const userSets = needsUser ? await getUserSets(opts.userId) : { seen: new Set<string>(), watchlist: new Set<string>() };
   const now = Date.now();
 
-  const result = catalog.filter((m) => matches(m, f, userSets, now, opts.isMember));
+  // „Podobné ako…“ — nájdi cieľový film (podľa id alebo slugu)
+  const target = f.similar ? catalog.find((m) => m.id === f.similar || m.slug === f.similar) || null : null;
+  const result = catalog.filter((m) => matches(m, f, userSets, now, opts.isMember) && (!target || m.id !== target.id));
 
   let facets: FilterResult['facets'] = { types: {}, genres: {}, countries: {}, services: {} };
   if (opts.withFacets) {
@@ -476,7 +562,24 @@ export async function runFilter(
     };
   }
 
-  const sorted = sortMovies(result, f.sort);
+  let sorted: CatalogMovie[];
+  if (target && (f.sort === 'similar' || f.sort === 'popular')) {
+    const score = new Map(result.map((m) => [m.id, similarity(target, m)] as [string, number]));
+    sorted = result.filter((m) => (score.get(m.id) || 0) > 8).sort((a, b) => (score.get(b.id) || 0) - (score.get(a.id) || 0));
+  } else {
+    sorted = sortMovies(result, f.sort === 'similar' ? 'popular' : f.sort);
+  }
+
+  // Náhodný tip („Neviem, čo pozerať“) — z výsledkov, prednostne dobre hodnotené
+  if (opts.random) {
+    const good = sorted.filter((m) => (m.percent ?? 0) >= 65);
+    const pool = good.length >= 5 ? good : sorted;
+    const pick = pool.length ? pool[Math.floor(Math.random() * Math.min(pool.length, 400))] : null;
+    return {
+      total: sorted.length, page: 1, pages: 1, limited: false, items: pick ? [pick] : [], facets,
+      userSets, similarTo: null, didYouMean: []
+    };
+  }
   const pageSize = opts.pageSize ?? PAGE_SIZE;
   const pages = Math.max(1, Math.ceil(sorted.length / Math.max(1, pageSize)));
   const maxPage = opts.isMember ? pages : Math.min(pages, MAX_FREE_PAGE);
@@ -490,7 +593,9 @@ export async function runFilter(
     limited: !opts.isMember && pages > MAX_FREE_PAGE,
     items,
     facets,
-    userSets
+    userSets,
+    similarTo: target ? { id: target.id, title: target.title, year: target.yearRaw } : null,
+    didYouMean: sorted.length === 0 && f.q.length >= 3 ? didYouMean(catalog, f.q) : []
   };
 }
 
@@ -517,12 +622,11 @@ export async function getFilterOptions() {
   });
 }
 
-export type SuggestKind = 'director' | 'actor' | 'writer' | 'camera' | 'music' | 'keyword';
+export type SuggestKind = 'director' | 'actor' | 'writer' | 'camera' | 'music' | 'keyword' | 'title';
 
-export async function suggest(kind: SuggestKind, q: string, limit = 10) {
-  const query = fold(q);
-  if (query.length < 2) return [];
-  const index = await memo(`movieFilter:suggest:${kind}`, CATALOG_TTL, async () => {
+// Index mien (alebo kľúčových slov) z celého katalógu: meno → počet titulov.
+export async function getNameIndex(kind: Exclude<SuggestKind, 'title'>) {
+  return memo(`movieFilter:suggest:${kind}`, CATALOG_TTL, async () => {
     const catalog = await getFilterCatalog();
     const pick: Record<SuggestKind, (m: CatalogMovie) => string[]> = {
       director: (m) => m.directors,
@@ -530,7 +634,8 @@ export async function suggest(kind: SuggestKind, q: string, limit = 10) {
       writer: (m) => m.writers,
       camera: (m) => m.camera,
       music: (m) => m.music,
-      keyword: (m) => m.tags
+      keyword: (m) => m.tags,
+      title: () => []
     };
     const map = new Map<string, { name: string; count: number; f: string }>();
     for (const m of catalog) {
@@ -543,6 +648,22 @@ export async function suggest(kind: SuggestKind, q: string, limit = 10) {
     }
     return Array.from(map.values()).sort((a, b) => b.count - a.count);
   });
+}
+
+export async function suggest(kind: SuggestKind, q: string, limit = 10) {
+  const query = fold(q);
+  if (query.length < 2) return [];
+  if (kind === 'title') {
+    // Pre „Podobné ako…“ — názvy filmov s rokom (najznámejšie prvé)
+    const catalog = await getFilterCatalog();
+    const words = query.split(/\s+/).filter(Boolean);
+    return catalog
+      .filter((m) => words.every((w) => m.fTitle.includes(w)))
+      .sort((a, b) => b.popularity - a.popularity || b.votes - a.votes)
+      .slice(0, limit)
+      .map((m) => ({ name: m.title, count: m.year || 0, id: m.id, slug: m.slug, poster: m.poster }));
+  }
+  const index = await getNameIndex(kind);
   const starts: typeof index = [];
   const contains: typeof index = [];
   for (const e of index) {
@@ -576,6 +697,10 @@ export function toListItem(m: CatalogMovie, u: UserSets) {
     releaseDate: m.releaseDate,
     premiereType: m.premiereType,
     watched: u.seen.has(m.id),
-    inWatchlist: u.watchlist.has(m.id)
+    inWatchlist: u.watchlist.has(m.id),
+    directors: m.directors.slice(0, 2),
+    cast: m.cast.slice(0, 3),
+    services: m.services,
+    reviews: m.reviews
   };
 }
