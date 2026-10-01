@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { prisma } from './prisma';
 import { memo } from './memoCache';
 import { computeBlendedPercent } from './rating';
@@ -14,7 +15,36 @@ import { computeBlendedPercent } from './rating';
 // („pan prstenov“ = „Pán prsteňov“, „zelenka“ = „Želenka“).
 // ---------------------------------------------------------------------------
 
-const CATALOG_TTL = 5 * 60 * 1000;
+const CATALOG_TTL = 15 * 60 * 1000;
+
+// Súčty (hodnotenia, recenzie, fotky, videá, zaujímavosti) — 5 agregovaných
+// dopytov namiesto ťahania tisícov riadkov hodnotení. Výsledok je malý, preto
+// ho zdieľajú všetky inštancie servera (cache na 15 min), nie každá zvlášť.
+const getCatalogAggregates = unstable_cache(
+  async () => {
+    const [ratings, reviews, photos, videos, trivia] = await Promise.all([
+      prisma.rating.groupBy({ by: ['movieId'], where: { seasonId: null, episodeId: null }, _avg: { value: true }, _count: { _all: true } }),
+      prisma.review.groupBy({ by: ['movieId'], where: { seasonId: null, episodeId: null }, _count: { _all: true } }),
+      prisma.moviePhoto.groupBy({ by: ['movieId'], _count: { _all: true } }),
+      prisma.movieVideo.groupBy({ by: ['movieId'], _count: { _all: true } }),
+      prisma.movieTrivia.groupBy({ by: ['movieId'], _count: { _all: true } })
+    ]);
+    const out: Record<string, [number, number, number, number, number, number]> = {};
+    const row = (id: string) => (out[id] ||= [0, 0, 0, 0, 0, 0]);
+    for (const r of ratings) {
+      const x = row(r.movieId);
+      x[0] = r._avg.value ?? 0;
+      x[1] = r._count._all;
+    }
+    for (const r of reviews) row(r.movieId)[2] = r._count._all;
+    for (const r of photos) row(r.movieId)[3] = r._count._all;
+    for (const r of videos) row(r.movieId)[4] = r._count._all;
+    for (const r of trivia) row(r.movieId)[5] = r._count._all;
+    return out;
+  },
+  ['movie-filter-aggregates-v1'],
+  { revalidate: 900, tags: ['movie-filter'] }
+);
 export const PAGE_SIZE = 24;
 export const MAX_FREE_PAGE = 5; // neplatiaci: max. 5 stránok (ako doteraz)
 
@@ -80,7 +110,8 @@ export type CatalogMovie = {
 };
 
 async function loadCatalog(): Promise<CatalogMovie[]> {
-  const rows = await prisma.movie.findMany({
+  const [rows, agg] = await Promise.all([
+    prisma.movie.findMany({
     where: { approved: true },
     select: {
       id: true,
@@ -110,13 +141,13 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
       tmdbVoteAverage: true,
       tmdbVoteCount: true,
       boxOffice: true,
-      ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } },
       streamingServices: { select: { streamingServiceId: true } },
       keywords: { select: { name: true } },
-      premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } },
-      _count: { select: { reviews: { where: { seasonId: null, episodeId: null } }, photos: true, videos: true, trivia: true } }
+      premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } }
     }
-  });
+    }),
+    getCatalogAggregates()
+  ]);
 
   return rows.map((m) => {
     const yearNum = m.year ? parseInt(m.year, 10) : NaN;
@@ -127,6 +158,10 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
     const music = splitList(m.music);
     const tags = Array.from(new Set([...splitList(m.tags), ...m.keywords.map((k) => k.name.trim()).filter(Boolean)]));
     const services = m.streamingServices.map((s) => s.streamingServiceId);
+    const a = agg[m.id] || [0, 0, 0, 0, 0, 0];
+    // computeBlendedPercent pracuje s jednotlivými hodnoteniami — priemer
+    // zopakovaný „počet“-krát dá rovnaký výsledok bez ťahania všetkých riadkov.
+    const ratingValues = a[1] ? Array.from({ length: a[1] }, () => ({ value: a[0] })) : [];
     return {
       id: m.id,
       title: m.title,
@@ -154,14 +189,14 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
       releaseDate: m.releaseDate ? m.releaseDate.toISOString() : null,
       createdAt: m.createdAt.getTime(),
       popularity: m.tmdbPopularity || 0,
-      percent: computeBlendedPercent(m.ratings, m.tmdbVoteAverage, m.tmdbVoteCount) ?? null,
-      votes: m.ratings.length + (m.tmdbVoteCount || 0),
-      ratingCount: m.ratings.length,
+      percent: computeBlendedPercent(ratingValues, m.tmdbVoteAverage, m.tmdbVoteCount) ?? null,
+      votes: a[1] + (m.tmdbVoteCount || 0),
+      ratingCount: a[1],
       boxOffice: m.boxOffice ? Number(m.boxOffice) : 0,
-      reviews: m._count.reviews,
-      photos: m._count.photos,
-      videos: m._count.videos,
-      trivia: m._count.trivia,
+      reviews: a[2],
+      photos: a[3],
+      videos: a[4],
+      trivia: a[5],
       premiereType: m.premiereDates[0]?.type || null,
       fTitle: fold(`${m.title} ${m.originalTitle || ''}`),
       fDirectors: fold(directors.join('|')),
