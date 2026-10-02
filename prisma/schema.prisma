@@ -316,6 +316,7 @@ model Thread {
 }
 
 model Movie {
+  fanFavorites FanFavorite[]
   recentlyViewed RecentlyViewed[]
   id             String   @id @default(cuid())
   title          String
@@ -1254,4 +1255,20 @@ model RecentlyViewed {
 
   @@unique([userId, movieId])
   @@index([userId, viewedAt])
+}
+
+model FanFavorite {
+  id          String   @id @default(cuid())
+  rank        Int
+  sourceId    String   @unique
+  title       String
+  year        Int?
+  tmdbId      Int?
+  mediaType   String?
+  movieId     String?
+  movie       Movie?   @relation(fields: [movieId], references: [id], onDelete: SetNull)
+  importError String?
+  updatedAt   DateTime @default(now())
+
+  @@index([rank])
 }

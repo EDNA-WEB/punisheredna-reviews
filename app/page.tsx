@@ -24,6 +24,8 @@ import WeekendBoxOffice from '@/components/WeekendBoxOffice';
 import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
 import { getRecentlyViewedSafe } from '@/lib/recentlyViewed';
 import RecentlyViewedSection from '@/components/RecentlyViewedSection';
+import { getFanFavorites, FAN_ROW_LIMIT } from '@/lib/fanFavorites';
+import FanFavoritesSection from '@/components/FanFavoritesSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,7 +78,7 @@ export default async function HomePage() {
   const isMember = isAdmin || (await isActiveMember(viewerId));
   const newsFilter = publishedNewsFilterForMember(isMember);
 
-  const [trailerVideos, news, latestReviewsRaw, popularMovies, recentMovies, popularSeries, following] = await Promise.all([
+  const [trailerVideos, news, latestReviewsRaw, recentMovies, popularSeries, following] = await Promise.all([
     // Titulky sa pre 20 kandidátov nenačítavajú — len ich počet. Text titulkov
     // sa dotiahne nižšie iba pre 5 trailerov, ktoré sa naozaj zobrazia.
     prisma.movieVideo.findMany({
@@ -107,12 +109,6 @@ export default async function HomePage() {
     }),
     prisma.movie.findMany({
       where: { approved: true, ...movieVisibleFilter(isMember) },
-      orderBy: { ratings: { _count: 'desc' } },
-      take: 7,
-      select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
-    }),
-    prisma.movie.findMany({
-      where: { approved: true, ...movieVisibleFilter(isMember) },
       orderBy: { createdAt: 'desc' },
       take: 7,
       select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, countries: true }
@@ -128,7 +124,8 @@ export default async function HomePage() {
 
   const recommendations = viewerId ? await getRecommendationsForUser(viewerId) : { movies: [], topGenres: [] };
   // Nedávno prohlížené (spoločné s appkou) — len pre prihláseného.
-  const recentlyViewed = await getRecentlyViewedSafe(viewerId);
+  const [recentlyViewed, fanData] = await Promise.all([getRecentlyViewedSafe(viewerId), getFanFavorites(viewerId)]);
+  const fanFavorites = fanData.items.slice(0, FAN_ROW_LIMIT);
 
   const trailerPick = [...trailerVideos]
     .sort((a, b) => {
@@ -265,6 +262,8 @@ export default async function HomePage() {
         </div>
       </div>
 
+      {fanFavorites.length > 0 && <FanFavoritesSection initialItems={fanFavorites} />}
+
       {recommendations.movies.length > 0 && (
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
@@ -344,16 +343,10 @@ export default async function HomePage() {
         />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-5">
-        <MovieMiniList
-          title={t('home.najsledovanejsie_filmy')}
-          items={popularMovies.map((m) => ({ id: m.id, title: m.title, slug: m.slug, year: m.year, poster: m.poster, genre: firstGenre(m.genres), country: m.countries }))}
-        />
-        <MovieMiniList
-          title={t('home.naposledy_pridane')}
-          items={recentMovies.map((m) => ({ id: m.id, title: m.title, slug: m.slug, year: m.year, poster: m.poster, genre: firstGenre(m.genres), country: m.countries }))}
-        />
-      </div>
+      <MovieMiniList
+        title={t('home.naposledy_pridane')}
+        items={recentMovies.map((m) => ({ id: m.id, title: m.title, slug: m.slug, year: m.year, poster: m.poster, genre: firstGenre(m.genres), country: m.countries }))}
+      />
 
       {latestReviews.length > 0 && (
         <div className="mt-12 border border-line rounded-xl bg-card p-4 sm:p-5">

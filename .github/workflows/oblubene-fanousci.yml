@@ -1,0 +1,29 @@
+name: Oblibene mezi fanousky
+
+# Kontrola každé 2 hodiny; bot sám zistí, či od poslednej aktualizácie
+# uplynulo 20 hodín, a až potom stiahne nové poradie.
+on:
+  schedule:
+    - cron: '23 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Aktualizovat hned (bez cekani na 20 h)'
+        type: boolean
+        default: false
+
+jobs:
+  aktualizace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Stahnout a odeslat poradi
+        run: node scripts/bot/oblubene.mjs
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          FORCE: ${{ github.event.inputs.force || 'false' }}
