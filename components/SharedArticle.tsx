@@ -1,3 +1,5 @@
+import SharedPeek from './SharedPeek';
+
 // Samostatné zobrazenie zdieľaného článku — žiadne prvky webu okolo, žiadne
 // odkazy, len text článku.
 export default function SharedArticle({
@@ -37,6 +39,7 @@ export default function SharedArticle({
         <div className="article-body shared-article text-lg leading-[1.8] text-ink font-body" dangerouslySetInnerHTML={{ __html: html }} />
       </article>
       <style>{`.shared-article .shared-link{color:inherit;text-decoration:none;cursor:text}`}</style>
+      <SharedPeek />
     </main>
   );
 }
