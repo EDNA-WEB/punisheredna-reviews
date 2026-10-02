@@ -4,7 +4,7 @@ import { after } from 'next/server';
 import { headers, cookies } from 'next/headers';
 import { prisma } from './prisma';
 import { memo } from './memoCache';
-import { isBot, parseUserAgent } from './userAgent';
+import { isBot, parseUserAgent } from './visitorUserAgent';
 
 // ---------------------------------------------------------------------------
 // ANALYTIKA ZDIEĽANÝCH ČLÁNKOV — privacy by design
