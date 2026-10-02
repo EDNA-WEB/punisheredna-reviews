@@ -55,22 +55,64 @@ function collect(node, out, seen) {
   for (const key of Object.keys(node)) collect(node[key], out, seen);
 }
 
-async function fetchList() {
-  const res = await fetch(SOURCE_URL, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36',
-      'Accept-Language': 'en-US,en;q=0.9',
-      Accept: 'text/html,application/xhtml+xml'
-    }
+const BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36',
+  'Accept-Language': 'en-US,en;q=0.9'
+};
+
+// 1. spôsob: dátové rozhranie, z ktorého zoznam čerpá samotná stránka zdroja.
+async function fromApi() {
+  const query = `query { fanPicksTitles(first: ${MAX_ITEMS}) { edges { node { id titleText { text } originalTitleText { text } releaseYear { year } } } } }`;
+  const res = await fetch('https://api.graphql.imdb.com/', {
+    method: 'POST',
+    headers: { ...BROWSER_HEADERS, 'Content-Type': 'application/json', Accept: 'application/json', Origin: 'https://www.imdb.com', Referer: 'https://www.imdb.com/' },
+    body: JSON.stringify({ query })
   });
-  if (!res.ok) throw new Error(`Zdroj vrátil ${res.status}.`);
-  const html = await res.text();
-  const m = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
-  if (!m) throw new Error('Na stránke sa nenašli dáta (zmenila sa štruktúra stránky alebo bol prístup zablokovaný).');
-  const json = JSON.parse(m[1]);
+  const text = await res.text();
+  if (!res.ok) throw new Error(`rozhranie vrátilo ${res.status}: ${text.slice(0, 200)}`);
+  const json = JSON.parse(text);
+  if (json.errors?.length) throw new Error(`rozhranie hlási chybu: ${json.errors[0].message}`);
   const out = [];
-  collect(json?.props?.pageProps ?? json, out, new Set());
+  collect(json.data, out, new Set());
   return out;
+}
+
+// 2. spôsob: HTML stránky — všetky vložené JSON bloky.
+async function fromPage() {
+  const res = await fetch(SOURCE_URL, { headers: { ...BROWSER_HEADERS, Accept: 'text/html,application/xhtml+xml' } });
+  const html = await res.text();
+  const blocked = /awsWaf|captcha|challenge-platform|Request blocked/i.test(html);
+  console.log(`  stránka: HTTP ${res.status}, ${html.length} znakov${blocked ? ', vyzerá to na blokovanie robotov' : ''}`);
+  if (!res.ok) throw new Error(`stránka vrátila ${res.status}`);
+  const out = [];
+  const seen = new Set();
+  const re = /<script[^>]*type="application\/(?:json|ld\+json)"[^>]*>([\s\S]*?)<\/script>/g;
+  let m;
+  while ((m = re.exec(html))) {
+    try {
+      collect(JSON.parse(m[1]), out, seen);
+    } catch {
+      /* nie je JSON */
+    }
+  }
+  return out;
+}
+
+async function fetchList() {
+  const attempts = [
+    ['dátové rozhranie', fromApi],
+    ['stránka', fromPage]
+  ];
+  for (const [name, fn] of attempts) {
+    try {
+      const items = await fn();
+      console.log(`Spôsob „${name}“: ${items.length} titulov`);
+      if (items.length >= 5) return items;
+    } catch (error) {
+      console.log(`Spôsob „${name}“ zlyhal: ${error.message}`);
+    }
+  }
+  throw new Error('Nepodarilo sa získať zoznam ani jedným spôsobom, na webe ostávajú pôvodné dáta.');
 }
 
 try {
