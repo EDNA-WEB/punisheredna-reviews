@@ -12,11 +12,12 @@ type Props = {
   userAvatar: string | null;
   isAdmin: boolean;
   badges: Record<string, number>; // href → počet čakajúcich položiek
+  embed?: boolean; // otvorené z appky — len obsah, bez panela a lišty
 };
 
 // Rozhranie administrácie: bočný panel so sekciami, horná lišta s rýchlym
 // vyhľadávaním (Ctrl/⌘ + K) a obsah. Na mobile sa panel vysúva zboku.
-export default function AdminShell({ children, userName, userAvatar, isAdmin, badges }: Props) {
+export default function AdminShell({ children, userName, userAvatar, isAdmin, badges, embed }: Props) {
   const pathname = usePathname() || '/admin';
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -116,6 +117,15 @@ export default function AdminShell({ children, userName, userAvatar, isAdmin, ba
       </div>
     </Link>
   );
+
+  // Vložený režim (WebView v appke): rovnaký obsah, len bez panela a lišty
+  if (embed) {
+    return (
+      <div className="min-h-screen bg-bg">
+        <main className="admin-content admin-embed px-4 pt-1 pb-12">{children}</main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg text-ink">

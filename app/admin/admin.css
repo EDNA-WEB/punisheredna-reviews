@@ -267,3 +267,23 @@
 .admin-content .admin-page > :last-child {
   margin-bottom: 0.5rem;
 }
+
+/* ==========================================================================
+   Vložený režim — administrácia otvorená z mobilnej appky
+   (appka má vlastnú hlavičku so šípkou späť, preto bez navigačnej cesty)
+   ========================================================================== */
+.admin-embed .admin-page {
+  padding-top: 0.75rem;
+}
+.admin-embed .admin-page-header nav {
+  display: none;
+}
+.admin-embed .admin-page-header h1 {
+  font-size: 22px;
+}
+.admin-embed .admin-page-header {
+  margin-bottom: 1rem;
+}
+.admin-embed :is(.rounded-xl, .rounded-2xl).border.border-line[class*='p-']:not(button):not(a) {
+  border-radius: 14px;
+}

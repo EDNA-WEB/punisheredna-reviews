@@ -85,6 +85,9 @@ export async function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('x-pathname', pathname); // layout podľa toho skryje verejné menu v administrácii
+  // Administrácia otvorená z appky (?app=1) → vložený režim bez bočného panela
+  const appEmbed = req.nextUrl.searchParams.get('app') === '1' || (req.nextUrl.searchParams.get('app') !== '0' && req.cookies.get('kf_app_embed')?.value === '1');
+  if (appEmbed) requestHeaders.set('x-app-embed', '1');
   requestHeaders.set('Content-Security-Policy', csp); // Next.js si odtiaľ vezme nonce pre svoje skripty
   const pass = () => securityHeaders(NextResponse.next({ request: { headers: requestHeaders } }), csp);
 
@@ -100,6 +103,8 @@ export async function proxy(req: NextRequest) {
     if (!(isAdmin || isEditor) || !ipAllowed(req)) return securityHeaders(notFound(req), null);
     const res = pass();
     res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    if (req.nextUrl.searchParams.get('app') === '1') res.cookies.set('kf_app_embed', '1', { path: '/admin', sameSite: 'lax', httpOnly: true, secure: true });
+    if (req.nextUrl.searchParams.get('app') === '0') res.cookies.set('kf_app_embed', '', { path: '/admin', maxAge: 0 });
     return res;
   }
 
