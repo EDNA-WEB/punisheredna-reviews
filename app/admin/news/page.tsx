@@ -8,11 +8,27 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminNewsPage() {
+const PER_PAGE = 30;
+
+export default async function AdminNewsPage(props: { searchParams?: Promise<{ strana?: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 
-  const news = await prisma.newsPost.findMany({ orderBy: { createdAt: 'desc' } });
+  const sp = (await props.searchParams) || {};
+  const page = Math.max(1, parseInt(sp.strana || '1', 10) || 1);
+
+  // Len stĺpce, ktoré zoznam zobrazuje (bez celého textu článku) a len jedna
+  // stránka naraz — predtým sa načítali všetky novinky so všetkými stĺpcami.
+  const [news, total] = await Promise.all([
+    prisma.newsPost.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+      select: { id: true, slug: true, title: true, coverImage: true, isDraft: true, publishAt: true, createdAt: true }
+    }),
+    prisma.newsPost.count()
+  ]);
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
 
   return (
     <div className="admin-page">
@@ -55,6 +71,28 @@ export default async function AdminNewsPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {pages > 1 && (
+        <nav className="flex items-center justify-between gap-4 mt-6 text-sm" aria-label="Stránkování">
+          {page > 1 ? (
+            <Link href={`/admin/news?strana=${page - 1}`} className="px-4 py-2 rounded-full border border-line bg-card font-semibold text-ink hover:border-accent">
+              Předchozí
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="text-muted">
+            Strana {page} z {pages} · celkem {total}
+          </span>
+          {page < pages ? (
+            <Link href={`/admin/news?strana=${page + 1}`} className="px-4 py-2 rounded-full border border-line bg-card font-semibold text-ink hover:border-accent">
+              Další
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
       )}
     </div>
   );

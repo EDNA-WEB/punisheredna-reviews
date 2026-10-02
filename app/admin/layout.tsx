@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { unstable_cache } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { notFound } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
@@ -8,6 +9,14 @@ import AdminShell from '@/components/admin/AdminShell';
 import './admin.css';
 
 export const dynamic = 'force-dynamic';
+
+// Meno a avatar prihláseného v hornej lište — pri každej stránke administrácie
+// sa nemusí čítať z databázy. Zmena avatara sa prejaví najneskôr do 10 minút.
+const getAdminIdentity = unstable_cache(
+  async (userId: string) => prisma.user.findUnique({ where: { id: userId }, select: { name: true, avatar: true } }),
+  ['admin-identity-v1'],
+  { revalidate: 600, tags: ['admin-identity'] }
+);
 
 // Spoločné rozhranie celej administrácie (bočný panel + horná lišta).
 // Prístup: admin (všetko) a redaktor (len novinky) — každá stránka si to
@@ -20,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const userId = (session.user as any).id as string;
   const [user, badges] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true, avatar: true } }),
+    getAdminIdentity(userId),
     role === 'ADMIN' ? getAdminBadges() : Promise.resolve({} as Record<string, number>)
   ]);
 

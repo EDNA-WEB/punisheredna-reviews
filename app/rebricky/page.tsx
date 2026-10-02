@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -10,6 +11,56 @@ import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
+const RANKING_LIMIT = 100;
+
+// Rebríček (spoločný pre všetkých návštevníkov) — počíta sa z agregovaných
+// súčtov hodnotení, nie zo všetkých riadkov hodnotení, a ukladá sa do
+// zdieľanej cache na 10 minút. Zobrazuje sa prvých 100 titulov.
+const getRanking = unstable_cache(
+  async (contentType: string) => {
+    const agg = await prisma.rating.groupBy({
+      by: ['movieId'],
+      where: { seasonId: null, episodeId: null, movie: { approved: true, contentType } },
+      _avg: { value: true },
+      _count: { _all: true }
+    });
+    const stats = new Map(agg.map((a) => [a.movieId, { avg: a._avg.value || 0, count: a._count._all }]));
+    const movies = stats.size
+      ? await prisma.movie.findMany({
+          where: { id: { in: Array.from(stats.keys()) } },
+          select: { id: true, slug: true, title: true, year: true, poster: true, countries: true, genres: true, director: true, cast: true }
+        })
+      : [];
+
+    const ranked = movies
+      .map((m) => {
+        const st = stats.get(m.id) || { avg: 0, count: 0 };
+        // computePercent pracuje s jednotlivými hodnoteniami — priemer zopakovaný
+        // „počet“-krát dá rovnaký výsledok (rovnaký postup ako katalóg filtra).
+        const values = Array.from({ length: st.count }, () => ({ value: st.avg }));
+        return { ...m, ratingCount: st.count, percent: computePercent(values as any) as number | null };
+      })
+      .filter((m) => m.percent !== null)
+      .sort((a, b) => (b.percent as number) - (a.percent as number) || b.ratingCount - a.ratingCount)
+      .slice(0, RANKING_LIMIT);
+
+    const allNames = Array.from(
+      new Set(
+        ranked.flatMap((m) => [
+          ...(m.director ? m.director.split(',').map((x) => x.trim()) : []),
+          ...(m.cast ? m.cast.split(',').map((x) => x.trim()).slice(0, 2) : [])
+        ])
+      )
+    );
+    const people = allNames.length
+      ? await prisma.person.findMany({ where: { name: { in: allNames } }, select: { name: true, slug: true } })
+      : [];
+    return { ranked, people };
+  },
+  ['rebricky-v1'],
+  { revalidate: 600, tags: ['rebricky'] }
+);
+
 export default async function RebrickyPage(props: { searchParams: Promise<{ typ?: string }> }) {
   const { searchParams } = { ...props, searchParams: await props.searchParams };
   const session = await getServerSession(authOptions);
@@ -19,26 +70,17 @@ export default async function RebrickyPage(props: { searchParams: Promise<{ typ?
 
   const activeType = searchParams?.typ === 'serialy' ? 'Seriál' : 'Film';
 
-  const movies = await prisma.movie.findMany({
-    where: { approved: true, contentType: activeType },
-    include: { ratings: { where: { seasonId: null, episodeId: null } } }
-  });
-
-  const ranked = movies
-    .map((m) => ({ ...m, percent: computePercent(m.ratings) }))
-    .filter((m) => m.percent !== null)
-    .sort((a, b) => (b.percent as number) - (a.percent as number) || b.ratings.length - a.ratings.length);
-
-  const allNames = Array.from(
-    new Set(
-      ranked.flatMap((m) => [
-        ...(m.director ? m.director.split(',').map((x) => x.trim()) : []),
-        ...(m.cast ? m.cast.split(',').map((x) => x.trim()).slice(0, 2) : [])
-      ])
-    )
-  );
-  const people = allNames.length ? await prisma.person.findMany({ where: { name: { in: allNames } }, select: { name: true, slug: true } }) : [];
+  const { ranked, people } = await getRanking(activeType);
   const slugByName = new Map(people.map((p) => [p.name, p.slug]));
+
+  // Vlastné hodnotenia prihláseného — jeden malý dopyt len pre zobrazené tituly.
+  const myRatings = viewerId && ranked.length
+    ? await prisma.rating.findMany({
+        where: { userId: viewerId, seasonId: null, episodeId: null, movieId: { in: ranked.map((m) => m.id) } },
+        select: { movieId: true, value: true }
+      })
+    : [];
+  const myByMovie = new Map(myRatings.map((r) => [r.movieId, r.value]));
 
   return (
     <div className="pt-8">
@@ -73,7 +115,7 @@ export default async function RebrickyPage(props: { searchParams: Promise<{ typ?
           {ranked.map((m, i) => {
             const director = m.director ? m.director.split(',').map((x) => x.trim()) : [];
             const actors = m.cast ? m.cast.split(',').map((x) => x.trim()).slice(0, 2) : [];
-            const myRating = viewerId ? m.ratings.find((r) => r.userId === viewerId)?.value || 0 : 0;
+            const myRating = myByMovie.get(m.id) || 0;
 
             return (
               <div key={m.id} className="flex items-start gap-4 p-4 bg-card hover:bg-surface transition-colors">
@@ -103,7 +145,7 @@ export default async function RebrickyPage(props: { searchParams: Promise<{ typ?
                 </div>
 
                 <div className="flex-none flex flex-col items-end gap-1.5 pt-0.5">
-                  <ScoreBadge percent={m.percent} count={m.ratings.length} size="sm" />
+                  <ScoreBadge percent={m.percent} count={m.ratingCount} size="sm" />
                   <StarRating rating={myRating} size="w-3.5 h-3.5" />
                 </div>
               </div>

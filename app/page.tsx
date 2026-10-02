@@ -25,6 +25,45 @@ import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
 
 export const dynamic = 'force-dynamic';
 
+// Recenzia na hlavnej stránke: len to, čo karta zobrazuje.
+const HOME_REVIEW_SELECT = {
+  id: true,
+  body: true,
+  authorId: true,
+  movieId: true,
+  movie: { select: { slug: true, title: true, year: true, poster: true } },
+  author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
+} as const;
+
+type HomeReview = {
+  id: string;
+  body: string;
+  authorId: string;
+  movieId: string;
+  movie: { slug: string; title: string; year: string | null; poster: string | null };
+  author: { id: string; name: string; avatar: string | null; membershipUntil: Date | null };
+};
+
+// Doplní ku každej recenzii hodnotenie jej autora (tvar movie.ratings ostáva
+// rovnaký ako predtým, takže vykresľovanie sa nemení).
+async function attachAuthorRatings(groups: HomeReview[][]) {
+  const all = groups.flat();
+  const pairs = Array.from(new Map(all.map((r) => [`${r.movieId}:${r.authorId}`, { movieId: r.movieId, userId: r.authorId }])).values());
+  const ratings = pairs.length
+    ? await prisma.rating.findMany({
+        where: { seasonId: null, episodeId: null, OR: pairs },
+        select: { movieId: true, userId: true, value: true }
+      })
+    : [];
+  const byKey = new Map(ratings.map((r) => [`${r.movieId}:${r.userId}`, r]));
+  return groups.map((list) =>
+    list.map((r) => {
+      const own = byKey.get(`${r.movieId}:${r.authorId}`);
+      return { ...r, movie: { ...r.movie, ratings: own ? [{ userId: own.userId, value: own.value }] : [] } };
+    })
+  );
+}
+
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   const viewerId = (session?.user as any)?.id;
@@ -35,26 +74,34 @@ export default async function HomePage() {
   const isMember = isAdmin || (await isActiveMember(viewerId));
   const newsFilter = publishedNewsFilterForMember(isMember);
 
-  const [trailerVideos, news, latestReviews, popularMovies, recentMovies, popularSeries, following] = await Promise.all([
+  const [trailerVideos, news, latestReviewsRaw, popularMovies, recentMovies, popularSeries, following] = await Promise.all([
+    // Titulky sa pre 20 kandidátov nenačítavajú — len ich počet. Text titulkov
+    // sa dotiahne nižšie iba pre 5 trailerov, ktoré sa naozaj zobrazia.
     prisma.movieVideo.findMany({
       where: { category: 'trailer', featuredOnHome: true, episodeId: null, seasonId: null, movie: { approved: true } },
       orderBy: { createdAt: 'desc' },
       take: 20,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        url: true,
+        previewImage: true,
+        createdAt: true,
         movie: { select: { title: true, poster: true } },
-        subtitles: { orderBy: { startTime: 'asc' }, select: { startTime: true, endTime: true, text: true } },
         _count: { select: { subtitles: true } }
       }
     }),
-    prisma.newsPost.findMany({ where: newsFilter, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.newsPost.findMany({
+      where: newsFilter,
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: { id: true, slug: true, title: true, summary: true, coverImage: true, createdAt: true }
+    }),
     prisma.review.findMany({
       where: { movie: { approved: true }, seasonId: null, episodeId: null },
       orderBy: { createdAt: 'desc' },
-      take: 8,
-      include: {
-        movie: { include: { ratings: { where: { seasonId: null, episodeId: null } } } },
-        author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
-      }
+      take: 4,
+      select: HOME_REVIEW_SELECT
     }),
     prisma.movie.findMany({
       where: { approved: true, ...movieVisibleFilter(isMember) },
@@ -79,7 +126,7 @@ export default async function HomePage() {
 
   const recommendations = viewerId ? await getRecommendationsForUser(viewerId) : { movies: [], topGenres: [] };
 
-  const trailers = [...trailerVideos]
+  const trailerPick = [...trailerVideos]
     .sort((a, b) => {
       const aHas = a._count.subtitles > 0 ? 1 : 0;
       const bHas = b._count.subtitles > 0 ? 1 : 0;
@@ -89,13 +136,23 @@ export default async function HomePage() {
       // zmenia na reťazce — priame ".getTime()" na nich by zlyhalo).
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     })
-    .slice(0, 5)
+    .slice(0, 5);
+  const pickedSubtitles = trailerPick.length
+    ? await prisma.videoSubtitle.findMany({
+        where: { movieVideoId: { in: trailerPick.map((v) => v.id) } },
+        orderBy: { startTime: 'asc' },
+        select: { movieVideoId: true, startTime: true, endTime: true, text: true }
+      })
+    : [];
+  const trailers = trailerPick
     .map((v) => ({
       id: v.id,
       title: v.title || v.movie.title,
       youtubeUrl: v.url,
       youtubeId: youtubeVideoId(v.url),
-      subtitles: v.subtitles,
+      subtitles: pickedSubtitles
+        .filter((st) => st.movieVideoId === v.id)
+        .map((st) => ({ startTime: st.startTime, endTime: st.endTime, text: st.text })),
       posterImage: v.previewImage || v.movie.poster
     }))
     .filter((v) => v.youtubeId) as {
@@ -111,30 +168,33 @@ export default async function HomePage() {
   const personalizationAllowed = isConsentGranted(consent, 'personalization');
 
   const followingIds = following.map((f) => f.followingId);
-  const favoriteReviews = followingIds.length && personalizationAllowed
+  const favoriteReviewsRaw = followingIds.length && personalizationAllowed
     ? await prisma.review.findMany({
         where: { authorId: { in: followingIds }, movie: { approved: true }, seasonId: null, episodeId: null },
         orderBy: { createdAt: 'desc' },
-        take: 8,
-        include: {
-          movie: { include: { ratings: { where: { seasonId: null, episodeId: null } } } },
-          author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
-        }
+        take: 4,
+        select: HOME_REVIEW_SELECT
       })
     : [];
 
   const verifiedCriticIds = await getVerifiedCriticIds();
-  const criticReviews = verifiedCriticIds.size
+  const criticReviewsRaw = verifiedCriticIds.size
     ? await prisma.review.findMany({
         where: { authorId: { in: Array.from(verifiedCriticIds) }, movie: { approved: true }, seasonId: null, episodeId: null },
         orderBy: { createdAt: 'desc' },
-        take: 8,
-        include: {
-          movie: { include: { ratings: { where: { seasonId: null, episodeId: null } } } },
-          author: { select: { id: true, name: true, avatar: true, membershipUntil: true } }
-        }
+        take: 4,
+        select: HOME_REVIEW_SELECT
       })
     : [];
+
+  // Hodnotenie autora recenzie k danému filmu — jeden malý dopyt pre všetky
+  // zobrazené recenzie naraz (predtým sa ku každému filmu ťahali VŠETKY jeho
+  // hodnotenia aj s celým riadkom filmu).
+  const [latestReviews, favoriteReviews, criticReviews] = await attachAuthorRatings([
+    latestReviewsRaw,
+    favoriteReviewsRaw,
+    criticReviewsRaw
+  ]);
 
   const [topActors, topCreators] = await Promise.all([
     prisma.person.findMany({

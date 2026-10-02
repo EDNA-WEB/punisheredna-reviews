@@ -660,7 +660,15 @@ export async function runFilter(
 
 // --- Možnosti do formulára (žánre, krajiny…) a našepkávanie -----------------
 
-export async function getFilterOptions() {
+// Voľby do formulára sú malé (pár kB), preto sa ukladajú do zdieľanej cache
+// Vercelu (unstable_cache). Nová inštancia servera ich tak dostane hotové
+// a nemusí kvôli nim načítať celý katalóg z databázy.
+export const getFilterOptions = unstable_cache(() => buildFilterOptions(), ['movie-filter-options-v1'], {
+  revalidate: 900,
+  tags: ['movie-filter']
+});
+
+async function buildFilterOptions() {
   return memo('movieFilter:options', CATALOG_TTL, async () => {
     const [catalog, services] = await Promise.all([
       getFilterCatalog(),
