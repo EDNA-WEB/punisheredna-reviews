@@ -8,7 +8,7 @@
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/$/, '');
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const FORCE = process.env.FORCE === 'true';
-const SOURCE_URL = 'https://www.imdb.com/what-to-watch/fan-favorites/';
+const API_URL = 'https://api.graphql.imdb.com/';
 const MAX_ITEMS = 30;
 
 if (!SITE_URL || !CRON_SECRET) {
@@ -49,70 +49,84 @@ function collect(node, out, seen) {
   const title = node.titleText?.text || node.originalTitleText?.text || null;
   if (id && /^tt\d{6,10}$/.test(id) && title && !seen.has(id)) {
     seen.add(id);
-    const year = node.releaseYear?.year ?? node.releaseDate?.year ?? null;
+    const year = node.releaseYear?.year ?? null;
     out.push({ sourceId: id, title: node.originalTitleText?.text || title, year: Number.isFinite(year) ? year : null });
   }
   for (const key of Object.keys(node)) collect(node[key], out, seen);
 }
 
-const BROWSER_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36',
-  'Accept-Language': 'en-US,en;q=0.9'
-};
+// Náhodný identifikátor relácie v tvare, aký posiela prehliadač (123-1234567-1234567).
+const digits = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join('');
+const SESSION_ID = `${digits(3)}-${digits(7)}-${digits(7)}`;
 
-// 1. spôsob: dátové rozhranie, z ktorého zoznam čerpá samotná stránka zdroja.
-async function fromApi() {
-  const query = `query { fanPicksTitles(first: ${MAX_ITEMS}) { edges { node { id titleText { text } originalTitleText { text } releaseYear { year } } } } }`;
-  const res = await fetch('https://api.graphql.imdb.com/', {
+async function gql(query) {
+  const res = await fetch(API_URL, {
     method: 'POST',
-    headers: { ...BROWSER_HEADERS, 'Content-Type': 'application/json', Accept: 'application/json', Origin: 'https://www.imdb.com', Referer: 'https://www.imdb.com/' },
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Origin: 'https://www.imdb.com',
+      Referer: 'https://www.imdb.com/',
+      'x-amzn-sessionid': SESSION_ID,
+      'x-imdb-client-name': 'imdb-web-next-localized',
+      'x-imdb-user-country': 'US',
+      'x-imdb-user-language': 'en-US'
+    },
     body: JSON.stringify({ query })
   });
   const text = await res.text();
   if (!res.ok) throw new Error(`rozhranie vrátilo ${res.status}: ${text.slice(0, 200)}`);
   const json = JSON.parse(text);
-  if (json.errors?.length) throw new Error(`rozhranie hlási chybu: ${json.errors[0].message}`);
+  if (json.errors?.length && !json.data) throw new Error(`rozhranie hlási chybu: ${json.errors[0].message}`);
+  if (json.errors?.length) console.log(`  upozornenie rozhrania: ${json.errors[0].message}`);
+  return json.data;
+}
+
+const NODE = 'node { id titleText { text } originalTitleText { text } releaseYear { year } }';
+
+// 1. spôsob: zoznam „fan favorites“.
+async function fanPicks() {
+  const data = await gql(`query { fanPicksTitles(first: ${MAX_ITEMS}) { edges { ${NODE} } } }`);
   const out = [];
-  collect(json.data, out, new Set());
+  collect(data?.fanPicksTitles, out, new Set());
   return out;
 }
 
-// 2. spôsob: HTML stránky — všetky vložené JSON bloky.
-async function fromPage() {
-  const res = await fetch(SOURCE_URL, { headers: { ...BROWSER_HEADERS, Accept: 'text/html,application/xhtml+xml' } });
-  const html = await res.text();
-  const blocked = /awsWaf|captcha|challenge-platform|Request blocked/i.test(html);
-  console.log(`  stránka: HTTP ${res.status}, ${html.length} znakov${blocked ? ', vyzerá to na blokovanie robotov' : ''}`);
-  if (!res.ok) throw new Error(`stránka vrátila ${res.status}`);
+// 2. spôsob (záloha): najpopulárnejšie filmy a seriály, striedavo.
+async function mostPopular() {
+  const data = await gql(`query {
+    movies: chartTitles(first: 20, chart: { chartType: MOST_POPULAR_MOVIES }) { edges { ${NODE} } }
+    tv: chartTitles(first: 10, chart: { chartType: MOST_POPULAR_TV_SHOWS }) { edges { ${NODE} } }
+  }`);
+  const movies = [];
+  const tv = [];
+  collect(data?.movies, movies, new Set());
+  collect(data?.tv, tv, new Set());
   const out = [];
-  const seen = new Set();
-  const re = /<script[^>]*type="application\/(?:json|ld\+json)"[^>]*>([\s\S]*?)<\/script>/g;
-  let m;
-  while ((m = re.exec(html))) {
-    try {
-      collect(JSON.parse(m[1]), out, seen);
-    } catch {
-      /* nie je JSON */
-    }
+  while ((movies.length || tv.length) && out.length < MAX_ITEMS) {
+    out.push(...movies.splice(0, 2));
+    if (tv.length) out.push(tv.shift());
   }
-  return out;
+  return out.slice(0, MAX_ITEMS);
 }
 
 async function fetchList() {
   const attempts = [
-    ['dátové rozhranie', fromApi],
-    ['stránka', fromPage]
+    ['fan favorites', fanPicks],
+    ['najpopulárnejšie (záloha)', mostPopular]
   ];
   for (const [name, fn] of attempts) {
     try {
       const items = await fn();
-      console.log(`Spôsob „${name}“: ${items.length} titulov`);
+      console.log(`Zoznam „${name}“: ${items.length} titulov`);
       if (items.length >= 5) return items;
     } catch (error) {
-      console.log(`Spôsob „${name}“ zlyhal: ${error.message}`);
+      console.log(`Zoznam „${name}“ zlyhal: ${error.message}`);
     }
   }
-  throw new Error('Nepodarilo sa získať zoznam ani jedným spôsobom, na webe ostávajú pôvodné dáta.');
+  throw new Error('Nepodarilo sa získať žiadny zoznam, na webe ostávajú pôvodné dáta.');
 }
 
 try {
@@ -128,7 +142,6 @@ try {
   }
   const items = await fetchList();
   console.log(`Stiahnutých titulov: ${items.length}`);
-  if (items.length < 5) throw new Error('Príliš málo titulov, na webe ostávajú pôvodné dáta.');
   items.slice(0, 10).forEach((i, n) => console.log(`  ${n + 1}. ${i.title}${i.year ? ` (${i.year})` : ''}`));
 
   const res = await fetch(`${SITE_URL}/api/cron/fan-favorites`, {
