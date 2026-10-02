@@ -5,45 +5,56 @@ import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
 import { tmdbGetMovieCastCrew, tmdbGetPersonDetails } from '@/lib/tmdb';
 
-// Zaistí, že osoba s daným TMDb ID existuje u nás v databáze — ak áno, len
-// vráti jej meno; ak nie, vytvorí nový (schválený) profil s fotkou, životopisom
-// a dátumami, natiahnutými priamo z TMDb.
-async function ensurePersonExists(tmdbId: number, fallbackName: string): Promise<string> {
-  const existing = await prisma.person.findFirst({ where: { tmdbId } });
-  if (existing) return existing.name;
+// Zaistí, že osoby s danými TMDb ID existujú u nás v databáze. Existujúce
+// nájde JEDNÝM dopytom (predtým jeden dopyt na každú osobu cez celú tabuľku),
+// nové vytvorí (schválený profil s fotkou, životopisom a dátumami z TMDb).
+async function ensurePeople(people: Array<{ tmdbId: number; name: string }>): Promise<Map<number, string>> {
+  const ids = Array.from(new Set(people.map((p) => p.tmdbId)));
+  const names = new Map<number, string>();
+  if (ids.length === 0) return names;
 
-  const details = await tmdbGetPersonDetails(tmdbId);
-  const name = details.name || fallbackName;
+  const existing = await prisma.person.findMany({ where: { tmdbId: { in: ids } }, select: { tmdbId: true, name: true } });
+  for (const e of existing) if (e.tmdbId !== null) names.set(e.tmdbId, e.name);
 
-  // TMDb fotky sú už na ich vlastnom trvalom CDN (image.tmdb.org) — netreba
-  // ich zbytočne kopírovať (sťahovať a znova nahrávať) do Cloudinary, to by
-  // len zbytočne plnilo úložisko bez akéhokoľvek úžitku.
-  const photoUrl: string | null = details.photo;
+  const missing = ids.filter((id) => !names.has(id));
+  for (const tmdbId of missing) {
+    const fallbackName = people.find((p) => p.tmdbId === tmdbId)?.name || 'Osoba';
+    const details = await tmdbGetPersonDetails(tmdbId);
+    const name = details.name || fallbackName;
 
-  let slug = slugify(name) || 'osoba';
-  let uniqueSlug = slug;
-  let counter = 2;
-  while (await prisma.person.findUnique({ where: { slug: uniqueSlug } })) {
-    uniqueSlug = `${slug}-${counter}`;
-    counter++;
-  }
+    // TMDb fotky sú na ich trvalom CDN — netreba ich kopírovať do Cloudinary.
+    const photoUrl: string | null = details.photo;
 
-  await prisma.person.create({
-    data: {
-      name,
-      slug: uniqueSlug,
-      role: details.role === 'CREATOR' ? 'CREATOR' : 'ACTOR',
-      photo: photoUrl,
-      bio: details.bio || null,
-      birthDate: details.birthDate ? new Date(details.birthDate) : null,
-      deathDate: details.deathDate ? new Date(details.deathDate) : null,
-      birthPlace: details.birthPlace || null,
-      tmdbId,
-      approved: true
+    // Voľný slug — jeden dopyt na všetky obsadené varianty
+    const base = slugify(name) || 'osoba';
+    const taken = new Set(
+      (await prisma.person.findMany({ where: { slug: { startsWith: base } }, select: { slug: true } })).map((p) => p.slug)
+    );
+    let slug = base;
+    let counter = 2;
+    while (taken.has(slug)) slug = `${base}-${counter++}`;
+
+    try {
+      await prisma.person.create({
+        data: {
+          name,
+          slug,
+          role: details.role === 'CREATOR' ? 'CREATOR' : 'ACTOR',
+          photo: photoUrl,
+          bio: details.bio || null,
+          birthDate: details.birthDate ? new Date(details.birthDate) : null,
+          deathDate: details.deathDate ? new Date(details.deathDate) : null,
+          birthPlace: details.birthPlace || null,
+          tmdbId,
+          approved: true
+        }
+      });
+    } catch (e: any) {
+      if (e?.code !== 'P2002') throw e; // súbežne vytvorené — nevadí
     }
-  });
-
-  return name;
+    names.set(tmdbId, name);
+  }
+  return names;
 }
 
 export async function POST(_req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -64,13 +75,20 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
 
     // Pre KAŽDÚ osobu (herci aj štáb) zaistíme profil u nás — nové osoby sa
     // vytvoria automaticky, existujúce sa len znovu použijú (žiadna duplicita).
-    const [castNames, directorNames, screenplayNames, cinematographyNames, musicNames] = await Promise.all([
-      Promise.all(creditsFromTmdb.cast.map((p) => ensurePersonExists(p.tmdbId, p.name))),
-      Promise.all(creditsFromTmdb.director.map((p) => ensurePersonExists(p.tmdbId, p.name))),
-      Promise.all(creditsFromTmdb.screenplay.map((p) => ensurePersonExists(p.tmdbId, p.name))),
-      Promise.all(creditsFromTmdb.cinematography.map((p) => ensurePersonExists(p.tmdbId, p.name))),
-      Promise.all(creditsFromTmdb.music.map((p) => ensurePersonExists(p.tmdbId, p.name)))
-    ]);
+    const all = [
+      ...creditsFromTmdb.cast,
+      ...creditsFromTmdb.director,
+      ...creditsFromTmdb.screenplay,
+      ...creditsFromTmdb.cinematography,
+      ...creditsFromTmdb.music
+    ];
+    const names = await ensurePeople(all);
+    const pick = (list: Array<{ tmdbId: number; name: string }>) => list.map((p) => names.get(p.tmdbId) || p.name);
+    const castNames = pick(creditsFromTmdb.cast);
+    const directorNames = pick(creditsFromTmdb.director);
+    const screenplayNames = pick(creditsFromTmdb.screenplay);
+    const cinematographyNames = pick(creditsFromTmdb.cinematography);
+    const musicNames = pick(creditsFromTmdb.music);
 
     const updateData = {
       cast: castNames.join(', ') || null,

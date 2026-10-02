@@ -93,6 +93,7 @@ export type CatalogMovie = {
   percent: number | null;
   votes: number;
   ratingCount: number;
+  ratingAvg: number;
   boxOffice: number;
   reviews: number;
   photos: number;
@@ -192,6 +193,7 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
       percent: computeBlendedPercent(ratingValues, m.tmdbVoteAverage, m.tmdbVoteCount) ?? null,
       votes: a[1] + (m.tmdbVoteCount || 0),
       ratingCount: a[1],
+      ratingAvg: a[0],
       boxOffice: m.boxOffice ? Number(m.boxOffice) : 0,
       reviews: a[2],
       photos: a[3],

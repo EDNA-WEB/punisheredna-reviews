@@ -1,50 +1,37 @@
 import { NextResponse } from 'next/server';
 import { cdnHeaders } from '@/lib/memoCache';
-import { prisma } from '@/lib/prisma';
+import { getFilterCatalog } from '@/lib/movieFilter';
 
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 12;
 
-// Rovnaká logika ako "populárne filmy" na hlavnej stránke webu — zoradené
-// podľa POČTU hodnotení (nie samostatné sledovanie návštev, to web
-// nepoužíva). Appka posiela ?page=0,1,2...
+// Populárne filmy pre appku — zoradené podľa POČTU hodnotení (ako na webe).
+// Berie sa z katalógu filtra v pamäti servera → žiadny ďalší dopyt do
+// databázy (predtým triedenie cez všetky hodnotenia pri každom volaní).
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const page = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
     const contentType = searchParams.get('contentType');
 
-    const where: any = { approved: true };
-    if (contentType) where.contentType = contentType;
+    const catalog = await getFilterCatalog();
+    const list = (contentType ? catalog.filter((m) => m.contentType === contentType) : catalog)
+      .slice()
+      .sort((a, b) => b.ratingCount - a.ratingCount || b.popularity - a.popularity);
 
-    const [movies, total] = await Promise.all([
-      prisma.movie.findMany({
-        where,
-        orderBy: { ratings: { _count: 'desc' } },
-        skip: page * PAGE_SIZE,
-        take: PAGE_SIZE,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          poster: true,
-          year: true,
-          genres: true,
-          countries: true,
-          ratings: { select: { value: true } }
-        }
-      }),
-      prisma.movie.count({ where })
-    ]);
+    const movies = list.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((m) => ({
+      id: m.id,
+      title: m.title,
+      slug: m.slug,
+      poster: m.poster,
+      year: m.yearRaw,
+      genres: m.genres.join(', '),
+      countries: m.countries.join(', '),
+      averageRating: m.ratingCount ? m.ratingAvg : null
+    }));
 
-    const result = movies.map((m) => {
-      const avg = m.ratings.length > 0 ? m.ratings.reduce((s, r) => s + r.value, 0) / m.ratings.length : null;
-      const { ratings, ...rest } = m;
-      return { ...rest, averageRating: avg };
-    });
-
-    return NextResponse.json({ movies: result, totalPages: Math.ceil(total / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(300) });
+    return NextResponse.json({ movies, totalPages: Math.ceil(list.length / PAGE_SIZE) }, { status: 200, headers: cdnHeaders(300) });
   } catch (error) {
     console.error('[api/mobile/popular-movies]', error);
     return NextResponse.json({ error: 'Chyba při načítání filmů.' }, { status: 500 });

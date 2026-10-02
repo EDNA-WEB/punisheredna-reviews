@@ -98,6 +98,7 @@ model User {
   receivedMessages Message[]      @relation("receiver")
   notifications    Notification[]
   news             NewsPost[]
+  @@index([createdAt])
 }
 
 enum PersonRole {
@@ -126,6 +127,7 @@ model Person {
 
   @@index([approved, role])
   @@index([submittedById])
+  @@index([tmdbId])
 }
 
 model PersonFollow {
@@ -390,6 +392,7 @@ model Movie {
 
   @@index([approved])
   @@index([submittedById])
+  @@index([approved, createdAt])
 }
 
 model MovieDiscussionFollow {
@@ -675,6 +678,7 @@ model Rating {
   @@index([userId])
   @@index([seasonId])
   @@index([episodeId])
+  @@index([createdAt])
 }
 
 model Review {
@@ -697,6 +701,7 @@ model Review {
   @@index([authorId, createdAt])
   @@index([seasonId])
   @@index([episodeId])
+  @@index([createdAt])
 }
 
 model Settings {
