@@ -5,19 +5,21 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { excerpt, mdToHtml, readingTime } from '@/lib/markdown';
 import { trackArticleView } from '@/lib/trackView';
-import { getShareConfig, neutralizeLinks, proxiedImage, recordShareView, rewriteImages, verifyShareKey } from '@/lib/articleShare';
+import { getShareConfig, neutralizeLinks, proxiedImage, rewriteImages, verifyShareKey } from '@/lib/articleShare';
+import { normalizeTag, trackShareVisit } from '@/lib/visitorAnalytics';
 import SharedArticle from '@/components/SharedArticle';
 
 export const dynamic = 'force-dynamic';
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ k?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ k?: string; s?: string }> };
 
 const NOINDEX: Metadata = { robots: { index: false, follow: false } };
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { id } = await props.params;
-  const { k } = await props.searchParams;
-  if (!(await getShareConfig()).enabled || !(await verifyShareKey('blog', id, k))) return NOINDEX;
+  const { k, s: rawTag } = await props.searchParams;
+  const tag = normalizeTag(rawTag);
+  if (!(await getShareConfig()).enabled || !(await verifyShareKey('blog', id, k, tag))) return NOINDEX;
   const post = await prisma.blogPost.findUnique({ where: { id }, select: { title: true, body: true, coverImage: true } });
   if (!post) return NOINDEX;
   const description = excerpt(post.body, 160);
@@ -28,13 +30,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 // Zdieľaný BLOGOVÝ článok — len článok, nič iné. Bez platného kľúča → prihlásenie.
 export default async function SharedBlogPage(props: Props) {
   const { id } = await props.params;
-  const { k } = await props.searchParams;
+  const { k, s: rawTag } = await props.searchParams;
+  const tag = normalizeTag(rawTag);
 
   const session = await getServerSession(authOptions);
   if (session) redirect(`/blog/${encodeURIComponent(id)}`);
 
   const cfg = await getShareConfig();
-  if (!cfg.enabled || !(await verifyShareKey('blog', id, k))) redirect('/login');
+  if (!cfg.enabled || !(await verifyShareKey('blog', id, k, tag))) redirect('/login');
 
   const post = await prisma.blogPost.findUnique({
     where: { id },
@@ -42,7 +45,7 @@ export default async function SharedBlogPage(props: Props) {
   });
   if (!post || post.isDraft || !post.published) redirect('/login');
 
-  await recordShareView('blog', post.id);
+  await trackShareVisit('blog', post.id, tag); // anonymná analytika (lib/visitorAnalytics.ts)
   try {
     await trackArticleView('blog', post.id);
   } catch {

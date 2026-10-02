@@ -5,20 +5,22 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { mdToHtml, readingTime } from '@/lib/markdown';
 import { trackArticleView } from '@/lib/trackView';
-import { getShareConfig, neutralizeLinks, proxiedImage, recordShareView, rewriteImages, verifyShareKey } from '@/lib/articleShare';
+import { getShareConfig, neutralizeLinks, proxiedImage, rewriteImages, verifyShareKey } from '@/lib/articleShare';
+import { normalizeTag, trackShareVisit } from '@/lib/visitorAnalytics';
 import SharedArticle from '@/components/SharedArticle';
 
 export const dynamic = 'force-dynamic';
 
-type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ k?: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ k?: string; s?: string }> };
 
 const NOINDEX: Metadata = { robots: { index: false, follow: false } };
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { slug } = await props.params;
-  const { k } = await props.searchParams;
+  const { k, s: rawTag } = await props.searchParams;
+  const tag = normalizeTag(rawTag);
   // Názov a obrázok len pri platnom odkaze (inak nič neprezradíme)
-  if (!(await getShareConfig()).enabled || !(await verifyShareKey('news', slug, k))) return NOINDEX;
+  if (!(await getShareConfig()).enabled || !(await verifyShareKey('news', slug, k, tag))) return NOINDEX;
   const news = await prisma.newsPost.findUnique({ where: { slug }, select: { title: true, summary: true, coverImage: true } });
   if (!news) return NOINDEX;
   const img = proxiedImage(news.coverImage);
@@ -33,13 +35,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 // Zdieľaná NOVINKA — len článok, nič iné. Bez platného kľúča → prihlásenie.
 export default async function SharedNewsPage(props: Props) {
   const { slug } = await props.params;
-  const { k } = await props.searchParams;
+  const { k, s: rawTag } = await props.searchParams;
+  const tag = normalizeTag(rawTag);
 
   const session = await getServerSession(authOptions);
   if (session) redirect(`/news/${encodeURIComponent(slug)}`);
 
   const cfg = await getShareConfig();
-  if (!cfg.enabled || !(await verifyShareKey('news', slug, k))) redirect('/login');
+  if (!cfg.enabled || !(await verifyShareKey('news', slug, k, tag))) redirect('/login');
 
   const news = await prisma.newsPost.findUnique({
     where: { slug },
@@ -49,7 +52,7 @@ export default async function SharedNewsPage(props: Props) {
 
   // Zdieľaná novinka je viditeľná OKAMŽITE po zverejnení (bez 10 h lehoty pre nečlenov).
 
-  await recordShareView('news', news.id);
+  await trackShareVisit('news', news.id, tag); // anonymná analytika (lib/visitorAnalytics.ts)
   try {
     await trackArticleView('news', news.id);
   } catch {

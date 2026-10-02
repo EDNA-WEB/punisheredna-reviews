@@ -1161,3 +1161,83 @@ model ArticleShareView {
   @@index([articleType, articleId])
   @@index([createdAt])
 }
+
+// ---------------------------------------------------------------------------
+// ANALYTIKA ZDIEĽANÝCH ČLÁNKOV (privacy by design — bez cookies, bez plných IP)
+// ---------------------------------------------------------------------------
+
+// Denná náhodná „soľ“ na anonymizáciu návštev. Uchováva sa len dnešná
+// a včerajšia — po zmazaní sa už nedá zistiť, ktorá IP patrila ktorej návšteve.
+model AnalyticsSalt {
+  day       String   @id // 'YYYY-MM-DD'
+  salt      String
+  createdAt DateTime @default(now())
+}
+
+// Jedna návšteva (relácia) z vonku — podrobnosti sa uchovávajú 30 dní.
+model VisitorSession {
+  id           String   @id // HMAC(denná soľ, skrátená IP + prehliadač + OS + deň) — nevratné
+  firstSeen    DateTime @default(now())
+  lastSeen     DateTime @default(now())
+  sourceTag    String? // umiestnenie zo zdieľacieho odkazu, napr. 'csfd-diskuse-film-x'
+  referrerHost String? // len doména, napr. 'csfd.cz'
+  deviceType   String? // mobile | tablet | desktop
+  os           String? // 'iOS 18'
+  browser      String? // 'Safari 18'
+  country      String? // 'CZ'
+  region       String? // kód kraja od Vercelu
+  city         String?
+  asn          Int?
+  asnOrg       String? // poskytovateľ pripojenia (sieť), nie predplatiteľ
+  pages        Int      @default(1)
+  visits       ShareVisit[]
+
+  @@index([firstSeen])
+  @@index([sourceTag])
+}
+
+// Jedno zobrazenie zdieľaného článku v rámci návštevy.
+model ShareVisit {
+  id          String         @id @default(cuid())
+  sessionId   String
+  session     VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  articleType String // news | blog
+  articleId   String
+  visitedAt   DateTime       @default(now())
+
+  @@index([articleType, articleId, visitedAt])
+  @@index([visitedAt])
+}
+
+// Trvalé anonymné súhrny (po dňoch) — ostávajú aj po zmazaní podrobností.
+model ShareDailyStat {
+  day          String // 'YYYY-MM-DD'
+  articleType  String
+  articleId    String
+  sourceTag    String @default("")
+  referrerHost String @default("")
+  country      String @default("")
+  deviceType   String @default("")
+  visits       Int
+  sessions     Int
+
+  @@id([day, articleType, articleId, sourceTag, referrerHost, country, deviceType])
+  @@index([articleType, articleId])
+}
+
+// Evidencia žiadostí orgánov (polícia, súd…) a toho, čo bolo vydané.
+model LegalRequest {
+  id          String   @id @default(cuid())
+  receivedAt  DateTime @default(now())
+  authority   String
+  referenceNo String
+  legalBasis  String
+  scope       String
+  provided    String?
+  status      String   @default("open") // open | done | rejected
+  handledBy   String
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([receivedAt])
+}

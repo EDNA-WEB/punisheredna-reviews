@@ -37,6 +37,27 @@ export default function SharedArticle({
         </div>
         {cover && <img src={cover} alt="" className="w-full max-h-[460px] object-cover rounded-xl mb-10 bg-surface" />}
         <div className="article-body shared-article text-lg leading-[1.8] text-ink font-body" dangerouslySetInnerHTML={{ __html: html }} />
+
+        {/* Informace o zpracování (čl. 13 GDPR) — bez odkazů, aby se z článku nedalo nikam přejít */}
+        <details className="mt-14 pt-6 border-t border-line text-[12.5px] text-muted leading-relaxed">
+          <summary className="cursor-pointer select-none hover:text-ink">Měření návštěvnosti a ochrana soukromí</summary>
+          <div className="mt-3 space-y-2">
+            <p>
+              Abychom věděli, odkud čtenáři k článku přicházejí, měříme anonymně návštěvnost této stránky. Nepoužíváme cookies ani jiné ukládání do
+              vašeho zařízení a vaši IP adresu neukládáme — pouze její zkrácenou podobu zpracujeme na nevratný, každý den měněný kód.
+            </p>
+            <p>
+              Zaznamenáváme: zdroj návštěvy (odkaz, ze kterého jste přišli — pouze doména), typ zařízení, operační systém a prohlížeč (bez verzí
+              detailnějších než hlavní), zemi, kraj a město podle sítě a poskytovatele připojení (název sítě, nikoli vaši totožnost).
+            </p>
+            <p>
+              Účel: statistika dosahu sdíleného obsahu. Právní základ: oprávněný zájem (čl. 6 odst. 1 písm. f GDPR). Podrobné záznamy mažeme
+              automaticky po 30 dnech, poté zůstávají jen anonymní souhrnné počty. Údaje nepředáváme třetím stranám kromě technických zpracovatelů
+              (hosting Vercel, databáze Neon). Protože nevíme, kdo jste, nelze vás v datech zpětně dohledat. Dotazy a uplatnění práv: provozovatel
+              webu KrálFilmu.cz, kontakt v zásadách ochrany osobních údajů na webu. Máte právo podat stížnost u Úřadu pro ochranu osobních údajů.
+            </p>
+          </div>
+        </details>
       </article>
       <style>{`.shared-article .shared-link{color:inherit;text-decoration:none;cursor:text}`}</style>
       <SharedPeek />

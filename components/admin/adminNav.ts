@@ -60,6 +60,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { href: '/admin/preklad', label: 'Překlad', icon: 'translate' },
       { href: '/admin/prava', label: 'Práva', icon: 'shield' },
       { href: '/admin/audit-log', label: 'Audit log', icon: 'list' },
+      { href: '/admin/zadosti-organu', label: 'Žádosti orgánů', icon: 'shield' },
       { href: '/admin/system', label: 'Systém', icon: 'cog' }
     ]
   }

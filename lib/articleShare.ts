@@ -40,15 +40,17 @@ function hmac(data: string) {
   return crypto.createHmac('sha256', secret()).update(data).digest('base64url');
 }
 
-// Kľúč pre jeden článok (novinka podľa slugu, blog podľa id)
-export function shareKey(type: ShareType, ref: string, salt: string) {
-  return hmac(`share:${salt}:${type}:${ref}`).slice(0, 22);
+// Kľúč pre jeden článok (novinka podľa slugu, blog podľa id). Voliteľné
+// „umiestnenie“ (tag, napr. 'csfd-diskuse-film-x') je súčasťou podpisu —
+// zdroj návštevy sa tak nedá podvrhnúť úpravou adresy.
+export function shareKey(type: ShareType, ref: string, salt: string, tag?: string | null) {
+  return hmac(tag ? `share:${salt}:${type}:${ref}:${tag}` : `share:${salt}:${type}:${ref}`).slice(0, 22);
 }
 
-export async function verifyShareKey(type: ShareType, ref: string, key: string | undefined | null) {
+export async function verifyShareKey(type: ShareType, ref: string, key: string | undefined | null, tag?: string | null) {
   if (!key || typeof key !== 'string' || key.length !== 22) return false;
   const { salt } = await getShareConfig();
-  const a = Buffer.from(shareKey(type, ref, salt));
+  const a = Buffer.from(shareKey(type, ref, salt, tag));
   const b = Buffer.from(key);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
@@ -101,38 +103,4 @@ export function rewriteImages(html: string) {
   return html.replace(/(<img\b[^>]*?\ssrc=)(["'])([^"']+)\2/gi, (_m, pre, q, src) => `${pre}${q}${proxiedImage(src) || src}${q}`);
 }
 
-// --- Štatistika ------------------------------------------------------------------
-
-const BOT_RE = /(bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|whatsapp|telegram|discord|slack|skype|linkedin|twitter|embedly|preview|pinterest|vkshare|headless|lighthouse|curl|wget|python|axios|node-fetch)/i;
-
-export async function recordShareView(type: ShareType, articleId: string) {
-  try {
-    const h = await headers();
-    const ua = h.get('user-agent') || '';
-    if (!ua || BOT_RE.test(ua)) return; // náhľady odkazov (Messenger, WhatsApp…) a roboti sa nerátajú
-    const ip = (h.get('x-forwarded-for') || '').split(',')[0].trim() || h.get('x-real-ip') || '';
-    const visitorHash = hmac(`visitor:${ip}:${ua}`).slice(0, 24);
-
-    let source: string | null = null;
-    const ref = h.get('referer');
-    if (ref) {
-      try {
-        const host = new URL(ref).hostname.replace(/^www\./, '');
-        const own = (h.get('host') || '').replace(/^www\./, '');
-        if (host && host !== own) source = host.slice(0, 80);
-      } catch {
-        /* neplatný referer */
-      }
-    }
-
-    // Obnovenie stránky do 10 min sa neráta ako ďalšie kliknutie
-    const recent = await prisma.articleShareView.findFirst({
-      where: { articleType: type, articleId, visitorHash, createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) } },
-      select: { id: true }
-    });
-    if (recent) return;
-    await prisma.articleShareView.create({ data: { articleType: type, articleId, visitorHash, source } });
-  } catch (e) {
-    console.error('[articleShare] štatistika', e);
-  }
-}
+// Štatistika návštev: lib/visitorAnalytics.ts (trackShareVisit)
