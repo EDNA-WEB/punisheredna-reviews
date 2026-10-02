@@ -54,7 +54,7 @@ type Item = {
 type Facets = { types: Record<string, number>; genres: Record<string, number>; countries: Record<string, number>; services: Record<string, number> };
 
 const LIST_KEYS = ['types', 'genres', 'exGenres', 'countries', 'exCountries', 'services', 'actors', 'keywords'] as const;
-const TEXT_KEYS = ['q', 'yearFrom', 'yearTo', 'lenFrom', 'lenTo', 'ratingFrom', 'ratingTo', 'minVotes', 'maxVotes', 'addedDays', 'director', 'writer', 'camera', 'music', 'genresMode', 'sort', 'similar'] as const;
+const TEXT_KEYS = ['q', 'yearFrom', 'yearTo', 'lenFrom', 'lenTo', 'ratingFrom', 'ratingTo', 'minVotes', 'maxVotes', 'addedDays', 'director', 'writer', 'camera', 'music', 'genresMode', 'countriesMode', 'sort', 'similar'] as const;
 const FLAG_KEYS = ['cinema', 'online', 'subs', 'dub', 'hideSeen', 'onlySeen', 'onlyWatchlist', 'hasReviews', 'hasGallery', 'hasVideos', 'hasTrivia', 'upcoming', 'noCam'] as const;
 
 type ListKey = (typeof LIST_KEYS)[number];
@@ -65,7 +65,7 @@ type State = Record<ListKey, string[]> & Record<TextKey, string> & Record<FlagKe
 const EMPTY: State = {
   types: [], genres: [], exGenres: [], countries: [], exCountries: [], services: [], actors: [], keywords: [],
   q: '', yearFrom: '', yearTo: '', lenFrom: '', lenTo: '', ratingFrom: '', ratingTo: '', minVotes: '', maxVotes: '', addedDays: '',
-  director: '', writer: '', camera: '', music: '', genresMode: 'any', sort: 'popular', similar: '',
+  director: '', writer: '', camera: '', music: '', genresMode: 'any', countriesMode: 'any', sort: 'popular', similar: '',
   cinema: false, online: false, subs: false, dub: false, hideSeen: false, onlySeen: false, onlyWatchlist: false,
   hasReviews: false, hasGallery: false, hasVideos: false, hasTrivia: false, upcoming: false, noCam: false
 };
@@ -93,7 +93,7 @@ function toParams(s: State) {
   LIST_KEYS.forEach((k) => s[k].length && p.set(k, s[k].join(',')));
   TEXT_KEYS.forEach((k) => {
     const v = String(s[k] || '').trim();
-    if (!v || (k === 'genresMode' && v === 'any') || (k === 'sort' && v === 'popular')) return;
+    if (!v || ((k === 'genresMode' || k === 'countriesMode') && v === 'any') || (k === 'sort' && v === 'popular')) return;
     p.set(k, v);
   });
   FLAG_KEYS.forEach((k) => s[k] && p.set(k, '1'));
@@ -614,7 +614,8 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
     s.types.forEach((v) => tags.push({ label: valueLabel(v), clear: () => toggleIn('types', v) }));
     s.genres.forEach((v) => tags.push({ label: valueLabel(v), clear: () => toggleIn('genres', v) }));
     s.exGenres.forEach((v) => tags.push({ label: `Bez: ${valueLabel(v)}`, clear: () => toggleIn('exGenres', v) }));
-    s.countries.forEach((v) => tags.push({ label: valueLabel(v), clear: () => toggleIn('countries', v) }));
+    const cPrefix = s.countriesMode === 'primary' ? 'Původ: ' : s.countriesMode === 'secondary' ? 'Stopa: ' : '';
+    s.countries.forEach((v) => tags.push({ label: `${cPrefix}${valueLabel(v)}`, clear: () => toggleIn('countries', v) }));
     s.exCountries.forEach((v) => tags.push({ label: `Bez: ${valueLabel(v)}`, clear: () => toggleIn('exCountries', v) }));
     if (s.yearFrom || s.yearTo) tags.push({ label: `${s.yearFrom || '…'} – ${s.yearTo || '…'}`, clear: () => setS((p) => ({ ...p, yearFrom: '', yearTo: '' })) });
     if (s.ratingFrom || s.ratingTo) tags.push({ label: `Hodnocení ${s.ratingFrom || 0}–${s.ratingTo || 100} %`, clear: () => setS((p) => ({ ...p, ratingFrom: '', ratingTo: '' })) });
@@ -741,6 +742,23 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
       </Section>
 
       <Section title="Země původu" count={s.countries.length + s.exCountries.length} defaultOpen={false}>
+        <div className="flex text-[12px] font-medium bg-surface border border-line rounded-md p-0.5 mb-2.5">
+          {([
+            ['any', 'Jakákoli účast'],
+            ['primary', 'Hlavní země'],
+            ['secondary', 'Jen stopa']
+          ] as const).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => set('countriesMode', mode)}
+              title={mode === 'primary' ? 'Země, odkud film skutečně pochází (domácí tvorba)' : mode === 'secondary' ? 'Zahraniční filmy s koprodukcí nebo natáčením v dané zemi' : 'Země se na filmu jakkoli podílela'}
+              className={`flex-1 rounded-[5px] py-1 transition-colors ${s.countriesMode === mode ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <div className="relative mb-2">
           <Icon name="search" size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" />
           <input

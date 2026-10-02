@@ -272,6 +272,7 @@ export type FilterSpec = {
   upcoming: boolean; // premiéra ešte len bude
   noCam: boolean; // bez CAM verzií
   similar: string; // id alebo slug filmu — „Podobné ako…“
+  countriesMode: 'any' | 'primary' | 'secondary'; // primary = hlavná krajina pôvodu (domáca tvorba), secondary = len koprodukcia / natáčanie (stopa)
   sort: SortKey;
   page: number;
 };
@@ -355,6 +356,7 @@ export function parseFilter(p: ParamSource): FilterSpec {
     upcoming: flag(p, 'upcoming'),
     noCam: flag(p, 'noCam'),
     similar: text(p, 'similar'),
+    countriesMode: p.get('countriesMode') === 'primary' ? 'primary' : p.get('countriesMode') === 'secondary' ? 'secondary' : 'any',
     sort,
     page: Math.max(1, num(p, 'page', 1, 100000) || 1)
   };
@@ -383,19 +385,22 @@ export function activeFilterCount(f: FilterSpec) {
 
 // --- Osobné údaje (len ak treba) --------------------------------------------
 
-export type UserSets = { seen: Set<string>; watchlist: Set<string> };
+export type UserSets = { seen: Set<string>; watchlist: Set<string>; seenThisYear?: Set<string> };
 
 export async function getUserSets(userId: string | null): Promise<UserSets> {
   if (!userId) return { seen: new Set(), watchlist: new Set() };
   return memo(`movieFilter:user:${userId}`, 60 * 1000, async () => {
     const [rated, reviewed, watch, listItems] = await Promise.all([
-      prisma.rating.findMany({ where: { userId, seasonId: null, episodeId: null }, select: { movieId: true } }),
-      prisma.review.findMany({ where: { authorId: userId, seasonId: null, episodeId: null }, select: { movieId: true } }),
+      prisma.rating.findMany({ where: { userId, seasonId: null, episodeId: null }, select: { movieId: true, createdAt: true } }),
+      prisma.review.findMany({ where: { authorId: userId, seasonId: null, episodeId: null }, select: { movieId: true, createdAt: true } }),
       prisma.watchlistItem.findMany({ where: { userId }, select: { movieId: true } }),
       prisma.movieListItem.findMany({ where: { list: { authorId: userId, title: 'Chcem vidieť' } }, select: { movieId: true } })
     ]);
+    const yearStart = new Date(new Date().getFullYear(), 0, 1).getTime();
     return {
       seen: new Set([...rated, ...reviewed].map((r) => r.movieId)),
+      // videné (ohodnotené / zrecenzované) od 1. januára tohto roka
+      seenThisYear: new Set([...rated, ...reviewed].filter((r) => r.createdAt.getTime() >= yearStart).map((r) => r.movieId)),
       watchlist: new Set([...watch, ...listItems].map((r) => r.movieId))
     };
   });
@@ -420,7 +425,14 @@ function matches(m: CatalogMovie, f: FilterSpec, u: UserSets, nowMs: number, isM
     if (!ok) return false;
   }
   if (f.exGenres.length && f.exGenres.some((g) => m.genres.includes(g))) return false;
-  if (!skip.countries && f.countries.length && !f.countries.some((c) => m.countries.includes(c))) return false;
+  if (!skip.countries && f.countries.length) {
+    // „primary“ = film MUSÍ byť hlavne z danej krajiny (prvá uvedená krajina
+    // pôvodu) — odlíši domácu tvorbu od zahraničných filmov len natáčaných u nás
+    const primary = !!m.countries[0] && f.countries.includes(m.countries[0]);
+    const anyOf = f.countries.some((c) => m.countries.includes(c));
+    const ok = f.countriesMode === 'primary' ? primary : f.countriesMode === 'secondary' ? anyOf && !primary : anyOf;
+    if (!ok) return false;
+  }
   if (f.exCountries.length && f.exCountries.some((c) => m.countries.includes(c))) return false;
 
   if (f.yearFrom !== null && (m.year === null || m.year < f.yearFrom)) return false;
@@ -609,6 +621,16 @@ export async function runFilter(
 
   // Náhodný tip („Neviem, čo pozerať“) — z výsledkov, prednostne dobre hodnotené
   if (opts.random) {
+    // Tip na film: nikdy nie titul, ktorý ešte nemal premiéru, a nikdy nie
+    // titul, ktorý používateľ videl (ohodnotil/zrecenzoval) v tomto roku.
+    const thisYear = new Date().getFullYear();
+    const seenNow = userSets.seenThisYear || new Set<string>();
+    sorted = sorted.filter((m) => {
+      if (seenNow.has(m.id)) return false;
+      if (m.releaseDate && new Date(m.releaseDate).getTime() > now) return false;
+      if (!m.releaseDate && m.year !== null && m.year > thisYear) return false;
+      return true;
+    });
     const good = sorted.filter((m) => (m.percent ?? 0) >= 65);
     const pool = good.length >= 5 ? good : sorted;
     const pick = pool.length ? pool[Math.floor(Math.random() * Math.min(pool.length, 400))] : null;
