@@ -707,6 +707,8 @@ model Review {
 model Settings {
   // Dočasné verejné zdieľanie článkov (Administrace → Sdílení článků)
   articleShareEnabled Boolean @default(false)
+  // Tajná „soľ“ zdieľacích kľúčov — jej zmenou sa zneplatnia všetky odkazy
+  articleShareSalt    String?
   id            String  @id @default("singleton")
   wallpaper     String? @db.Text
   mobileWallpaper String? @db.Text
@@ -1143,4 +1145,19 @@ model Like {
   @@index([commentId])
   @@index([postId])
   @@index([newsId])
+}
+
+// Otvorenie zdieľaného článku cez zdieľací odkaz (štatistika pre administráciu).
+// visitorHash = nevratný odtlačok (IP + prehliadač) na počítanie unikátnych
+// návštevníkov — samotná IP adresa sa neukladá.
+model ArticleShareView {
+  id          String   @id @default(cuid())
+  articleType String
+  articleId   String
+  visitorHash String
+  source      String?
+  createdAt   DateTime @default(now())
+
+  @@index([articleType, articleId])
+  @@index([createdAt])
 }

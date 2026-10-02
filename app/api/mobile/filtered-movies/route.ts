@@ -13,6 +13,7 @@ export async function GET(req: Request) {
     const spec = parseFilter(searchParams);
     if (!searchParams.get('sort')) spec.sort = spec.ratingFrom ? 'rating' : 'popular';
     const viewer = await filterViewer(req);
+    if (!viewer.userId) return NextResponse.json({ error: 'Musíš být přihlášen.' }, { status: 401 });
     const r = await runFilter(spec, { ...viewer, pageSize: 40 });
     const percents = await getMoviePercents(r.items.map((m) => m.id));
     return NextResponse.json(

@@ -40,3 +40,15 @@ export default function SharedArticle({
     </main>
   );
 }
+
+// Novinka ešte nie je verejne dostupná (10 h po zverejnení) — bez odkazov.
+export function SharedUnavailable() {
+  return (
+    <main className="min-h-screen bg-bg flex items-center justify-center px-6">
+      <div className="max-w-md text-center">
+        <h1 className="font-display font-bold text-2xl text-ink mb-2">Článek zatím není dostupný</h1>
+        <p className="text-muted">Zkuste prosím odkaz otevřít později.</p>
+      </div>
+    </main>
+  );
+}

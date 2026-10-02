@@ -14,6 +14,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const spec = parseFilter(searchParams);
     const viewer = await filterViewer(req);
+    // Len pre prihlásených (web aj appka) — rovnako ako zvyšok webu
+    if (!viewer.userId) return NextResponse.json({ error: 'Musíš být přihlášen.' }, { status: 401 });
     const pageSizeRaw = Number(searchParams.get('pageSize'));
     const pageSize = Number.isFinite(pageSizeRaw) && searchParams.get('pageSize') !== null ? Math.min(60, Math.max(0, pageSizeRaw)) : 24;
 
