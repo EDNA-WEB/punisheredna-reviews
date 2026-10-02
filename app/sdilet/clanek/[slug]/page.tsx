@@ -49,7 +49,7 @@ export default async function SharedNewsPage(props: { params: Promise<{ slug: st
     <SharedArticle
       kicker="Novinka"
       title={news.title}
-      summary={news.summary}
+      summary={null} // anotácia patrí len do náhľadu článku (zoznamy, sociálne siete), nie do samotného článku
       author={news.author.name}
       date={(news.publishAt || news.createdAt).toISOString()}
       minutes={readingTime(news.body)}
