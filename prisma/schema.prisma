@@ -13,6 +13,7 @@ enum Role {
 }
 
 model User {
+  recentlyViewed RecentlyViewed[]
   id           String    @id @default(cuid())
   email        String    @unique
   lastActiveAt DateTime  @default(now())
@@ -315,6 +316,7 @@ model Thread {
 }
 
 model Movie {
+  recentlyViewed RecentlyViewed[]
   id             String   @id @default(cuid())
   title          String
   originalTitle  String?
@@ -1240,4 +1242,16 @@ model LegalRequest {
   createdAt   DateTime @default(now())
 
   @@index([receivedAt])
+}
+
+model RecentlyViewed {
+  id       String   @id @default(cuid())
+  userId   String
+  movieId  String
+  viewedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie    Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([userId, viewedAt])
 }

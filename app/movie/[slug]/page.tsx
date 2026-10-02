@@ -18,6 +18,8 @@ import Link from 'next/link';
 import { mdToHtml, youtubeEmbedUrl, youtubeVideoId } from '@/lib/markdown';
 import { displayUserName } from '@/lib/deletedUser';
 import { logActivity } from '@/lib/logActivity';
+import { recordRecentView } from '@/lib/recentlyViewed';
+import { after } from 'next/server';
 import MovieNoteBox from '@/components/MovieNoteBox';
 import SimilarMoviesBox from '@/components/SimilarMoviesBox';
 import AdminQuickEditButton from '@/components/AdminQuickEditButton';
@@ -153,6 +155,11 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
 
   if (viewerId) {
     logActivity(viewerId, `Profil filmu ${movie.title}`, `/movie/${movie.slug}`);
+    // Nedávno prohlížené — zapíše sa až po odoslaní stránky, nespomalí ju.
+    if (movie.approved) {
+      const movieId = movie.id;
+      after(() => recordRecentView(viewerId, movieId).catch((e) => console.error('[recentlyViewed]', e)));
+    }
   }
 
   const percent = computeBlendedPercent(movie.ratings, movie.tmdbVoteAverage, movie.tmdbVoteCount);

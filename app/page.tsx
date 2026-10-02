@@ -22,6 +22,8 @@ import MovieCard from '@/components/MovieCard';
 import { primaryGenreLabel } from '@/lib/genreLabel';
 import WeekendBoxOffice from '@/components/WeekendBoxOffice';
 import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
+import { getRecentlyViewedSafe } from '@/lib/recentlyViewed';
+import RecentlyViewedSection from '@/components/RecentlyViewedSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,6 +127,8 @@ export default async function HomePage() {
   ]);
 
   const recommendations = viewerId ? await getRecommendationsForUser(viewerId) : { movies: [], topGenres: [] };
+  // Nedávno prohlížené (spoločné s appkou) — len pre prihláseného.
+  const recentlyViewed = await getRecentlyViewedSafe(viewerId);
 
   const trailerPick = [...trailerVideos]
     .sort((a, b) => {
@@ -453,6 +457,8 @@ export default async function HomePage() {
         <TopVideosList />
         <TopVisitedUsersList />
       </div>
+
+      {recentlyViewed.length > 0 && <RecentlyViewedSection initialItems={recentlyViewed} />}
     </div>
   );
 }

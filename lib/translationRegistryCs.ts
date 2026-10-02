@@ -501,5 +501,9 @@ export const REGISTRY_CS: Record<string, string> = {
   "home.dnes_slavia_narodeniny": "Dnes slaví narozeniny",
   "home.naposledy_zomreli": "Naposledy zemřeli",
   "guest.na_webe_mame": "Na webu máme",
-  "guest.filmov_a_serialov": "filmů a seriálů"
+  "guest.filmov_a_serialov": "filmů a seriálů",
+  'home.nedavno_prezerane': 'Nedávno prohlížené',
+  'home.vymazat_vsetko': 'Vymazat vše',
+  'home.pridat_chcem_vidiet': 'Přidat do Chci vidět',
+  'home.odobrat_chcem_vidiet': 'Odebrat z Chci vidět'
 };
