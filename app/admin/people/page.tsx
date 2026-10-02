@@ -3,9 +3,9 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import AdminTabs from '@/components/AdminTabs';
 import AdminPersonActions from '@/components/AdminPersonActions';
 import ApprovePersonButton from '@/components/ApprovePersonButton';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,11 +28,10 @@ export default async function AdminPeoplePage() {
   ]);
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Herci a tvůrci</h1>
+          <AdminPageHeader title={<>Osobnosti</>} compact />
         </div>
         <div className="flex items-center gap-2">
           <Link href="/admin/people/hromadne" className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent">

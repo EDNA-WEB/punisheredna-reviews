@@ -2,11 +2,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import Link from 'next/link';
 import AdminMovieActions from '@/components/AdminMovieActions';
 import MovieNowShowingToggle from '@/components/MovieNowShowingToggle';
 import ApproveMovieButton from '@/components/ApproveMovieButton';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,11 +39,10 @@ export default async function AdminMoviesPage(props: { searchParams: Promise<{ t
   ];
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Filmy a seriály</h1>
+          <AdminPageHeader title={<>Filmy a seriály</>} compact />
         </div>
         <div className="flex gap-2">
           <Link

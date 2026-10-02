@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import PersonForm from '@/components/PersonForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function EditPersonPage(props: { params: Promise<{ id: string }> }) {
   const { params } = { ...props, params: await props.params };
@@ -14,9 +14,8 @@ export default async function EditPersonPage(props: { params: Promise<{ id: stri
   if (!person) return notFound();
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit osobu</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Upravit osobu</>} />
       <PersonForm initial={person} />
     </div>
   );

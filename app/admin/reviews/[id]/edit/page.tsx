@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import ReviewForm from '@/components/ReviewForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function EditReviewPage(props: { params: Promise<{ id: string }> }) {
   const { params } = { ...props, params: await props.params };
@@ -15,8 +16,8 @@ export default async function EditReviewPage(props: { params: Promise<{ id: stri
   const rating = await prisma.rating.findFirst({ where: { movieId: review.movieId, userId: review.authorId, seasonId: null, episodeId: null } });
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit recenzi</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Upravit recenzi</>} />
       <ReviewForm initial={{ id: review.id, movieId: review.movieId, body: review.body, rating: rating?.value || 0 }} movieLocked />
     </div>
   );

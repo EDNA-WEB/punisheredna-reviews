@@ -2,11 +2,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import SystemBroadcastForm from '@/components/SystemBroadcastForm';
 import RegistrationsToggle from '@/components/RegistrationsToggle';
 import OnlineFreeForAllToggle from '@/components/OnlineFreeForAllToggle';
 import { getOrCreateSystemAccount } from '@/lib/recoveryCode';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,9 +19,8 @@ export default async function AdminSystemPage() {
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true, onlineFreeForAll: true } });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Systém</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Systém</>} />
 
       <div className="mb-4">
         <RegistrationsToggle initialEnabled={settings?.registrationsEnabled ?? true} />

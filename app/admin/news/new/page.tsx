@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import NewsForm from '@/components/NewsForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function NewNewsPage() {
   const session = await getServerSession(authOptions);
@@ -10,8 +11,8 @@ export default async function NewNewsPage() {
   if (!session || (!isAdmin && !isEditor)) redirect('/login');
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Nová novinka</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Nová novinka</>} />
       {!isAdmin && isEditor && (
         <p className="text-sm text-muted mb-6 -mt-4">
           Jako redaktor můžeš v administraci přidávat jen novinky — nic jiného tu není dostupné.

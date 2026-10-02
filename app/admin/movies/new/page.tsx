@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import MovieFormWithTmdbImport from '@/components/MovieFormWithTmdbImport';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function NewMoviePage(props: { searchParams: Promise<{ type?: string }> }) {
   const { searchParams } = { ...props, searchParams: await props.searchParams };
@@ -12,8 +13,8 @@ export default async function NewMoviePage(props: { searchParams: Promise<{ type
   const title = type === 'Seriál' ? 'Přidat seriál' : type === 'TV film' ? 'Přidat TV film' : 'Přidat film';
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">{title}</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={title} />
       <MovieFormWithTmdbImport contentType={type} />
     </div>
   );

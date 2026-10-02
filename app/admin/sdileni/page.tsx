@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { forgetShareConfig, getShareConfig, shareKey } from '@/lib/articleShare';
 import ArticleShareAdmin from '@/components/admin/ArticleShareAdmin';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,12 +79,9 @@ export default async function ArticleSharePage() {
   };
 
   return (
-    <div className="admin-content">
-      <h1 className="font-display font-extrabold text-2xl text-ink mb-1">Sdílení článků</h1>
-      <p className="text-sm text-muted mb-6 max-w-2xl">
-        Dočasná funkce: nepřihlášený návštěvník uvidí přes sdílecí odkaz jen samotný článek — bez menu, hlavičky, patičky, komentářů a bez možnosti přejít
-        kamkoli jinam. Každý odkaz obsahuje tajný klíč, takže se nedá uhodnout jiný článek. Přihlášenému se článek otevře normálně.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Sdílení článků</>} description={<>Dočasná funkce: nepřihlášený návštěvník uvidí přes sdílecí odkaz jen samotný článek — bez menu, hlavičky, patičky, komentářů a bez možnosti přejít
+        kamkoli jinam. Každý odkaz obsahuje tajný klíč, takže se nedá uhodnout jiný článek. Přihlášenému se článek otevře normálně.</>} />
       <ArticleShareAdmin initialEnabled={cfg.enabled} items={items} summary={summary} />
     </div>
   );

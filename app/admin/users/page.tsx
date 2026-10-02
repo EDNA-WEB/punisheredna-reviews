@@ -2,9 +2,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import UserBanToggle from '@/components/UserBanToggle';
 import UserRestrictionsToggle from '@/components/UserRestrictionsToggle';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,9 +20,8 @@ export default async function AdminUsersPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Čtenáři</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Uživatelé</>} />
 
       {users.length === 0 ? (
         <div className="border border-line rounded-xl p-10 text-center text-muted bg-surface">

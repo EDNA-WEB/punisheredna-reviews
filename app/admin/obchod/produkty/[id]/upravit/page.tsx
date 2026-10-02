@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import ShopProductForm from '@/components/ShopProductForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,10 +20,9 @@ export default async function EditShopProductPage(props: { params: Promise<{ id:
   if (!product) notFound();
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace — Obchod</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Upravit produkt</h1>
+      <AdminPageHeader title={<>Upravit produkt</>} />
       <ShopProductForm categories={categories} initial={product} />
     </div>
   );

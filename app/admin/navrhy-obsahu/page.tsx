@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import ContentSubmissionsAdmin from '@/components/ContentSubmissionsAdmin';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,12 +21,8 @@ export default async function AdminContentSubmissionsPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Návrhy obsahu</h1>
-      <p className="text-sm text-muted mb-6">
-        Návrhy obsahu filmů/seriálů od uživatelů, čekající na schválení. Po schválení se text uloží jako "Obsah" daného filmu.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Návrhy obsahu</>} description={<>Návrhy obsahu filmů/seriálů od uživatelů, čekající na schválení. Po schválení se text uloží jako "Obsah" daného filmu.</>} />
       <ContentSubmissionsAdmin initialSubmissions={submissions} />
     </div>
   );

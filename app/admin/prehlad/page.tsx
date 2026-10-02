@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,12 +54,8 @@ export default async function AdminOverviewPage() {
   ]);
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Přehled</h1>
-      <p className="text-sm text-muted mb-6 max-w-2xl">
-        Rychlý přehled, kolik z {totalApproved} schválených filmů a seriálů je doplněných v jednotlivých oblastech — klikni na řádek pro přímý přechod do dané sekce.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Stav obsahu</>} description={<>Rychlý přehled, kolik z {totalApproved} schválených filmů a seriálů je doplněných v jednotlivých oblastech — klikni na řádek pro přímý přechod do dané sekce.</>} />
 
       <div className="max-w-2xl border border-line rounded-xl p-5 bg-card mb-6">
         <h2 className="text-xs font-bold uppercase tracking-wide text-muted mb-1">Profil filmu</h2>

@@ -133,3 +133,137 @@
 .admin-content a.text-sm.text-muted:hover {
   color: var(--color-ink);
 }
+
+/* ==========================================================================
+   Verzia 2 — vnútro sekcií v rovnakom štýle ako dashboard
+   ========================================================================== */
+
+/* Stránka a hlavička (components/admin/AdminPageHeader.tsx) */
+.admin-content .admin-page {
+  padding-top: 1.75rem;
+}
+@media (min-width: 640px) {
+  .admin-content .admin-page {
+    padding-top: 2rem;
+  }
+}
+.admin-content .admin-page-header h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+/* hlavička vedľa tlačidiel (napr. Filmy → Export / Import / Přidat) */
+.admin-content .flex.justify-between:has(> div > .admin-page-header),
+.admin-content .flex.justify-between:has(> .admin-page-header) {
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+/* Nadpisy sekcií vo vnútri stránok — ako na dashboarde */
+.admin-content .admin-page :is(h2, h3).font-display,
+.admin-content .admin-page h2:is(.text-xl, .text-lg, .text-2xl) {
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--color-ink);
+}
+
+/* Karty: rovnaké zaoblenie, tieň a pozadie ako karty na dashboarde */
+.admin-content :is(.rounded-lg, .rounded-xl, .rounded-2xl).border[class*='p-']:not(button):not(a):not(input):not(select):not(textarea):not(img) {
+  border-radius: 16px;
+}
+.admin-content :is(.rounded-xl, .rounded-2xl).border.border-line:not(button):not(a) {
+  background-color: var(--color-card);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+/* Staré oddelené sekcie („mt-12 pt-8 border-t“, napr. Vzhled webu) → karty */
+.admin-content .admin-page > div.border-t.border-line[class*='mt-'][class*='pt-'] {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background-color: var(--color-card);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+/* Tlačidlá — jednotný tvar a výška pre všetky hlavné a vedľajšie tlačidlá */
+.admin-content :is(a, button):is(.rounded-full, .rounded-lg, .rounded-xl):is(.bg-accent, .border)[class*='px-4'],
+.admin-content :is(a, button):is(.rounded-full, .rounded-lg, .rounded-xl):is(.bg-accent, .border)[class*='px-5'],
+.admin-content :is(a, button):is(.rounded-full, .rounded-lg, .rounded-xl):is(.bg-accent, .border)[class*='px-6'] {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.admin-content :is(a, button).rounded-lg:is(.bg-accent, .border),
+.admin-content :is(a, button).rounded-xl:is(.bg-accent, .border) {
+  border-radius: 10px;
+}
+.admin-content :is(a, button).bg-accent:hover {
+  background-color: var(--color-accent-dark);
+}
+
+/* Polia bez vlastnej triedy (aby vyzerali ako .field-input) */
+.admin-content :is(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='color']):not([type='hidden']), select, textarea):not(.field-input):not(.field-input-sm) {
+  border-radius: 10px;
+  border-color: var(--color-line);
+  background-color: var(--color-card);
+  color: var(--color-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.admin-content :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+.admin-content :is(input[type='checkbox'], input[type='radio'], input[type='range']) {
+  accent-color: var(--color-accent);
+}
+.admin-content input[type='checkbox'],
+.admin-content input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Popisky polí: jednotná veľkosť a farba */
+.admin-content label.block:is(.text-xs, .text-sm) {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 0.375rem;
+}
+
+/* Tabuľky v kartách: okraje a riadky */
+.admin-content table {
+  width: 100%;
+  font-size: 13.5px;
+}
+.admin-content table :is(th, td) {
+  padding: 0.7rem 0.9rem;
+}
+.admin-content table tbody tr + tr td {
+  border-top: 1px solid var(--color-line);
+}
+
+/* Odznaky stavu (Schváleno / Čeká…) — jednotný tvar */
+.admin-content span.rounded-full:is(.text-xs, .text-\[10px\], .text-\[11px\]):is([class*='bg-'], .border) {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Prázdne miesto pod poslednou kartou */
+.admin-content .admin-page > :last-child {
+  margin-bottom: 0.5rem;
+}

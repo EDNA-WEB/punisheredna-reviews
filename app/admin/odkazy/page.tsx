@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import MovieLinksAdmin from '@/components/MovieLinksAdmin';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,12 +43,8 @@ export default async function AdminOdkazyPage() {
   const missingCsfd = csfdType ? movies.filter((m) => !m.links.some((l) => l.linkTypeId === csfdType.id)).length : movies.length;
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Odkazy</h1>
-      <p className="text-sm text-muted mb-6">
-        <strong className="text-ink">{missingImdb}</strong> {missingImdb === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} IMDb odkaz, <strong className="text-ink">{missingCsfd}</strong> {missingCsfd === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} ČSFD odkaz.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Odkazy</>} description={<><strong className="text-ink">{missingImdb}</strong> {missingImdb === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} IMDb odkaz, <strong className="text-ink">{missingCsfd}</strong> {missingCsfd === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} ČSFD odkaz.</>} />
       <MovieLinksAdmin initialLinkTypes={linkTypes} initialMovies={sortedMovies} />
     </div>
   );

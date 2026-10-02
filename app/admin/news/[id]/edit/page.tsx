@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import NewsForm from '@/components/NewsForm';
 import RevisionHistory from '@/components/RevisionHistory';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function EditNewsPage(props: { params: Promise<{ id: string }> }) {
   const { params } = { ...props, params: await props.params };
@@ -19,8 +20,8 @@ export default async function EditNewsPage(props: { params: Promise<{ id: string
   const movieTitle = relatedMovie ? `${relatedMovie.title}${relatedMovie.year ? ` (${relatedMovie.year})` : ''}` : null;
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Upravit novinku</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Upravit novinku</>} />
       <div className="mb-6 max-w-2xl">
         <RevisionHistory apiBase={`/api/news/${news.id}`} />
       </div>

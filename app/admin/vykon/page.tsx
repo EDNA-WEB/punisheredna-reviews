@@ -3,9 +3,9 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import AdminTabs from '@/components/AdminTabs';
 import PerfAdminActions from '@/components/PerfAdminActions';
 import { PERF_ENABLED } from '@/lib/perfMonitor';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -198,10 +198,9 @@ export default async function AdminPerfPage(props: { searchParams?: Promise<{ ro
   const maxBar = Math.max(1, ...hourBars.map((h) => h.queries));
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
-        <h1 className="font-display font-extrabold text-3xl text-ink">Výkon a náklady databázy</h1>
+        <AdminPageHeader title={<>Výkon databáze</>} compact />
         <div className="flex gap-2">
           {RANGES.map((r) => (
             <Link

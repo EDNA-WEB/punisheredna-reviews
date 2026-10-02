@@ -2,10 +2,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import OnlineAdminList from '@/components/OnlineAdminList';
 import OnlineReportsList from '@/components/OnlineReportsList';
 import FetchTmdbPopularityButton from '@/components/FetchTmdbPopularityButton';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,12 +77,8 @@ export default async function AdminOnlinePage() {
   const missingCount = movies.length - filledCount;
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Online</h1>
-      <p className="text-sm text-muted mb-1 max-w-2xl">
-        Nastav odkaz, kam se diváci přesměrují, když kliknou na náhled v záložce "Online", a náhledový obrázek, který se jim při tom zobrazí. U seriálů můžeš rozkliknout i jednotlivé epizody a nastavit totéž pro každou zvlášť.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Online</>} description={<>Nastav odkaz, kam se diváci přesměrují, když kliknou na náhled v záložce "Online", a náhledový obrázek, který se jim při tom zobrazí. U seriálů můžeš rozkliknout i jednotlivé epizody a nastavit totéž pro každou zvlášť.</>} />
       <p className="text-sm mb-6">
         <strong className="text-ink">{filledCount}</strong> {filledCount === 1 ? 'film má' : 'filmů má'} nastavené online,{' '}
         <strong className="text-ink">{missingCount}</strong> {missingCount === 1 ? 'film ještě nemá' : 'filmů ještě nemá'} nastavené online.

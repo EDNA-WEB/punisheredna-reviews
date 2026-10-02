@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import AdminTabs from '@/components/AdminTabs';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,13 +38,9 @@ export default async function AuditLogPage(props: { searchParams: Promise<{ page
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace · Viditelné jen tobě</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Audit log</h1>
-      <p className="text-sm text-muted mb-6 max-w-2xl">
-        Podrobný záznam o tom, kdo a co udělal při vytváření a úpravě novinek/blogových článků i při spuštění hromadných nástrojů (import zajímavostí, odkazů, dat z TMDb apod.) — kdo akci spustil, kolik záznamů se jí týkalo a kdy.
-      </p>
+      <AdminPageHeader title={<>Audit log</>} description={<>Podrobný záznam o tom, kdo a co udělal při vytváření a úpravě novinek/blogových článků i při spuštění hromadných nástrojů (import zajímavostí, odkazů, dat z TMDb apod.) — kdo akci spustil, kolik záznamů se jí týkalo a kdy.</>} />
 
       {entries.length === 0 ? (
         <p className="text-sm text-muted">Zatím žádná zaznamenaná aktivita.</p>

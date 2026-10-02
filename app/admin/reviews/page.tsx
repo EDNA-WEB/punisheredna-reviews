@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
 import AdminReviewActions from '@/components/AdminReviewActions';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,11 +21,10 @@ export default async function AdminReviewsPage() {
   });
 
   return (
-    <div className="pt-8">
+    <div className="admin-page">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Recenze</h1>
-          <p className="text-sm text-muted mt-1">Posledních 300 recenzí filmů a seriálů.</p>
+          <AdminPageHeader title={<>Recenze</>} description={<>Posledních 300 recenzí filmů a seriálů.</>} compact />
         </div>
         <div className="flex gap-3">
           <Link href="/admin/movies" className="border border-line text-ink px-5 py-2.5 rounded-full text-sm font-semibold hover:border-accent hover:text-accent">

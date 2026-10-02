@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import AdminTabs from '@/components/AdminTabs';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,10 +49,9 @@ export default async function AnalyticsPage() {
   const totalViews24h = views24h.reduce((sum, v) => sum + v._count.id, 0);
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">Administrace · Viditelné jen tobě</div>
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Analytics</h1>
+      <AdminPageHeader title={<>Analytika</>} />
 
       <div className="grid grid-cols-2 gap-4 mb-8 max-w-md">
         <div className="border border-line rounded-xl p-4">

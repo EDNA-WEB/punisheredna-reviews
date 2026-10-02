@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import StreamingServicesAdmin from '@/components/StreamingServicesAdmin';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,9 +42,8 @@ export default async function AdminKdeSledovatPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-6">Kde sledovat</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Kde sledovat</>} />
       <StreamingServicesAdmin initialServices={services} initialMovies={sortedMovies} />
     </div>
   );

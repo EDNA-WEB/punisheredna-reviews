@@ -7,6 +7,7 @@ import MovieGalleryManager from '@/components/MovieGalleryManager';
 import MovieTriviaManager from '@/components/MovieTriviaManager';
 import MovieVideoManager from '@/components/MovieVideoManager';
 import SeasonManager from '@/components/SeasonManager';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function EditMoviePage(props: { params: Promise<{ id: string }> }) {
   const { params } = { ...props, params: await props.params };
@@ -62,10 +63,8 @@ export default async function EditMoviePage(props: { params: Promise<{ id: strin
   ]);
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">
-        {movie.contentType === 'Seriál' ? 'Upravit seriál' : movie.contentType === 'TV film' ? 'Upravit TV film' : 'Upravit film'}
-      </h1>
+    <div className="admin-page">
+      <AdminPageHeader title={movie.contentType === 'Seriál' ? 'Upravit seriál' : movie.contentType === 'TV film' ? 'Upravit TV film' : 'Upravit film'} />
       <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
         <MovieForm initial={movie} />
 

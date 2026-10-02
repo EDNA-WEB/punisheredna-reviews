@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import MoviePremieresAdmin from '@/components/MoviePremieresAdmin';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,12 +42,8 @@ export default async function AdminPremieresPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Premiéry</h1>
-      <p className="text-sm text-muted mb-6">
-        Vyber existující film a nastav mu data premiér v jednotlivých zemích (s distributorem) a věkové omezení. Tato data se zobrazují na profilu filmu i v přehledu Kino.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Premiéry</>} description={<>Vyber existující film a nastav mu data premiér v jednotlivých zemích (s distributorem) a věkové omezení. Tato data se zobrazují na profilu filmu i v přehledu Kino.</>} />
       <MoviePremieresAdmin initialMovies={sortedMovies} />
     </div>
   );

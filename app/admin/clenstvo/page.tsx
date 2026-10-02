@@ -2,10 +2,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import BuyMeACoffeeLinkForm from '@/components/BuyMeACoffeeLinkForm';
 import MembershipDirectSetForm from '@/components/MembershipDirectSetForm';
 import MembershipOverviewTable from '@/components/MembershipOverviewTable';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +23,8 @@ export default async function AdminMembershipPage() {
   ]);
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Členství — Golden Ticket</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Členství — Golden Ticket</>} />
       <p className="text-muted mb-6">
         Členství ověřuješ a nastavuješ ručně — po přijetí platby (např. přes BuyMeACoffee) porovnáš jméno plátce s přezdívkou na webu a nastavíš mu členství přímo níže.
       </p>

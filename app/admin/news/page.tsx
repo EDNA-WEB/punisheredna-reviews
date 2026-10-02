@@ -2,9 +2,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import Link from 'next/link';
 import AdminNewsActions from '@/components/AdminNewsActions';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +15,10 @@ export default async function AdminNewsPage() {
   const news = await prisma.newsPost.findMany({ orderBy: { createdAt: 'desc' } });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
+    <div className="admin-page">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-ink">Novinky</h1>
+          <AdminPageHeader title={<>Novinky</>} compact />
         </div>
         <Link href="/admin/news/new" className="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark">
           + Nová novinka

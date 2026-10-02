@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import TagsAdminList from '@/components/TagsAdminList';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +27,8 @@ export default async function AdminTagsPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Tagy</h1>
-      <p className="text-sm text-muted mb-6">
-        Jediné místo pro správu tagů — přidávání, mazání i úpravy. Nastavování tagů nikde jinde na webu není možné.
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Tagy</>} description={<>Jediné místo pro správu tagů — přidávání, mazání i úpravy. Nastavování tagů nikde jinde na webu není možné.</>} />
       <TagsAdminList initialMovies={sortedMovies} />
     </div>
   );

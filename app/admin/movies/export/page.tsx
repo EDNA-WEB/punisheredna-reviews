@@ -2,14 +2,15 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import MovieExportForm from '@/components/MovieExportForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function MovieExportPage() {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== 'ADMIN') redirect('/login');
 
   return (
-    <div className="pt-8">
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-8">Export seznamu filmů a seriálů</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Export seznamu filmů a seriálů</>} />
       <MovieExportForm />
     </div>
   );

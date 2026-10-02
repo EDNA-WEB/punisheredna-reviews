@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import LocalizationAdminList from '@/components/LocalizationAdminList';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +27,8 @@ export default async function AdminLocalizationPage() {
   });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Lokalizace</h1>
-      <p className="text-sm text-muted mb-6 max-w-2xl">
-        Rychlé hromadné nastavení, které filmy a seriály mají dabing, titulky, nebo ani jedno — bez nutnosti otevírat každý film zvlášť přes "Upravit film".
-      </p>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Dabing a titulky</>} description={<>Rychlé hromadné nastavení, které filmy a seriály mají dabing, titulky, nebo ani jedno — bez nutnosti otevírat každý film zvlášť přes "Upravit film".</>} />
 
       <LocalizationAdminList movies={sortedMovies} />
     </div>

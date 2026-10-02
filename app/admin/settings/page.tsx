@@ -2,13 +2,13 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import AdminTabs from '@/components/AdminTabs';
 import WallpaperForm from '@/components/WallpaperForm';
 import MobileWallpaperForm from '@/components/MobileWallpaperForm';
 import MobileLogoForm from '@/components/MobileLogoForm';
 import AppAndSocialLinksForm from '@/components/AppAndSocialLinksForm';
 import PrivacyModalTextForm from '@/components/PrivacyModalTextForm';
 import CookiesPolicyForm from '@/components/CookiesPolicyForm';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default async function AdminSettingsPage() {
   const session = await getServerSession(authOptions);
@@ -17,9 +17,8 @@ export default async function AdminSettingsPage() {
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
 
   return (
-    <div className="pt-8">
-      <AdminTabs />
-      <h1 className="font-display font-extrabold text-3xl text-ink mb-2">Vzhled webu</h1>
+    <div className="admin-page">
+      <AdminPageHeader title={<>Vzhled webu</>} />
       <p className="text-muted mb-8">
         Tapeta se zobrazí na pozadí po stranách stránky na širokých obrazovkách — přesně tam, kde by jinak bylo místo na reklamu.
       </p>
