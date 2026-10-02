@@ -14,6 +14,8 @@ import CookieConsentBanner from '@/components/CookieConsentBanner';
 import SiteFooter from '@/components/SiteFooter';
 import SiteChrome from '@/components/SiteChrome';
 import GuestSiteCount from '@/components/GuestSiteCount';
+import GuestShell from '@/components/GuestShell';
+import HideOnShared from '@/components/HideOnShared';
 import TvNavigation from '@/components/TvNavigation';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import TvModeToggle from '@/components/TvModeToggle';
@@ -159,15 +161,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               // Neprihlásený: len formulár v strede + počet filmov. Žiadna navigácia,
               // panely ani pätička — obsah webu je skrytý (middleware.ts ho aj tak
               // presmeruje sem z akejkoľvek inej adresy).
-              <>
-                <SiteWallpaper />
-                <main className="min-h-screen flex flex-col justify-center max-w-lg mx-auto px-5">
-                  {children}
-                  <GuestSiteCount />
-                </main>
-              </>
+              // Na zdieľanom článku (/sdilet/…) len samotný článok (components/GuestShell.tsx).
+              <GuestShell wallpaper={<SiteWallpaper />} count={<GuestSiteCount />}>
+                {children}
+              </GuestShell>
             )}
-            <CookieConsentBanner />
+            <HideOnShared>
+              <CookieConsentBanner />
+            </HideOnShared>
           </Providers>
         </TranslationProvider>
       </body>

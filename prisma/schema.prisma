@@ -705,6 +705,8 @@ model Review {
 }
 
 model Settings {
+  // Dočasné verejné zdieľanie článkov (Administrace → Sdílení článků)
+  articleShareEnabled Boolean @default(false)
   id            String  @id @default("singleton")
   wallpaper     String? @db.Text
   mobileWallpaper String? @db.Text

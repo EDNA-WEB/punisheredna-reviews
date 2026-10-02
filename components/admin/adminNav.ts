@@ -20,6 +20,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { href: '/admin/people', label: 'Osobnosti', icon: 'user' },
       { href: '/admin/reviews', label: 'Recenze', icon: 'star' },
       { href: '/admin/news', label: 'Novinky', icon: 'news', editor: true },
+      { href: '/admin/sdileni', label: 'Sdílení článků', icon: 'link' },
       { href: '/admin/trailers', label: 'Trailery', icon: 'play' }
     ]
   },

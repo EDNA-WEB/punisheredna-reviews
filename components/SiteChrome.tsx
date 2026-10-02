@@ -10,6 +10,8 @@ import { usePathname } from 'next/navigation';
 export default function SiteChrome({ top, footer, children }: { top: React.ReactNode; footer: React.ReactNode; children: React.ReactNode }) {
   const pathname = usePathname() || '';
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return <>{children}</>;
+  // Zdieľaný článok — bez akýchkoľvek prvkov webu
+  if (pathname.startsWith('/sdilet/')) return <>{children}</>;
   return (
     <>
       {top}

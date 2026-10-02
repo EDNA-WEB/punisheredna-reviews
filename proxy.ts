@@ -15,7 +15,8 @@ import { getToken } from 'next-auth/jwt';
 //    na konkrétne IP adresy (premenná ADMIN_ALLOWED_IPS).
 // ---------------------------------------------------------------------------
 
-const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies'];
+// /sdilet = zdieľané články (stránka sama overí, či je zdieľanie zapnuté)
+const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies', '/sdilet'];
 const isDev = process.env.NODE_ENV !== 'production';
 
 function buildCsp(nonce: string) {
