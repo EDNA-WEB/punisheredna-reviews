@@ -38,7 +38,7 @@ async function importMissing() {
   console.log('Import nedobehol celý, zvyšok sa dokončí pri ďalšom behu.');
 }
 
-// Prejde JSON stránky a pozbiera tituly v poradí, v akom sa objavujú.
+// Prejde JSON a pozbiera tituly v poradí, v akom sa objavujú.
 function collect(node, out, seen) {
   if (!node || typeof node !== 'object' || out.length >= MAX_ITEMS) return;
   if (Array.isArray(node)) {
