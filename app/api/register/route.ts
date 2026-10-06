@@ -7,8 +7,9 @@ import { issueRecoveryCode } from '@/lib/recoveryCode';
 import { sendVerificationEmail } from '@/lib/email/account';
 import { maskEmail } from '@/lib/email/util';
 import { checkEmailAllowed } from '@/lib/disposableEmail';
+import { withRegistrationLog } from '@/lib/security/registrationLog';
 
-export async function POST(req: Request) {
+async function __registerPOST(req: Request) {
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true } });
     if (settings && settings.registrationsEnabled === false) {
@@ -95,4 +96,9 @@ export async function POST(req: Request) {
     console.error(err);
     return NextResponse.json({ error: 'Registrace se nezdařila. Zkus to prosím znovu.' }, { status: 500 });
   }
+}
+
+// Bezpečnosť: každý pokus o registráciu sa zaznamená (Administrace → Bezpečnost).
+export async function POST(...args: Parameters<typeof __registerPOST>) {
+  return withRegistrationLog('web', args, __registerPOST);
 }

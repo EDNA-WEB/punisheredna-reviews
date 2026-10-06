@@ -12,7 +12,7 @@ const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof cre
 // Zároveň tu beží monitoring záťaže databázy (lib/perfMonitor.ts) — meria
 // každý dopyt a raz za minútu uloží súhrn pre dashboard Administrácia → Výkon.
 function createPrismaClient() {
-  return withSettingsCache(createMeasuredClient());
+  return withActivityLog(withSettingsCache(createMeasuredClient()));
 }
 
 function createMeasuredClient() {
@@ -85,6 +85,51 @@ function withSettingsCache(client: ReturnType<typeof createMeasuredClient>) {
             if (settingsCache.get(key)?.value === value) settingsCache.delete(key);
           });
           return value;
+        }
+      }
+    }
+  });
+}
+
+// Bezpečnosť: pri vytvorení recenzie, komentára, príspevku, správy… sa uloží
+// IP adresa autora (lib/security/activityLog.ts) — len pre úradné žiadosti.
+const ACTIVITY_MODELS: Record<string, { action: string; user: string; rel: string; target?: string }> = {
+  Review: { action: 'review', user: 'authorId', rel: 'author', target: 'movieId' },
+  Comment: { action: 'comment', user: 'userId', rel: 'user', target: 'movieId' },
+  Thread: { action: 'thread', user: 'authorId', rel: 'author', target: 'movieId' },
+  Post: { action: 'post', user: 'authorId', rel: 'author', target: 'threadId' },
+  Message: { action: 'message', user: 'senderId', rel: 'sender', target: 'receiverId' },
+  BlogPost: { action: 'blog', user: 'authorId', rel: 'author' },
+  ShopReview: { action: 'shop_review', user: 'userId', rel: 'user', target: 'productId' },
+  User: { action: 'register', user: '', rel: '' }
+};
+
+async function logCreated(model: string, data: any, result: any, upsert: boolean) {
+  const cfg = ACTIVITY_MODELS[model];
+  if (!cfg || !data || (upsert && model === 'User')) return;
+  try {
+    const userId = model === 'User' ? result?.id : data[cfg.user] ?? data[cfg.rel]?.connect?.id ?? result?.[cfg.user];
+    const targetId = cfg.target ? data[cfg.target] ?? result?.[cfg.target] ?? null : null;
+    const { recordActivity } = await import('./security/activityLog');
+    await recordActivity(userId, cfg.action, targetId);
+  } catch (err) {
+    console.error('[activityLog]', err);
+  }
+}
+
+function withActivityLog(client: ReturnType<typeof withSettingsCache>) {
+  return client.$extends({
+    query: {
+      $allModels: {
+        async create({ model, args, query }) {
+          const result = await query(args);
+          await logCreated(model, (args as any)?.data, result, false);
+          return result;
+        },
+        async upsert({ model, args, query }) {
+          const result = await query(args);
+          await logCreated(model, (args as any)?.create, result, true);
+          return result;
         }
       }
     }

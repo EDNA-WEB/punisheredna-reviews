@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
+import { recordActivity } from './security/activityLog';
 
 type FreshUserState = { role: any; banned: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
 const FRESH_TTL_MS = 30_000;
@@ -130,6 +131,7 @@ export const authOptions: NextAuthOptions = {
         token.membershipUntil = (user as any).membershipUntil || null;
         token.isEditor = (user as any).isEditor || false;
         token.authAt = Date.now();
+        await recordActivity(String(token.id), 'login');
         // "Zapamätať si ma" — zaškrtnuté: prihlásenie vydrží 10 dní, aj keď
         // používateľ medzitým zavrie prehliadač. Nezaškrtnuté: len 1 deň.
         const rememberDays = (user as any).rememberMe ? 10 : 1;

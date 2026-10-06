@@ -7,10 +7,11 @@ import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
+import { withRegistrationLog } from '@/lib/security/registrationLog';
 
 // Rovnaká logika ako webová registrácia (app/api/register): po registrácii
 // príde overovací e-mail a prihlásiť sa dá až po potvrdení adresy.
-export async function POST(req: Request) {
+async function __registerPOST(req: Request) {
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true } });
     if (settings && settings.registrationsEnabled === false) {
@@ -76,4 +77,9 @@ export async function POST(req: Request) {
     console.error('[mobile/register]', error);
     return NextResponse.json({ error: 'Registrace se nezdařila. Zkus to prosím znovu.' }, { status: 500 });
   }
+}
+
+// Bezpečnosť: každý pokus o registráciu sa zaznamená (Administrace → Bezpečnost).
+export async function POST(...args: Parameters<typeof __registerPOST>) {
+  return withRegistrationLog('app', args, __registerPOST);
 }

@@ -1329,3 +1329,37 @@ model SeenMovie {
   @@unique([userId, movieId])
   @@index([movieId])
 }
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  targetId  String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model RegistrationAttempt {
+  id          String   @id @default(cuid())
+  source      String
+  result      String
+  emailMasked String?
+  emailDomain String?
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([result, createdAt])
+}
+
+model IpLogHold {
+  userId    String   @id
+  note      String?
+  createdBy String
+  createdAt DateTime @default(now())
+}

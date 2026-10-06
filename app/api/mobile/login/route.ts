@@ -3,11 +3,12 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { signMobileToken } from '@/lib/mobileAuth';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
+import { withLoginLog } from '@/lib/security/activityLog';
 
 // Rovnaká logika overenia ako na webe (lib/auth.ts) — rovnaké uzamknutie
 // účtu po 5 nesprávnych pokusoch na 15 minút, rovnaká kontrola zablokovania.
 // Jediný rozdiel: namiesto cookie session appka dostane podpísaný token.
-export async function POST(req: Request) {
+async function __loginPOST(req: Request) {
   if (!checkIpRateLimit(req, 'mobile-login', 15 * 60_000, 15)) {
     return NextResponse.json({ error: 'Příliš mnoho pokusů. Zkus to prosím znovu za 15 minut.' }, { status: 429 });
   }
@@ -62,4 +63,9 @@ export async function POST(req: Request) {
     token,
     user: { id: user.id, name: user.name, role: user.role, avatar: user.avatar }
   });
+}
+
+// Bezpečnosť: úspešné prihlásenie v appke sa zaznamená (IP záznamy).
+export async function POST(...args: Parameters<typeof __loginPOST>) {
+  return withLoginLog(args, __loginPOST);
 }
