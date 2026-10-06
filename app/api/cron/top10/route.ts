@@ -70,7 +70,7 @@ export async function POST(req: Request) {
         year: Number.isFinite(Number(i?.year)) && Number(i?.year) > 1800 ? Number(i.year) : null
       }))
       .filter((i) => /^tt\d{6,10}$/.test(i.sourceId) && i.title);
-    const unique = Array.from(new Map(items.map((i) => [i.sourceId, i])).values()).slice(0, 10);
+    const unique = Array.from(new Map(items.map((i) => [i.sourceId, i])).values()).slice(0, 15);
     if (unique.length < 5) return NextResponse.json({ error: 'Príliš málo titulov, nič sa neuložilo.' }, { status: 400 });
 
     const found = await Promise.all(unique.map((it) => findTmdbBySourceId(it.sourceId).catch(() => null)));

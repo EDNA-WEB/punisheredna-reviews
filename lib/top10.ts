@@ -25,12 +25,14 @@ export type Top10Movie = {
 };
 export type Top10Item = Top10Movie & { inWatchlist: boolean; myRating: number; seen: boolean };
 
-// Krátky dej do karty: najviac prvé 2 vety a 200 znakov.
+// Krátky dej do karty: najviac prvé 2 vety, vždy ukončené trojbodkou
+// (ak sa v karte nezmestí ani to, prehliadač ho skráti tiež s trojbodkou).
 function shortSynopsis(text: string | null) {
   if (!text) return null;
   const clean = text.replace(/\s+/g, ' ').trim();
-  const sentences = clean.split(/(?<=[.!?…])\s+/).slice(0, 2).join(' ');
-  return sentences.length > 200 ? `${sentences.slice(0, 197).replace(/\s+\S*$/, '')}…` : sentences;
+  let out = clean.split(/(?<=[.!?…])\s+/).slice(0, 2).join(' ');
+  if (out.length > 200) out = out.slice(0, 200).replace(/\s+\S*$/, '');
+  return `${out.replace(/[\s.,;:!?…-]+$/, '')}…`;
 }
 
 const loadBase = unstable_cache(
@@ -38,7 +40,7 @@ const loadBase = unstable_cache(
     const rows = await prisma.top10Entry.findMany({
       where: { movieId: { not: null }, movie: { approved: true } },
       orderBy: { rank: 'asc' },
-      take: 10,
+      take: 10, // rebríček má až 15 titulov — zobrazí sa prvých 10, ktoré máme
       select: {
         updatedAt: true,
         movie: {
@@ -99,7 +101,7 @@ const loadBase = unstable_cache(
     });
     return { items, updatedAt };
   },
-  ['top10-v2'],
+  ['top10-v3'],
   { revalidate: 1800, tags: ['top10'] }
 );
 

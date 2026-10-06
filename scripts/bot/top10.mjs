@@ -1,5 +1,6 @@
 // Bot „Top 10 tento týden“ — spúšťa ho GitHub Actions (.github/workflows/top10.yml).
-// Raz za 24 hodín stiahne aktuálny týždenný rebríček Top 10 a pošle ho webu
+// Raz za 24 hodín stiahne aktuálny týždenný rebríček (15 titulov — keby
+// niektorý nešlo pridať, na webe sa aj tak zobrazí plných 10) a pošle ho webu
 // na /api/cron/top10. Keď sťahovanie zlyhá, na webe ostane posledný rebríček.
 //
 // Premenné prostredia: SITE_URL, CRON_SECRET, FORCE ("true" = bez čakania na 24 h)
@@ -43,7 +44,7 @@ async function gql(query) {
   return json.data;
 }
 
-function collect(node, out, seen, max = 10) {
+function collect(node, out, seen, max = 15) {
   if (!node || typeof node !== 'object' || out.length >= max) return;
   if (Array.isArray(node)) {
     for (const n of node) collect(n, out, seen, max);
@@ -63,7 +64,7 @@ const NODE = 'node { id titleText { text } originalTitleText { text } releaseYea
 
 // 1. spôsob: týždenný rebríček Top 10 (filmy aj seriály spolu)
 async function weeklyTop10() {
-  const data = await gql(`query { topMeterTitles(first: 10, topMeterTitlesType: ALL) { edges { ${NODE} } } }`);
+  const data = await gql(`query { topMeterTitles(first: 15, topMeterTitlesType: ALL) { edges { ${NODE} } } }`);
   const out = [];
   collect(data?.topMeterTitles, out, new Set());
   return out;
@@ -72,17 +73,17 @@ async function weeklyTop10() {
 // 2. spôsob (záloha): najpopulárnejšie filmy a seriály, striedavo
 async function mostPopular() {
   const data = await gql(`query {
-    movies: chartTitles(first: 10, chart: { chartType: MOST_POPULAR_MOVIES }) { edges { ${NODE} } }
-    tv: chartTitles(first: 10, chart: { chartType: MOST_POPULAR_TV_SHOWS }) { edges { ${NODE} } }
+    movies: chartTitles(first: 15, chart: { chartType: MOST_POPULAR_MOVIES }) { edges { ${NODE} } }
+    tv: chartTitles(first: 15, chart: { chartType: MOST_POPULAR_TV_SHOWS }) { edges { ${NODE} } }
   }`);
   const movies = [];
   const tv = [];
   collect(data?.movies, movies, new Set());
   collect(data?.tv, tv, new Set());
   const out = [];
-  while ((movies.length || tv.length) && out.length < 10) {
+  while ((movies.length || tv.length) && out.length < 15) {
     if (movies.length) out.push(movies.shift());
-    if (tv.length && out.length < 10) out.push(tv.shift());
+    if (tv.length && out.length < 15) out.push(tv.shift());
   }
   return out;
 }
