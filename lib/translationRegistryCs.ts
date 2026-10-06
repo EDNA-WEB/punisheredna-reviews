@@ -596,5 +596,6 @@ export const REGISTRY_CS: Record<string, string> = {
   'top10.ohodnotit': 'Ohodnotit',
   'top10.videl_som': 'Viděl jsem',
   'top10.videl': 'Viděno',
-  'top10.videny_hodnotenim': 'Ohodnocený film je označený jako viděný'
+  'top10.videny_hodnotenim': 'Ohodnocený film je označený jako viděný',
+  'top10.cely_zoznam': 'Celý žebříček'
 };

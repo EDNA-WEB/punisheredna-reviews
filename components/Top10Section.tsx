@@ -92,11 +92,11 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
 
   const Card = ({ m, highlight }: { m: Item; highlight: boolean }) => (
     <article
-      className={`rounded-xl border border-line p-3 flex gap-4 min-w-0 ${highlight ? 'bg-gradient-to-b from-accent/15 to-card' : 'bg-card'} ${
-        layout === 'home' ? 'flex-none w-[300px] sm:w-[340px] lg:w-auto lg:flex-1 snap-start' : ''
+      className={`rounded-xl border border-line p-3 flex gap-3 xl:gap-4 min-w-0 overflow-hidden h-[182px] md:h-[170px] lg:h-[221px] xl:h-[251px] ${highlight ? 'bg-gradient-to-b from-accent/15 to-card' : 'bg-card'} ${
+        layout === 'home' ? 'flex-none w-[300px] md:w-auto snap-start' : ''
       }`}
     >
-      <div className="relative flex-none w-[104px] sm:w-[130px] lg:w-[150px]">
+      <div className="relative flex-none w-[104px] md:w-[96px] lg:w-[130px] xl:w-[150px]">
         <Link href={`/movie/${m.slug}`} className="block aspect-[2/3] rounded-lg bg-surface bg-cover bg-center" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} aria-label={m.title} />
         <button
           type="button"
@@ -109,12 +109,12 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
           {m.inWatchlist ? <IconCheck className="w-4 h-4" /> : <IconPlus className="w-4 h-4" />}
         </button>
       </div>
-      <div className="min-w-0 flex flex-col gap-2 pt-0.5">
+      <div className="min-w-0 flex-1 flex flex-col gap-1.5 pt-0.5 overflow-hidden">
         <Rank n={m.rank} />
-        <Link href={`/movie/${m.slug}`} className="font-display font-bold text-ink leading-snug hover:text-accent">
+        <Link href={`/movie/${m.slug}`} className="font-display font-bold text-ink leading-snug line-clamp-2 hover:text-accent">
           {m.title}
         </Link>
-        <div className="text-xs text-muted leading-relaxed">{top10Meta(m)}</div>
+        <div className="text-xs text-muted leading-relaxed truncate">{top10Meta(m)}</div>
         <div className="flex items-center gap-4 text-sm">
           <span className="flex items-center gap-1 text-ink">
             <Star className="w-4 h-4 text-[#f5c518]" filled />
@@ -134,7 +134,7 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
           {m.seen ? <IconCheck className="w-4 h-4" /> : <Eye />}
           {m.seen ? t('top10.videl', 'Viděno') : t('top10.videl_som', 'Viděl jsem')}
         </button>
-        {m.synopsis && <p className="hidden sm:block text-xs text-muted leading-relaxed line-clamp-4">{m.synopsis}</p>}
+        {m.synopsis && <p className="hidden lg:block text-xs text-muted leading-relaxed line-clamp-3">{m.synopsis}</p>}
       </div>
     </article>
   );
@@ -153,16 +153,17 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
         </Link>
       )}
 
-      <div className={layout === 'home' ? 'flex gap-4 overflow-x-auto snap-x snap-mandatory pb-1 lg:overflow-visible [scrollbar-width:none]' : 'grid md:grid-cols-2 gap-4'}>
+      {/* Počítač: horný rad 3 filmy, spodný 7 filmov + šípka na celý zoznam. Mobil: rady sa posúvajú prstom. */}
+      <div className={layout === 'home' ? 'flex gap-4 overflow-x-auto snap-x snap-mandatory pb-1 md:grid md:grid-cols-3 md:overflow-visible md:pb-0 [scrollbar-width:none]' : 'grid md:grid-cols-2 gap-4'}>
         {big.map((m, i) => (
           <Card key={m.id} m={m} highlight={i === 0} />
         ))}
       </div>
 
       {rest.length > 0 && (
-        <div className="flex gap-4 overflow-x-auto snap-x pb-1 mt-4 lg:grid lg:grid-cols-7 lg:overflow-visible [scrollbar-width:none]">
+        <div className="flex gap-3 xl:gap-4 overflow-x-auto snap-x pb-1 mt-4 md:grid md:grid-cols-[repeat(7,minmax(0,1fr))_auto] md:overflow-visible md:pb-0 [scrollbar-width:none]">
           {rest.map((m) => (
-            <Link key={m.id} href={`/movie/${m.slug}`} className="group flex-none w-[118px] lg:w-auto snap-start rounded-xl border border-line bg-card overflow-hidden">
+            <Link key={m.id} href={`/movie/${m.slug}`} className="group flex-none w-[118px] md:w-auto snap-start rounded-xl border border-line bg-card overflow-hidden">
               <div className="relative aspect-[2/3] bg-surface bg-cover bg-center" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined}>
                 <span className="absolute top-0 left-0">
                   <Rank n={m.rank} small />
@@ -171,6 +172,17 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
               <div className="px-2.5 py-2 text-sm font-semibold text-ink truncate group-hover:text-accent">{m.title}</div>
             </Link>
           ))}
+          <Link
+            href="/top-10"
+            aria-label={t('top10.cely_zoznam', 'Celý žebříček')}
+            title={t('top10.cely_zoznam', 'Celý žebříček')}
+            className="group flex-none self-center flex flex-col items-center gap-2 px-2 text-xs font-semibold text-muted hover:text-accent"
+          >
+            <span className="w-11 h-11 rounded-full border border-line bg-card flex items-center justify-center text-ink group-hover:border-accent group-hover:text-accent transition-colors">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+            </span>
+            <span className="whitespace-nowrap">{t('top10.cely_zoznam', 'Celý žebříček')}</span>
+          </Link>
         </div>
       )}
 

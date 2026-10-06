@@ -683,5 +683,6 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'top10.ohodnotit', group: 'Hlavná stránka', sk: 'Ohodnotiť' },
   { key: 'top10.videl_som', group: 'Hlavná stránka', sk: 'Videl som' },
   { key: 'top10.videl', group: 'Hlavná stránka', sk: 'Videné' },
-  { key: 'top10.videny_hodnotenim', group: 'Hlavná stránka', sk: 'Ohodnotený film je označený ako videný' }
+  { key: 'top10.videny_hodnotenim', group: 'Hlavná stránka', sk: 'Ohodnotený film je označený ako videný' },
+  { key: 'top10.cely_zoznam', group: 'Hlavná stránka', sk: 'Celý rebríček' }
 ];

@@ -11,7 +11,8 @@ const ENTRIES = [
   { key: 'top10.ohodnotit', sk: 'Ohodnotiť', cs: 'Ohodnotit' },
   { key: 'top10.videl_som', sk: 'Videl som', cs: 'Viděl jsem' },
   { key: 'top10.videl', sk: 'Videné', cs: 'Viděno' },
-  { key: 'top10.videny_hodnotenim', sk: 'Ohodnotený film je označený ako videný', cs: 'Ohodnocený film je označený jako viděný' }
+  { key: 'top10.videny_hodnotenim', sk: 'Ohodnotený film je označený ako videný', cs: 'Ohodnocený film je označený jako viděný' },
+  { key: 'top10.cely_zoznam', sk: 'Celý rebríček', cs: 'Celý žebříček' }
 ];
 let problems = 0;
 const nlOf = (s) => (s.includes('\r\n') ? '\r\n' : '\n');

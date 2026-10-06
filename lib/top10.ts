@@ -25,6 +25,14 @@ export type Top10Movie = {
 };
 export type Top10Item = Top10Movie & { inWatchlist: boolean; myRating: number; seen: boolean };
 
+// Krátky dej do karty: najviac prvé 2 vety a 200 znakov.
+function shortSynopsis(text: string | null) {
+  if (!text) return null;
+  const clean = text.replace(/\s+/g, ' ').trim();
+  const sentences = clean.split(/(?<=[.!?…])\s+/).slice(0, 2).join(' ');
+  return sentences.length > 200 ? `${sentences.slice(0, 197).replace(/\s+\S*$/, '')}…` : sentences;
+}
+
 const loadBase = unstable_cache(
   async (): Promise<{ items: Top10Movie[]; updatedAt: string | null }> => {
     const rows = await prisma.top10Entry.findMany({
@@ -85,13 +93,13 @@ const loadBase = unstable_cache(
         runtime: m.runtimeMinutes ?? null,
         episodes: epBy.get(m.id) || 0,
         ageRating: m.ageRating ?? null,
-        synopsis: m.synopsis ? (m.synopsis.length > 320 ? `${m.synopsis.slice(0, 317)}…` : m.synopsis) : null,
+        synopsis: shortSynopsis(m.synopsis),
         percent: ((computeBlendedPercent(values as any, m.tmdbVoteAverage, m.tmdbVoteCount) as number | null) ?? null)
       };
     });
     return { items, updatedAt };
   },
-  ['top10-v1'],
+  ['top10-v2'],
   { revalidate: 1800, tags: ['top10'] }
 );
 
