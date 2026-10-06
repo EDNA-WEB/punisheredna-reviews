@@ -12,6 +12,10 @@ const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof cre
 // Zároveň tu beží monitoring záťaže databázy (lib/perfMonitor.ts) — meria
 // každý dopyt a raz za minútu uloží súhrn pre dashboard Administrácia → Výkon.
 function createPrismaClient() {
+  return withSettingsCache(createMeasuredClient());
+}
+
+function createMeasuredClient() {
   const base = new PrismaClient();
   return base.$extends({
     query: {
@@ -47,3 +51,42 @@ function convertBigInts(value: any): any {
 export const prisma = globalForPrisma.prisma || createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+// Výkon: tabuľka Settings (jeden riadok s nastaveniami webu) sa čítala pri
+// každom zobrazení stránky – na /login aj tisíckrát za deň. Čítanie sa teraz
+// pamätá 60 sekúnd v rámci inštancie servera. Akýkoľvek zápis do Settings
+// pamäť okamžite vymaže, takže admin vidí zmenu hneď; ostatné inštancie
+// najneskôr do minúty.
+const SETTINGS_TTL_MS = 60_000;
+const SETTINGS_READS = new Set(['findUnique', 'findFirst', 'findUniqueOrThrow', 'findFirstOrThrow']);
+const settingsCache: Map<string, { at: number; value: Promise<unknown> }> =
+  ((globalThis as any).__settingsCache ||= new Map());
+
+function withSettingsCache(client: ReturnType<typeof createMeasuredClient>) {
+  return client.$extends({
+    query: {
+      settings: {
+        async $allOperations({ operation, args, query }) {
+          if (!SETTINGS_READS.has(operation)) {
+            settingsCache.clear();
+            try {
+              return await query(args);
+            } finally {
+              settingsCache.clear();
+            }
+          }
+          const key = operation + ':' + JSON.stringify(args ?? {});
+          const now = Date.now();
+          const hit = settingsCache.get(key);
+          if (hit && now - hit.at < SETTINGS_TTL_MS) return hit.value as any;
+          const value = Promise.resolve(query(args));
+          settingsCache.set(key, { at: now, value });
+          value.catch(() => {
+            if (settingsCache.get(key)?.value === value) settingsCache.delete(key);
+          });
+          return value;
+        }
+      }
+    }
+  });
+}

@@ -421,21 +421,29 @@ export const getCachedVodPremieres = unstable_cache(
 // akejkoľvek stránky.
 export const getCachedSiteStats = unstable_cache(
   async () => {
-    const movies = await prisma.movie.findMany({
-      where: { approved: true },
-      select: { synopsis: true, watchUrl: true, seasons: { select: { episodes: { select: { onlineUrl: true } } } } }
-    });
-
-    const czechRegex = /[řěů]/i;
-    const totalMovies = movies.length;
-    const czechCount = movies.filter((m) => m.synopsis && czechRegex.test(m.synopsis)).length;
-    const onlineCount = movies.filter(
-      (m) => m.watchUrl || m.seasons.some((s) => s.episodes.some((e) => e.onlineUrl))
-    ).length;
-
-    return { totalMovies, czechCount, onlineCount };
+    // Výkon: počíta priamo databáza (predtým sa sťahovali deje všetkých filmov).
+    const rows = await prisma.$queryRaw<{ total: number; czech: number; online: number }[]>`
+      SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE m."synopsis" ~ '[řěůŘĚŮ]')::int AS czech,
+        COUNT(*) FILTER (
+          WHERE (m."watchUrl" IS NOT NULL AND m."watchUrl" <> '')
+             OR EXISTS (
+               SELECT 1 FROM "Season" s
+               JOIN "Episode" e ON e."seasonId" = s."id"
+               WHERE s."movieId" = m."id" AND e."onlineUrl" IS NOT NULL AND e."onlineUrl" <> ''
+             )
+        )::int AS online
+      FROM "Movie" m
+      WHERE m."approved" = true`;
+    const r = rows[0];
+    return {
+      totalMovies: Number(r?.total ?? 0),
+      czechCount: Number(r?.czech ?? 0),
+      onlineCount: Number(r?.online ?? 0)
+    };
   },
-  ['site-stats-panel'],
+  ['site-stats-panel-v2'],
   { revalidate: 1800 }
 );
 

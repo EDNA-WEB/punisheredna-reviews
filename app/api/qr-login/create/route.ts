@@ -6,6 +6,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 // Krátka platnosť — 3 minúty. Ak sa QR kód medzitým nenaskenuje a nepotvrdí,
 // jednoducho vyprší a prehliadač si (podľa potreby) vypýta nový.
 const EXPIRY_MINUTES = 3;
+const BOT_UA = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly|whatsapp|telegram|discord/i;
 
 export async function POST(req: Request) {
   // Ochrana proti zneužitiu — niekto by mohol skúšať vytvárať veľké množstvo
@@ -15,8 +16,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Příliš mnoho pokusů. Zkus to prosím za chvíli znovu.' }, { status: 429 });
   }
 
-  const expiresAt = new Date(Date.now() + EXPIRY_MINUTES * 60_000);
   const requestingDevice = req.headers.get('user-agent');
+  // Výkon: roboty nedostanú QR reláciu (žiadny zápis do databázy).
+  if (!requestingDevice || BOT_UA.test(requestingDevice)) {
+    return NextResponse.json({ error: 'QR přihlášení není dostupné.' }, { status: 403 });
+  }
+  const expiresAt = new Date(Date.now() + EXPIRY_MINUTES * 60_000);
 
   const session = await prisma.qrLoginSession.create({
     data: { status: 'pending', expiresAt, requestingDevice }

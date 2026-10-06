@@ -110,11 +110,25 @@ export type CatalogMovie = {
   fTags: string[];
 };
 
-async function loadCatalog(): Promise<CatalogMovie[]> {
-  const [rows, agg] = await Promise.all([
-    prisma.movie.findMany({
-    where: { approved: true },
-    select: {
+// Výkon: katalóg je príliš veľký na jednu položku zdieľanej cache (limit
+// 2 MB), preto sa ukladá po častiach. Inštancia servera si ho tak poskladá
+// z cache za zlomok sekundy namiesto ťahania celej filmotéky z databázy.
+const CATALOG_CHUNK = 250;
+
+const getCatalogCount = unstable_cache(
+  () => prisma.movie.count({ where: { approved: true } }),
+  ['movie-filter-count-v1'],
+  { revalidate: 900, tags: ['movie-filter'] }
+);
+
+const getCatalogChunk = unstable_cache(
+  async (index: number) => {
+    const rows = await prisma.movie.findMany({
+      where: { approved: true },
+      orderBy: { id: 'asc' },
+      skip: index * CATALOG_CHUNK,
+      take: CATALOG_CHUNK,
+      select: {
       id: true,
       title: true,
       originalTitle: true,
@@ -146,9 +160,29 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
       keywords: { select: { name: true } },
       premiereDates: { orderBy: { releaseDate: 'asc' }, take: 1, select: { type: true } }
     }
-    }),
-    getCatalogAggregates()
-  ]);
+    });
+    return rows.map((m) => ({
+      ...m,
+      releaseDate: m.releaseDate ? new Date(m.releaseDate).toISOString() : null,
+      createdAt: new Date(m.createdAt).getTime(),
+      boxOffice: m.boxOffice ? Number(m.boxOffice) : 0
+    }));
+  },
+  ['movie-filter-chunk-v1'],
+  { revalidate: 900, tags: ['movie-filter'] }
+);
+
+async function loadCatalog(): Promise<CatalogMovie[]> {
+  const [total, agg] = await Promise.all([getCatalogCount(), getCatalogAggregates()]);
+  // +1 časť navyše pre filmy pridané od posledného spočítania.
+  const chunkCount = Math.ceil(total / CATALOG_CHUNK) + 1;
+  const chunks = await Promise.all(Array.from({ length: chunkCount }, (_, i) => getCatalogChunk(i)));
+  const seen = new Set<string>();
+  const rows = chunks.flat().filter((m) => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
 
   return rows.map((m) => {
     const yearNum = m.year ? parseInt(m.year, 10) : NaN;
@@ -187,8 +221,8 @@ async function loadCatalog(): Promise<CatalogMovie[]> {
       nowShowing: m.nowShowing,
       online: !!m.watchUrl || services.length > 0,
       isCamVersion: m.isCamVersion,
-      releaseDate: m.releaseDate ? m.releaseDate.toISOString() : null,
-      createdAt: m.createdAt.getTime(),
+      releaseDate: m.releaseDate,
+      createdAt: m.createdAt,
       popularity: m.tmdbPopularity || 0,
       percent: computeBlendedPercent(ratingValues, m.tmdbVoteAverage, m.tmdbVoteCount) ?? null,
       votes: a[1] + (m.tmdbVoteCount || 0),

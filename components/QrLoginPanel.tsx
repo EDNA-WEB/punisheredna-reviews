@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useT } from './TranslationProvider';
 
+const BOT_UA = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly|whatsapp|telegram|discord/i;
+
 export default function QrLoginPanel() {
   const t = useT();
   const [qrSvg, setQrSvg] = useState('');
@@ -59,8 +61,28 @@ export default function QrLoginPanel() {
   }
 
   useEffect(() => {
-    createSession();
+    // Výkon: roboty (vyhľadávače, náhľady odkazov) QR kód nepotrebujú –
+    // predtým každá ich návšteva vytvorila v databáze novú reláciu.
+    const ua = navigator.userAgent || '';
+    if ((navigator as any).webdriver || BOT_UA.test(ua)) {
+      setExpired(true);
+      return;
+    }
+    // Kód sa vytvorí až keď je karta naozaj viditeľná (nie pri otvorení na pozadí).
+    let waiting = false;
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', onVisible);
+      waiting = false;
+      createSession();
+    };
+    if (document.visibilityState === 'visible') createSession();
+    else {
+      waiting = true;
+      document.addEventListener('visibilitychange', onVisible);
+    }
     return () => {
+      if (waiting) document.removeEventListener('visibilitychange', onVisible);
       if (pollRef.current) clearInterval(pollRef.current);
       if (tickRef.current) clearInterval(tickRef.current);
     };
@@ -120,7 +142,7 @@ export default function QrLoginPanel() {
         // Dočasný výpadok siete pri jednom pokuse nie je dôvod prestať skúšať —
         // ďalší pokus príde o pár sekúnd znova.
       }
-    }, 2500);
+    }, 3000);
 
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
