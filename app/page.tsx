@@ -1,3 +1,4 @@
+import Top10Home from '@/components/Top10Home';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { publishedNewsFilterForMember, movieVisibleFilter } from '@/lib/publishedFilter';
@@ -343,10 +344,7 @@ export default async function HomePage() {
         />
       </div>
 
-      <MovieMiniList
-        title={t('home.naposledy_pridane')}
-        items={recentMovies.map((m) => ({ id: m.id, title: m.title, slug: m.slug, year: m.year, poster: m.poster, genre: firstGenre(m.genres), country: m.countries }))}
-      />
+      <Top10Home viewerId={viewerId} />
 
       {latestReviews.length > 0 && (
         <div className="mt-12 border border-line rounded-xl bg-card p-4 sm:p-5">

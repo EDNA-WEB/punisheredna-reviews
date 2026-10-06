@@ -677,5 +677,11 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'unsub.news', group: 'E-maily a účet', sk: 'Novinky z KrálFilmu' },
   { key: 'unsub.online', group: 'E-maily a účet', sk: 'Film z Chcem vidieť alebo Obľúbených je online' },
   { key: 'unsub.potvrdit', group: 'E-maily a účet', sk: 'Odhlásiť odber' },
-  { key: 'unsub.text', group: 'E-maily a účet', sk: 'Prestaneme ti posielať e-maily:' }
+  { key: 'unsub.text', group: 'E-maily a účet', sk: 'Prestaneme ti posielať e-maily:' },
+  { key: 'top10.nadpis', group: 'Hlavná stránka', sk: 'Top 10 tento týždeň' },
+  { key: 'top10.popis', group: 'Hlavná stránka', sk: 'Čo tento týždeň najviac sledujú diváci' },
+  { key: 'top10.ohodnotit', group: 'Hlavná stránka', sk: 'Ohodnotiť' },
+  { key: 'top10.videl_som', group: 'Hlavná stránka', sk: 'Videl som' },
+  { key: 'top10.videl', group: 'Hlavná stránka', sk: 'Videné' },
+  { key: 'top10.videny_hodnotenim', group: 'Hlavná stránka', sk: 'Ohodnotený film je označený ako videný' }
 ];

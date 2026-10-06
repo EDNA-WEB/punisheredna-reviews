@@ -1,0 +1,30 @@
+name: Top 10 tento tyden
+
+# Raz denne (bot sám overí, či od poslednej aktualizácie uplynulo 24 hodín;
+# druhý beh je záloha pre prípad výpadku).
+on:
+  schedule:
+    - cron: '17 5 * * *'
+    - cron: '17 17 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Aktualizovat hned'
+        type: boolean
+        default: false
+
+jobs:
+  aktualizace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Stahnout a odeslat rebricek
+        run: node scripts/bot/top10.mjs
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          FORCE: ${{ github.event.inputs.force || 'false' }}

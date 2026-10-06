@@ -590,5 +590,11 @@ export const REGISTRY_CS: Record<string, string> = {
   'unsub.news': 'Novinky z KrálFilmu',
   'unsub.online': 'Film z Chci vidět nebo Oblíbených je online',
   'unsub.potvrdit': 'Odhlásit odběr',
-  'unsub.text': 'Přestaneme ti posílat e-maily:'
+  'unsub.text': 'Přestaneme ti posílat e-maily:',
+  'top10.nadpis': 'Top 10 tento týden',
+  'top10.popis': 'Co tento týden nejvíc sledují diváci',
+  'top10.ohodnotit': 'Ohodnotit',
+  'top10.videl_som': 'Viděl jsem',
+  'top10.videl': 'Viděno',
+  'top10.videny_hodnotenim': 'Ohodnocený film je označený jako viděný'
 };

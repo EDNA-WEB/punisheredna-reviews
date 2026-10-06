@@ -13,6 +13,7 @@ enum Role {
 }
 
 model User {
+  seenMovies SeenMovie[]
   mustVerifyEmail      Boolean   @default(false)
   verificationSentAt   DateTime?
   passwordResetHash    String?   @unique
@@ -325,6 +326,8 @@ model Thread {
 }
 
 model Movie {
+  seenBy SeenMovie[]
+  top10Entries Top10Entry[]
   onlineNotifiedAt DateTime?
   fanFavorites FanFavorite[]
   recentlyViewed RecentlyViewed[]
@@ -1297,4 +1300,32 @@ model EmailDomainRule {
   allow     Boolean  @default(false)
   note      String?
   createdAt DateTime @default(now())
+}
+
+model Top10Entry {
+  id          String   @id @default(cuid())
+  rank        Int
+  sourceId    String   @unique
+  title       String
+  year        Int?
+  tmdbId      Int?
+  mediaType   String?
+  movieId     String?
+  movie       Movie?   @relation(fields: [movieId], references: [id], onDelete: SetNull)
+  importError String?
+  updatedAt   DateTime @default(now())
+
+  @@index([rank])
+}
+
+model SeenMovie {
+  id        String   @id @default(cuid())
+  userId    String
+  movieId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([movieId])
 }
