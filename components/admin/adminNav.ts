@@ -41,6 +41,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     label: 'Komunita',
     items: [
       { href: '/admin/users', label: 'Uživatelé', icon: 'users' },
+      { href: '/admin/blokovane-emaily', label: 'Blokované e-maily', icon: 'users' },
       { href: '/admin/navrhy-obsahu', label: 'Návrhy obsahu', icon: 'inbox' },
       { href: '/admin/nahlasenia', label: 'Nahlášení', icon: 'flag' },
       { href: '/admin/upozornenia', label: 'Upozornění', icon: 'bell' },

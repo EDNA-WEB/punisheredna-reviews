@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sendVerificationEmail } from '@/lib/email/account';
 import { maskEmail } from '@/lib/email/util';
+import { checkEmailAllowed } from '@/lib/disposableEmail';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
@@ -41,6 +42,12 @@ export async function POST(req: Request) {
     const normalizedEmail = String(email).toLowerCase().trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       return NextResponse.json({ error: 'Zadaj platnú e-mailovú adresu.' }, { status: 400 });
+    }
+
+    // Dočasné e-maily (10minutemail, temp-mail…) a neexistujúce domény neprijímame.
+    const emailCheck = await checkEmailAllowed(normalizedEmail);
+    if (!emailCheck.ok) {
+      return NextResponse.json({ error: emailCheck.message, code: 'EMAIL_NOT_ALLOWED' }, { status: 400 });
     }
 
     const [existingEmail, existingNickname] = await Promise.all([

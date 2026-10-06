@@ -1291,3 +1291,10 @@ model EmailThrottle {
 
   @@index([sentAt])
 }
+
+model EmailDomainRule {
+  domain    String   @id
+  allow     Boolean  @default(false)
+  note      String?
+  createdAt DateTime @default(now())
+}

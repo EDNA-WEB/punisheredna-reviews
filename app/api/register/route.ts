@@ -6,6 +6,7 @@ import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
 import { sendVerificationEmail } from '@/lib/email/account';
 import { maskEmail } from '@/lib/email/util';
+import { checkEmailAllowed } from '@/lib/disposableEmail';
 
 export async function POST(req: Request) {
   try {
@@ -50,6 +51,12 @@ export async function POST(req: Request) {
     const normalizedEmail = String(email).toLowerCase().trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       return NextResponse.json({ error: 'Zadaj platnú e-mailovú adresu.' }, { status: 400 });
+    }
+
+    // Dočasné e-maily (10minutemail, temp-mail…) a neexistujúce domény neprijímame.
+    const emailCheck = await checkEmailAllowed(normalizedEmail);
+    if (!emailCheck.ok) {
+      return NextResponse.json({ error: emailCheck.message, code: 'EMAIL_NOT_ALLOWED' }, { status: 400 });
     }
 
     const [existingEmail, existingNickname] = await Promise.all([
