@@ -53,6 +53,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Tento účet byl zablokován administrátorem.' }, { status: 403 });
   }
 
+  // Nový účet sa prihlási až po overení e-mailu (staršie účty majú mustVerifyEmail = false).
+  if ((user as any).mustVerifyEmail && !(user as any).emailVerified) {
+    return NextResponse.json({ error: 'Účet ještě není ověřený. Klikni na odkaz v e-mailu, který jsme ti poslali.', code: 'EMAIL_NOT_VERIFIED' }, { status: 403 });
+  }
   const token = signMobileToken({ userId: user.id, name: user.name, role: user.role });
   return NextResponse.json({
     token,

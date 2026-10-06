@@ -16,7 +16,7 @@ import { getToken } from 'next-auth/jwt';
 // ---------------------------------------------------------------------------
 
 // /sdilet = zdieľané články (stránka sama overí, či je zdieľanie zapnuté)
-const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies', '/sdilet'];
+const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/obnoveni-hesla', '/nove-heslo', '/odhlasit-odber', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies', '/sdilet'];
 const isDev = process.env.NODE_ENV !== 'production';
 
 function buildCsp(nonce: string) {

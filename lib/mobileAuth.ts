@@ -35,6 +35,12 @@ export async function getMobileUser(req: Request) {
     // obrazovka ich má ~15) — záznam si pamätáme 20 s namiesto dopytu pri každej.
     const user = await memo(`mobile-user:${decoded.userId}`, 20_000, async () => prisma.user.findUnique({ where: { id: decoded.userId } }));
     if (!user || user.banned) return null;
+    // Neoverený nový účet sa do appky neprihlási (pozri /api/mobile/login).
+    if ((user as any).mustVerifyEmail && !user.emailVerified) return null;
+    // Po zmene hesla prestanú platiť všetky staršie prihlásenia.
+    const changedAt = (user as any).passwordChangedAt ? new Date((user as any).passwordChangedAt).getTime() : 0;
+    const issuedAt = ((decoded as any).iat || 0) * 1000;
+    if (changedAt && issuedAt < changedAt - 1000) return null;
     return user;
   } catch {
     return null;

@@ -1,56 +1,41 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import AuthCard from '@/components/email/AuthCard';
+import { primaryButton } from '@/components/email/authStyles';
+import ResendVerificationButton from '@/components/email/ResendVerificationButton';
+import { verifyEmailToken } from '@/lib/email/account';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
 
-export default function VerifyEmailPage() {
-  const searchParams = useSearchParams();
-  const token = searchParams?.get('token');
-  const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setMessage('Chýba overovací token v odkaze.');
-      return;
-    }
-    fetch('/api/verify-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token })
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        setStatus('ok');
-      })
-      .catch((err) => {
-        setStatus('error');
-        setMessage(err.message || 'Overenie zlyhalo.');
-      });
-  }, [token]);
+// Overenie e-mailu z odkazu v e-maile (/overit-email?token=…).
+export default async function VerifyEmailPage(props: { searchParams: Promise<{ token?: string }> }) {
+  const { token = '' } = await props.searchParams;
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (k: string, f: string) => dict[k] || f;
+  const result = await verifyEmailToken(token);
+
+  if (result === 'ok' || result === 'already') {
+    return (
+      <AuthCard icon="ok" title={t('email.overeny_nadpis', 'E-mail ověřen')}>
+        <p>{result === 'ok' ? t('email.overeny_text', 'Účet je aktivní. Vítej na KrálFilmu.cz.') : t('email.uz_overeny', 'Tento e-mail už je ověřený.')}</p>
+        <Link href="/login" className={`${primaryButton} block mt-6`}>
+          {t('auth.prihlasit', 'Přihlásit se')}
+        </Link>
+      </AuthCard>
+    );
+  }
 
   return (
-    <div className="max-w-md mx-auto pt-16 text-center">
-      {status === 'loading' && <p className="text-muted">Ověřuji tvůj e-mail…</p>}
-      {status === 'ok' && (
-        <>
-          <h1 className="font-display font-extrabold text-2xl text-ink mb-3">E-mail overený! ✅</h1>
-          <p className="text-muted mb-6">Tvůj účet je teď plně aktivní. Můžeš se přihlásit.</p>
-          <Link href="/login" className="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-accent-dark">
-            Přihlásit se
-          </Link>
-        </>
+    <AuthCard icon="warn" title={t('email.vyprsal_nadpis', 'Odkaz vypršel')}>
+      <p>{t('email.vyprsal_text', 'Tento odkaz už neplatí nebo byl použit. Pošli si nový, zabere to pár vteřin.')}</p>
+      {result === 'expired' ? (
+        <ResendVerificationButton token={token} primary initialWait={0} />
+      ) : (
+        <p className="mt-4 text-xs text-white/50">{t('email.vyprsal_prihlas', 'Nový odkaz si pošleš při pokusu o přihlášení.')}</p>
       )}
-      {status === 'error' && (
-        <>
-          <h1 className="font-display font-extrabold text-2xl text-ink mb-3">Ověření se nezdařilo</h1>
-          <p className="text-danger mb-6">{message}</p>
-          <Link href="/login" className="text-accent font-semibold hover:underline">Zpět na přihlášení</Link>
-        </>
-      )}
-    </div>
+      <Link href="/login" className="text-accent text-xs font-semibold hover:underline inline-block mt-4">
+        {t('email.spat_na_prihlasenie', 'Zpět na přihlášení')}
+      </Link>
+    </AuthCard>
   );
 }

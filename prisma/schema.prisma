@@ -13,6 +13,15 @@ enum Role {
 }
 
 model User {
+  mustVerifyEmail      Boolean   @default(false)
+  verificationSentAt   DateTime?
+  passwordResetHash    String?   @unique
+  passwordResetExpires DateTime?
+  passwordResetSentAt  DateTime?
+  passwordChangedAt    DateTime?
+  emailNews            Boolean   @default(false)
+  emailOnline          Boolean   @default(true)
+  emailMessages        Boolean   @default(true)
   recentlyViewed RecentlyViewed[]
   id           String    @id @default(cuid())
   email        String    @unique
@@ -316,6 +325,7 @@ model Thread {
 }
 
 model Movie {
+  onlineNotifiedAt DateTime?
   fanFavorites FanFavorite[]
   recentlyViewed RecentlyViewed[]
   id             String   @id @default(cuid())
@@ -782,6 +792,8 @@ model TrailerView {
 }
 
 model NewsPost {
+  emailedAt    DateTime?
+  emailedCount Int?
   id         String    @id @default(cuid())
   title      String
   slug       String    @unique
@@ -1271,4 +1283,11 @@ model FanFavorite {
   updatedAt   DateTime @default(now())
 
   @@index([rank])
+}
+
+model EmailThrottle {
+  key    String   @id
+  sentAt DateTime @default(now())
+
+  @@index([sentAt])
 }

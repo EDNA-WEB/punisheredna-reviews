@@ -165,7 +165,7 @@ export default function LoginPage() {
                 {loading ? t('auth.prihlasujem') : t('auth.prihlasit')}
               </button>
 
-              <Link href="/zabudnute-heslo" className="block text-xs text-accent hover:underline mt-1">
+              <Link href="/obnoveni-hesla" className="block text-xs text-accent hover:underline mt-1">
                 {t('auth.pomozte_mi')}
               </Link>
             </form>

@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
+import { sendVerificationEmail } from '@/lib/email/account';
+import { maskEmail } from '@/lib/email/util';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
-import { signMobileToken } from '@/lib/mobileAuth';
 
-// Rovnaká logika ako webová registrácia (app/api/register) — appka navyše
-// po úspešnej registrácii rovno dostane prihlasovací token, nech sa
-// používateľ nemusí ešte raz prihlasovať zvlášť.
+// Rovnaká logika ako webová registrácia (app/api/register): po registrácii
+// príde overovací e-mail a prihlásiť sa dá až po potvrdení adresy.
 export async function POST(req: Request) {
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true } });
@@ -56,19 +55,16 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     const user = await prisma.user.create({
-      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, verificationToken }
+      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true }
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
 
-    const token = signMobileToken({ userId: user.id, name: user.name, role: user.role });
-    return NextResponse.json({
-      token,
-      user: { id: user.id, name: user.name, role: user.role, avatar: user.avatar }
-    });
+    // Bez potvrdenia e-mailu sa nový účet neprihlási — appka ukáže „Zkontroluj e-mail“.
+    await sendVerificationEmail(user.id, { ignoreCooldown: true }).catch((err) => console.error('sendVerificationEmail', err));
+    return NextResponse.json({ ok: true, needsVerification: true, email: maskEmail(normalizedEmail) });
   } catch (error) {
     console.error('[mobile/register]', error);
     return NextResponse.json({ error: 'Registrace se nezdařila. Zkus to prosím znovu.' }, { status: 500 });

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import CaptchaField from '@/components/CaptchaField';
 import { useT } from '@/components/TranslationProvider';
@@ -59,10 +58,8 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registrace se nezdařila.');
 
-      const signInRes = await signIn('credentials', { redirect: false, nickname, password });
-      if (signInRes?.error) throw new Error('Účet byl vytvořen, ale přihlášení se nezdařilo. Zkus se přihlásit ručně.');
-
-      window.location.href = '/';
+      // Bez potvrdenia e-mailu sa nový účet neprihlási → stránka „Zkontroluj svůj e-mail“.
+      window.location.href = `/overit-email/odeslano?n=${encodeURIComponent(nickname.trim())}&e=${encodeURIComponent(data.email || '')}`;
     } catch (err: any) {
       setError(err.message);
       setCaptchaKey((k) => k + 1);

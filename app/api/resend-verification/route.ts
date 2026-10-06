@@ -1,32 +1,29 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { sendEmail } from '@/lib/resend';
+import { sendVerificationEmail } from '@/lib/email/account';
 
+export const dynamic = 'force-dynamic';
+
+// Opätovné poslanie overovacieho e-mailu. Prijme prezývku, e-mail alebo
+// starý (prepadnutý) token z odkazu. Navonok nikdy neprezradí, či účet existuje.
 export async function POST(req: Request) {
-  const { nickname } = await req.json();
-  if (!nickname) return NextResponse.json({ error: 'Chýba prezývka.' }, { status: 400 });
+  const body = await req.json().catch(() => ({}));
+  const nickname = typeof body?.nickname === 'string' ? body.nickname.trim().slice(0, 60) : '';
+  const email = typeof body?.email === 'string' ? body.email.toLowerCase().trim().slice(0, 200) : '';
+  const token = typeof body?.token === 'string' ? body.token.slice(0, 200) : '';
+  if (!nickname && !email && !token) return NextResponse.json({ error: 'Chybí údaje.' }, { status: 400 });
 
-  const user = await prisma.user.findFirst({ where: { name: { equals: String(nickname).trim(), mode: 'insensitive' } } });
-  // Zámerne nehlásime, či prezývka existuje alebo nie — nech to nie je zneužiteľné
-  // na zisťovanie, kto je u nás registrovaný.
-  if (!user || user.emailVerified) {
-    return NextResponse.json({ ok: true });
+  const user = token
+    ? await prisma.user.findUnique({ where: { verificationToken: token }, select: { id: true } })
+    : email
+      ? await prisma.user.findUnique({ where: { email }, select: { id: true } })
+      : await prisma.user.findFirst({ where: { name: { equals: nickname, mode: 'insensitive' } }, select: { id: true } });
+
+  if (user) {
+    const r = await sendVerificationEmail(user.id);
+    if (!r.ok && r.reason === 'cooldown') {
+      return NextResponse.json({ error: `Odkaz půjde poslat znovu za ${r.retryIn} s.`, retryIn: r.retryIn }, { status: 429 });
+    }
   }
-
-  const verificationToken = crypto.randomBytes(32).toString('hex');
-  await prisma.user.update({ where: { id: user.id }, data: { verificationToken } });
-
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
-  await sendEmail({
-    to: user.email,
-    subject: 'Potvrď svoj e-mail — KrálFilmu.cz',
-    html: `
-      <p>Ahoj ${user.name},</p>
-      <p>tu je nový odkaz na potvrdenie tvojej e-mailovej adresy:</p>
-      <p><a href="${verifyUrl}">${verifyUrl}</a></p>
-    `
-  }).catch((err) => console.error('sendEmail (opätovné odoslanie)', err));
-
   return NextResponse.json({ ok: true });
 }

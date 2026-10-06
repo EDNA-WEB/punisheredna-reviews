@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
 import { verifyCaptcha } from '@/lib/captcha';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
-// import { sendEmail } from '@/lib/resend'; // dočasne nepoužívané, pozri komentár nižšie
+import { sendVerificationEmail } from '@/lib/email/account';
+import { maskEmail } from '@/lib/email/util';
 
 export async function POST(req: Request) {
   try {
@@ -64,32 +64,19 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     // Verejná registrácia vytvára vždy len čitateľský účet — administrátorov
     // možno vytvoriť len cez "npx prisma db seed" alebo priamo v databáze.
     const user = await prisma.user.create({
-      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, verificationToken }
+      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true }
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
 
-    // DOČASNE VYPNUTÉ — spolu s kontrolou v lib/auth.ts. Resend zatiaľ nevie doručiť
-    // na ľubovoľnú adresu (chýba vlastná overená doména), takže by sa tento e-mail
-    // stále odosielal nadarmo. Znova zapnúť odkomentovaním, hneď ako bude doména hotová.
-    // const verifyUrl = `${process.env.NEXTAUTH_URL}/overit-email?token=${verificationToken}`;
-    // await sendEmail({
-    //   to: normalizedEmail,
-    //   subject: 'Potvrď svoj e-mail — KrálFilmu.cz',
-    //   html: `
-    //     <p>Ahoj ${trimmedNickname},</p>
-    //     <p>ďakujeme za registráciu na KrálFilmu.cz. Pre dokončenie registrácie prosím potvrď svoju e-mailovú adresu kliknutím na odkaz nižšie:</p>
-    //     <p><a href="${verifyUrl}">${verifyUrl}</a></p>
-    //     <p>Ak si sa na našom webe neregistroval, tento e-mail jednoducho ignoruj.</p>
-    //   `
-    // }).catch((err) => console.error('sendEmail (overenie)', err));
+    // Overovací e-mail — bez potvrdenia adresy sa nový účet neprihlási.
+    await sendVerificationEmail(user.id, { ignoreCooldown: true }).catch((err) => console.error('sendVerificationEmail', err));
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, needsVerification: true, email: maskEmail(normalizedEmail) });
   } catch (err: any) {
     if (err?.code === 'P2002') {
       // Dvaja ľudia sa pokúsili zaregistrovať s rovnakou prezývkou/e-mailom v tom istom okamihu.

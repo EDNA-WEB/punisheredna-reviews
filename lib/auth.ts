@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 
-type FreshUserState = { role: any; banned: boolean; membershipUntil: Date | null; isEditor: boolean } | null;
+type FreshUserState = { role: any; banned: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
 const FRESH_TTL_MS = 30_000;
 const freshCache: Map<string, { at: number; value: FreshUserState }> =
   (globalThis as any).__authFreshCache || ((globalThis as any).__authFreshCache = new Map());
@@ -13,7 +13,7 @@ async function getFreshUserState(userId: string): Promise<FreshUserState> {
   if (hit && Date.now() - hit.at < FRESH_TTL_MS) return hit.value;
   const value = await prisma.user.findUnique({
     where: { id: userId },
-    select: { role: true, banned: true, membershipUntil: true, isEditor: true }
+    select: { role: true, banned: true, membershipUntil: true, isEditor: true, passwordChangedAt: true }
   });
   freshCache.set(userId, { at: Date.now(), value });
   if (freshCache.size > 5000) freshCache.clear(); // poistka proti rastu pamäte
@@ -104,12 +104,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error('BANNED');
         }
 
-        // DOČASNE VYPNUTÉ — overovacie e-maily zatiaľ nemôžu chodiť na ľubovoľné adresy,
-        // kým nie je v Resend overená vlastná doména. Znova zapnúť odkomentovaním nižšie,
-        // hneď ako bude doména hotová.
-        // if (!user.emailVerified) {
-        //   throw new Error('UNVERIFIED');
-        // }
+        // Nové účty (od zapnutia e-mailov) sa prihlásia až po overení e-mailu.
+        // Staršie účty majú mustVerifyEmail = false a fungujú ďalej bez zmeny.
+        if (user.mustVerifyEmail && !user.emailVerified) {
+          throw new Error('UNVERIFIED');
+        }
 
         return {
           id: user.id,
@@ -130,6 +129,7 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role;
         token.membershipUntil = (user as any).membershipUntil || null;
         token.isEditor = (user as any).isEditor || false;
+        token.authAt = Date.now();
         // "Zapamätať si ma" — zaškrtnuté: prihlásenie vydrží 10 dní, aj keď
         // používateľ medzitým zavrie prehliadač. Nezaškrtnuté: len 1 deň.
         const rememberDays = (user as any).rememberMe ? 10 : 1;
@@ -144,7 +144,9 @@ export const authOptions: NextAuthOptions = {
         // každej požiadavke. Výsledok si preto pamätáme 30 s — zablokovanie či
         // zmena práv sa prejaví najneskôr do pol minúty.
         const fresh = await getFreshUserState(token.id as string);
-        if (!fresh || fresh.banned) {
+        // Po zmene hesla (napr. z odkazu v e-maile) sa odhlásia všetky staršie prihlásenia.
+        const changedAt = fresh?.passwordChangedAt ? new Date(fresh.passwordChangedAt).getTime() : 0;
+        if (!fresh || fresh.banned || (changedAt && Number(token.authAt || 0) < changedAt)) {
           token.invalid = true;
         } else {
           token.role = fresh.role;

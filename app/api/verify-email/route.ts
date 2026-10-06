@@ -1,24 +1,13 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { verifyEmailToken } from '@/lib/email/account';
 
-import { hasInjectedObject } from '@/lib/inputGuard';
+export const dynamic = 'force-dynamic';
+
+// Overenie e-mailu (používa ho appka; web overuje priamo na stránke /overit-email).
 export async function POST(req: Request) {
-  const { token } = await req.json();
-  if (hasInjectedObject(token)) return NextResponse.json({ error: 'Neplatné údaje.' }, { status: 400 });
-  if (!token) return NextResponse.json({ error: 'Chýba overovací token.' }, { status: 400 });
-
-  const user = await prisma.user.findUnique({ where: { verificationToken: token } });
-  if (!user) {
-    return NextResponse.json({ error: 'Ověřovací odkaz je neplatný nebo už byl použit.' }, { status: 404 });
-  }
-  if (user.emailVerified) {
-    return NextResponse.json({ ok: true, alreadyVerified: true });
-  }
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { emailVerified: true, verificationToken: null }
-  });
-
-  return NextResponse.json({ ok: true });
+  const body = await req.json().catch(() => ({}));
+  const result = await verifyEmailToken(typeof body?.token === 'string' ? body.token : '');
+  if (result === 'ok' || result === 'already') return NextResponse.json({ ok: true, alreadyVerified: result === 'already' });
+  if (result === 'expired') return NextResponse.json({ error: 'Odkaz vypršel. Pošli si nový.', code: 'EXPIRED' }, { status: 410 });
+  return NextResponse.json({ error: 'Ověřovací odkaz je neplatný nebo už byl použit.', code: 'INVALID' }, { status: 404 });
 }
