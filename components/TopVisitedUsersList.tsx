@@ -31,8 +31,8 @@ export default async function TopVisitedUsersList() {
   if (items.length === 0) return null;
 
   return (
-    <div className="border border-line rounded-xl p-4 bg-card">
-      <h3 className="font-display font-bold text-sm text-ink mb-3">{t['home.najsledovanejsi_pouzivatelia'] || 'Najsledovanejší používatelia'}</h3>
+    <div className="border border-line rounded-xl p-4 sm:p-5 bg-card">
+      <h3 className="font-display font-bold text-base text-ink mb-4">{t['home.najsledovanejsi_pouzivatelia'] || 'Najsledovanejší používatelia'}</h3>
       <div className="space-y-3">
         {items.map(({ user, count }, i) => (
           <Link key={user!.id} href={`/profile/${user!.id}`} className="flex items-center gap-3 group">

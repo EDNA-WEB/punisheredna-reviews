@@ -98,7 +98,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
               <IconChevronRight className="w-5 h-5" />
             </button>
 
-            <div className="absolute bottom-10 sm:bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+            <div className="absolute bottom-5 right-4 sm:bottom-6 sm:right-5 flex items-center gap-1.5 z-10">
               {trailers.map((t, i) => (
                 <button
                   key={t.id}

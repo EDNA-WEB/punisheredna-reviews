@@ -684,5 +684,10 @@ export const TRANSLATION_REGISTRY: TranslationEntry[] = [
   { key: 'top10.videl_som', group: 'Hlavná stránka', sk: 'Videl som' },
   { key: 'top10.videl', group: 'Hlavná stránka', sk: 'Videné' },
   { key: 'top10.videny_hodnotenim', group: 'Hlavná stránka', sk: 'Ohodnotený film je označený ako videný' },
-  { key: 'top10.cely_zoznam', group: 'Hlavná stránka', sk: 'Celý rebríček' }
+  { key: 'top10.cely_zoznam', group: 'Hlavná stránka', sk: 'Celý rebríček' },
+  { key: 'home.recenzie_nadpis', group: 'Hlavná stránka', sk: 'Recenzie' },
+  { key: 'home.tab_nove', group: 'Hlavná stránka', sk: 'Nové recenzie' },
+  { key: 'home.tab_kritici', group: 'Hlavná stránka', sk: 'Overení kritici' },
+  { key: 'home.tab_oblubeni', group: 'Hlavná stránka', sk: 'Od obľúbených' },
+  { key: 'top10.popis_home', group: 'Hlavná stránka', sk: 'Najsledovanejšie filmy a seriály tohto týždňa' }
 ];

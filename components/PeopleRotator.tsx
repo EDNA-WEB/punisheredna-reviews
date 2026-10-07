@@ -8,8 +8,8 @@ import { IconCake, IconCandle } from './Icons';
 
 // Jeden box na hlavnej stránke namiesto štyroch: Najsledovanejší herci →
 // tvorcovia → Dnes slávia narodeniny → Naposledy zomreli. Každých 30 s sa
-// sám prepne. Prepínanie ako "stories": tenké pásiky hore (aktívny sa
-// postupne plní, klik na pásik = skok na skupinu), bez tlačidiel s textom.
+// sám prepne. Prepínanie cez pomenované záložky v hlavičke (aktívna sa
+// postupne podčiarkuje, klik = skok na skupinu).
 // Prechod: staré fotky odplávajú doľava s rozostrením, cez box prebehne
 // jemný svetelný záblesk a nové fotky nabehnú jedna po druhej.
 // Pri prejdení myšou sa striedanie pozastaví.
@@ -65,7 +65,7 @@ export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[];
 
   return (
     <div
-      className="mt-8 border border-line rounded-xl bg-card min-w-0 overflow-hidden relative"
+      className="border border-line rounded-xl bg-card min-w-0 overflow-hidden relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -93,48 +93,49 @@ export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[];
         />
       )}
 
-      <div className="p-4 pt-3">
-        {/* Pásiky ("stories") — aktívny sa plní, klik = skok na skupinu */}
-        {visible.length > 1 && (
-          <div className="flex gap-1.5 mb-3" role="tablist">
-            {visible.map((t, i) => (
-              <button
-                key={t.key}
-                type="button"
-                role="tab"
-                aria-selected={i === idx}
-                aria-label={t.title}
-                title={t.title}
-                onClick={() => go(i)}
-                className="flex-1 py-1.5 group"
-              >
-                <span className="block h-[3px] rounded-full bg-line overflow-hidden group-hover:bg-muted/40 transition-colors">
-                  {i < idx && <span className="block h-full w-full bg-accent/60 rounded-full" />}
-                  {i === idx && (
-                    <span
-                      key={`bar-${cycle}`}
-                      className="block h-full w-full bg-accent rounded-full origin-left"
-                      style={{ animation: `prBar ${INTERVAL_S}s linear both`, animationPlayState: paused ? 'paused' : 'running' }}
-                      onAnimationEnd={() => go(idx + 1)}
-                    />
-                  )}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Nadpis aktívnej skupiny + "viac" */}
-        <div className="flex items-center justify-between gap-3 mb-3 min-h-[24px]">
-          <h3 key={`t-${cycle}`} className="pr-motion font-display font-bold text-sm text-ink flex items-center gap-2 min-w-0" style={{ animation: 'prTitleIn .6s cubic-bezier(.16,1,.3,1) both' }}>
+      <div className="p-4 sm:p-5">
+        {/* Hlavička: nadpis aktívnej skupiny, pomenované záložky (aktívna sa
+            postupne podčiarkuje — po naplnení sa prepne na ďalšiu) a „více“. */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 key={`t-${cycle}`} className="pr-motion font-display font-bold text-base text-ink flex items-center gap-2 min-w-0" style={{ animation: 'prTitleIn .6s cubic-bezier(.16,1,.3,1) both' }}>
             {icon}
             <span className="truncate">{tab.title}</span>
-          </h3>
-          {tab.moreHref && (
-            <Link href={tab.moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
-              {moreLabel}
-            </Link>
-          )}
+          </h2>
+          <div className="flex items-center gap-3 min-w-0">
+            {visible.length > 1 && (
+              <div className="flex gap-1 bg-surface p-1 rounded-full overflow-x-auto [scrollbar-width:none]" role="tablist">
+                {visible.map((t, i) => (
+                  <button
+                    key={t.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === idx}
+                    title={t.title}
+                    onClick={() => go(i)}
+                    className={`relative overflow-hidden px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                      i === idx ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'
+                    }`}
+                  >
+                    {t.label}
+                    {i === idx && (
+                      <span
+                        key={`bar-${cycle}`}
+                        aria-hidden
+                        className="absolute left-2 right-2 bottom-0.5 h-[2px] rounded-full bg-accent origin-left"
+                        style={{ animation: `prBar ${INTERVAL_S}s linear both`, animationPlayState: paused ? 'paused' : 'running' }}
+                        onAnimationEnd={() => go(idx + 1)}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+            {tab.moreHref && (
+              <Link href={tab.moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
+                {moreLabel}
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Obsah — stará skupina odchádza, nová nabieha */}

@@ -25,6 +25,7 @@ import WeekendBoxOffice from '@/components/WeekendBoxOffice';
 import { getWeekendBoxOffice } from '@/lib/weekendBoxOffice';
 import { getRecentlyViewedSafe } from '@/lib/recentlyViewed';
 import RecentlyViewedSection from '@/components/RecentlyViewedSection';
+import HomeReviewsTabs from '@/components/HomeReviewsTabs';
 import { getFanFavorites, FAN_ROW_LIMIT } from '@/lib/fanFavorites';
 import FanFavoritesSection from '@/components/FanFavoritesSection';
 
@@ -240,20 +241,47 @@ export default async function HomePage() {
 
   const firstGenre = (g: string | null) => (g || '').split(',').map((x) => x.trim()).filter(Boolean)[0] || null;
 
+  // Recenzie — jedna sekcia so záložkami (namiesto troch boxov pod sebou).
+  const reviewGrid = (list: typeof latestReviews, critic = false) => (
+    <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1 [scrollbar-width:none]">
+      {list.slice(0, 4).map((r) => {
+        const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
+        return (
+          <div key={r.id} className="flex-none w-[78%] sm:w-auto snap-start">
+            <ReviewPreviewCard
+              slug={r.movie.slug}
+              body={r.body}
+              author={r.author}
+              rating={myRating?.value || 0}
+              movieTitle={r.movie.title}
+              movieYear={r.movie.year}
+              moviePoster={r.movie.poster}
+              showCriticBadge={critic}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+  const reviewTabs = [
+    latestReviews.length > 0 && { key: 'nove', label: t('home.tab_nove'), href: '/recenzie/nove', content: reviewGrid(latestReviews) },
+    criticReviews.length > 0 && { key: 'kritici', label: t('home.tab_kritici'), href: '/recenzie/kritici', content: reviewGrid(criticReviews, true) },
+    favoriteReviews.length > 0 && { key: 'oblubeni', label: t('home.tab_oblubeni'), href: '/recenzie/oblubencov', content: reviewGrid(favoriteReviews as typeof latestReviews) }
+  ].filter(Boolean) as { key: string; label: string; href: string; content: React.ReactNode }[];
+
+  // Poradie a rozostupy hlavnej stránky (návrh v2): všade rovnaká medzera
+  // medzi sekciami (space-y-10), sekcie samy vonkajšie okraje nemajú.
   return (
-    <div className="pt-6">
-      <div className="lg:flex lg:gap-6 lg:items-start mb-12">
-        <div className="w-full lg:w-[576px] lg:flex-none">
+    <div className="pt-6 space-y-10">
+      {/* 1 — Trailer | V kinech brzy + súťaž (rovnaká výška oboch stĺpcov) */}
+      <div className="lg:flex lg:gap-6 lg:items-stretch">
+        <div className="w-full lg:w-[600px] lg:flex-none">
           <TrailerCarousel trailers={trailers} />
         </div>
-        <div className="hidden lg:block flex-1 min-w-0 mt-6 lg:mt-0">
+        <div className="hidden lg:flex flex-col gap-4 flex-1 min-w-0">
           <PremieresList />
-          <Link href="/sutaz/hbo" className="block mt-4 relative rounded-xl overflow-hidden group">
-            <img
-              src="/sutaz-hbo-banner.jpg"
-              alt="Soutěž o předplatné HBO na celý rok"
-              className="w-full block"
-            />
+          <Link href="/sutaz/hbo" className="block relative rounded-xl overflow-hidden group">
+            <img src="/sutaz-hbo-banner.jpg" alt="Soutěž o předplatné HBO na celý rok" className="w-full block" />
             <img
               src="/sutaz-hbo-banner-hover.jpg"
               alt=""
@@ -263,10 +291,18 @@ export default async function HomePage() {
         </div>
       </div>
 
+      <div className="lg:hidden">
+        <PremieresList />
+      </div>
+
+      {/* 2 — Top 10 tento týden */}
+      <Top10Home viewerId={viewerId} />
+
+      {/* 3 — Oblíbené mezi fanoušky */}
       {fanFavorites.length > 0 && <FanFavoritesSection initialItems={fanFavorites} />}
 
       {recommendations.movies.length > 0 && (
-        <div className="mb-12">
+        <div>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-display font-extrabold text-xl text-ink">Odporúčame pre teba</h2>
@@ -300,37 +336,30 @@ export default async function HomePage() {
         </div>
       )}
 
-      <div className="lg:hidden mb-12">
-        <PremieresList />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-        <div className="border border-line rounded-xl p-4 bg-card">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-sm text-ink">{t('home.novinky')}</h3>
+      {/* 4 — Novinky | Nejsledovanější seriály (rovnaká výška) */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="border border-line rounded-xl p-4 sm:p-5 bg-card min-w-0">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold text-base text-ink">{t('home.novinky')}</h2>
             <Link href="/novinky" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              více
+              {t('home.viac')}
             </Link>
           </div>
 
           {news.length === 0 ? (
             <p className="text-sm text-muted">Zatím žádné novinky.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="divide-y divide-line">
               {news.map((n) => (
-                <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group">
+                <Link key={n.id} href={`/news/${n.slug}`} className="flex gap-3 group py-3 first:pt-0 last:pb-0">
                   <div
                     className="w-20 h-20 rounded-lg bg-surface bg-cover bg-center flex-none"
                     style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
                   />
                   <div className="min-w-0">
-                    <div className="text-[11px] text-muted mb-0.5">
-                      {new Date(n.createdAt).toLocaleDateString('cs-CZ')}
-                    </div>
-                    <h4 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                      {n.title}
-                    </h4>
-                    <p className="text-xs text-muted line-clamp-2 mt-0.5">{n.summary}</p>
+                    <div className="text-[11px] text-muted mb-0.5">{new Date(n.createdAt).toLocaleDateString('cs-CZ')}</div>
+                    <h3 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">{n.title}</h3>
+                    <p className="text-xs text-muted line-clamp-1 mt-0.5">{n.summary}</p>
                   </div>
                 </Link>
               ))}
@@ -340,98 +369,16 @@ export default async function HomePage() {
 
         <MovieMiniList
           title={t('home.najsledovanejsie_serialy')}
+          moreHref="/recenzie?types=Seri%C3%A1l&sort=popular"
+          moreLabel={t('home.viac')}
           items={popularSeries.map((s) => ({ id: s.id, title: s.title, slug: s.slug, year: s.year, poster: s.poster, genre: firstGenre(s.genres), country: s.countries }))}
         />
       </div>
 
-      <Top10Home viewerId={viewerId} />
+      {/* 5 — Recenze (záložky Nové / Ověření kritici / Od oblíbených) */}
+      {reviewTabs.length > 0 && <HomeReviewsTabs title={t('home.recenzie_nadpis')} moreLabel={t('home.viac')} tabs={reviewTabs} />}
 
-      {latestReviews.length > 0 && (
-        <div className="mt-12 border border-line rounded-xl bg-card p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-bold text-base text-ink">{t('home.nove_recenzie')}</h2>
-            <Link href="/recenzie/nove" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              více
-            </Link>
-          </div>
-          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">
-            {latestReviews.slice(0, 4).map((r) => {
-              const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
-              return (
-                <div key={r.id} className="flex-none w-[78%] sm:w-auto snap-start">
-                <ReviewPreviewCard
-                  slug={r.movie.slug}
-                  body={r.body}
-                  author={r.author}
-                  rating={myRating?.value || 0}
-                  movieTitle={r.movie.title}
-                  movieYear={r.movie.year}
-                  moviePoster={r.movie.poster}
-                />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-      {favoriteReviews.length > 0 && (
-        <div className="mt-8 border border-line rounded-xl bg-card p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-bold text-base text-ink">{t('home.recenzie_oblubenych')}</h2>
-            <Link href="/recenzie/oblubencov" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              více
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {favoriteReviews.slice(0, 4).map((r) => {
-              const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
-              return (
-                <ReviewPreviewCard
-                  key={r.id}
-                  slug={r.movie.slug}
-                  body={r.body}
-                  author={r.author}
-                  rating={myRating?.value || 0}
-                  movieTitle={r.movie.title}
-                  movieYear={r.movie.year}
-                  moviePoster={r.movie.poster}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
-      {criticReviews.length > 0 && (
-        <div className="mt-8 border border-line rounded-xl bg-card p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-bold text-base text-ink">{t('home.recenzie_kritikov')}</h2>
-            <Link href="/recenzie/kritici" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
-              více
-            </Link>
-          </div>
-          <div className="flex sm:grid sm:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1">
-            {criticReviews.slice(0, 4).map((r) => {
-              const myRating = r.movie.ratings.find((rt) => rt.userId === r.authorId);
-              return (
-                <div key={r.id} className="flex-none w-[78%] sm:w-auto snap-start">
-                <ReviewPreviewCard
-                  slug={r.movie.slug}
-                  body={r.body}
-                  author={r.author}
-                  rating={myRating?.value || 0}
-                  movieTitle={r.movie.title}
-                  movieYear={r.movie.year}
-                  moviePoster={r.movie.poster}
-                  showCriticBadge
-                />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Herci / tvorcovia / narodeniny / zosnulí — jeden box, strieda sa každých 30 s */}
+      {/* 6 — Herci / tvůrci / narozeniny / zemřeli (pomenované záložky) */}
       <PeopleRotator
         moreLabel={t('home.viac')}
         tabs={[
@@ -442,13 +389,15 @@ export default async function HomePage() {
         ]}
       />
 
+      {/* 7 — Top box office (USA) */}
       <WeekendBoxOffice data={weekendBoxOffice} t={t} />
 
-      <div className="mt-8 grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4 empty:hidden">
         <TopVideosList />
         <TopVisitedUsersList />
       </div>
 
+      {/* 8 — Nedávno prohlížené (vždy dole) */}
       {recentlyViewed.length > 0 && <RecentlyViewedSection initialItems={recentlyViewed} />}
     </div>
   );

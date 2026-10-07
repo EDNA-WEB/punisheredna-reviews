@@ -22,11 +22,17 @@ function Row({ e, t, className = '' }: { e: BoxOfficeEntry; t: T; className?: st
     <>
       <span className="w-5 text-center font-display font-bold text-sm text-muted flex-none tabular-nums">{e.rank}</span>
       <div className="relative w-9 h-12 rounded-md overflow-hidden bg-surface flex-none shadow-sm">
-        {e.poster && (
+        {e.poster ? (
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
             style={{ backgroundImage: `url('${e.poster}')` }}
           />
+        ) : (
+          // Film bez plagátu — ikonka namiesto prázdneho sivého obdĺžnika.
+          <svg className="absolute inset-0 m-auto w-4 h-4 text-muted/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="M3 9h18M8 5v4M16 5v4" />
+          </svg>
         )}
       </div>
       <div className="min-w-0 flex-1">
@@ -58,7 +64,7 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
   const right = data.entries.slice(5, 10);
 
   return (
-    <div className="mt-8 border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0">
+    <div className="border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0">
       <div className="flex items-center justify-between mb-4 gap-3">
         <div className="min-w-0">
           <h2 className="font-display font-bold text-base text-ink">{t('boxoffice_vikend.nadpis')}</h2>

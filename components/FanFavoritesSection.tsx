@@ -67,16 +67,17 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
   const watchLabel = (m: Item) => (m.inWatchlist ? t('home.odobrat_chcem_vidiet', 'Odebrat z Chci vidět') : t('home.pridat_chcem_vidiet', 'Přidat do Chci vidět'));
 
   return (
-    <section className={grid ? '' : 'mb-12'} aria-labelledby={grid ? undefined : 'oblibene-fanousci'} aria-label={grid ? t('home.oblubene_fanusikovia', 'Oblíbené mezi fanoušky') : undefined}>
+    <section aria-labelledby={grid ? undefined : 'oblibene-fanousci'} aria-label={grid ? t('home.oblubene_fanusikovia', 'Oblíbené mezi fanoušky') : undefined}>
       {!grid && (
       <div className="flex items-end justify-between gap-4 mb-4">
         <div>
-          <Link href={FAN_PAGE_PATH} className="group inline-flex items-center gap-1.5">
+          <Link href={FAN_PAGE_PATH} className="group inline-flex items-center gap-2">
+            <span className="w-1 h-6 rounded-full bg-[#f5c518]" aria-hidden="true" />
             <h2 id="oblibene-fanousci" className="font-display font-extrabold text-xl text-ink group-hover:text-accent transition-colors">{t('home.oblubene_fanusikovia', 'Oblíbené mezi fanoušky')}</h2>
             <svg className="w-6 h-6 text-ink group-hover:text-accent group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
             <span className="sr-only">{t('fans.zobrazit_vsetky', 'Zobrazit všechny')}</span>
           </Link>
-          <p className="text-xs text-muted mt-0.5">{t('home.oblubene_popis', 'Co tento týden nejvíc zajímá diváky')}</p>
+          <p className="text-xs text-muted mt-0.5 pl-3">{t('home.oblubene_popis', 'Co tento týden nejvíc zajímá diváky')}</p>
         </div>
         <div className="hidden sm:flex gap-2">
           <button type="button" onClick={() => scroll(-1)} aria-label={t('home.posunut_vlavo', 'Posunout doleva')} className="w-10 h-10 rounded-full border border-line bg-card text-ink hover:border-accent flex items-center justify-center">
@@ -96,7 +97,7 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
         {items.map((m) => (
           <article
             key={m.id}
-            className={`${grid ? '' : 'flex-none w-[164px] sm:w-[188px] snap-start '}rounded-xl border border-line bg-card overflow-hidden flex flex-col`}
+            className={`${grid ? '' : 'flex-none w-[150px] sm:w-[172px] lg:w-[calc((100%-80px)/6)] snap-start '}rounded-xl border border-line bg-card overflow-hidden flex flex-col`}
           >
             <div className="relative">
               {grid && (
@@ -138,7 +139,7 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
                 <button
                   type="button"
                   onClick={() => toggleWatchlist(m)}
-                  className={`h-9 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                  className={`h-8 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                     m.inWatchlist ? 'bg-accent text-white' : 'bg-surface text-accent hover:bg-line'
                   }`}
                 >
@@ -146,12 +147,12 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
                   {t('movie.chcem_vidiet', 'Chci vidět')}
                 </button>
                 {m.trailerId ? (
-                  <button type="button" onClick={() => setTrailerFor(m)} className="h-9 rounded-full text-xs font-semibold text-ink hover:bg-surface flex items-center justify-center gap-1.5">
+                  <button type="button" onClick={() => setTrailerFor(m)} className="h-8 rounded-full text-xs font-semibold text-ink hover:bg-surface flex items-center justify-center gap-1.5">
                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
                     {t('home.trailer', 'Trailer')}
                   </button>
                 ) : (
-                  <div className="h-9" />
+                  <div className="h-8" />
                 )}
               </div>
             </div>

@@ -29,8 +29,8 @@ export default async function TopVideosList() {
   if (items.length === 0) return null;
 
   return (
-    <div className="border border-line rounded-xl p-4 bg-card">
-      <h3 className="font-display font-bold text-sm text-ink mb-3">{t['home.najsledovanejsie_videa'] || 'Najsledovanejšie videá'}</h3>
+    <div className="border border-line rounded-xl p-4 sm:p-5 bg-card">
+      <h3 className="font-display font-bold text-base text-ink mb-4">{t['home.najsledovanejsie_videa'] || 'Najsledovanejšie videá'}</h3>
       <div className="space-y-3">
         {items.map(({ video, count }, i) => (
           <div key={video!.id} className="flex items-center gap-3">

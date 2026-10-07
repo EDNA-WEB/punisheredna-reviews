@@ -597,5 +597,10 @@ export const REGISTRY_CS: Record<string, string> = {
   'top10.videl_som': 'Viděl jsem',
   'top10.videl': 'Viděno',
   'top10.videny_hodnotenim': 'Ohodnocený film je označený jako viděný',
-  'top10.cely_zoznam': 'Celý žebříček'
+  'top10.cely_zoznam': 'Celý žebříček',
+  'home.recenzie_nadpis': 'Recenze',
+  'home.tab_nove': 'Nové recenze',
+  'home.tab_kritici': 'Ověření kritici',
+  'home.tab_oblubeni': 'Od oblíbených',
+  'top10.popis_home': 'Nejsledovanější filmy a seriály tohoto týdne'
 };
