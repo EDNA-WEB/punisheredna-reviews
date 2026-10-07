@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { readingTime } from '@/lib/markdown';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,8 +16,13 @@ export async function GET(req: Request) {
 
     const me = await getMobileUser(req);
 
-    const news = await prisma.newsPost.findUnique({
-      where: { slug },
+    // Bezpečnosť: koncepty a naplánované články vidí len admin, editor alebo
+    // autor; ostatní len zverejnené (neplatiaci s 10-hodinovým oneskorením).
+    const privileged = !!me && (me.role === 'ADMIN' || (me as any).isEditor);
+    const isMember = !!me && !!me.membershipUntil && new Date(me.membershipUntil) > new Date();
+    const visibility = privileged ? {} : me ? { OR: [{ authorId: me.id }, publishedNewsFilterForMember(isMember)] } : publishedNewsFilterForMember(false);
+    const news = await prisma.newsPost.findFirst({
+      where: { slug, ...visibility },
       include: {
         author: { select: { id: true, name: true, avatar: true } },
         likes: true,

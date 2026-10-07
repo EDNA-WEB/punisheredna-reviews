@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
-import { publishedNewsFilter } from '@/lib/publishedFilter';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,8 @@ export async function GET(req: Request) {
     if (sort === 'commented') orderBy = { comments: { _count: 'desc' } };
 
     const news = await prisma.newsPost.findMany({
-      where: publishedNewsFilter(),
+      // Bezpečnosť: zdieľaná (CDN) odpoveď pre všetkých → bez 10-hodinového náskoku členov.
+      where: publishedNewsFilterForMember(false),
       orderBy,
       skip: page * PAGE_SIZE,
       take: PAGE_SIZE,

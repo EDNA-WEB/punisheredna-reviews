@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { memoForget } from './memoCache';
 import { recordActivity } from './security/activityLog';
+import { ipFromHeaders } from './security/clientInfo';
+import { loginAttemptAllowed, registerFailedLogin, clearFailedLogins } from './loginGuard';
 
 type FreshUserState = { role: any; banned: boolean; deleted: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
 const FRESH_TTL_MS = 30_000;
@@ -43,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         rememberMe: { label: 'Zapamatovat si mě', type: 'text' },
         qrToken: { label: 'QR prihlásenie', type: 'text' }
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         // Prihlasovacie údaje môžu prísť aj ako JSON — povolíme len obyčajný text,
         // aby sa do dopytu nedal podstrčiť objekt (napr. qrToken: { not: '' }).
         if (credentials && Object.values(credentials).some((v) => v !== undefined && v !== null && typeof v !== 'string')) return null;
@@ -77,6 +79,16 @@ export const authOptions: NextAuthOptions = {
 
         if (!credentials?.nickname || !credentials?.password) return null;
 
+        // Limit pokusov na IP aj prezývku ešte pred porovnaním hesla.
+        const rawHeaders = ((req as any)?.headers || {}) as Record<string, string | string[] | undefined>;
+        const ip = ipFromHeaders({
+          get: (n: string) => {
+            const v = rawHeaders[n] ?? rawHeaders[n.toLowerCase()];
+            return Array.isArray(v) ? v[0] ?? null : v ?? null;
+          }
+        });
+        if (!(await loginAttemptAllowed(ip, credentials.nickname))) throw new Error('LOCKED');
+
         const user = await prisma.user.findFirst({
           where: { name: { equals: credentials.nickname.trim(), mode: 'insensitive' } }
         });
@@ -89,25 +101,11 @@ export const authOptions: NextAuthOptions = {
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
 
         if (!valid) {
-          const attempts = user.failedLoginAttempts + 1;
-          const LOCK_THRESHOLD = 5;
-          const LOCK_MINUTES = 15;
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              failedLoginAttempts: attempts >= LOCK_THRESHOLD ? 0 : attempts,
-              lockedUntil: attempts >= LOCK_THRESHOLD ? new Date(Date.now() + LOCK_MINUTES * 60_000) : null
-            }
-          });
+          await registerFailedLogin(user.id);
           return null;
         }
 
-        if (user.failedLoginAttempts > 0 || user.lockedUntil) {
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { failedLoginAttempts: 0, lockedUntil: null }
-          });
-        }
+        await clearFailedLogins(user);
 
         if (user.banned) {
           throw new Error('BANNED');

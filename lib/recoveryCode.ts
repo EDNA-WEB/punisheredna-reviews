@@ -9,7 +9,7 @@ const SYSTEM_ACCOUNT_NAME = 'Systém';
 
 function randomCode(): string {
   let code = '';
-  for (let i = 0; i < 8; i++) code += CHARS[Math.floor(Math.random() * CHARS.length)];
+  for (let i = 0; i < 8; i++) code += CHARS[crypto.randomInt(CHARS.length)];
   return code;
 }
 
@@ -65,4 +65,12 @@ export async function issueRecoveryCode(userId: string): Promise<void> {
         `Túto správu odoslal automatický systém webu — administrátor k tvojmu kódu nemá prístup.`
     }
   });
+}
+
+// Porovnanie kódu v konštantnom čase (nedá sa hádať podľa dĺžky odpovede).
+export function recoveryCodeMatches(stored: string | null | undefined, given: string): boolean {
+  if (!stored) return false;
+  const a = Buffer.from(stored);
+  const b = Buffer.from(given);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }

@@ -43,6 +43,21 @@ export function maxTypoDistance(wordLength: number): number {
   return 3;
 }
 
+// Bezpečnosť/výkon: dlhý dotaz nesmie zaťažiť server — max. 100 znakov a 6 slov.
+export const MAX_QUERY_LENGTH = 100;
+export const MAX_QUERY_WORDS = 6;
+export function clampQuery(q: string): string {
+  return q.slice(0, MAX_QUERY_LENGTH).split(/\s+/).filter(Boolean).slice(0, MAX_QUERY_WORDS).join(' ');
+}
+
+// Slová, ktoré sa dĺžkou líšia viac, než povoľuje tolerancia, nemôžu byť
+// „blízko“ — Levenshtein sa pre ne vôbec nepočíta (výrazne rýchlejšie).
+function closeWord(qw: string, cw: string): boolean {
+  const max = maxTypoDistance(qw.length);
+  if (qw.length > 30 || Math.abs(qw.length - cw.length) > max) return false;
+  return levenshtein(qw, cw) <= max;
+}
+
 // Vypočíta, ako veľmi presne "candidate" (názov filmu) zodpovedá hľadanému
 // výrazu — vyššie číslo = lepšia zhoda. Používa sa na zoradenie výsledkov
 // podľa relevancie namiesto len podľa dátumu pridania.
@@ -63,12 +78,12 @@ export function matchScore(candidate: string, normalizedQuery: string, queryWord
   // Tolerancia na preklepy — každé hľadané slovo porovnáme so slovami z
   // názvu a povolíme malý počet rozdielov (podľa dĺžky slova).
   const allWordsCloseEnough = queryWords.every((qw) =>
-    candidateWords.some((cw) => levenshtein(qw, cw) <= maxTypoDistance(qw.length))
+    candidateWords.some((cw) => closeWord(qw, cw))
   );
   if (allWordsCloseEnough) return 45;
 
   const someWordsClose = queryWords.some((qw) =>
-    qw.length >= 3 && candidateWords.some((cw) => levenshtein(qw, cw) <= maxTypoDistance(qw.length))
+    qw.length >= 3 && candidateWords.some((cw) => closeWord(qw, cw))
   );
   if (someWordsClose) return 25;
 

@@ -1,3 +1,4 @@
+import { randomInt } from 'crypto';
 import { prisma } from './prisma';
 import { memo } from './memoCache';
 import { getOrCreateSystemAccount } from './recoveryCode';
@@ -26,7 +27,7 @@ export type MembershipType = 'trial4d' | 'month' | 'year';
 
 function randomCode(): string {
   let code = '';
-  for (let i = 0; i < CODE_LENGTH; i++) code += CHARS[Math.floor(Math.random() * CHARS.length)];
+  for (let i = 0; i < CODE_LENGTH; i++) code += CHARS[randomInt(CHARS.length)];
   return code;
 }
 
@@ -114,20 +115,36 @@ export async function redeemMembershipCode(userId: string, rawCode: string) {
     }
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { membershipUntil: true } });
-  const base = user?.membershipUntil && user.membershipUntil > new Date() ? user.membershipUntil : new Date();
-  const until = new Date(base.getTime() + durationForType(record.type as MembershipType));
-
-  await prisma.$transaction([
-    prisma.membershipCode.update({ where: { id: record.id }, data: { usedByUserId: userId, usedAt: new Date() } }),
-    prisma.user.update({
-      where: { id: userId },
-      data: {
-        membershipUntil: until,
-        ...(record.type === 'trial4d' ? { redeemedTrial: true } : {})
+  // Bezpečnosť: všetko v jednej transakcii a atómovo — kód sa označí ako
+  // použitý len vtedy, ak ešte NIKTO iný nebol rýchlejší (usedByUserId: null).
+  // Dva súbežné pokusy s tým istým kódom tak už nepredĺžia členstvo dvakrát.
+  const type = record.type as MembershipType;
+  let until: Date;
+  try {
+    until = await prisma.$transaction(async (tx) => {
+      const claimed = await tx.membershipCode.updateMany({
+        where: { id: record.id, usedByUserId: null },
+        data: { usedByUserId: userId, usedAt: new Date() }
+      });
+      if (claimed.count !== 1) throw new Error('CODE_USED');
+      if (type === 'trial4d') {
+        const t = await tx.user.updateMany({ where: { id: userId, redeemedTrial: false }, data: { redeemedTrial: true } });
+        if (t.count !== 1) throw new Error('TRIAL_USED');
       }
-    })
-  ]);
+      // Riadok používateľa zamkneme, nech dva rôzne kódy naraz nepočítajú z rovnakého základu.
+      const rows = await tx.$queryRaw<{ membershipUntil: Date | null }[]>`
+        SELECT "membershipUntil" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+      const current = rows[0]?.membershipUntil ? new Date(rows[0].membershipUntil) : null;
+      const base = current && current > new Date() ? current : new Date();
+      const next = new Date(base.getTime() + durationForType(type));
+      await tx.user.update({ where: { id: userId }, data: { membershipUntil: next } });
+      return next;
+    });
+  } catch (err: any) {
+    if (err?.message === 'CODE_USED') return { ok: false as const, error: 'Tento kód už byl uplatněn.' };
+    if (err?.message === 'TRIAL_USED') return { ok: false as const, error: 'Skúšobnú verziu si už niekedy využil.' };
+    throw err;
+  }
 
   return { ok: true as const, until, type: record.type as MembershipType, label: labelForType(record.type as MembershipType) };
 }

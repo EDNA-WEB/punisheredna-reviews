@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getCachedSearchIndex } from '@/lib/cachedMovieData';
 import { computeBlendedPercent } from '@/lib/rating';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
-import { normalize, matchScore } from '@/lib/fuzzySearch';
+import { normalize, matchScore, clampQuery } from '@/lib/fuzzySearch';
 
 export async function GET(req: Request) {
   if (!checkIpRateLimit(req, 'search-movies', 10_000, 20)) {
@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
-  const q = (searchParams.get('q') || '').trim();
+  const q = clampQuery((searchParams.get('q') || '').trim());
 
   if (!q || q.length < 2) {
     return NextResponse.json({ movies: [], users: [], episodes: [] });

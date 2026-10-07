@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import { checkRateLimit } from './antiSpam';
+import { publishedNewsFilterForMember } from './publishedFilter';
 
 // Zdieľaná logika reakcií (páči sa / nepáči sa) — používa ju web
 // (app/api/likes) aj appka (app/api/mobile/reaction), nech sa pravidlá
@@ -40,7 +41,8 @@ export async function resolveReactionTarget(targetKey: any) {
     return { ownerId: post.authorId, link: `/diskusie/${post.threadId}`, kind: 'príspevok' };
   }
   if (targetKey.newsId) {
-    const news = await prisma.newsPost.findUnique({ where: { id: targetKey.newsId } });
+    // Reagovať sa dá len na zverejnenú novinku (nie koncept či naplánovanú).
+    const news = await prisma.newsPost.findFirst({ where: { id: targetKey.newsId, ...publishedNewsFilterForMember(true) } });
     if (!news) return null;
     return { ownerId: news.authorId, link: `/news/${news.slug}`, kind: 'novinku' };
   }

@@ -1,3 +1,4 @@
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 import { prisma } from '@/lib/prisma';
 import { trackArticleView } from '@/lib/trackView';
 import { articleJsonLd } from '@/lib/jsonLd';
@@ -19,7 +20,11 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { params } = { ...props, params: await props.params };
-  const news = await prisma.newsPost.findUnique({ where: { slug: params.slug }, select: { title: true, summary: true, coverImage: true } });
+  // Nadpis a popis konceptu či naplánovanej novinky sa nesmú dostať do metadát (náhľady na sociálnych sieťach).
+  const news = await prisma.newsPost.findFirst({
+    where: { slug: params.slug, ...publishedNewsFilterForMember(true) },
+    select: { title: true, summary: true, coverImage: true }
+  });
   if (!news) return {};
   return {
     title: news.title,
@@ -67,7 +72,9 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
 
   if (!news) return notFound();
   if (news.publishAt && news.publishAt > new Date() && !isAdmin) return notFound();
-  if (news.isDraft && !isAdmin && !isMember) return notFound();
+  // Koncept vidí len administrátor, redaktor a autor — nie bežní členovia.
+  const canSeeDraft = isAdmin || !!(session?.user as any)?.isEditor || (!!viewerId && news.author?.id === viewerId);
+  if (news.isDraft && !canSeeDraft) return notFound();
 
   // Golden Ticket členovia vidia novinku hneď po zverejnení, ostatní
   // registrovaní až o 10 hodín neskôr — namiesto matúcej "404" im ukážeme

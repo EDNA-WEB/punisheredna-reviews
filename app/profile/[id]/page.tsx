@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { canSeeFavorites, FAVORITES_LIST_TITLE } from '@/lib/favoritesVisibility';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { notFound } from 'next/navigation';
@@ -32,6 +33,7 @@ export default async function ProfilePage(props: { params: Promise<{ id: string 
       name: true,
       avatar: true,
       bio: true,
+      favoritesVisibility: true,
       membershipUntil: true,
       role: true,
       isEditor: true,
@@ -156,7 +158,9 @@ export default async function ProfilePage(props: { params: Promise<{ id: string 
       _count: { select: { items: true } }
     }
   });
-  const movieLists = movieListsRaw.map((l) => ({
+  // Súkromie: zoznam „Obľúbené“ len ak to vlastník dovolil (nastavenie viditeľnosti).
+  const showFavorites = await canSeeFavorites(user, viewerId, viewerIsAdmin);
+  const movieLists = movieListsRaw.filter((l) => showFavorites || l.title !== FAVORITES_LIST_TITLE).map((l) => ({
     id: l.id,
     title: l.title,
     itemCount: l._count.items,

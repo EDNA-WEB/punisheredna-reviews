@@ -2,6 +2,22 @@ import { prisma } from '../prisma';
 import { sendOne } from './send';
 import { verifyEmailTemplate, resetPasswordTemplate } from './templates';
 import { randomToken, sha256, siteUrl } from './util';
+import { hitSharedLimit } from '../sharedRateLimit';
+
+// Strop e-mailov k účtu (overenie + reset hesla): max. 5 denne na jeden účet
+// a celkovo 400 denne za celý web — chráni kvótu Resend a reputáciu domény
+// pred „e-mailovým bombardovaním“ cudzej adresy.
+const PER_ACCOUNT_DAILY = 5;
+const GLOBAL_DAILY = 400;
+const DAY_MS = 24 * 3_600_000;
+async function accountMailAllowed(userId: string): Promise<boolean> {
+  if (!(await hitSharedLimit(`mail:acct:${userId}`, DAY_MS, PER_ACCOUNT_DAILY))) return false;
+  if (!(await hitSharedLimit('mail:global', DAY_MS, GLOBAL_DAILY))) {
+    console.error('[email] Denný strop e-mailov k účtom bol dosiahnutý — ďalšie sa dnes neodošlú.');
+    return false;
+  }
+  return true;
+}
 
 // ---------------------------------------------------------------------------
 // E-maily k účtu: overenie adresy a obnovenie hesla.
@@ -24,6 +40,10 @@ export async function sendVerificationEmail(userId: string, opts: { ignoreCooldo
     const left = RESEND_COOLDOWN_SECONDS - Math.floor((Date.now() - user.verificationSentAt.getTime()) / 1000);
     if (left > 0) return { ok: false, reason: 'cooldown', retryIn: left };
   }
+  const allowed = opts.ignoreCooldown
+    ? await hitSharedLimit('mail:global', DAY_MS, GLOBAL_DAILY) // registrácia: len celkový strop
+    : await accountMailAllowed(user.id);
+  if (!allowed) return { ok: false, reason: 'cooldown', retryIn: 3600 };
   const token = randomToken();
   await prisma.user.update({ where: { id: user.id }, data: { verificationToken: token, verificationSentAt: new Date() } });
   const url = `${siteUrl()}/overit-email?token=${token}`;
@@ -55,6 +75,7 @@ export async function requestPasswordReset(email: string) {
   });
   if (!user || user.deleted || user.banned) return;
   if (user.passwordResetSentAt && Date.now() - user.passwordResetSentAt.getTime() < RESEND_COOLDOWN_SECONDS * 1000) return;
+  if (!(await accountMailAllowed(user.id))) return;
   const token = randomToken();
   await prisma.user.update({
     where: { id: user.id },

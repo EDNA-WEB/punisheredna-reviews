@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCachedSearchIndex } from '@/lib/cachedMovieData';
-import { normalize, matchScore } from '@/lib/fuzzySearch';
+import { normalize, matchScore, clampQuery } from '@/lib/fuzzySearch';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { checkIpRateLimit } from '@/lib/ipRateLimit';
 
 // Ľahké vyhľadávanie pre redakčný editor — hľadá naraz filmy/seriály aj osobnosti,
 // aby autor vedel do textu vložiť klikateľný odkaz jedným kliknutím (alebo priradiť
@@ -9,8 +12,14 @@ import { normalize, matchScore } from '@/lib/fuzzySearch';
 // vyhľadávaní na webe — bez ohľadu na diakritiku, aj v anglickom/originálnom názve,
 // s toleranciou na preklepy — nie len presnou zhodou v slovenskom/českom názve.
 export async function GET(req: Request) {
+  // Bezpečnosť: len prihlásený (redakčný editor), s limitom a krátkym dotazom.
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: 'Musíš být přihlášen.' }, { status: 401 });
+  if (!checkIpRateLimit(req, 'editor-search', 10_000, 20)) {
+    return NextResponse.json({ error: 'Příliš mnoho vyhledávání za krátkou dobu.' }, { status: 429 });
+  }
   const { searchParams } = new URL(req.url);
-  const q = (searchParams.get('q') || '').trim();
+  const q = clampQuery((searchParams.get('q') || '').trim());
   const type = searchParams.get('type');
 
   if (q.length < 2) return NextResponse.json({ movies: [], people: [] });

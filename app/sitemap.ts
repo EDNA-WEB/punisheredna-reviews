@@ -1,3 +1,4 @@
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
@@ -7,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [movies, people, news, shopProducts] = await Promise.all([
     prisma.movie.findMany({ where: { approved: true }, select: { slug: true, createdAt: true }, take: 5000 }),
     prisma.person.findMany({ where: { approved: true }, select: { slug: true }, take: 2000 }),
-    prisma.newsPost.findMany({ select: { slug: true, createdAt: true }, take: 2000 }),
+    prisma.newsPost.findMany({ where: publishedNewsFilterForMember(false), select: { slug: true, createdAt: true }, take: 2000 }),
     prisma.shopProduct.findMany({ where: { approved: true }, select: { slug: true, createdAt: true }, take: 2000 })
   ]);
 

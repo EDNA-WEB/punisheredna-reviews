@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { isActiveMember } from '@/lib/membership';
 import { logActivity } from '@/lib/logActivity';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 
@@ -44,7 +46,14 @@ export async function POST(req: Request) {
       if (!review) return NextResponse.json({ error: 'Recenze se nenašla.' }, { status: 404 });
       link = `/movie/${review.movie.slug}`;
     } else if (newsId) {
-      const news = await prisma.newsPost.findUnique({ where: { id: newsId }, select: { slug: true } });
+      // Komentovať sa dá len zverejnenú novinku (koncept len autor / admin / redaktor).
+      const privileged = user.role === 'ADMIN' || !!(user as any).isEditor;
+      const news = await prisma.newsPost.findFirst({
+        where: privileged
+          ? { id: newsId }
+          : { id: newsId, OR: [{ authorId: userId }, publishedNewsFilterForMember(await isActiveMember(userId))] },
+        select: { slug: true }
+      });
       if (!news) return NextResponse.json({ error: 'Novinka se nenašla.' }, { status: 404 });
       link = `/news/${news.slug}`;
     } else if (movieId) {

@@ -8,12 +8,20 @@ import { sendVerificationEmail } from '@/lib/email/account';
 import { maskEmail } from '@/lib/email/util';
 import { checkEmailAllowed } from '@/lib/disposableEmail';
 import { withRegistrationLog } from '@/lib/security/registrationLog';
+import { hitSharedLimit } from '@/lib/sharedRateLimit';
+import { ipFromHeaders } from '@/lib/security/clientInfo';
 
 async function __registerPOST(req: Request) {
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 'singleton' }, select: { registrationsEnabled: true } });
     if (settings && settings.registrationsEnabled === false) {
       return NextResponse.json({ error: 'Registrace jsou momentálně pozastavené. Zkus to prosím později.' }, { status: 403 });
+    }
+
+    // Max. 20 pokusov o registráciu za hodinu z jednej IP adresy (web aj appka spolu,
+    // všetky servery) — dosť aj pre zdieľané mobilné pripojenia, no zastaví hromadné zakladanie účtov.
+    if (!(await hitSharedLimit(`register:ip:${ipFromHeaders(req.headers) || 'unknown'}`, 3_600_000, 20))) {
+      return NextResponse.json({ error: 'Příliš mnoho registrací z tohoto připojení. Zkus to prosím za hodinu.' }, { status: 429 });
     }
 
     const { nickname, email, password, website, elapsedMs, captchaToken, captchaAnswer } = await req.json();

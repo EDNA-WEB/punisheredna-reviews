@@ -1363,3 +1363,12 @@ model IpLogHold {
   createdBy String
   createdAt DateTime @default(now())
 }
+
+// Zdieľaný limit pokusov (lib/sharedRateLimit.ts) — spoločný pre všetky inštancie servera.
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}

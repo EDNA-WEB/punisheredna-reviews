@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { canSeeFavorites, FAVORITES_LIST_TITLE } from '@/lib/favoritesVisibility';
 import { notFound } from 'next/navigation';
 import { IconUser } from '@/components/Icons';
 import MovieListGrid from '@/components/MovieListGrid';
@@ -17,7 +18,7 @@ export default async function MovieListPage(props: { params: Promise<{ id: strin
   const list = await prisma.movieList.findUnique({
     where: { id: params.id },
     include: {
-      author: { select: { id: true, name: true, avatar: true } },
+      author: { select: { id: true, name: true, avatar: true, favoritesVisibility: true } },
       items: {
         orderBy: { order: 'asc' },
         include: { movie: { select: { id: true, title: true, slug: true, poster: true, year: true } } }
@@ -25,6 +26,8 @@ export default async function MovieListPage(props: { params: Promise<{ id: strin
     }
   });
   if (!list) return notFound();
+  // Súkromie: zoznam „Obľúbené“ len ak to vlastník dovolil.
+  if (list.title === FAVORITES_LIST_TITLE && !(await canSeeFavorites(list.author, viewerId, (session?.user as any)?.role === 'ADMIN'))) return notFound();
 
   const isOwn = list.authorId === viewerId;
 

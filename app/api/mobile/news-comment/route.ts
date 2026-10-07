@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { checkRateLimit, looksLikeSpam } from '@/lib/antiSpam';
 import { logActivity } from '@/lib/logActivity';
+import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
 
 import { hasInjectedObject } from '@/lib/inputGuard';
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,13 @@ export async function POST(req: Request) {
     const spamReason = looksLikeSpam(String(body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
 
-    const news = await prisma.newsPost.findUnique({ where: { id: newsId }, select: { slug: true, title: true, authorId: true } });
+    // Komentovať sa dá len článok, ktorý tento používateľ smie vidieť.
+    const privileged = user.role === 'ADMIN' || user.isEditor;
+    const isMember = !!user.membershipUntil && user.membershipUntil > new Date();
+    const news = await prisma.newsPost.findFirst({
+      where: { id: String(newsId), ...(privileged ? {} : { OR: [{ authorId: user.id }, publishedNewsFilterForMember(isMember)] }) },
+      select: { slug: true, title: true, authorId: true }
+    });
     if (!news) return NextResponse.json({ error: 'Článek se nenašel.' }, { status: 404 });
 
     const rateLimitError = await checkRateLimit('comment', user.id, user.createdAt);
