@@ -31,14 +31,44 @@ export function cloudinaryThumbnailUrl(url: string, width = 300): string {
 // starého plagátu novým, aby v Cloudinary nezostávali nepoužité súbory navždy.
 // Ticho zlyhá (nezhodí požiadavku), ak by URL nebola z Cloudinary alebo obrázok
 // už neexistoval — mazanie je "upratovanie", nie kritická časť operácie.
-export async function deleteImageByUrl(url: string | null | undefined): Promise<void> {
-  if (!url || !url.includes('res.cloudinary.com')) return;
+//
+// Bezpečnosť: zmaže sa LEN obrázok z nášho vlastného Cloudinary účtu a len
+// z priečinka "punisheredna/…" (pri zadanom "folder" len z neho, napr.
+// "avatars"). Predtým stačilo, aby URL obsahovala "res.cloudinary.com", čo
+// umožnilo cez zmenu avatara zmazať ľubovoľný obrázok webu.
+export function cloudinaryPublicIdFromUrl(url: string | null | undefined, folder?: string): string | null {
+  if (!url || typeof url !== 'string') return null;
+  let parsed: URL;
   try {
-    const afterUpload = url.split('/upload/')[1];
-    if (!afterUpload) return;
-    // odstráni prípadnú verzovaciu časť "v1234567890/" na začiatku a príponu súboru na konci
-    const withoutVersion = afterUpload.replace(/^v\d+\//, '');
-    const publicId = withoutVersion.replace(/\.[a-zA-Z0-9]+$/, '');
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+  if (parsed.hostname !== 'res.cloudinary.com') return null;
+  let parts: string[];
+  try {
+    parts = parsed.pathname.split('/').filter(Boolean).map((p) => decodeURIComponent(p));
+  } catch {
+    return null;
+  }
+  // /<cloud>/image/upload/[transformácie/][v123/]punisheredna/…/nazov.jpg
+  const cloud = process.env.CLOUDINARY_CLOUD_NAME;
+  if (!cloud || parts[0] !== cloud || parts[1] !== 'image' || parts[2] !== 'upload') return null;
+  const rest = parts.slice(3);
+  const start = rest.findIndex((p) => p === 'punisheredna');
+  if (start < 0) return null;
+  const publicId = rest.slice(start).join('/').replace(/\.[a-zA-Z0-9]+$/, '');
+  if (publicId.includes('..')) return null;
+  const prefix = folder ? `punisheredna/${folder.replace(/^\/+|\/+$/g, '')}/` : 'punisheredna/';
+  if (!publicId.startsWith(prefix) || publicId.length <= prefix.length) return null;
+  return publicId;
+}
+
+export async function deleteImageByUrl(url: string | null | undefined, opts?: { folder?: string }): Promise<void> {
+  const publicId = cloudinaryPublicIdFromUrl(url, opts?.folder);
+  if (!publicId) return;
+  try {
     await cloudinary.uploader.destroy(publicId);
   } catch {
     // upratovacia operácia — chyba sa zámerne ignoruje

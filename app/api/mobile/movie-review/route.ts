@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseRatingValue, RATINGS_DISABLED_MESSAGE } from '@/lib/ratingValue';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
@@ -30,11 +31,20 @@ export async function POST(req: Request) {
     if (!body || !String(body).trim()) return NextResponse.json({ error: 'Text recenze nemůže být prázdný.' }, { status: 400 });
     if (String(body).length > 20000) return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
 
+    // Bezpečnosť: hodnotenie len 0,5 – 5 a len ak ho admin používateľovi nezakázal.
+    const ratingParsed = parseRatingValue(rating);
+    if (ratingParsed.error) return NextResponse.json({ error: ratingParsed.error }, { status: 400 });
+    if (ratingParsed.value !== null && user.ratingsDisabled) return NextResponse.json({ error: RATINGS_DISABLED_MESSAGE }, { status: 403 });
+    const ratingValue = ratingParsed.value;
     const spamReason = looksLikeSpam(String(body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
 
     const movie = await prisma.movie.findUnique({ where: { id: movieId } });
     if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
+    // Rovnako ako na webe: pred premiérou sa nedá písať recenzia ani hodnotiť.
+    if (movie.releaseDate && movie.releaseDate > new Date()) {
+      return NextResponse.json({ error: 'Film ještě neměl premiéru, zatím na něj nemůžeš napsat recenzi.' }, { status: 403 });
+    }
 
     const existing = await prisma.review.findFirst({ where: { movieId, authorId: user.id, seasonId: null, episodeId: null } });
 
@@ -47,10 +57,10 @@ export async function POST(req: Request) {
       review = await prisma.review.create({ data: { movieId, body: String(body).trim(), authorId: user.id } });
     }
 
-    if (rating && Number(rating) > 0) {
+    if (ratingValue !== null) {
       const existingRating = await prisma.rating.findFirst({ where: { movieId, userId: user.id, seasonId: null, episodeId: null } });
-      if (existingRating) await prisma.rating.update({ where: { id: existingRating.id }, data: { value: Number(rating) } });
-      else await prisma.rating.create({ data: { movieId, userId: user.id, value: Number(rating) } });
+      if (existingRating) await prisma.rating.update({ where: { id: existingRating.id }, data: { value: ratingValue } });
+      else await prisma.rating.create({ data: { movieId, userId: user.id, value: ratingValue } });
     }
 
     if (!existing) {

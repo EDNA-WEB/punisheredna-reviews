@@ -2,9 +2,10 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
+import { memoForget } from './memoCache';
 import { recordActivity } from './security/activityLog';
 
-type FreshUserState = { role: any; banned: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
+type FreshUserState = { role: any; banned: boolean; deleted: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
 const FRESH_TTL_MS = 30_000;
 const freshCache: Map<string, { at: number; value: FreshUserState }> =
   (globalThis as any).__authFreshCache || ((globalThis as any).__authFreshCache = new Map());
@@ -14,11 +15,18 @@ async function getFreshUserState(userId: string): Promise<FreshUserState> {
   if (hit && Date.now() - hit.at < FRESH_TTL_MS) return hit.value;
   const value = await prisma.user.findUnique({
     where: { id: userId },
-    select: { role: true, banned: true, membershipUntil: true, isEditor: true, passwordChangedAt: true }
+    select: { role: true, banned: true, deleted: true, membershipUntil: true, isEditor: true, passwordChangedAt: true }
   });
   freshCache.set(userId, { at: Date.now(), value });
   if (freshCache.size > 5000) freshCache.clear(); // poistka proti rastu pamäte
   return value;
+}
+
+// Po zmene hesla / zmazaní účtu zabudneme uložený stav hneď (na tejto
+// inštancii servera), nech odhlásenie nečaká na 30-sekundovú pamäť.
+export function forgetUserSessionCache(userId: string) {
+  freshCache.delete(userId);
+  memoForget(`mobile-user:${userId}`);
 }
 
 export const authOptions: NextAuthOptions = {
@@ -148,7 +156,7 @@ export const authOptions: NextAuthOptions = {
         const fresh = await getFreshUserState(token.id as string);
         // Po zmene hesla (napr. z odkazu v e-maile) sa odhlásia všetky staršie prihlásenia.
         const changedAt = fresh?.passwordChangedAt ? new Date(fresh.passwordChangedAt).getTime() : 0;
-        if (!fresh || fresh.banned || (changedAt && Number(token.authAt || 0) < changedAt)) {
+        if (!fresh || fresh.banned || fresh.deleted || (changedAt && Number(token.authAt || 0) < changedAt)) {
           token.invalid = true;
         } else {
           token.role = fresh.role;

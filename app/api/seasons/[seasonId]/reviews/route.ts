@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { parseRatingValue, RATINGS_DISABLED_MESSAGE } from '@/lib/ratingValue';
 import { looksLikeSpam, checkRateLimit } from '@/lib/antiSpam';
 
 export async function POST(req: Request, ctx: { params: Promise<{ seasonId: string }> }) {
@@ -24,6 +25,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ seasonId: stri
     if (String(data.body).length > 20000) {
       return NextResponse.json({ error: 'Text recenze je příliš dlouhý (max. 20 000 znaků).' }, { status: 400 });
     }
+    // Bezpečnosť: hodnotenie len 0,5 – 5 a len ak ho admin používateľovi nezakázal.
+    const ratingParsed = parseRatingValue(data.rating);
+    if (ratingParsed.error) return NextResponse.json({ error: ratingParsed.error }, { status: 400 });
+    if (ratingParsed.value !== null && user.ratingsDisabled) return NextResponse.json({ error: RATINGS_DISABLED_MESSAGE }, { status: 403 });
+    const ratingValue = ratingParsed.value;
     const spamReason = looksLikeSpam(String(data.body));
     if (spamReason) return NextResponse.json({ error: spamReason }, { status: 400 });
 
@@ -45,12 +51,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ seasonId: stri
         data: { movieId: season.movieId, seasonId: season.id, body: String(data.body).trim(), authorId }
       });
 
-      if (data.rating && Number(data.rating) > 0) {
+      if (ratingValue !== null) {
         const existingRating = await tx.rating.findFirst({ where: { movieId: season.movieId, userId: authorId, seasonId: season.id, episodeId: null } });
         if (existingRating) {
-          await tx.rating.update({ where: { id: existingRating.id }, data: { value: Number(data.rating) } });
+          await tx.rating.update({ where: { id: existingRating.id }, data: { value: ratingValue } });
         } else {
-          await tx.rating.create({ data: { movieId: season.movieId, userId: authorId, seasonId: season.id, value: Number(data.rating) } });
+          await tx.rating.create({ data: { movieId: season.movieId, userId: authorId, seasonId: season.id, value: ratingValue } });
         }
       }
 

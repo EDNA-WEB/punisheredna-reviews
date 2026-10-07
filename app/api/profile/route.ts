@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { validateImageDataUrl } from '@/lib/validateUpload';
+import { checkAvatarInput } from '@/lib/validateUpload';
 import { checkKeyRateLimit } from '@/lib/ipRateLimit';
 import { uploadImage, deleteImageByUrl } from '@/lib/cloudinary';
 import { recordProfileChanges } from '@/lib/activityFeed';
@@ -32,13 +32,19 @@ export async function PATCH(req: Request) {
 
   let oldAvatar: string | null = null;
   if ('avatar' in body) {
-    const avatarError = validateImageDataUrl(body.avatar);
+    // Bezpečnosť: len nový nahraný obrázok, odstránenie, alebo bezo zmeny.
+    const current = await prisma.user.findUnique({ where: { id: userId }, select: { avatar: true } });
+    const avatarError = checkAvatarInput(body.avatar, current?.avatar);
     if (avatarError) return NextResponse.json({ error: avatarError }, { status: 400 });
-    let avatarUrl = body.avatar || null;
+    let avatarUrl: string | null = body.avatar || null;
     if (avatarUrl && avatarUrl.startsWith('data:image')) {
-      const current = await prisma.user.findUnique({ where: { id: userId }, select: { avatar: true } });
-      oldAvatar = current?.avatar || null;
       avatarUrl = await uploadImage(avatarUrl, 'avatars');
+    }
+    // Starý súbor zmažeme, len ak ho nepoužíva nikto iný (ochrana pred avatarmi
+    // nastavenými na cudziu adresu ešte pred touto opravou).
+    if (current?.avatar && current.avatar !== avatarUrl) {
+      const shared = await prisma.user.count({ where: { avatar: current.avatar, id: { not: userId } } });
+      if (shared === 0) oldAvatar = current.avatar;
     }
     data.avatar = avatarUrl;
   }
@@ -46,6 +52,6 @@ export async function PATCH(req: Request) {
   const before = await prisma.user.findUnique({ where: { id: userId } });
   const updated = await prisma.user.update({ where: { id: userId }, data });
   await recordProfileChanges(userId, before, updated);
-  if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar);
+  if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar, { folder: 'avatars' });
   return NextResponse.json({ id: updated.id, name: updated.name, avatar: updated.avatar });
 }

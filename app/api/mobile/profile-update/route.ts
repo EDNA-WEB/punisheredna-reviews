@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
-import { validateImageDataUrl } from '@/lib/validateUpload';
+import { checkAvatarInput } from '@/lib/validateUpload';
 import { uploadImage } from '@/lib/cloudinary';
 import { deleteImageByUrl } from '@/lib/cloudinary';
 import { recordProfileChanges } from '@/lib/activityFeed';
@@ -32,26 +32,28 @@ export async function POST(req: Request) {
     }
 
     let oldAvatar: string | null = null;
-    if ('avatar' in body && body.avatar) {
-      const avatarError = validateImageDataUrl(body.avatar);
+    if ('avatar' in body) {
+      // Bezpečnosť: len nový nahraný obrázok, odstránenie, alebo bezo zmeny.
+      const fresh = await prisma.user.findUnique({ where: { id: authUser.id }, select: { avatar: true } });
+      const currentAvatar = fresh?.avatar || null;
+      const avatarError = checkAvatarInput(body.avatar, currentAvatar);
       if (avatarError) return NextResponse.json({ error: avatarError }, { status: 400 });
-      let avatarUrl = body.avatar;
-      if (avatarUrl.startsWith('data:image')) {
-        const current = await prisma.user.findUnique({ where: { id: authUser.id }, select: { avatar: true } });
-        oldAvatar = current?.avatar || null;
+      let avatarUrl: string | null = body.avatar || null;
+      if (avatarUrl && avatarUrl.startsWith('data:image')) {
         avatarUrl = await uploadImage(avatarUrl, 'avatars');
       }
+      // Starý súbor zmažeme, len ak ho nepoužíva nikto iný.
+      if (currentAvatar && currentAvatar !== avatarUrl) {
+        const shared = await prisma.user.count({ where: { avatar: currentAvatar, id: { not: authUser.id } } });
+        if (shared === 0) oldAvatar = currentAvatar;
+      }
       data.avatar = avatarUrl;
-    } else if ('avatar' in body && body.avatar === null) {
-      const current = await prisma.user.findUnique({ where: { id: authUser.id }, select: { avatar: true } });
-      oldAvatar = current?.avatar || null;
-      data.avatar = null;
     }
 
     const updated = await prisma.user.update({ where: { id: authUser.id }, data });
     // getMobileUser vracia celý záznam používateľa pred úpravou — slúži ako "pred".
     await recordProfileChanges(authUser.id, authUser, updated);
-    if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar);
+    if (oldAvatar && oldAvatar !== updated.avatar) await deleteImageByUrl(oldAvatar, { folder: 'avatars' });
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {

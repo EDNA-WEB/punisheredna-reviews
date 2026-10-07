@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { forgetUserSessionCache } from '@/lib/auth';
 import { validatePassword } from '@/lib/passwordRules';
 import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { issueRecoveryCode } from '@/lib/recoveryCode';
@@ -32,9 +33,11 @@ export async function POST(req: Request) {
     const passwordHash = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
       where: { id: user.id },
-      data: { passwordHash, failedLoginAttempts: 0, lockedUntil: null }
+      // Bezpečnosť: nové heslo odhlási všetky staršie prihlásenia (web aj appka).
+      data: { passwordHash, failedLoginAttempts: 0, lockedUntil: null, passwordChangedAt: new Date() }
     });
 
+    forgetUserSessionCache(user.id);
     await issueRecoveryCode(user.id);
 
     return NextResponse.json({ ok: true });

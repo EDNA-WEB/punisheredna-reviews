@@ -53,5 +53,6 @@ export async function PATCH(req: Request) {
   const before = await prisma.user.findUnique({ where: { id: userId } });
   const updated = await prisma.user.update({ where: { id: userId }, data });
   await recordProfileChanges(userId, before, updated);
-  return NextResponse.json({ ok: true, updated });
+  // Bezpečnosť: nevraciame celý záznam (obsahoval hash hesla, obnovovací kód a tokeny).
+  return NextResponse.json({ ok: true });
 }

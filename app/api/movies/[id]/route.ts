@@ -12,9 +12,39 @@ async function requireAdmin() {
   return session;
 }
 
+// Bezpečnosť: celý záznam (vrátane platených online odkazov, rozpočtov a
+// neschválených návrhov) vidí len admin. Ostatní dostanú len verejné údaje
+// schváleného filmu — predtým sa tu dali stiahnuť všetky watchUrl bez prihlásenia.
+const PUBLIC_MOVIE_SELECT = {
+  id: true,
+  title: true,
+  originalTitle: true,
+  slug: true,
+  poster: true,
+  year: true,
+  genres: true,
+  countries: true,
+  runtimeMinutes: true,
+  director: true,
+  screenplay: true,
+  cinematography: true,
+  music: true,
+  cast: true,
+  synopsis: true,
+  trailerUrl: true,
+  contentType: true,
+  releaseDate: true,
+  ageRating: true
+} as const;
+
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { params } = { ...ctx, params: await ctx.params };
-  const movie = await prisma.movie.findUnique({ where: { id: params.id } });
+  if (await requireAdmin()) {
+    const movie = await prisma.movie.findUnique({ where: { id: params.id } });
+    if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
+    return NextResponse.json(movie);
+  }
+  const movie = await prisma.movie.findFirst({ where: { id: params.id, approved: true }, select: PUBLIC_MOVIE_SELECT });
   if (!movie) return NextResponse.json({ error: 'Film se nenašel.' }, { status: 404 });
   return NextResponse.json(movie);
 }

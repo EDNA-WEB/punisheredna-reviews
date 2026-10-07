@@ -29,8 +29,12 @@ export type EmailTopic = 'news' | 'online' | 'messages' | 'all';
 export const TOPICS: EmailTopic[] = ['news', 'online', 'messages', 'all'];
 
 function unsubSig(userId: string, topic: EmailTopic) {
+  // Bezpečnosť: bez verejne známej náhrady — bez NEXTAUTH_SECRET by sa dali
+  // podvrhnúť odkazy na odhlásenie odberu pre kohokoľvek.
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error('NEXTAUTH_SECRET nie je nastavený.');
   return crypto
-    .createHmac('sha256', process.env.NEXTAUTH_SECRET || 'kralfilmu')
+    .createHmac('sha256', secret)
     .update(`unsub:${userId}:${topic}`)
     .digest('base64url')
     .slice(0, 32);

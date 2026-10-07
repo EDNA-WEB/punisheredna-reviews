@@ -57,3 +57,14 @@ export function validateSafeUrl(value: unknown): string | null {
   }
   return null;
 }
+
+// Avatar používateľa: prijme sa LEN nový nahraný obrázok (data URL), odstránenie
+// (null / prázdne) alebo bezo zmeny presne tá adresa, ktorá je už uložená.
+// Cudzia URL (napr. plagát filmu alebo obrázok z iného servera) sa odmietne.
+export function checkAvatarInput(value: unknown, currentAvatar: string | null | undefined): string | null {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value !== 'string') return 'Neplatný formát obrázka.';
+  if (value.startsWith('data:image/')) return validateImageDataUrl(value);
+  if (currentAvatar && value === currentAvatar) return null;
+  return 'Profilovou fotku je potřeba nahrát jako obrázek ze zařízení.';
+}

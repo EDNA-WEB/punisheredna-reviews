@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { forgetUserSessionCache } from '@/lib/auth';
 import { validatePassword } from '@/lib/passwordRules';
 import { findResetUser } from '@/lib/email/account';
 
@@ -33,5 +34,6 @@ export async function POST(req: Request) {
       lockedUntil: null
     }
   });
+  forgetUserSessionCache(user.id);
   return NextResponse.json({ ok: true });
 }

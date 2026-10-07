@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions, forgetUserSessionCache } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { validatePassword } from '@/lib/passwordRules';
@@ -34,7 +34,10 @@ export async function PATCH(req: Request) {
   if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
-  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+  // Bezpečnosť: po zmene hesla sa odhlásia všetky prihlásenia (web aj appka),
+  // aj prípadný útočník s ukradnutým prihlásením.
+  await prisma.user.update({ where: { id: user.id }, data: { passwordHash, passwordChangedAt: new Date() } });
+  forgetUserSessionCache(user.id);
 
   await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));
 

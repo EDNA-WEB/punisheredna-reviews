@@ -10,7 +10,8 @@ import { validateSafeUrl } from '@/lib/validateUpload';
 import { hasInjectedObject } from '@/lib/inputGuard';
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const limit = Number(searchParams.get('limit')) || 100;
+  // Bezpečnosť: horná hranica, nech sa jedným dopytom nedá stiahnuť celý katalóg.
+  const limit = Math.min(200, Math.max(1, Math.floor(Number(searchParams.get('limit')) || 100)));
   const movies = await prisma.movie.findMany({
     where: { approved: true },
     orderBy: { createdAt: 'desc' },

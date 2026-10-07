@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { signOut } from 'next-auth/react';
 
 export default function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -44,6 +45,8 @@ export default function ChangePasswordForm() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      // Zmena hesla odhlási všetky zariadenia (aj toto) — po chvíli presmerujeme na prihlásenie.
+      setTimeout(() => signOut({ callbackUrl: '/login' }), 3000);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -78,7 +81,7 @@ export default function ChangePasswordForm() {
       </div>
 
       {error && <div className="text-danger text-sm">{error}</div>}
-      {success && <div className="text-emerald-600 text-sm font-semibold">Heslo bylo úspěšně změněno.</div>}
+      {success && <div className="text-emerald-600 text-sm font-semibold">Heslo bylo změněno. Ze všech zařízení jsi byl odhlášen, za chvíli se přihlas novým heslem.</div>}
 
       <button
         type="submit"

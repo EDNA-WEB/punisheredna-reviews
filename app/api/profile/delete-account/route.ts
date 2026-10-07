@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { authOptions } from '@/lib/auth';
+import { authOptions, forgetUserSessionCache } from '@/lib/auth';
+import { deleteImageByUrl } from '@/lib/cloudinary';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
@@ -29,6 +30,8 @@ export async function POST(req: Request) {
     where: { id: userId },
     data: {
       deleted: true,
+      // Bezpečnosť: zmazaný účet sa okamžite odhlási zo všetkých zariadení.
+      passwordChangedAt: new Date(),
       name: `Smazaný uživatel ${suffix}`,
       email: `deleted-${suffix}@deleted.punisheredna.internal`,
       passwordHash,
@@ -55,6 +58,14 @@ export async function POST(req: Request) {
       recoveryCode: null
     }
   });
+
+  // Odhlásiť všade, prestať posielať push notifikácie a zmazať profilovú fotku.
+  forgetUserSessionCache(userId);
+  await prisma.pushToken.deleteMany({ where: { userId } }).catch((err) => console.error('[delete-account] push', err));
+  if (user.avatar) {
+    const shared = await prisma.user.count({ where: { avatar: user.avatar, id: { not: userId } } });
+    if (shared === 0) await deleteImageByUrl(user.avatar, { folder: 'avatars' });
+  }
 
   return NextResponse.json({ ok: true });
 }

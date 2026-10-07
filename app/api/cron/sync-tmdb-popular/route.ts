@@ -8,8 +8,11 @@ export const maxDuration = 60;
 export async function GET(req: Request) {
   // Vercel Cron posiela Authorization: Bearer <CRON_SECRET> — overíme, nech to
   // nemôže spustiť hocikto zvonka.
+  // Bezpečnosť: bez nastaveného CRON_SECRET sa nespustí vôbec (predtým sa vtedy
+  // spustil komukoľvek).
   const authHeader = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret || authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'Neoprávnené.' }, { status: 401 });
   }
 

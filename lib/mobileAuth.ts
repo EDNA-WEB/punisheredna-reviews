@@ -30,11 +30,12 @@ export async function getMobileUser(req: Request) {
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, SECRET) as MobileTokenPayload;
+    const decoded = jwt.verify(token, SECRET, { algorithms: ['HS256'] }) as MobileTokenPayload;
     // Výkon: rovnaký používateľ posiela veľa požiadaviek za sebou (hlavná
     // obrazovka ich má ~15) — záznam si pamätáme 20 s namiesto dopytu pri každej.
     const user = await memo(`mobile-user:${decoded.userId}`, 20_000, async () => prisma.user.findUnique({ where: { id: decoded.userId } }));
-    if (!user || user.banned) return null;
+    // Zmazaný účet sa odhlási zo všetkých zariadení (bezpečnosť, GDPR).
+    if (!user || user.banned || (user as any).deleted) return null;
     // Neoverený nový účet sa do appky neprihlási (pozri /api/mobile/login).
     if ((user as any).mustVerifyEmail && !user.emailVerified) return null;
     // Po zmene hesla prestanú platiť všetky staršie prihlásenia.
