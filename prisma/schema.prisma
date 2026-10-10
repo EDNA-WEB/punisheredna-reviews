@@ -41,6 +41,13 @@ model User {
   ratingsDisabled  Boolean @default(false)
   commentsDisabled Boolean @default(false)
   failedLoginAttempts Int      @default(0)
+  // Dvojfaktorové overenie (TOTP z aplikácie v mobile). Tajomstvo je zašifrované
+  // (lib/serverCrypto), záložné kódy sú uložené len ako SHA-256 odtlačky.
+  twoFactorSecret        String?
+  twoFactorPendingSecret String?
+  twoFactorEnabledAt     DateTime?
+  twoFactorBackupCodes   String[]  @default([])
+  twoFactorLastStep      Int?
   lockedUntil         DateTime?
   timezone            String?
   recoveryCode        String?  @unique

@@ -179,7 +179,7 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
             </div>
             <div className="aspect-video rounded-xl overflow-hidden bg-black">
               <iframe
-                src={`https://www.youtube-nocookie.com/embed/${trailerFor.trailerId}?autoplay=1&rel=0`}
+                src={`https://www.youtube-nocookie.com/embed/${trailerFor.trailerId}?autoplay=1&rel=0&playsinline=1`}
                 title={trailerFor.title}
                 allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                 allowFullScreen

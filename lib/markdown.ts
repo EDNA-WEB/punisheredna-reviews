@@ -66,7 +66,7 @@ export function mdToHtml(input: string): string {
       const videoId = extractYoutubeId(youtubeMatch[1].trim());
       if (videoId) {
         out.push(
-          `<div class="relative rounded-xl overflow-hidden bg-night my-4" style="aspect-ratio:16/9"><iframe src="https://www.youtube.com/embed/${videoId}" class="absolute inset-0 w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+          `<div class="relative rounded-xl overflow-hidden bg-night my-4" style="aspect-ratio:16/9"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&playsinline=1" class="absolute inset-0 w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
         );
       }
     } else if (/^###\s+/.test(line)) {

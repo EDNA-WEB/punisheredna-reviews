@@ -32,6 +32,9 @@ export async function GET(req: Request) {
       role: user.role,
       membershipUntil: user.membershipUntil || null,
       isEditor: (user as any).isEditor || false,
+      twoFactor: !!(user as any).twoFactorEnabledAt,
+      loginExpiresAt: Date.now() + MAX_AGE * 1000,
+      authAt: Date.now(), // inak by ho po akejkoľvek zmene hesla v minulosti hneď odhlásilo
       exp: Math.floor(Date.now() / 1000) + MAX_AGE
     },
     secret: process.env.NEXTAUTH_SECRET as string,

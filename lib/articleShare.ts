@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { purposeSecret, verifyKeys } from './secrets';
 import { headers } from 'next/headers';
 import { prisma } from './prisma';
 import { memo, memoForget } from './memoCache';
@@ -30,29 +31,27 @@ export function forgetShareConfig() {
   memoForget('articleShare:');
 }
 
-function secret() {
-  const s = process.env.NEXTAUTH_SECRET;
-  if (!s) throw new Error('Chýba NEXTAUTH_SECRET');
-  return s;
-}
-
-function hmac(data: string) {
-  return crypto.createHmac('sha256', secret()).update(data).digest('base64url');
+// Vlastný kľúč pre zdieľanie (lib/secrets.ts); starý kľúč platí počas prechodného obdobia.
+function hmac(data: string, key: string = purposeSecret('share')) {
+  return crypto.createHmac('sha256', key).update(data).digest('base64url');
 }
 
 // Kľúč pre jeden článok (novinka podľa slugu, blog podľa id). Voliteľné
 // „umiestnenie“ (tag, napr. 'csfd-diskuse-film-x') je súčasťou podpisu —
 // zdroj návštevy sa tak nedá podvrhnúť úpravou adresy.
-export function shareKey(type: ShareType, ref: string, salt: string, tag?: string | null) {
-  return hmac(tag ? `share:${salt}:${type}:${ref}:${tag}` : `share:${salt}:${type}:${ref}`).slice(0, 22);
+export function shareKey(type: ShareType, ref: string, salt: string, tag?: string | null, key?: string) {
+  return hmac(tag ? `share:${salt}:${type}:${ref}:${tag}` : `share:${salt}:${type}:${ref}`, key).slice(0, 22);
 }
 
 export async function verifyShareKey(type: ShareType, ref: string, key: string | undefined | null, tag?: string | null) {
   if (!key || typeof key !== 'string' || key.length !== 22) return false;
   const { salt } = await getShareConfig();
-  const a = Buffer.from(shareKey(type, ref, salt, tag));
   const b = Buffer.from(key);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+  for (const k of verifyKeys('share')) {
+    const a = Buffer.from(shareKey(type, ref, salt, tag, k));
+    if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
+  }
+  return false;
 }
 
 // Odkazy v texte článku → obyčajný text (návštevník sa nesmie preklikať ďalej)

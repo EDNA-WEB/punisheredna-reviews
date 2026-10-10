@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clampInt } from '@/lib/queryLimit';
 import { activeFilterCount, parseFilter, runFilter, toListItem } from '@/lib/movieFilter';
 import { filterViewer } from '@/lib/movieFilterAuth';
 import { getMoviePercents } from '@/lib/moviePercents';
@@ -16,8 +17,7 @@ export async function GET(req: Request) {
     const viewer = await filterViewer(req);
     // Len pre prihlásených (web aj appka) — rovnako ako zvyšok webu
     if (!viewer.userId) return NextResponse.json({ error: 'Musíš být přihlášen.' }, { status: 401 });
-    const pageSizeRaw = Number(searchParams.get('pageSize'));
-    const pageSize = Number.isFinite(pageSizeRaw) && searchParams.get('pageSize') !== null ? Math.min(60, Math.max(0, pageSizeRaw)) : 24;
+    const pageSize = clampInt(searchParams.get('pageSize'), 24, 0, 60);
 
     const random = searchParams.get('random') === '1';
     const r = await runFilter(spec, { ...viewer, pageSize: random ? 1 : pageSize, withFacets: searchParams.get('facets') === '1', random });

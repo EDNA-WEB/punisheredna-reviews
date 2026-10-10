@@ -13,7 +13,7 @@ const PAGE_SIZE = 5;
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
+    const page = Math.min(10_000, Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0));
     const sort = searchParams.get('sort') || 'newest';
 
     let orderBy: any = { createdAt: 'desc' };

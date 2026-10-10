@@ -31,6 +31,11 @@ export async function POST(req: Request) {
       await prisma.follow.delete({ where: { id: existing.id } });
       return NextResponse.json({ following: false });
     } else {
+      // Kto ma zablokoval, toho sledovať nemôžem.
+      const blockedByTarget = await prisma.blockedUser.findUnique({
+        where: { blockerId_blockedId: { blockerId: targetId, blockedId: myId } }
+      });
+      if (blockedByTarget) return NextResponse.json({ error: 'Tohoto uživatele nelze sledovat.' }, { status: 403 });
       await prisma.follow.create({ data: { followerId: myId, followingId: targetId } });
       return NextResponse.json({ following: true });
     }

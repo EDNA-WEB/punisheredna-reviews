@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clampInt } from '@/lib/queryLimit';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -11,7 +12,7 @@ import { isActiveMember } from '@/lib/membership';
 import { getSessionOrMobile } from '@/lib/adminAuth'; // web aj natívna administrácia v appke
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const limit = Number(searchParams.get('limit')) || 20;
+  const limit = clampInt(searchParams.get('limit'), 20, 1, 50);
   const session = await getSessionOrMobile();
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const isMember = isAdmin || (await isActiveMember((session?.user as any)?.id));

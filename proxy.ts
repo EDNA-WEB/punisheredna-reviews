@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { adminIpAllowed } from './lib/adminIp';
 
 // Next.js 16: tento súbor nahrádza middleware.ts (beží v prostredí Node.js).
 // ---------------------------------------------------------------------------
@@ -53,16 +54,8 @@ function securityHeaders(res: NextResponse, csp: string | null) {
   return res;
 }
 
-function clientIp(req: NextRequest) {
-  return (req as any).ip || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || '';
-}
-
-// Voliteľné: ADMIN_ALLOWED_IPS = "1.2.3.4, 5.6.7.8" → administrácia len z týchto IP.
-function ipAllowed(req: NextRequest) {
-  const list = (process.env.ADMIN_ALLOWED_IPS || '').split(',').map((x) => x.trim()).filter(Boolean);
-  if (list.length === 0) return true;
-  return list.includes(clientIp(req));
-}
+// Rovnaké pravidlo ako v API a v appke (lib/adminIp.ts).
+const ipAllowed = (req: NextRequest) => adminIpAllowed(req.headers);
 
 function notFound(req: NextRequest) {
   // Prepíše na neexistujúcu adresu → Next.js vráti bežnú stránku 404.
@@ -101,6 +94,13 @@ export async function proxy(req: NextRequest) {
     const isAdmin = valid && (token as any).role === 'ADMIN';
     const isEditor = valid && !!(token as any).isEditor;
     if (!(isAdmin || isEditor) || !ipAllowed(req)) return securityHeaders(notFound(req), null);
+    // Administrácia len so zapnutým dvojfaktorovým overením → inak na jeho nastavenie.
+    if (process.env.ADMIN_2FA_REQUIRED !== 'false' && !(token as any).twoFactor) {
+      const setup = req.nextUrl.clone();
+      setup.pathname = '/nastavenia/zabezpeceni';
+      setup.search = '?vyzadovano=1';
+      return securityHeaders(NextResponse.redirect(setup), null);
+    }
     const res = pass();
     res.headers.set('X-Robots-Tag', 'noindex, nofollow');
     if (req.nextUrl.searchParams.get('app') === '1') res.cookies.set('kf_app_embed', '1', { path: '/admin', sameSite: 'lax', httpOnly: true, secure: true });

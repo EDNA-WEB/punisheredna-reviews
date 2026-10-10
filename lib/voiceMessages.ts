@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { purposeSecret, verifyKeys } from './secrets';
 import { after } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { prisma } from './prisma';
@@ -142,14 +143,8 @@ export function cloudinaryVoiceSource(publicId: string, format: string | null) {
 
 // --- Krátkodobý podpis odkazu na prehrávanie ---------------------------------
 
-function tokenSecret() {
-  const s = process.env.VOICE_SECRET || process.env.NEXTAUTH_SECRET;
-  if (!s) throw new Error('Chýba VOICE_SECRET alebo NEXTAUTH_SECRET');
-  return s;
-}
-
-function signToken(messageId: string, expSec: number) {
-  return crypto.createHmac('sha256', tokenSecret()).update(`voice:${messageId}:${expSec}`).digest('base64url');
+function signToken(messageId: string, expSec: number, key: string = purposeSecret('voice')) {
+  return crypto.createHmac('sha256', key).update(`voice:${messageId}:${expSec}`).digest('base64url');
 }
 
 export function createVoiceToken(messageId: string, expiresAtMs: number) {
@@ -163,9 +158,12 @@ export function verifyVoiceToken(messageId: string, token: string | null) {
   const expSec = Number(expRaw);
   if (!Number.isFinite(expSec) || !sig) return false;
   if (expSec * 1000 <= Date.now()) return false;
-  const expected = Buffer.from(signToken(messageId, expSec));
   const given = Buffer.from(sig);
-  return expected.length === given.length && crypto.timingSafeEqual(expected, given);
+  for (const k of verifyKeys('voice')) {
+    const expected = Buffer.from(signToken(messageId, expSec, k));
+    if (expected.length === given.length && crypto.timingSafeEqual(expected, given)) return true;
+  }
+  return false;
 }
 
 // --- Prehratie (appka aj web) -----------------------------------------------

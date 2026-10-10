@@ -6,6 +6,7 @@ import { checkIpRateLimit } from '@/lib/ipRateLimit';
 import { withLoginLog } from '@/lib/security/activityLog';
 import { ipFromHeaders } from '@/lib/security/clientInfo';
 import { loginAttemptAllowed, registerFailedLogin, clearFailedLogins } from '@/lib/loginGuard';
+import { verifySecondFactor, twoFactorRequiredFor } from '@/lib/twoFactor';
 
 // Rovnaká logika overenia ako na webe (lib/auth.ts) — rovnaké uzamknutie
 // účtu po 5 nesprávnych pokusoch na 15 minút, rovnaká kontrola zablokovania.
@@ -18,6 +19,7 @@ async function __loginPOST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const nickname = typeof body?.nickname === 'string' ? body.nickname.slice(0, 80) : '';
   const password = typeof body?.password === 'string' ? body.password.slice(0, 200) : '';
+  const otp = typeof body?.otp === 'string' ? body.otp.slice(0, 20) : '';
   if (!nickname || !password) {
     return NextResponse.json({ error: 'Zadej přezdívku i heslo.' }, { status: 400 });
   }
@@ -46,6 +48,18 @@ async function __loginPOST(req: Request) {
     return NextResponse.json({ error: 'Nesprávná přezdívka nebo heslo.' }, { status: 401 });
   }
 
+  // Dvojfaktorové overenie: appka po tejto odpovedi ukáže obrazovku na kód
+  // a pošle prihlásenie znova aj s ním.
+  if (user.twoFactorEnabledAt) {
+    if (!otp) {
+      return NextResponse.json({ error: 'Zadej kód z ověřovací aplikace.', code: 'TWO_FACTOR_REQUIRED' }, { status: 401 });
+    }
+    if (!(await verifySecondFactor(user.id, otp))) {
+      await registerFailedLogin(user.id);
+      return NextResponse.json({ error: 'Kód nesedí. Zkus aktuální kód z aplikace.', code: 'TWO_FACTOR_INVALID' }, { status: 401 });
+    }
+  }
+
   await clearFailedLogins(user);
 
   if (user.banned) {
@@ -57,9 +71,11 @@ async function __loginPOST(req: Request) {
     return NextResponse.json({ error: 'Účet ještě není ověřený. Klikni na odkaz v e-mailu, který jsme ti poslali.', code: 'EMAIL_NOT_VERIFIED' }, { status: 403 });
   }
   const token = signMobileToken({ userId: user.id, name: user.name, role: user.role });
+  // Admin/redaktor bez dvojfázového overenia → appka ho zatiaľ berie ako bežného používateľa.
+  const role = twoFactorRequiredFor(user) && !user.twoFactorEnabledAt ? 'READER' : user.role;
   return NextResponse.json({
     token,
-    user: { id: user.id, name: user.name, role: user.role, avatar: user.avatar }
+    user: { id: user.id, name: user.name, role, avatar: user.avatar }
   });
 }
 

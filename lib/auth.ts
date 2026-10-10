@@ -4,10 +4,12 @@ import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { memoForget } from './memoCache';
 import { recordActivity } from './security/activityLog';
-import { ipFromHeaders } from './security/clientInfo';
+import { ipFromHeaders, currentHeaders } from './security/clientInfo';
+import { adminIpAllowed } from './adminIp';
 import { loginAttemptAllowed, registerFailedLogin, clearFailedLogins } from './loginGuard';
+import { verifySecondFactor, twoFactorRequiredFor } from './twoFactor';
 
-type FreshUserState = { role: any; banned: boolean; deleted: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null } | null;
+type FreshUserState = { role: any; banned: boolean; deleted: boolean; membershipUntil: Date | null; isEditor: boolean; passwordChangedAt: Date | null; twoFactorEnabledAt: Date | null } | null;
 const FRESH_TTL_MS = 30_000;
 const freshCache: Map<string, { at: number; value: FreshUserState }> =
   (globalThis as any).__authFreshCache || ((globalThis as any).__authFreshCache = new Map());
@@ -17,7 +19,7 @@ async function getFreshUserState(userId: string): Promise<FreshUserState> {
   if (hit && Date.now() - hit.at < FRESH_TTL_MS) return hit.value;
   const value = await prisma.user.findUnique({
     where: { id: userId },
-    select: { role: true, banned: true, deleted: true, membershipUntil: true, isEditor: true, passwordChangedAt: true }
+    select: { role: true, banned: true, deleted: true, membershipUntil: true, isEditor: true, passwordChangedAt: true, twoFactorEnabledAt: true }
   });
   freshCache.set(userId, { at: Date.now(), value });
   if (freshCache.size > 5000) freshCache.clear(); // poistka proti rastu pamäte
@@ -43,7 +45,8 @@ export const authOptions: NextAuthOptions = {
         nickname: { label: 'Prezývka', type: 'text' },
         password: { label: 'Heslo', type: 'password' },
         rememberMe: { label: 'Zapamatovat si mě', type: 'text' },
-        qrToken: { label: 'QR prihlásenie', type: 'text' }
+        qrToken: { label: 'QR prihlásenie', type: 'text' },
+        otp: { label: 'Kód z aplikácie', type: 'text' }
       },
       async authorize(credentials, req) {
         // Prihlasovacie údaje môžu prísť aj ako JSON — povolíme len obyčajný text,
@@ -73,6 +76,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
             membershipUntil: user.membershipUntil,
             isEditor: user.isEditor,
+            twoFactor: !!user.twoFactorEnabledAt,
             rememberMe: true
           } as any;
         }
@@ -105,6 +109,16 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Dvojfaktorové overenie: po správnom hesle ešte kód z aplikácie
+        // (alebo záložný kód). Nesprávny kód sa počíta ako nesprávne heslo.
+        if (user.twoFactorEnabledAt) {
+          if (!credentials.otp) throw new Error('TWO_FACTOR_REQUIRED');
+          if (!(await verifySecondFactor(user.id, credentials.otp))) {
+            await registerFailedLogin(user.id);
+            throw new Error('TWO_FACTOR_INVALID');
+          }
+        }
+
         await clearFailedLogins(user);
 
         if (user.banned) {
@@ -124,6 +138,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           membershipUntil: user.membershipUntil,
           isEditor: user.isEditor,
+          twoFactor: !!user.twoFactorEnabledAt,
           rememberMe: credentials.rememberMe === 'true'
         } as any;
       }
@@ -136,12 +151,16 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role;
         token.membershipUntil = (user as any).membershipUntil || null;
         token.isEditor = (user as any).isEditor || false;
+        token.twoFactor = !!(user as any).twoFactor;
         token.authAt = Date.now();
         await recordActivity(String(token.id), 'login');
         // "Zapamätať si ma" — zaškrtnuté: prihlásenie vydrží 10 dní, aj keď
         // používateľ medzitým zavrie prehliadač. Nezaškrtnuté: len 1 deň.
         const rememberDays = (user as any).rememberMe ? 10 : 1;
         token.exp = Math.floor(Date.now() / 1000) + rememberDays * 24 * 60 * 60;
+        // NextAuth pri každom obnovení prepíše „exp“ na 30 dní — preto si koniec
+        // prihlásenia ukladáme zvlášť a kontrolujeme ho nižšie.
+        token.loginExpiresAt = Date.now() + rememberDays * 24 * 60 * 60 * 1000;
       } else if (token.id) {
         // Obnov rolu, stav zablokovania a členstvo z databázy pri každom overení,
         // nech sa zmena (napr. odobratie admin práv, zablokovanie, alebo uplatnenie
@@ -154,12 +173,16 @@ export const authOptions: NextAuthOptions = {
         const fresh = await getFreshUserState(token.id as string);
         // Po zmene hesla (napr. z odkazu v e-maile) sa odhlásia všetky staršie prihlásenia.
         const changedAt = fresh?.passwordChangedAt ? new Date(fresh.passwordChangedAt).getTime() : 0;
-        if (!fresh || fresh.banned || fresh.deleted || (changedAt && Number(token.authAt || 0) < changedAt)) {
+        // Prihlásenia spred tejto úpravy nemajú koniec uložený — dostanú 10 dní od teraz.
+        if (!token.loginExpiresAt) token.loginExpiresAt = Date.now() + 10 * 24 * 60 * 60 * 1000;
+        const loginExpired = Date.now() > Number(token.loginExpiresAt);
+        if (!fresh || fresh.banned || fresh.deleted || loginExpired || (changedAt && Number(token.authAt || 0) < changedAt)) {
           token.invalid = true;
         } else {
           token.role = fresh.role;
           token.membershipUntil = fresh.membershipUntil;
           token.isEditor = fresh.isEditor;
+          token.twoFactor = !!fresh.twoFactorEnabledAt;
           token.invalid = false;
         }
       }
@@ -180,6 +203,22 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = token.role;
         (session.user as any).membershipUntil = token.membershipUntil || null;
         (session.user as any).isEditor = token.isEditor || false;
+        // Admin a redaktor bez zapnutého dvojfaktorového overenia nemá zvláštne
+        // práva, kým si ho nenastaví (Nastavenia → Zabezpečení).
+        if (twoFactorRequiredFor({ role: token.role as string, isEditor: !!token.isEditor }) && !token.twoFactor) {
+          (session.user as any).role = 'READER';
+          (session.user as any).isEditor = false;
+          (session.user as any).needsTwoFactorSetup = true;
+        }
+        // Mimo povolených IP adries (ADMIN_ALLOWED_IPS) nemá admin ani redaktor
+        // žiadne zvláštne práva — ani v API mimo /api/admin.
+        if ((token.role === 'ADMIN' || token.isEditor) && process.env.ADMIN_ALLOWED_IPS) {
+          const h = await currentHeaders();
+          if (h && !adminIpAllowed(h)) {
+            (session.user as any).role = 'READER';
+            (session.user as any).isEditor = false;
+          }
+        }
       }
       return session;
     }

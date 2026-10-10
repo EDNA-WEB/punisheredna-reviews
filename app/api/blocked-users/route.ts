@@ -19,6 +19,17 @@ export async function POST(req: Request) {
     create: { blockerId: myId, blockedId: userId }
   });
 
+  // Zablokovaný používateľ prestane blokujúceho sledovať (a naopak) — nedostáva
+  // už upozornenia o jeho aktivite ani ju nevidí v prehľade od sledovaných.
+  await prisma.follow.deleteMany({
+    where: {
+      OR: [
+        { followerId: userId, followingId: myId },
+        { followerId: myId, followingId: userId }
+      ]
+    }
+  });
+
   return NextResponse.json({ ok: true });
 }
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clampInt } from '@/lib/queryLimit';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -12,14 +13,14 @@ export async function GET(req: Request) {
     if (!authorId) return NextResponse.json({ error: 'Chýba authorId.' }, { status: 400 });
     const cursor = searchParams.get('cursor');
     const page = searchParams.get('page');
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const limit = clampInt(searchParams.get('limit'), 10, 1, 100);
 
     const [ratings, total] = await Promise.all([
       prisma.rating.findMany({
         where: { userId: authorId },
         orderBy: { createdAt: 'desc' },
         take: limit,
-        ...(page ? { skip: parseInt(page, 10) * limit } : cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+        ...(page ? { skip: clampInt(page, 0, 0, 10_000) * limit } : cursor ? { skip: 1, cursor: { id: cursor } } : {}),
         select: {
           id: true,
           value: true,

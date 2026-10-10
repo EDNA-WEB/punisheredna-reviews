@@ -10,10 +10,17 @@ import { getMobileUser } from './mobileAuth';
 // Vracia objekt v tvare session z NextAuth, takže existujúci kód sa nemení.
 export async function getSessionOrMobile(): Promise<any | null> {
   const session = await getServerSession(authOptions);
-  if (session) return session;
-  const auth = (await headers()).get('authorization');
+  if (session) return session; // admin práva mimo povolených IP odoberá už lib/auth.ts
+  const h = await headers();
+  const auth = h.get('authorization');
   if (!auth || !auth.startsWith('Bearer ')) return null;
-  const user = await getMobileUser(new Request('https://appka.local', { headers: { authorization: auth } }));
+  // Pôvodné hlavičky (vrátane IP) — kvôli obmedzeniu admin práv na povolené IP.
+  const forwarded = new Headers({ authorization: auth });
+  for (const name of ['x-vercel-forwarded-for', 'x-forwarded-for', 'x-real-ip']) {
+    const v = h.get(name);
+    if (v) forwarded.set(name, v);
+  }
+  const user = await getMobileUser(new Request('https://appka.local', { headers: forwarded }));
   if (!user || user.banned) return null;
   return { user: { id: user.id, name: user.name, email: user.email, role: user.role, isEditor: !!(user as any).isEditor } };
 }

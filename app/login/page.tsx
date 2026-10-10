@@ -8,6 +8,7 @@ import { useT } from '@/components/TranslationProvider';
 import { IconEye, IconEyeOff, IconLock } from '@/components/Icons';
 import QrLoginPanel from '@/components/QrLoginPanel';
 import AuthPageBackgroundOverride from '@/components/AuthPageBackgroundOverride';
+import TwoFactorLoginStep from '@/components/TwoFactorLoginStep';
 
 import { safeLocalPath } from '@/lib/safeRedirect';
 export default function LoginPage() {
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [twoFactorStep, setTwoFactorStep] = useState(false);
   const [resent, setResent] = useState(false);
   const [resending, setResending] = useState(false);
 
@@ -48,11 +50,29 @@ export default function LoginPage() {
       setError('UNVERIFIED');
       return;
     }
+    if (res?.error === 'TWO_FACTOR_REQUIRED') {
+      setTwoFactorStep(true);
+      return;
+    }
     if (res?.error) {
       setError(t('auth.chyba_nespravne_udaje'));
       return;
     }
     window.location.href = callbackUrl || '/';
+  }
+
+  // Druhý krok: to isté prihlásenie znova, tentoraz aj s kódom.
+  async function submitTwoFactor(code: string): Promise<string | null> {
+    const res = await signIn('credentials', { redirect: false, nickname, password, otp: code, rememberMe: rememberMe ? 'true' : 'false' });
+    if (!res?.error) {
+      window.location.href = callbackUrl || '/';
+      return null;
+    }
+    if (res.error === 'LOCKED') return t('auth.chyba_zamknuty');
+    if (res.error === 'BANNED') return t('auth.chyba_zablokovany');
+    if (res.error === 'TWO_FACTOR_INVALID') return t('2fa.chyba_kod', 'Kód nesedí. Zkus aktuální kód z aplikace.');
+    if (res.error === 'UNVERIFIED') return t('auth.email_neovereny');
+    return t('auth.chyba_nespravne_udaje');
   }
 
   async function resendVerification() {
@@ -93,6 +113,15 @@ export default function LoginPage() {
           </div>
         )}
 
+        {twoFactorStep ? (
+          <TwoFactorLoginStep
+            onSubmit={submitTwoFactor}
+            onBack={() => {
+              setTwoFactorStep(false);
+              setPassword('');
+            }}
+          />
+        ) : (
         <div className="grid sm:grid-cols-[1.15fr_1fr]">
           <div className="p-8 flex flex-col justify-center gap-3">
             <form onSubmit={submit} className="space-y-3">
@@ -184,6 +213,7 @@ export default function LoginPage() {
             <p className="text-xs text-white/55 leading-relaxed">{t('auth.qr_popis')}</p>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

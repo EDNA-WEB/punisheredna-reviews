@@ -15,7 +15,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { mdToHtml, youtubeEmbedUrl, youtubeVideoId } from '@/lib/markdown';
+import { mdToHtml, youtubeVideoId } from '@/lib/markdown';
 import { displayUserName } from '@/lib/deletedUser';
 import { logActivity } from '@/lib/logActivity';
 import { recordRecentView } from '@/lib/recentlyViewed';
@@ -320,7 +320,7 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
     ? await prisma.person.findMany({ where: { name: { in: allNames } }, select: { name: true, slug: true } })
     : [];
   const slugByName = new Map(people.map((p) => [p.name, p.slug]));
-  const embed = movie.trailerUrl ? youtubeEmbedUrl(movie.trailerUrl) : null;
+  const embed = movie.trailerUrl ? youtubeVideoId(movie.trailerUrl) : null;
 
   // Pre každého herca: profilová fotka, miesto pôvodu a top 3 najlepšie hodnotené filmy,
   // v ktorých na našom webe hral (dopĺňa sa to automaticky, ako pribúdajú nové filmy).
@@ -841,13 +841,7 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
                       <YouTubeSubtitlePlayer videoId={primaryVideo.youtubeId} subtitles={primaryVideo.subtitles} />
                     ) : embed ? (
                       <div className="relative aspect-video bg-night">
-                        <iframe
-                          src={embed}
-                          title={`Trailer — ${movie.title}`}
-                          className="absolute inset-0 w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
+                        <YouTubeSubtitlePlayer videoId={embed} subtitles={[]} title={`Trailer — ${movie.title}`} fill />
                       </div>
                     ) : (
                       <p className="text-sm text-muted p-4">{t('movie.ziadny_trailer')}</p>
@@ -1045,14 +1039,8 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
                   <MovieVideoTabs groups={videoGroups} />
                 ) : embed ? (
                   <div className="relative rounded-xl overflow-hidden bg-surface aspect-video max-w-2xl">
-                    <iframe
-                      src={embed}
-                      title={`Trailer — ${movie.title}`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
+                        <YouTubeSubtitlePlayer videoId={embed} subtitles={[]} title={`Trailer — ${movie.title}`} fill />
+                      </div>
                 ) : (
                   <p className="text-sm text-muted">{t('movie.ziadne_video')}</p>
                 )}

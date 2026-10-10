@@ -11,6 +11,7 @@ const TABS = [
   { href: '/nastavenia/jazyky', label: 'Jazyky' },
   { href: '/nastavenia/notifikacie', label: 'Notifikácie' },
   { href: '/nastavenia/heslo', label: 'Zmena hesla' },
+  { href: '/nastavenia/zabezpeceni', label: 'Zabezpečení' },
   { href: '/nastavenia/zariadenia', label: 'Prihlásené zariadenia' },
   { href: '/nastavenia/prepojenie', label: 'Prepojenie' }
 ];

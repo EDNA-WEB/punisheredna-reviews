@@ -600,13 +600,7 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
                       <div key={v.id}>
                         {v.title && <div className="text-sm font-semibold text-ink mb-2">{v.title}</div>}
                         <div className="relative rounded-xl overflow-hidden bg-night aspect-video">
-                          <iframe
-                            src={`https://www.youtube.com/embed/${v.youtubeId}`}
-                            title={v.title || 'Video'}
-                            className="absolute inset-0 w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
+                          {v.youtubeId && <YouTubeSubtitlePlayer videoId={v.youtubeId} subtitles={[]} title={v.title || 'Video'} fill />}
                         </div>
                       </div>
                     ))}

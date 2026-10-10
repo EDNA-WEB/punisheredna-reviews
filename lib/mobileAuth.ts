@@ -1,14 +1,20 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
 import { memo } from './memoCache';
+import { adminIpAllowed } from './adminIp';
+import { twoFactorRequiredFor } from './twoFactor';
+import { purposeSecret, verifyKeys } from './secrets';
 
 // Samostatný autentifikačný systém pre mobilnú appku — NextAuth (na webe) je
 // postavený na cookies, čo appka nemá k dispozícii rovnako ako prehliadač.
 // Appka namiesto toho po prihlásení dostane tento token, uloží si ho lokálne
 // (SecureStore) a posiela ho v hlavičke "Authorization: Bearer <token>" pri
-// každom ďalšom volaní. Podpisuje sa tým istým tajným kľúčom ako web
-// (NEXTAUTH_SECRET), nech netreba spravovať druhý tajný kľúč naviac.
-const SECRET = process.env.NEXTAUTH_SECRET as string;
+// každom ďalšom volaní.
+// Bezpečnosť: podpisuje sa VLASTNÝM kľúčom (MOBILE_JWT_SECRET, inak odvodený
+// z NEXTAUTH_SECRET), nie priamo kľúčom webových relácií. Staršie tokeny
+// podpísané pôvodným kľúčom platia do konca prechodného obdobia, nech sa
+// nikto z appky neodhlási naraz.
+const secret = () => purposeSecret('mobile');
 const TOKEN_EXPIRY = '30d';
 
 export type MobileTokenPayload = {
@@ -18,7 +24,7 @@ export type MobileTokenPayload = {
 };
 
 export function signMobileToken(payload: MobileTokenPayload): string {
-  return jwt.sign(payload, SECRET, { expiresIn: TOKEN_EXPIRY });
+  return jwt.sign(payload, secret(), { expiresIn: TOKEN_EXPIRY });
 }
 
 // Overí token z hlavičky "Authorization: Bearer ..." a vráti prihláseného
@@ -30,18 +36,32 @@ export async function getMobileUser(req: Request) {
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, SECRET, { algorithms: ['HS256'] }) as MobileTokenPayload;
+    let decoded: MobileTokenPayload | null = null;
+    for (const key of verifyKeys('mobile')) {
+      try {
+        decoded = jwt.verify(token, key, { algorithms: ['HS256'] }) as MobileTokenPayload;
+        break;
+      } catch {}
+    }
+    if (!decoded) return null;
+    const payload = decoded;
     // Výkon: rovnaký používateľ posiela veľa požiadaviek za sebou (hlavná
     // obrazovka ich má ~15) — záznam si pamätáme 20 s namiesto dopytu pri každej.
-    const user = await memo(`mobile-user:${decoded.userId}`, 20_000, async () => prisma.user.findUnique({ where: { id: decoded.userId } }));
+    const user = await memo(`mobile-user:${payload.userId}`, 20_000, async () => prisma.user.findUnique({ where: { id: payload.userId } }));
     // Zmazaný účet sa odhlási zo všetkých zariadení (bezpečnosť, GDPR).
     if (!user || user.banned || (user as any).deleted) return null;
     // Neoverený nový účet sa do appky neprihlási (pozri /api/mobile/login).
     if ((user as any).mustVerifyEmail && !user.emailVerified) return null;
     // Po zmene hesla prestanú platiť všetky staršie prihlásenia.
     const changedAt = (user as any).passwordChangedAt ? new Date((user as any).passwordChangedAt).getTime() : 0;
-    const issuedAt = ((decoded as any).iat || 0) * 1000;
+    const issuedAt = ((payload as any).iat || 0) * 1000;
     if (changedAt && issuedAt < changedAt - 1000) return null;
+    // Mimo povolených IP adries (ADMIN_ALLOWED_IPS) nemá admin ani redaktor
+    // žiadne zvláštne práva. Kópia — záznam z pamäte sa nesmie meniť.
+    // To isté pre admina/redaktora bez zapnutého dvojfaktorového overenia.
+    if (twoFactorRequiredFor(user) && (!user.twoFactorEnabledAt || !adminIpAllowed(req.headers))) {
+      return { ...user, role: 'READER', isEditor: false } as typeof user;
+    }
     return user;
   } catch {
     return null;

@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { computeBoxOffice } from '@/lib/boxOffice';
 import { adjustForInflation } from '@/lib/inflation';
+import { getSessionOrMobile } from '@/lib/adminAuth';
+import { isActiveMember } from '@/lib/membership';
 
 async function loadMovieStats(id: string) {
-  const m = await prisma.movie.findUnique({
-    where: { id },
+  const m = await prisma.movie.findFirst({
+    where: { id, approved: true },
     select: {
       id: true, title: true, slug: true, poster: true, year: true, budget: true, marketingBudget: true, boxOffice: true,
       domesticBoxOffice: true, internationalBoxOffice: true, chinaBoxOffice: true, ancillaryRevenue: true
@@ -41,6 +43,14 @@ async function loadMovieStats(id: string) {
 }
 
 export async function GET(req: Request) {
+  // Box Office je len pre Golden Ticket členov (rovnako ako stránka /box-office).
+  const session = await getSessionOrMobile();
+  const userId = (session?.user as any)?.id as string | undefined;
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+  if (!userId) return NextResponse.json({ error: 'Musíš být přihlášený.' }, { status: 401 });
+  if (!isAdmin && !(await isActiveMember(userId))) {
+    return NextResponse.json({ error: 'Box Office je dostupný jen pro Golden Ticket členy.' }, { status: 403 });
+  }
   const { searchParams } = new URL(req.url);
   const a = searchParams.get('a');
   const b = searchParams.get('b');

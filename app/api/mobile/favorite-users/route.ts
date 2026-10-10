@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clampInt } from '@/lib/queryLimit';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
     if (!me) return NextResponse.json({ error: 'Neplatné nebo vypršelé přihlášení.' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '100', 10);
+    const limit = clampInt(searchParams.get('limit'), 100, 1, 500);
 
     const follows = await prisma.follow.findMany({
       where: { followerId: me.id },

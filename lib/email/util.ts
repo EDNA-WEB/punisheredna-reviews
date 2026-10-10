@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { purposeSecret, verifyKeys } from '../secrets';
 
 // Verejná adresa webu pre odkazy v e-mailoch.
 export function siteUrl() {
@@ -28,16 +29,10 @@ export const randomToken = () => crypto.randomBytes(32).toString('hex');
 export type EmailTopic = 'news' | 'online' | 'messages' | 'all';
 export const TOPICS: EmailTopic[] = ['news', 'online', 'messages', 'all'];
 
-function unsubSig(userId: string, topic: EmailTopic) {
-  // Bezpečnosť: bez verejne známej náhrady — bez NEXTAUTH_SECRET by sa dali
-  // podvrhnúť odkazy na odhlásenie odberu pre kohokoľvek.
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error('NEXTAUTH_SECRET nie je nastavený.');
-  return crypto
-    .createHmac('sha256', secret)
-    .update(`unsub:${userId}:${topic}`)
-    .digest('base64url')
-    .slice(0, 32);
+// Vlastný kľúč (lib/secrets.ts) — bez verejne známej náhrady, inak by sa dali
+// podvrhnúť odkazy na odhlásenie odberu pre kohokoľvek.
+function unsubSig(userId: string, topic: EmailTopic, key: string = purposeSecret('unsubscribe')) {
+  return crypto.createHmac('sha256', key).update(`unsub:${userId}:${topic}`).digest('base64url').slice(0, 32);
 }
 
 export function unsubscribeUrl(userId: string, topic: EmailTopic) {
@@ -50,6 +45,9 @@ export function unsubscribeApiUrl(userId: string, topic: EmailTopic) {
 
 export function verifyUnsubscribe(userId: string, topic: string, sig: string) {
   if (!userId || !sig || !TOPICS.includes(topic as EmailTopic)) return false;
-  const expected = unsubSig(userId, topic as EmailTopic);
-  return expected.length === sig.length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig));
+  for (const k of verifyKeys('unsubscribe')) {
+    const expected = unsubSig(userId, topic as EmailTopic, k);
+    if (expected.length === sig.length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) return true;
+  }
+  return false;
 }

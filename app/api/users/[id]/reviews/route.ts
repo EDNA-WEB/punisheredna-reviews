@@ -6,7 +6,7 @@ const PAGE_SIZE = 10;
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { params } = { ...ctx, params: await ctx.params };
   const { searchParams } = new URL(req.url);
-  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const page = Math.min(10_000, Math.max(1, Math.floor(Number(searchParams.get('page'))) || 1));
 
   const where = { authorId: params.id, seasonId: null, episodeId: null };
 

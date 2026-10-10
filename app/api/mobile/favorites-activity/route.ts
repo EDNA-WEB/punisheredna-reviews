@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const rawType = searchParams.get('type') || 'all';
     const type = (['all', 'reviews', 'ratings', 'other'].includes(rawType) ? rawType : 'all') as FeedType;
-    const page = Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0);
+    const page = Math.min(10_000, Math.max(0, parseInt(searchParams.get('page') || '0', 10) || 0));
 
     const feed = await getFavoritesFeed(user.id, { type, page, pageSize: 10 });
     return NextResponse.json(feed, { status: 200 });

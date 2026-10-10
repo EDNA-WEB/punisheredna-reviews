@@ -48,7 +48,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
     <div className="-mx-5 sm:mx-0">
       <div className="relative rounded-none sm:rounded-xl overflow-hidden bg-night aspect-[16/10] sm:aspect-video">
         {playing ? (
-          <YouTubeSubtitlePlayer key={current.id} videoId={current.youtubeId} subtitles={current.subtitles} title={current.title} fill />
+          <YouTubeSubtitlePlayer key={current.id} videoId={current.youtubeId} subtitles={current.subtitles} title={current.title} fill autoPlay />
         ) : (
           <>
             <div

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clampInt } from '@/lib/queryLimit';
 import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 
@@ -18,7 +19,7 @@ export async function GET(req: Request) {
     const authorId = searchParams.get('authorId');
     const cursor = searchParams.get('cursor');
     const page = searchParams.get('page');
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const limit = clampInt(searchParams.get('limit'), 10, 1, 50);
     const where = authorId ? { authorId } : onlyEditors ? { author: { isEditor: true } } : {};
 
     const [reviews, total] = await Promise.all([
@@ -26,7 +27,7 @@ export async function GET(req: Request) {
         where,
         orderBy: { createdAt: 'desc' },
         take: limit,
-        ...(page ? { skip: parseInt(page, 10) * limit } : cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+        ...(page ? { skip: clampInt(page, 0, 0, 10_000) * limit } : cursor ? { skip: 1, cursor: { id: cursor } } : {}),
         select: {
           id: true,
           body: true,
