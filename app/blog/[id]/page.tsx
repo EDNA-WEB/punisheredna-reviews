@@ -5,9 +5,12 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { trackArticleView } from '@/lib/trackView';
 import { notFound } from 'next/navigation';
-import { mdToHtml, excerpt } from '@/lib/markdown';
+import { mdToHtml, excerpt, readingTime } from '@/lib/markdown';
 import { articleJsonLd } from '@/lib/jsonLd';
-import { IconEdit, IconUser } from '@/components/Icons';
+import { IconEdit } from '@/components/Icons';
+import ArticleView from '@/components/article/ArticleView';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
+import { loadAuthorStats, loadMostRead, loadRelated, plainImg } from '@/lib/articleData';
 import RequestPublishButton from '@/components/RequestPublishButton';
 import ApproveBlogPostButton from '@/components/ApproveBlogPostButton';
 import DeleteBlogPostButton from '@/components/DeleteBlogPostButton';
@@ -40,7 +43,7 @@ export default async function BlogPostPage(props: { params: Promise<{ id: string
 
   const post = await prisma.blogPost.findUnique({
     where: { id: params.id },
-    include: { author: { select: { id: true, name: true, avatar: true } } }
+    include: { author: { select: { id: true, name: true, avatar: true, role: true, bio: true } } }
   });
   if (!post) return notFound();
 
@@ -55,17 +58,45 @@ export default async function BlogPostPage(props: { params: Promise<{ id: string
 
   await trackArticleView('blog', post.id);
 
-  const relatedByTags = post.tags.length
-    ? await prisma.blogPost.findMany({
-        where: { id: { not: post.id }, tags: { hasSome: post.tags }, isDraft: false, published: true },
-        orderBy: { createdAt: 'desc' },
-        take: 4,
-        select: { id: true, title: true, coverImage: true }
-      })
-    : [];
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (k: string, f: string) => dict[k] || f;
+  const kicker = t('clanok.clanek', 'Článek');
+
+  const [mostRead, related, authorStats, followRow] = await Promise.all([
+    loadMostRead('blog', post.id, plainImg, kicker),
+    loadRelated('blog', post.id, post.tags, plainImg, kicker),
+    loadAuthorStats(post.author.id, { reviews: t('clanok.recenze', 'Recenze'), articles: t('clanok.clanky', 'Články') }),
+    viewerId && viewerId !== post.author.id
+      ? prisma.follow.findUnique({ where: { followerId_followingId: { followerId: viewerId, followingId: post.author.id } }, select: { id: true } })
+      : Promise.resolve(null)
+  ]);
+
+  const statusBadges = (post.isDraft || post.published) && (
+    <div className="flex flex-wrap items-center gap-2 mb-5">
+      {post.isDraft && <span className="text-xs font-semibold bg-surface text-accent border border-line px-2.5 py-1 rounded-full">Rozpísané</span>}
+      {post.published && <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Publikované na hlavnej stránke</span>}
+    </div>
+  );
+
+  const ownerBar = (isOwn || isAdmin) && (
+    <div className="flex flex-wrap items-center gap-2 mb-6">
+      <Link
+        href={`/blog/${post.id}/upravit`}
+        className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent"
+      >
+        <IconEdit className="w-4 h-4" />
+      </Link>
+      <DeleteBlogPostButton postId={post.id} />
+      {isOwn && !post.isDraft && !post.published && !post.publicationRequested && <RequestPublishButton postId={post.id} />}
+      {isOwn && post.publicationRequested && !post.published && (
+        <p className="text-sm text-muted">Žádost o publikaci už byla odeslána, čeká se na schválení administrátorem.</p>
+      )}
+      {isAdmin && post.publicationRequested && !post.published && <ApproveBlogPostButton postId={post.id} />}
+    </div>
+  );
 
   return (
-    <div className="pt-10 max-w-2xl">
+    <>
       {post.published && (
         <script
           nonce={(await headers()).get('x-nonce') ?? undefined}
@@ -83,76 +114,43 @@ export default async function BlogPostPage(props: { params: Promise<{ id: string
           }}
         />
       )}
-      {post.coverImage && (
-        <img src={post.coverImage} alt={post.title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />
-      )}
-
-      <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-ink leading-tight mb-3">{post.title}</h1>
-
-      <div className="flex items-center gap-3 mb-6">
-        <Link href={`/profile/${post.author.id}`} className="flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent">
-          {post.author.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="w-7 h-7 rounded-full object-cover" />
-          ) : (
-            <IconUser className="w-5 h-5" />
-          )}
-          {post.author.name}
-        </Link>
-        <span className="text-xs text-muted">{new Date(post.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-        {post.isDraft && (
-          <span className="text-xs font-semibold bg-surface text-accent border border-accent/40 px-2.5 py-1 rounded-full">Rozpísané</span>
-        )}
-        {post.published && (
-          <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Publikované na hlavnej stránke</span>
-        )}
-      </div>
-
-      {(isOwn || isAdmin) && (
-        <div className="flex items-center gap-2 mb-6">
-          <Link
-            href={`/blog/${post.id}/upravit`}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-muted border border-line hover:text-accent hover:border-accent"
-          >
-            <IconEdit className="w-4 h-4" />
-          </Link>
-          <DeleteBlogPostButton postId={post.id} />
-        </div>
-      )}
-
-      <div
-        className="article-body text-lg leading-[1.75] text-ink font-body mb-6"
-        dangerouslySetInnerHTML={{ __html: mdToHtml(post.body) }}
+      <ArticleView
+        readOnly={false}
+        kicker={kicker}
+        breadcrumb={[
+          { label: t('clanok.domu', 'Domů'), href: '/' },
+          { label: t('clanok.blog', 'Blog'), href: null }
+        ]}
+        chips={[]}
+        title={post.title}
+        perex={null}
+        minutes={readingTime(post.body)}
+        date={post.createdAt.toISOString()}
+        author={{
+          name: post.author.name,
+          avatar: post.author.avatar,
+          href: `/profile/${post.author.id}`,
+          isCritic: post.author.role === 'ADMIN',
+          stats: authorStats,
+          bio: post.author.bio || null,
+          follow: viewerId && viewerId !== post.author.id ? { targetId: post.author.id, initialFollowing: !!followRow } : null
+        }}
+        cover={plainImg(post.coverImage, 900)}
+        trailerYoutubeId={null}
+        html={mdToHtml(post.body)}
+        movie={null}
+        tags={post.tags.map((tag) => ({ label: tag, href: null }))}
+        likes={null}
+        canReact={false}
+        likeTarget={null}
+        commentCount={null}
+        mostRead={mostRead}
+        mostReadTitle={t('clanok.nejctenejsi', 'Nejčtenější')}
+        related={related}
+        sharePath={`/blog/${post.id}`}
+        notice={statusBadges || null}
+        adminBar={ownerBar || null}
       />
-
-      {post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-8">
-          {post.tags.map((tag) => (
-            <span key={tag} className="text-xs font-semibold text-accent bg-surface border border-accent/40 px-2.5 py-1 rounded-full">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {relatedByTags.length > 0 && (
-        <div className="mb-10">
-          <h2 className="font-display font-bold text-lg text-ink mb-3">Súvisiace články</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {relatedByTags.map((r) => (
-              <Link key={r.id} href={`/blog/${r.id}`} className="flex gap-3 border border-line rounded-xl p-3 hover:border-accent transition-colors">
-                <div className="w-14 h-14 rounded-lg bg-surface bg-cover bg-center flex-none" style={r.coverImage ? { backgroundImage: `url('${r.coverImage}')` } : undefined} />
-                <div className="text-sm font-semibold text-ink line-clamp-2">{r.title}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {isOwn && !post.isDraft && !post.published && !post.publicationRequested && <RequestPublishButton postId={post.id} />}
-      {isOwn && post.publicationRequested && !post.published && (
-        <p className="text-sm text-muted">Žádost o publikaci už byla odeslána, čeká se na schválení administrátorem.</p>
-      )}
-      {isAdmin && post.publicationRequested && !post.published && <ApproveBlogPostButton postId={post.id} />}
-    </div>
+    </>
   );
 }

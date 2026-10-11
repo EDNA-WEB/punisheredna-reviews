@@ -5,9 +5,15 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { excerpt, mdToHtml, readingTime } from '@/lib/markdown';
 import { trackArticleView } from '@/lib/trackView';
-import { getShareConfig, neutralizeLinks, proxiedImage, rewriteImages, verifyShareKey } from '@/lib/articleShare';
+import { getShareConfig, neutralizeLinks, proxiedImage, rewriteImages, stillVideos, strictProxiedImage, verifyShareKey } from '@/lib/articleShare';
 import { normalizeTag, trackShareVisit } from '@/lib/visitorAnalytics';
-import SharedArticle from '@/components/SharedArticle';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
+import { loadAuthorStats, loadMostRead, loadRelated, plainImg, type ImgFn } from '@/lib/articleData';
+import ArticleView from '@/components/article/ArticleView';
+import SharedPrivacyNote from '@/components/article/SharedPrivacyNote';
+
+// Obrázky zdieľanej verzie idú cez našu adresu (/sdilet/img/…), nie priamo z Cloudinary/TMDb.
+const shareImg: ImgFn = (url, w) => strictProxiedImage(plainImg(url, w));
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +47,17 @@ export default async function SharedBlogPage(props: Props) {
 
   const post = await prisma.blogPost.findUnique({
     where: { id },
-    select: { id: true, title: true, body: true, coverImage: true, createdAt: true, isDraft: true, published: true, author: { select: { name: true } } }
+    select: {
+      id: true,
+      title: true,
+      body: true,
+      tags: true,
+      coverImage: true,
+      createdAt: true,
+      isDraft: true,
+      published: true,
+      author: { select: { id: true, name: true, avatar: true, role: true, bio: true } }
+    }
   });
   if (!post || post.isDraft || !post.published) redirect('/login');
 
@@ -52,16 +68,51 @@ export default async function SharedBlogPage(props: Props) {
     /* počítadlo nie je dôležité */
   }
 
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (k: string, f: string) => dict[k] || f;
+  const kicker = t('clanok.clanek', 'Článek');
+
+  const [mostRead, related, authorStats] = await Promise.all([
+    loadMostRead('blog', post.id, shareImg, kicker),
+    loadRelated('blog', post.id, post.tags, shareImg, kicker),
+    loadAuthorStats(post.author.id, { reviews: t('clanok.recenze', 'Recenze'), articles: t('clanok.clanky', 'Články') })
+  ]);
+
+  const html = rewriteImages(stillVideos(neutralizeLinks(mdToHtml(post.body))));
+
   return (
-    <SharedArticle
-      kicker="Článek"
+    <ArticleView
+      readOnly
+      kicker={kicker}
+      breadcrumb={[{ label: t('clanok.domu', 'Domů'), href: null }, { label: t('clanok.blog', 'Blog'), href: null }]}
+      chips={[]}
       title={post.title}
-      summary={null}
-      author={post.author.name}
-      date={post.createdAt.toISOString()}
+      perex={null}
       minutes={readingTime(post.body)}
-      cover={proxiedImage(post.coverImage)}
-      html={rewriteImages(neutralizeLinks(mdToHtml(post.body)))}
+      date={post.createdAt.toISOString()}
+      author={{
+        name: post.author.name,
+        avatar: shareImg(post.author.avatar, 64),
+        href: null,
+        isCritic: post.author.role === 'ADMIN',
+        stats: authorStats,
+        bio: post.author.bio || null,
+        follow: null
+      }}
+      cover={shareImg(post.coverImage, 900)}
+      trailerYoutubeId={null}
+      html={html}
+      movie={null}
+      tags={post.tags.map((tag) => ({ label: tag, href: null }))}
+      likes={null}
+      canReact={false}
+      likeTarget={null}
+      commentCount={null}
+      mostRead={mostRead}
+      mostReadTitle={t('clanok.nejctenejsi', 'Nejčtenější')}
+      related={related}
+      sharePath={null}
+      footer={<SharedPrivacyNote />}
     />
   );
 }

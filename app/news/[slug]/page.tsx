@@ -4,16 +4,14 @@ import { trackArticleView } from '@/lib/trackView';
 import { articleJsonLd } from '@/lib/jsonLd';
 import type { Metadata } from 'next';
 import { mdToHtml, readingTime } from '@/lib/markdown';
-import { IconUser, IconClock, IconBook } from '@/components/Icons';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import ReactionButtons from '@/components/ReactionButtons';
-import CommentItem from '@/components/CommentItem';
-import CommentForm from '@/components/CommentForm';
-import MovieMiniProfile from '@/components/MovieMiniProfile';
-import NewsSidebarList from '@/components/NewsSidebarList';
+import ArticleView from '@/components/article/ArticleView';
+import ArticleComments from '@/components/article/ArticleComments';
+import { getDictionary, getUserLanguage } from '@/lib/i18n';
+import { loadArticleMovie, loadAuthorStats, loadMostRead, loadRelated, plainImg } from '@/lib/articleData';
 
 import { headers } from 'next/headers';
 export const dynamic = 'force-dynamic';
@@ -52,7 +50,7 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
   const news = await prisma.newsPost.findUnique({
     where: { slug: params.slug },
     include: {
-      author: { select: { id: true, name: true, avatar: true } },
+      author: { select: { id: true, name: true, avatar: true, role: true, bio: true } },
       likes: true,
       comments: {
         where: { parentId: null },
@@ -102,65 +100,51 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
 
   await trackArticleView('news', news.id);
 
-  const relatedByTags = news.tags.length
-    ? await prisma.newsPost.findMany({
-        where: { id: { not: news.id }, tags: { hasSome: news.tags }, isDraft: false, OR: [{ publishAt: null }, { publishAt: { lte: new Date() } }] },
-        orderBy: { createdAt: 'desc' },
-        take: 4,
-        select: { id: true, title: true, slug: true, coverImage: true, summary: true }
-      })
-    : [];
+  const dict = await getDictionary(await getUserLanguage());
+  const t = (k: string, f: string) => dict[k] || f;
+  const kicker = t('clanok.novinka', 'Novinka');
 
-  const relatedMovie = news.movieId
-    ? await prisma.movie.findUnique({
-        where: { id: news.movieId },
-        select: {
-          title: true,
-          slug: true,
-          poster: true,
-          year: true,
-          genres: true,
-          countries: true,
-          contentType: true,
-          tmdbVoteAverage: true,
-          tmdbVoteCount: true,
-          ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } },
-          seasons: { select: { id: true } },
-          streamingServices: { take: 5, select: { url: true, streamingService: { select: { name: true, icon: true } } } }
-        }
-      })
-    : null;
+  const [{ movie, trailerYoutubeId, movieTitle }, mostRead, related, authorStats, followRow] = await Promise.all([
+    loadArticleMovie(news.movieId, {
+      viewerId,
+      readOnly: false,
+      img: plainImg,
+      labels: {
+        premiere: t('clanok.premiera', 'Premiéra'),
+        director: t('clanok.rezie', 'Režie'),
+        runtime: t('clanok.delka', 'Délka'),
+        country: t('clanok.zeme', 'Země'),
+        type: t('clanok.typ', 'Typ')
+      }
+    }),
+    loadMostRead('news', news.id, plainImg, kicker, isAdmin || isMember),
+    loadRelated('news', news.id, news.tags, plainImg, kicker, isAdmin || isMember),
+    loadAuthorStats(news.author.id, { reviews: t('clanok.recenze', 'Recenze'), articles: t('clanok.clanky', 'Články') }),
+    viewerId && viewerId !== news.author.id
+      ? prisma.follow.findUnique({ where: { followerId_followingId: { followerId: viewerId, followingId: news.author.id } }, select: { id: true } })
+      : Promise.resolve(null)
+  ]);
 
-  // Najčítanejšie novinky za posledných 30 dní — počíta sa zo záznamov
-  // zobrazení (ArticleView), nie z celkového počtu za celú existenciu webu,
-  // nech rebríček odráža AKTUÁLNU popularitu, nie len staré "evergreen" hity.
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const viewCounts = await prisma.articleView.groupBy({
-    by: ['targetId'],
-    where: { targetType: 'news', createdAt: { gte: thirtyDaysAgo } },
-    _count: { targetId: true },
-    orderBy: { _count: { targetId: 'desc' } },
-    take: 5
-  });
-  const mostReadIds = viewCounts.map((v) => v.targetId).filter((id) => id !== news.id);
-  const mostReadRaw = mostReadIds.length
-    ? await prisma.newsPost.findMany({
-        where: { id: { in: mostReadIds }, isDraft: false, OR: [{ publishAt: null }, { publishAt: { lte: new Date() } }] },
-        select: { id: true, title: true, slug: true, coverImage: true }
-      })
-    : [];
-  const mostReadOrder = new Map(mostReadIds.map((id, i) => [id, i]));
-  const mostRead = mostReadRaw.sort((a, b) => (mostReadOrder.get(a.id) ?? 0) - (mostReadOrder.get(b.id) ?? 0));
+  const commentTotal = news.comments.reduce((n, c) => n + 1 + c.replies.length, 0);
+  const serializedComments = news.comments.map((c) => ({
+    ...c,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt?.toISOString() || c.createdAt.toISOString(),
+    reactions: summarizeReactions(c.reactions),
+    myReaction: c.reactions.find((r) => r.userId === viewerId)?.emoji || null,
+    replies: c.replies.map((r) => ({
+      ...r,
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt?.toISOString() || r.createdAt.toISOString(),
+      reactions: summarizeReactions(r.reactions),
+      myReaction: r.reactions.find((rr) => rr.userId === viewerId)?.emoji || null
+    }))
+  }));
 
-  const latestNews = await prisma.newsPost.findMany({
-    where: { id: { not: news.id }, isDraft: false, OR: [{ publishAt: null }, { publishAt: { lte: new Date() } }] },
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    select: { id: true, title: true, slug: true, coverImage: true }
-  });
+  const cover = plainImg(news.coverImage, 900);
 
   return (
-    <div className="pt-6">
+    <>
       <script
         nonce={(await headers()).get('x-nonce') ?? undefined}
         type="application/ld+json"
@@ -176,150 +160,65 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
           })
         }}
       />
-      <div className="flex items-center gap-2 text-sm text-muted mb-5 max-w-2xl">
-        <Link href="/" className="hover:text-accent">Domov</Link>
-        <span>/</span>
-        <span className="text-ink">Novinky</span>
-      </div>
-
-      <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
-        <div className="max-w-2xl min-w-0">
-      {news.isDraft && (
-        <div className="flex items-center gap-2 mb-5 text-xs font-semibold text-accent bg-surface border border-accent/40 rounded-full px-3 py-1.5 w-fit">
-          <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
-          {isAdmin ? 'Rozepsané — vidíš to jako administrátor' : 'Dřívější přístup díky Golden Ticket členství — tento článek ještě není veřejně publikovaný'}
-        </div>
-      )}
-
-      <span className="inline-block bg-night text-white text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-        Novinka
-      </span>
-
-      <h1 className="font-display font-extrabold text-3xl sm:text-4xl leading-tight text-ink mb-4">{news.title}</h1>
-
-      <div className="flex items-center gap-5 text-sm text-muted mb-6 flex-wrap">
-        <Link href={`/profile/${news.author.id}`} className="flex items-center gap-2 hover:text-accent">
-          {news.author.avatar ? (
-            <img src={news.author.avatar} alt={news.author.name} className="w-6 h-6 rounded-full object-cover" />
-          ) : (
-            <IconUser className="w-4 h-4" />
-          )}
-          {news.author.name}
-        </Link>
-        <span className="flex items-center gap-1.5"><IconClock className="w-4 h-4" />
-          {new Date(news.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </span>
-        <span className="flex items-center gap-1.5"><IconBook className="w-4 h-4" />{readingTime(news.body)} min čítania</span>
-      </div>
-
-      {news.coverImage && (
-        <img src={news.coverImage} alt={news.title} className="w-full max-h-[420px] object-cover rounded-xl mb-8 bg-surface" />
-      )}
-
-      <div
-        className="article-body text-lg leading-[1.75] text-ink font-body mb-6"
-        dangerouslySetInnerHTML={{ __html: mdToHtml(news.body) }}
+      <ArticleView
+        readOnly={false}
+        kicker={kicker}
+        breadcrumb={[
+          { label: t('clanok.domu', 'Domů'), href: '/' },
+          { label: t('nav.novinky', 'Novinky'), href: '/novinky' },
+          ...(news.tags[0] ? [{ label: news.tags[0], href: `/novinky?tag=${encodeURIComponent(news.tags[0])}` }] : [])
+        ]}
+        chips={movieTitle ? [movieTitle] : []}
+        title={news.title}
+        perex={news.summary || null}
+        minutes={readingTime(news.body)}
+        date={(news.publishAt || news.createdAt).toISOString()}
+        author={{
+          name: news.author.name,
+          avatar: news.author.avatar,
+          href: `/profile/${news.author.id}`,
+          isCritic: news.author.role === 'ADMIN',
+          stats: authorStats,
+          bio: news.author.bio || null,
+          follow: viewerId && viewerId !== news.author.id ? { targetId: news.author.id, initialFollowing: !!followRow } : null
+        }}
+        cover={cover}
+        trailerYoutubeId={trailerYoutubeId}
+        html={mdToHtml(news.body)}
+        movie={movie}
+        tags={news.tags.map((tag) => ({ label: tag, href: `/novinky?tag=${encodeURIComponent(tag)}` }))}
+        likes={{
+          myValue: news.likes.find((l) => l.userId === viewerId)?.value || 0,
+          likeCount: news.likes.filter((l) => l.value === 1).length,
+          dislikeCount: news.likes.filter((l) => l.value === -1).length
+        }}
+        canReact={!!viewerId && news.author.id !== viewerId}
+        likeTarget={{ newsId: news.id }}
+        commentCount={commentTotal}
+        comments={
+          <ArticleComments
+            comments={serializedComments}
+            total={commentTotal}
+            target={{ newsId: news.id }}
+            viewerId={viewerId}
+            isAdmin={isAdmin}
+            isMember={isMember}
+            articleAuthorId={news.author.id}
+          />
+        }
+        mostRead={mostRead}
+        mostReadTitle={t('clanok.nejctenejsi', 'Nejčtenější')}
+        related={related}
+        sharePath={`/news/${news.slug}`}
+        notice={
+          news.isDraft ? (
+            <div className="flex items-center gap-2 mb-6 text-xs font-semibold text-accent bg-surface border border-line rounded-full px-3 py-1.5 w-fit">
+              <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
+              {isAdmin ? 'Rozepsané — vidíš to jako administrátor' : 'Dřívější přístup díky Golden Ticket členství — tento článek ještě není veřejně publikovaný'}
+            </div>
+          ) : null
+        }
       />
-
-      {news.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-8">
-          {news.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/novinky?tag=${encodeURIComponent(tag)}`}
-              className="text-xs font-semibold text-accent bg-surface border border-accent/40 px-2.5 py-1 rounded-full hover:bg-accent hover:text-white transition-colors"
-            >
-              #{tag}
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {relatedByTags.length > 0 && (
-        <div className="mb-10 lg:hidden">
-          <h2 className="font-display font-bold text-lg text-ink mb-3">Súvisiace články</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {relatedByTags.map((r) => (
-              <Link key={r.id} href={`/news/${r.slug}`} className="group block rounded-xl overflow-hidden bg-card border border-line hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-                <div className="relative aspect-[16/10] bg-surface overflow-hidden">
-                  {r.coverImage && (
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-                      style={{ backgroundImage: `url('${r.coverImage}')` }}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
-                </div>
-                <div className="p-3">
-                  <div className="text-sm font-semibold text-ink leading-snug line-clamp-2 group-hover:text-accent transition-colors">{r.title}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {news.author.id !== viewerId && (
-        <ReactionButtons
-          target={{ newsId: news.id }}
-          initialMyValue={news.likes.find((l) => l.userId === viewerId)?.value || 0}
-          initialLikeCount={news.likes.filter((l) => l.value === 1).length}
-          initialDislikeCount={news.likes.filter((l) => l.value === -1).length}
-        />
-      )}
-
-      <div className="mt-10 pt-8 border-t border-line">
-        <h3 className="font-display font-bold text-lg text-ink mb-5">
-          Komentáre {news.comments.length > 0 && `(${news.comments.reduce((n, c) => n + 1 + c.replies.length, 0)})`}
-        </h3>
-
-        <div className="space-y-0 mb-6">
-          {news.comments.length === 0 ? (
-            <p className="text-muted text-sm mb-4">Zatím žádné komentáře. Buď první.</p>
-          ) : (
-            news.comments.map((c) => (
-              <CommentItem
-                key={c.id}
-                comment={{
-                  ...c,
-                  createdAt: c.createdAt.toISOString(),
-                  updatedAt: c.updatedAt?.toISOString() || c.createdAt.toISOString(),
-                  reactions: summarizeReactions(c.reactions),
-                  myReaction: c.reactions.find((r) => r.userId === viewerId)?.emoji || null,
-                  replies: c.replies.map((r) => ({
-                    ...r,
-                    createdAt: r.createdAt.toISOString(),
-                    updatedAt: r.updatedAt?.toISOString() || r.createdAt.toISOString(),
-                    reactions: summarizeReactions(r.reactions),
-                    myReaction: r.reactions.find((rr) => rr.userId === viewerId)?.emoji || null
-                  }))
-                }}
-                target={{ newsId: news.id }}
-                viewerId={viewerId}
-                isAdmin={isAdmin}
-                isMember={isMember}
-              />
-            ))
-          )}
-        </div>
-
-        <CommentForm target={{ newsId: news.id }} />
-      </div>
-        </div>
-
-        {(relatedMovie || relatedByTags.length > 0 || mostRead.length > 0 || latestNews.length > 0) && (
-          <div className="hidden lg:block sticky top-20">
-            {relatedMovie && <MovieMiniProfile movie={relatedMovie} />}
-
-            {relatedByTags.length > 0 && (
-              <div className="text-xs font-bold text-accent uppercase tracking-wider mb-1">Odporúčame</div>
-            )}
-            <NewsSidebarList title="Súvisiace články" items={relatedByTags} />
-            <NewsSidebarList title="Najčítanejšie novinky" items={mostRead} />
-            <NewsSidebarList title="Najnovšie novinky" items={latestNews} />
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 }

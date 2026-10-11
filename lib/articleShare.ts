@@ -59,6 +59,16 @@ export function neutralizeLinks(html: string) {
   return html.replace(/<a\b[^>]*>/gi, '<span class="shared-link">').replace(/<\/a>/gi, '</span>');
 }
 
+// Vložené YouTube videá → len nehybný náhľad (prehrávač YouTube obsahuje
+// odkazy na youtube.com, návštevník zdieľaného článku nesmie nikam odísť).
+export function stillVideos(html: string) {
+  return html.replace(
+    /<div class="relative rounded-xl overflow-hidden bg-night my-4" style="aspect-ratio:16\/9"><iframe src="https:\/\/www\.youtube-nocookie\.com\/embed\/([\w-]{11})[^"]*"[^>]*><\/iframe><\/div>/g,
+    (_m, id) =>
+      `<div class="ap-still-video"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy" /></div>`
+  ).replace(/<iframe\b[\s\S]*?<\/iframe>/gi, '');
+}
+
 // --- Obrázky cez našu adresu ---------------------------------------------------
 
 const IMAGE_HOSTS = ['res.cloudinary.com', 'image.tmdb.org', 'img.youtube.com', 'i.ytimg.com'];
@@ -98,8 +108,25 @@ export function decodeImageToken(token: string) {
 }
 
 // Všetky <img src="…"> v texte článku → naša adresa
+// Obrázok z inej (nepovolenej) adresy sa vynechá — návštevník nesmie nič načítať priamo odinakiaľ.
 export function rewriteImages(html: string) {
-  return html.replace(/(<img\b[^>]*?\ssrc=)(["'])([^"']+)\2/gi, (_m, pre, q, src) => `${pre}${q}${proxiedImage(src) || src}${q}`);
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    const m = tag.match(/(\ssrc=)(["'])([^"']+)\2/i);
+    if (!m) return '';
+    const src = m[3].replace(/&amp;/g, '&');
+    if (src.startsWith('data:image/') || (src.startsWith('/') && !src.startsWith('//'))) return tag;
+    const prox = proxiedImage(src);
+    if (!prox || !prox.startsWith('/sdilet/img/')) return '';
+    return tag.replace(m[0], `${m[1]}${m[2]}${prox}${m[2]}`);
+  });
+}
+
+// Pre jednotlivé obrázky na zdieľanej stránke (titulka, avatary…): len cez našu adresu, inak nič.
+export function strictProxiedImage(url: string | null | undefined) {
+  if (!url) return null;
+  if (url.startsWith('/') && !url.startsWith('//')) return url;
+  const prox = proxiedImage(url);
+  return prox && prox.startsWith('/sdilet/img/') ? prox : null;
 }
 
 // Štatistika návštev: lib/visitorAnalytics.ts (trackShareVisit)

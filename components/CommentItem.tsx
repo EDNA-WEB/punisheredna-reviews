@@ -30,7 +30,9 @@ export default function CommentItem({
   viewerId,
   isAdmin,
   isMember = false,
-  depth = 0
+  depth = 0,
+  articleAuthorId,
+  bestId
 }: {
   comment: CommentData;
   target: { reviewId?: string; newsId?: string; movieId?: string };
@@ -38,6 +40,9 @@ export default function CommentItem({
   isAdmin: boolean;
   isMember?: boolean;
   depth?: number;
+  // Nové zobrazenie článku: odznak AUTOR pri autorovi článku a NAJLEPŠÍ pri najobľúbenejšom komentári.
+  articleAuthorId?: string;
+  bestId?: string;
 }) {
   const router = useRouter();
   const t = useT();
@@ -49,7 +54,7 @@ export default function CommentItem({
   const [editError, setEditError] = useState('');
 
   const isOwner = comment.userId === viewerId;
-  const canDelete = isAdmin || (isOwner && isMember);
+  const canDelete = isAdmin || isOwner; // mazanie vlastného komentára je zadarmo pre všetkých
   const wasEdited = comment.updatedAt && new Date(comment.updatedAt).getTime() - new Date(comment.createdAt).getTime() > 60_000;
 
   async function handleDelete() {
@@ -111,6 +116,10 @@ export default function CommentItem({
                 {displayUserName(comment.user.name, t)}
               </Link>
               {comment.user.role === 'ADMIN' && <CriticBadge size="w-3.5 h-3.5" label={false} />}
+              {articleAuthorId && comment.userId === articleAuthorId && (
+                <span className="ap-badge ap-badge-author">{t('clanok.badge_autor', 'AUTOR')}</span>
+              )}
+              {bestId && comment.id === bestId && <span className="ap-badge ap-badge-best">{t('clanok.badge_nejlepsi', 'NEJLEPŠÍ')}</span>}
               <span>{new Date(comment.createdAt).toLocaleDateString('cs-CZ')}</span>
               {wasEdited && <span className="italic">(upravené)</span>}
             </div>
@@ -191,7 +200,7 @@ export default function CommentItem({
       {comment.replies && comment.replies.length > 0 && (
         <div className="space-y-0 mb-4">
           {comment.replies.map((r) => (
-            <CommentItem key={r.id} comment={r} target={target} viewerId={viewerId} isAdmin={isAdmin} isMember={isMember} depth={depth + 1} />
+            <CommentItem key={r.id} comment={r} target={target} viewerId={viewerId} isAdmin={isAdmin} isMember={isMember} depth={depth + 1} articleAuthorId={articleAuthorId} />
           ))}
         </div>
       )}
