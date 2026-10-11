@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { readingTime } from '@/lib/markdown';
 import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { loadArticleMovie, loadAuthorStats, loadMostRead, loadRelated, plainImg } from '@/lib/articleData';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function GET(req: Request) {
     const news = await prisma.newsPost.findFirst({
       where: { slug, ...visibility },
       include: {
-        author: { select: { id: true, name: true, avatar: true } },
+        author: { select: { id: true, name: true, avatar: true, role: true, bio: true } },
         likes: true,
         comments: {
           where: { parentId: null },
@@ -50,9 +51,39 @@ export async function GET(req: Request) {
         user: c.user,
         likesCount: c.likes.length,
         likedByMe: me ? c.likes.some((l: any) => l.userId === me.id) : false,
+        // Nové zobrazenie článku v appke: palce hore, moja reakcia, autor článku
+        likeCount: c.likes.filter((l: any) => l.value === 1).length,
+        myValue: me ? c.likes.find((l: any) => l.userId === me.id)?.value || 0 : 0,
+        isArticleAuthor: c.user?.id === news!.authorId,
         replies: (c.replies || []).map(mapComment)
       };
     }
+
+    // Doplnky pre nové zobrazenie článku (rovnaké údaje ako web — lib/articleData.ts)
+    const seesEarly = privileged || isMember;
+    const [movieData, mostRead, related, authorStats, followRow] = await Promise.all([
+      loadArticleMovie(news.movieId, {
+        viewerId: me?.id || null,
+        readOnly: false,
+        img: plainImg,
+        labels: { premiere: 'Premiéra', director: 'Režie', runtime: 'Délka', country: 'Země', type: 'Typ' }
+      }),
+      loadMostRead('news', news.id, plainImg, 'Novinka', seesEarly),
+      loadRelated('news', news.id, news.tags, plainImg, 'Novinka', seesEarly),
+      loadAuthorStats(news.author.id, { reviews: 'Recenze', articles: 'Články' }),
+      me && me.id !== news.author.id
+        ? prisma.follow.findUnique({ where: { followerId_followingId: { followerId: me.id, followingId: news.author.id } }, select: { id: true } })
+        : Promise.resolve(null)
+    ]);
+    const slugOf = (href: string | null) => {
+      if (!href) return null;
+      const last = href.split('/').pop() || '';
+      try {
+        return decodeURIComponent(last);
+      } catch {
+        return last;
+      }
+    };
 
     return NextResponse.json(
       {
@@ -62,7 +93,7 @@ export async function GET(req: Request) {
         body: news.body,
         coverImage: news.coverImage,
         createdAt: news.createdAt,
-        author: news.author,
+        author: { id: news.author.id, name: news.author.name, avatar: news.author.avatar },
         slug: news.slug,
         tags: news.tags,
         readingMinutes: readingTime(news.body),
@@ -75,7 +106,26 @@ export async function GET(req: Request) {
         likesCount: news.likes.filter((l) => l.value === 1).length,
         likedByMe: me ? news.likes.some((l) => l.userId === me.id && l.value === 1) : false,
         commentsCount: news.comments.reduce((sum, c) => sum + 1 + c.replies.length, 0),
-        comments: news.comments.map(mapComment)
+        comments: news.comments.map(mapComment),
+        // --- nové zobrazenie článku ---
+        publishedAt: news.publishAt || news.createdAt,
+        coverSharp: plainImg(news.coverImage, 600),
+        authorInfo: {
+          isCritic: news.author.role === 'ADMIN',
+          bio: news.author.bio || null,
+          stats: authorStats,
+          following: !!followRow
+        },
+        trailerYoutubeId: movieData.trailerYoutubeId,
+        movie: movieData.movie
+          ? {
+              ...movieData.movie,
+              slug: slugOf(movieData.movie.href),
+              cast: movieData.movie.cast.map((a) => ({ name: a.name, photo: a.photo, personSlug: slugOf(a.href) }))
+            }
+          : null,
+        mostRead: mostRead.map((m) => ({ id: m.key, title: m.title, slug: slugOf(m.href), image: m.image })),
+        related: related.map((r) => ({ id: r.key, title: r.title, slug: slugOf(r.href), image: r.image, minutes: r.minutes || null }))
       },
       { status: 200 }
     );
