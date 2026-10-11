@@ -5,7 +5,8 @@
 
 export function cloudinaryThumbnailUrlClient(url: string, width = 300): string {
   if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
-  return url.replace('/upload/', `/upload/w_${width},c_limit,q_auto/`);
+  // 2× šírka pre ostrosť na jemných displejoch, moderný formát (f_auto) a vyššia kvalita.
+  return url.replace('/upload/', `/upload/f_auto,q_auto:good,w_${width * 2},c_limit/`);
 }
 
 // Pridá do už nahraného obrázka textový vodoznak so zdrojom (napr. "Zdroj:

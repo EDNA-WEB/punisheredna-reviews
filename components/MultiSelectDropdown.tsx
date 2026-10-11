@@ -56,7 +56,7 @@ export default function MultiSelectDropdown({
             <button
               type="button"
               onClick={() => onChange([])}
-              className="w-full text-left px-3 py-1.5 text-[11px] font-semibold text-accent hover:bg-surface border-b border-line"
+              className="w-full text-left px-3 py-1.5 text-xs font-semibold text-accent hover:bg-surface border-b border-line"
             >
               {t('filter.zrusit_vyber')} ({selected.length})
             </button>

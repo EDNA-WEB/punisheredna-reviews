@@ -7,7 +7,7 @@ export default function MovieGoToTabButton({ tabKey, label }: { tabKey: string; 
   const goToTab = useGoToMovieTab();
   const t = useT();
   return (
-    <button onClick={() => goToTab(tabKey)} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
+    <button onClick={() => goToTab(tabKey)} className="text-xs font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
       {label || t('movie.viac_button')}
     </button>
   );

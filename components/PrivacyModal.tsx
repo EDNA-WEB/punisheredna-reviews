@@ -72,14 +72,14 @@ export default function PrivacyModal({ text, categories, trigger }: { text: stri
                     </div>
 
                     {cat.mandatory ? (
-                      <span className="flex-none text-[11px] font-semibold text-muted bg-surface border border-line px-3 py-1.5 rounded-full whitespace-nowrap">
+                      <span className="flex-none text-xs font-semibold text-muted bg-surface border border-line px-3 py-1.5 rounded-full whitespace-nowrap">
                         {t('privacy.vzdy_aktivne')}
                       </span>
                     ) : (
                       <div className="flex-none flex rounded-lg overflow-hidden border border-line">
                         <button
                           onClick={() => setChoice(cat.key, false)}
-                          className={`text-[11px] font-semibold px-3 py-1.5 whitespace-nowrap transition-colors ${
+                          className={`text-xs font-semibold px-3 py-1.5 whitespace-nowrap transition-colors ${
                             !consent[cat.key] ? 'bg-night text-white' : 'bg-card text-muted hover:text-ink'
                           }`}
                         >
@@ -87,7 +87,7 @@ export default function PrivacyModal({ text, categories, trigger }: { text: stri
                         </button>
                         <button
                           onClick={() => setChoice(cat.key, true)}
-                          className={`text-[11px] font-semibold px-3 py-1.5 whitespace-nowrap transition-colors border-l border-line ${
+                          className={`text-xs font-semibold px-3 py-1.5 whitespace-nowrap transition-colors border-l border-line ${
                             consent[cat.key] ? 'bg-accent text-white' : 'bg-card text-muted hover:text-ink'
                           }`}
                         >

@@ -52,7 +52,7 @@ export default function RecentlyViewedSection({ initialItems }: { initialItems: 
   }
 
   return (
-    <section className="border border-line rounded-xl bg-card p-4 sm:p-5" aria-labelledby="nedavno-prohlizene">
+    <section className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl bg-card p-4 sm:p-5" aria-labelledby="nedavno-prohlizene">
       <div className="flex items-center justify-between gap-4 mb-4">
         <h2 id="nedavno-prohlizene" className="font-display font-bold text-base text-ink">
           {t('home.nedavno_prezerane')}

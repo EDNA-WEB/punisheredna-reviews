@@ -77,12 +77,12 @@ export default async function UsaBoxOfficePage() {
                       <span className="font-display font-bold text-ink truncate">{e.title}</span>
                     )}
                     {e.isReRelease && (
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                      <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
                         {t('boxoffice_vikend.znovuuvedenie')}
                       </span>
                     )}
                     {e.movie?.percent !== null && e.movie?.percent !== undefined && (
-                      <span className={`text-[11px] font-bold text-white rounded-full px-2 py-0.5 ${percentClass(e.movie.percent)}`}>{e.movie.percent} %</span>
+                      <span className={`text-xs font-bold text-white rounded-full px-2 py-0.5 ${percentClass(e.movie.percent)}`}>{e.movie.percent} %</span>
                     )}
                   </div>
                   {e.originalTitle !== e.title && <div className="text-xs text-muted truncate">{e.originalTitle}</div>}
@@ -113,13 +113,13 @@ export default async function UsaBoxOfficePage() {
                 {/* Na počítači sú čísla v stĺpcoch vpravo */}
                 <div className="hidden sm:grid grid-cols-3 gap-4 text-right tabular-nums flex-none w-72">
                   <div>
-                    <div className="text-[10px] uppercase tracking-wide text-muted">{t('boxoffice_usa.vikend')}</div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted">{t('boxoffice_usa.vikend')}</div>
                     <div className={`text-sm ${i === 0 ? 'font-extrabold text-ink' : 'font-semibold text-ink'}`}>{e.grossLabel || '—'}</div>
                   </div>
                   <div>
                     {hasTotals && (
                       <>
-                        <div className="text-[10px] uppercase tracking-wide text-muted">{t('boxoffice_vikend.celkom')}</div>
+                        <div className="text-[11px] uppercase tracking-wide text-muted">{t('boxoffice_vikend.celkom')}</div>
                         <div className="text-sm text-ink">{e.totalLabel || '—'}</div>
                       </>
                     )}
@@ -127,7 +127,7 @@ export default async function UsaBoxOfficePage() {
                   <div>
                     {hasWeeks && (
                       <>
-                        <div className="text-[10px] uppercase tracking-wide text-muted">{t('boxoffice_usa.tyzdne')}</div>
+                        <div className="text-[11px] uppercase tracking-wide text-muted">{t('boxoffice_usa.tyzdne')}</div>
                         <div className="text-sm text-ink">{e.weeks || '—'}</div>
                       </>
                     )}

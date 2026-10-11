@@ -190,7 +190,7 @@ export default function QrLoginPanel() {
         dangerouslySetInnerHTML={{ __html: qrSvg }}
       />
       {secondsLeft !== null && (
-        <p className="text-[11px] text-white/45">
+        <p className="text-xs text-white/45">
           Platí ještě {mm}:{String(ss).padStart(2, '0')}
         </p>
       )}

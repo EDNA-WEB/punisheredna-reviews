@@ -53,7 +53,7 @@ export default function MovieVideoManager({ movieId, initialVideos }: { movieId:
         <ul className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
           {videos.map((v) => (
             <li key={v.id} className="flex items-center gap-2 text-xs text-ink border-b border-line pb-1.5 last:border-b-0">
-              <span className="bg-card border border-line rounded-full px-2 py-0.5 text-[10px] font-semibold text-muted flex-none">
+              <span className="bg-card border border-line rounded-full px-2 py-0.5 text-[11px] font-semibold text-muted flex-none">
                 {CATEGORY_LABELS[v.category] || v.category}
               </span>
               <span className="flex-1 truncate">{v.title || v.url}</span>

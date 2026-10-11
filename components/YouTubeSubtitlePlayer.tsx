@@ -54,7 +54,7 @@ export default function YouTubeSubtitlePlayer({
   poster?: string | null;
 }) {
   const [started, setStarted] = useState(!!autoPlay);
-  const [thumb, setThumb] = useState(poster || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`);
+  const [thumb, setThumb] = useState(poster || `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`);
   const mountRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -62,7 +62,7 @@ export default function YouTubeSubtitlePlayer({
 
   useEffect(() => {
     setStarted(!!autoPlay);
-    setThumb(poster || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`);
+    setThumb(poster || `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId]);
 
@@ -174,6 +174,12 @@ export default function YouTubeSubtitlePlayer({
             src={thumb}
             alt=""
             loading="lazy"
+            onLoad={(e) => {
+              // YouTube pri chýbajúcom náhľade vo vysokom rozlíšení vráti sivý obrázok 120×90.
+              if (e.currentTarget.naturalWidth <= 120 && thumb.includes('maxresdefault')) {
+                setThumb(`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`);
+              }
+            }}
             onError={() => {
               const fallback = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
               if (thumb !== fallback) setThumb(fallback);

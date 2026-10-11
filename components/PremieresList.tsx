@@ -24,7 +24,7 @@ export default async function PremieresList() {
   if (premieres.length === 0) return null;
 
   return (
-    <div className="border border-line rounded-xl overflow-hidden bg-card">
+    <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl overflow-hidden bg-card">
       <PremieresCarousel premieres={premieres} title={t['home.v_kinach_coskoro'] || 'Brzy v kinech'} />
     </div>
   );

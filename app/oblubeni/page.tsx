@@ -109,7 +109,7 @@ export default async function FavoritesPage() {
                             <div className="w-8 h-11 rounded bg-surface bg-cover bg-center flex-none" style={r.movie.poster ? { backgroundImage: `url('${r.movie.poster}')` } : undefined} />
                             <div className="min-w-0">
                               <div className="text-sm font-semibold text-ink truncate">{r.movie.title}</div>
-                              <div className="text-[11px] text-muted">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
+                              <div className="text-xs text-muted">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
                             </div>
                           </Link>
                         ))}

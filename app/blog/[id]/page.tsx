@@ -100,10 +100,10 @@ export default async function BlogPostPage(props: { params: Promise<{ id: string
         </Link>
         <span className="text-xs text-muted">{new Date(post.createdAt).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
         {post.isDraft && (
-          <span className="text-[11px] font-semibold bg-surface text-accent border border-accent/40 px-2.5 py-1 rounded-full">📝 Rozpísané</span>
+          <span className="text-xs font-semibold bg-surface text-accent border border-accent/40 px-2.5 py-1 rounded-full">Rozpísané</span>
         )}
         {post.published && (
-          <span className="text-[11px] font-semibold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Publikované na hlavnej stránke</span>
+          <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Publikované na hlavnej stránke</span>
         )}
       </div>
 

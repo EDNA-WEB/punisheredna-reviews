@@ -75,11 +75,11 @@ export default function RatingDistributionChart({ values, label }: { values: num
 
       <div className="h-4 mt-0.5 text-center">
         {activeBucket ? (
-          <span className="text-[11px] font-semibold text-ink">
+          <span className="text-xs font-semibold text-ink">
             {activeBucket.value}★ — {activeBucket.count} ({Math.round((activeBucket.count / total) * 100)}%)
           </span>
         ) : (
-          <span className="text-[11px] text-muted">{label || 'Rozložení hodnocení'} ({total})</span>
+          <span className="text-xs text-muted">{label || 'Rozložení hodnocení'} ({total})</span>
         )}
       </div>
     </div>

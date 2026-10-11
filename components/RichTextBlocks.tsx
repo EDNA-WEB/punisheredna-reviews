@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { IconLink } from './Icons';
 
 function insertAtCursor(ref: React.RefObject<HTMLTextAreaElement>, value: string, setValue: (v: string) => void, before: string, after: string, placeholder: string) {
   const el = ref.current;
@@ -63,7 +64,7 @@ export default function RichTextBlocks({ addMoreLabel, onChange }: { addMoreLabe
               onClick={() => insertAtCursor(textareaRefs.current[i] as any, block, (v) => updateBlock(i, v), '[', '](https://)', 'text odkazu')}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-ink hover:bg-card"
             >
-              🔗
+              <IconLink className="w-4 h-4" />
             </button>
             <button
               type="button"

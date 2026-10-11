@@ -26,10 +26,10 @@ export default function MessagesListClient({ conversations, myId }: { conversati
       const results: Record<string, string> = {};
       for (const c of conversations) {
         if (c.lastIsImage) {
-          results[c.user.id] = '📷 Fotka';
+          results[c.user.id] = 'Fotka';
         } else if (c.lastBody && c.lastIv) {
           if (!c.user.publicKey) {
-            results[c.user.id] = '🔒 Nová správa';
+            results[c.user.id] = 'Nová správa';
             continue;
           }
           try {
@@ -37,7 +37,7 @@ export default function MessagesListClient({ conversations, myId }: { conversati
             const sharedKey = await deriveSharedKey(myPrivateKey, c.user.publicKey);
             results[c.user.id] = await decryptText(sharedKey, c.lastBody, c.lastIv);
           } catch {
-            results[c.user.id] = '🔒 Nová správa';
+            results[c.user.id] = 'Nová správa';
           }
         } else {
           results[c.user.id] = c.lastBody || '';
@@ -70,7 +70,7 @@ export default function MessagesListClient({ conversations, myId }: { conversati
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
               <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
-              <span className="text-[11px] text-muted flex-none">
+              <span className="text-xs text-muted flex-none">
                 {new Date(c.lastAt).toLocaleDateString('cs-CZ', { timeZone: 'Europe/Bratislava' })}
               </span>
             </div>
@@ -90,8 +90,8 @@ export default function MessagesListClient({ conversations, myId }: { conversati
             </p>
           </div>
           {c.unread > 0 && (
-            <span className="w-5 h-5 bg-accent text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
-              {c.unread}
+            <span className="min-w-5 px-1 h-5 bg-accent text-white text-xs font-bold rounded-full flex items-center justify-center flex-none">
+              {c.unread > 99 ? '99+' : c.unread}
             </span>
           )}
         </Link>

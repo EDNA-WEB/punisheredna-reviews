@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import ArticleEditor from './ArticleEditor';
 import TagInput from './TagInput';
 import { mdToHtml, readingTime } from '@/lib/markdown';
-import { IconUser, IconClock, IconBook } from './Icons';
+import { IconUser, IconClock, IconBook, IconImage } from './Icons';
 
 type Initial = { id?: string; title?: string; summary?: string; coverImage?: string | null; body?: string; movieId?: string | null; movieTitle?: string | null; publishAt?: string | null; isDraft?: boolean; tags?: string[] };
 type MovieOption = { id: string; title: string; year: string | null };
@@ -118,9 +118,9 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
   }
 
   const statusLabel = wasDraft
-    ? { text: '📝 Rozpísané', className: 'text-accent border-accent/40 bg-surface' }
+    ? { text: 'Rozpísané', className: 'text-accent border-accent/40 bg-surface' }
     : publishAt && new Date(publishAt) > new Date()
-    ? { text: '🕐 Naplánované', className: 'text-accent border-accent/40 bg-surface' }
+    ? { text: 'Naplánované', className: 'text-accent border-accent/40 bg-surface' }
     : isEdit
     ? { text: '✓ Publikované', className: 'text-emerald-600 border-emerald-300 bg-emerald-50' }
     : { text: 'Nová novinka', className: 'text-muted border-line bg-surface' };
@@ -134,13 +134,13 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
           onClick={() => setPreviewMode((p) => !p)}
           className="text-sm font-semibold text-ink border border-line px-4 py-2 rounded-full hover:border-accent hover:text-accent transition-colors"
         >
-          {previewMode ? '← Zpět na úpravu' : '👁️ Zobrazit náhled'}
+          {previewMode ? '← Zpět na úpravu' : 'Zobrazit náhled'}
         </button>
       </div>
 
       {previewMode ? (
         <div className="max-w-2xl border border-line rounded-xl p-6 bg-card">
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">Takto bude článek vypadat na webu</div>
+          <div className="text-xs font-bold uppercase tracking-wide text-muted mb-4">Takto bude článek vypadat na webu</div>
           {cover && <img src={cover} alt={title} className="w-full max-h-[360px] object-cover rounded-xl mb-6 bg-surface" />}
           <h1 className="font-display font-extrabold text-3xl text-ink leading-tight mb-3">{title || 'Název novinky'}</h1>
           <div className="flex items-center gap-3 flex-wrap text-sm text-muted mb-6">
@@ -207,13 +207,13 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     value={publishAt}
                     onChange={(e) => setPublishAt(e.target.value)}
                   />
-                  <p className="text-[11px] text-muted mt-1.5">
+                  <p className="text-xs text-muted mt-1.5">
                     {publishAt
                       ? 'Nezobrazí se nikde na webu, dokud tento čas nenastane.'
                       : 'Necháš prázdné → zveřejní se okamžitě.'}
                   </p>
                   {publishAt && (
-                    <button type="button" onClick={() => setPublishAt('')} className="text-[11px] text-danger hover:underline mt-1">
+                    <button type="button" onClick={() => setPublishAt('')} className="text-xs text-danger hover:underline mt-1">
                       Zrušit plánování
                     </button>
                   )}
@@ -264,14 +264,14 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     </div>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-muted gap-1">
-                      <span className="text-2xl">🖼️</span>
+                      <IconImage className="w-7 h-7" />
                       <span className="text-xs font-semibold">Klikni pre nahratie</span>
                     </div>
                   )}
                 </label>
                 <input id="news-cover-upload" type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
                 {cover && (
-                  <button type="button" onClick={() => setCover('')} className="text-[11px] text-danger hover:underline mt-2">
+                  <button type="button" onClick={() => setCover('')} className="text-xs text-danger hover:underline mt-2">
                     Odstranit obrázek
                   </button>
                 )}
@@ -318,7 +318,7 @@ export default function NewsForm({ initial }: { initial?: Initial }) {
                     )}
                   </div>
                 )}
-                <p className="text-[11px] text-muted mt-1.5">Zobrazí se i v profilech herců, kteří v něm hráli.</p>
+                <p className="text-xs text-muted mt-1.5">Zobrazí se i v profilech herců, kteří v něm hráli.</p>
               </div>
             </div>
           </div>

@@ -55,7 +55,7 @@ export default function TimezoneLanguageBar({ savedTimezone }: { savedTimezone: 
   return (
     <div className="mt-4 border border-line rounded-xl bg-card p-4 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-wrap">
       <div className="flex items-center gap-3">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-muted flex items-center gap-1">
+        <span className="text-xs font-bold uppercase tracking-wide text-muted flex items-center gap-1">
           <IconGlobe className="w-3.5 h-3.5" />
           {t('home.vyber_pasma')}
         </span>

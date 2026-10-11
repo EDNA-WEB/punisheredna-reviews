@@ -167,7 +167,7 @@ export default function ProfileTabs({
               activeIsInMore ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
             }`}
           >
-            {activeIsInMore ? activeMoreTab?.label : 'Ďalší'} <span className="text-[10px]">▾</span>
+            {activeIsInMore ? activeMoreTab?.label : 'Ďalší'} <span className="text-xs">▾</span>
           </button>
           {moreOpen && (
             <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">
@@ -194,7 +194,7 @@ export default function ProfileTabs({
             <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
               <span className="text-sm font-bold text-ink">Poslední recenze{reviews.length > 0 ? ` (${reviews.length})` : ''}</span>
               {reviews.length > 3 && (
-                <button onClick={() => setActive('reviews')} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
+                <button onClick={() => setActive('reviews')} className="text-xs font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
                   VÍCE
                 </button>
               )}
@@ -211,7 +211,7 @@ export default function ProfileTabs({
                         {r.movie.title} {r.movie.year && <span className="text-muted font-normal">{r.movie.year}</span>}
                       </div>
                       {r.body && <p className="text-xs text-muted line-clamp-2 mt-1">{r.body.replace(/[#*_`>]/g, '')}</p>}
-                      <div className="text-[11px] text-muted mt-1">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
+                      <div className="text-xs text-muted mt-1">{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</div>
                     </div>
                   </Link>
                 ))
@@ -223,7 +223,7 @@ export default function ProfileTabs({
             <div className="flex items-center justify-between bg-surface border border-line rounded-t-xl px-4 py-2.5">
               <span className="text-sm font-bold text-ink">Posledné hodnotenia</span>
               {latestRatings.length > 0 && (
-                <button onClick={() => setActive('hodnotenie')} className="text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
+                <button onClick={() => setActive('hodnotenie')} className="text-xs font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
                   VÍCE
                 </button>
               )}
@@ -329,7 +329,7 @@ export default function ProfileTabs({
                     <div className="text-sm font-semibold text-ink truncate">
                       {r.movie.title} {r.movie.year && <span className="text-muted font-normal">{r.movie.year}</span>}
                     </div>
-                    <div className="text-[11px] text-muted mt-0.5">
+                    <div className="text-xs text-muted mt-0.5">
                       Ohodnotené {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
                       {days !== null && (
                         <> · {days === 0 ? 'v den premiéry' : days > 0 ? `${days}. den od premiéry` : `${Math.abs(days)} dní pred premiérou`}</>
@@ -397,9 +397,9 @@ export default function ProfileTabs({
                 <div className="w-14 h-14 rounded-md bg-surface bg-cover bg-center flex-none" style={p.coverImage ? { backgroundImage: `url('${p.coverImage}')` } : undefined} />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-ink truncate">{p.title}</div>
-                  <div className="text-[11px] text-muted mt-0.5">
+                  <div className="text-xs text-muted mt-0.5">
                     {new Date(p.createdAt).toLocaleDateString('cs-CZ')}
-                    {p.isDraft && <span className="text-accent font-semibold"> · 📝 rozpísané</span>}
+                    {p.isDraft && <span className="text-accent font-semibold"> · rozpísané</span>}
                     {p.published && <span className="text-emerald-600 font-semibold"> · publikované na hlavnej stránke</span>}
                   </div>
                 </div>
@@ -432,7 +432,7 @@ export default function ProfileTabs({
                   )}
                 </div>
                 <p className="text-sm text-ink line-clamp-2">{c.body}</p>
-                <div className="text-[11px] text-muted mt-1.5">{new Date(c.createdAt).toLocaleDateString('cs-CZ')}</div>
+                <div className="text-xs text-muted mt-1.5">{new Date(c.createdAt).toLocaleDateString('cs-CZ')}</div>
               </Link>
             ))
           )}

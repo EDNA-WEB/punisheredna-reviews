@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { IconImage } from './Icons';
 import { mdToHtml } from '@/lib/markdown';
 import { cloudinaryWithSourceWatermark } from '@/lib/cloudinaryUrl';
 
@@ -276,20 +277,20 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
         <span className="w-px h-5 bg-line mx-1" />
 
         <label className="toolbar-btn cursor-pointer" title="Vložit obrázek">
-          {uploading ? '…' : '🖼️ Obrázok'}
+          {uploading ? '…' : 'Obrázok'}
           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
         </label>
         <button type="button" title="Vložit YouTube video" onClick={() => setLinkPicker('youtube')} className="toolbar-btn">
-          🎥 Video
+          Video
         </button>
         <button type="button" title="Odkaz na film nebo seriál" onClick={() => openLinkPicker('movie')} className="toolbar-btn">
-          🎬 Film
+          Film
         </button>
         <button type="button" title="Odkaz na osobnosť" onClick={() => openLinkPicker('person')} className="toolbar-btn">
-          👤 Osobnosť
+          Osobnosť
         </button>
         <button type="button" title="Označ text a přiřaď mu odkaz na web nebo obrázek" onClick={openUrlLinkPicker} className="toolbar-btn">
-          🔗 Odkaz
+          Odkaz
         </button>
       </div>
 
@@ -310,7 +311,7 @@ export default function ArticleEditor({ value, onChange }: { value: string; onCh
               readOnly={urlInput.startsWith('data:')}
             />
             <label className="toolbar-btn cursor-pointer flex-none" title="Nebo nahraj obrázek, na který odkaz povede">
-              🖼️
+              <IconImage className="w-4 h-4" />
               <input type="file" accept="image/*" className="hidden" onChange={handleLinkImageUpload} />
             </label>
           </div>

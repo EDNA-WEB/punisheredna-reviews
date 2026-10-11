@@ -234,23 +234,23 @@ export default async function PersonPage(props: { params: Promise<{ slug: string
       <div className="grid grid-cols-2 sm:grid-cols-4 border border-line rounded-xl bg-card divide-x divide-line mb-6 overflow-hidden">
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{movies.length}</div>
-          <div className="text-[11px] text-muted mt-0.5">{t('person.filmov_u_nas')}</div>
+          <div className="text-xs text-muted mt-0.5">{t('person.filmov_u_nas')}</div>
         </div>
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{person.followers.length}</div>
-          <div className="text-[11px] text-muted mt-0.5">{t('person.sledovatelov')}</div>
+          <div className="text-xs text-muted mt-0.5">{t('person.sledovatelov')}</div>
         </div>
         <div className="p-4 text-center">
           <div className="font-display font-bold text-xl text-ink">{careerSpan || '—'}</div>
-          <div className="text-[11px] text-muted mt-0.5">{t('person.aktivne_obdobie')}</div>
+          <div className="text-xs text-muted mt-0.5">{t('person.aktivne_obdobie')}</div>
         </div>
         <div className="p-3 min-w-0">
-          <div className="text-[11px] text-muted mb-1.5 text-center">{t('person.najuspesnejsi_titul')}</div>
+          <div className="text-xs text-muted mb-1.5 text-center">{t('person.najuspesnejsi_titul')}</div>
           {topRated ? (
             <Link href={`/movie/${topRated.slug}`} className="flex items-center gap-2.5 group">
               <div className="relative w-10 h-14 rounded-md overflow-hidden bg-surface flex-none">
                 {topRated.poster && <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${topRated.poster}')` }} />}
-                <span className="absolute bottom-0.5 left-0.5 text-[9px] font-extrabold text-white bg-accent rounded px-1 leading-tight">
+                <span className="absolute bottom-0.5 left-0.5 text-[10.5px] font-extrabold text-white bg-accent rounded px-1 leading-tight">
                   {topRated.percent}%
                 </span>
               </div>

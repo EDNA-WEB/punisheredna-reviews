@@ -101,7 +101,7 @@ export default async function ShopPage(props: { searchParams: Promise<{ kategori
                     )}
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
-                    <span className="text-[10px] font-semibold text-accent uppercase tracking-wide mb-1">{p.category.name}</span>
+                    <span className="text-[11px] font-semibold text-accent uppercase tracking-wide mb-1">{p.category.name}</span>
                     <div className="text-sm font-semibold text-ink line-clamp-2 mb-1.5 group-hover:text-accent transition-colors">{p.title}</div>
                     <div className="text-xs text-muted mb-1">
                       Región: <span className="text-ink font-medium">{p.region}</span>
@@ -109,7 +109,7 @@ export default async function ShopPage(props: { searchParams: Promise<{ kategori
                     <div className="mt-auto pt-1">
                       {cheapest && (
                         <div>
-                          <span className="text-[10px] text-muted">od </span>
+                          <span className="text-xs text-muted">od </span>
                           <span className="text-base font-bold text-ink">{formatPrice(cheapest.price, cheapest.currency)}</span>
                         </div>
                       )}

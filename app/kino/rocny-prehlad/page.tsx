@@ -102,7 +102,7 @@ export default async function KinoRocnyPrehladPage(props: { searchParams: Promis
                           {(m.premiereDates.find((p) => p.country === 'CZ' && p.type !== 'VOD') || m.premiereDates.find((p) => p.country === 'CZ') || m.premiereDates[0])?.distributor || '—'}
                         </span>
                         {m.nowShowing && (
-                          <Badge tone="success" size="sm" className="flex-none whitespace-nowrap text-[10px] sm:text-xs px-1.5 sm:px-2">
+                          <Badge tone="success" size="sm" className="flex-none whitespace-nowrap text-xs sm:text-xs px-1.5 sm:px-2">
                             {t('kino.hraju_v_kinach')}
                           </Badge>
                         )}

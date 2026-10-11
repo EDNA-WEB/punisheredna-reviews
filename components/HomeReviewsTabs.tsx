@@ -14,7 +14,7 @@ export default function HomeReviewsTabs({ title, moreLabel, tabs }: { title: str
   const tab = tabs[Math.min(active, tabs.length - 1)];
 
   return (
-    <section className="border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0" aria-labelledby="home-recenze">
+    <section className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl bg-card p-4 sm:p-5 min-w-0" aria-labelledby="home-recenze">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 id="home-recenze" className="font-display font-bold text-base text-ink">
           {title}
@@ -38,7 +38,7 @@ export default function HomeReviewsTabs({ title, moreLabel, tabs }: { title: str
               ))}
             </div>
           )}
-          <Link href={tab.href} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
+          <Link href={tab.href} className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
             {moreLabel}
           </Link>
         </div>

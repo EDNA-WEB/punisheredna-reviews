@@ -72,7 +72,7 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
       <div className="flex items-center justify-between">
         {wasDraft ? (
           <div className="text-xs font-semibold text-accent border border-accent/40 px-3 py-1.5 rounded-full w-fit">
-            📝 Rozepsané — viditelné jen tobě, dokud to nezveřejníš
+            Rozepsané — viditelné jen tobě, dokud to nezveřejníš
           </div>
         ) : (
           <span />
@@ -82,13 +82,13 @@ export default function BlogPostForm({ initial }: { initial?: Initial }) {
           onClick={() => setPreviewMode((p) => !p)}
           className="text-sm font-semibold text-ink border border-line px-4 py-2 rounded-full hover:border-accent hover:text-accent"
         >
-          {previewMode ? '← Zpět na úpravu' : '👁️ Zobrazit náhled'}
+          {previewMode ? '← Zpět na úpravu' : 'Zobrazit náhled'}
         </button>
       </div>
 
       {previewMode ? (
         <div className="border border-line rounded-xl p-6 bg-card">
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-4">
+          <div className="text-xs font-bold uppercase tracking-wide text-muted mb-4">
             Takto bude článek vypadat na webu
           </div>
 

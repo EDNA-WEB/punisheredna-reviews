@@ -65,7 +65,7 @@ export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[];
 
   return (
     <div
-      className="border border-line rounded-xl bg-card min-w-0 overflow-hidden relative"
+      className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl bg-card min-w-0 overflow-hidden relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -131,7 +131,7 @@ export default function PeopleRotator({ tabs, moreLabel }: { tabs: RotatorTab[];
               </div>
             )}
             {tab.moreHref && (
-              <Link href={tab.moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
+              <Link href={tab.moreHref} className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
                 {moreLabel}
               </Link>
             )}

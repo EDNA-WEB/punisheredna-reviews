@@ -41,8 +41,8 @@ button:focus-visible,
   --color-surface: #F6F5F3;
   --color-surface2: #EDEBE8;
   --color-ink: #15171A;
-  --color-muted: #6B6F76;
-  --color-line: #E8E7E5;
+  --color-muted: #5E626A; /* tmavšia sivá — ostrejší kontrast malých textov */
+  --color-line: #E3E2DF; /* viditeľnejší okraj kariet */
   --color-card: #FFFFFF;
   --color-accent: #E3141F;
   --color-accent-dark: #B80F18;
@@ -53,8 +53,8 @@ button:focus-visible,
   --color-surface: #1B1D22;
   --color-surface2: #24262C;
   --color-ink: #F1F1F2;
-  --color-muted: #9AA0AA;
-  --color-line: #2E3138;
+  --color-muted: #A6ACB6;
+  --color-line: #32353D;
   --color-card: #1A1C21;
   --color-accent: #E3141F;
   --color-accent-dark: #B80F18;
@@ -87,6 +87,8 @@ body {
   color: var(--color-ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -271,4 +273,19 @@ input[type='number'] {
     height: 0;
     padding-bottom: 133.333%;
   }
+}
+
+/* Ostrejšie obrázky a karty (návrh „ostrejší web“) */
+img {
+  image-rendering: auto;
+}
+/* Karta s jasným okrajom a veľmi jemným tieňom — na hlavnej stránke a v zoznamoch. */
+.card-crisp {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(16, 17, 20, 0.05);
+}
+.dark .card-crisp {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }

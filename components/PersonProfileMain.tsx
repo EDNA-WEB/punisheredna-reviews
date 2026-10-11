@@ -90,7 +90,7 @@ export default function PersonProfileMain({
                       </div>
                     </div>
                     <div className="text-xs font-semibold text-ink group-hover:text-accent transition-colors truncate">{m.title}</div>
-                    {m.year && <div className="text-[11px] text-muted">{m.year}</div>}
+                    {m.year && <div className="text-xs text-muted">{m.year}</div>}
                   </Link>
                 ))}
               </div>
@@ -107,7 +107,7 @@ export default function PersonProfileMain({
                       {n.coverImage && <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${n.coverImage}')` }} />}
                     </div>
                     <div className="text-xs font-semibold text-ink group-hover:text-accent transition-colors line-clamp-2">{n.title}</div>
-                    <div className="text-[11px] text-muted mt-0.5">{n.movieTitle}</div>
+                    <div className="text-xs text-muted mt-0.5">{n.movieTitle}</div>
                   </Link>
                 ))}
               </div>
@@ -124,7 +124,7 @@ export default function PersonProfileMain({
                     <div className="w-11 h-11 rounded-full bg-surface bg-cover bg-center flex-none" style={c.photo ? { backgroundImage: `url('${c.photo}')` } : undefined} />
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors truncate">{c.name}</div>
-                      <div className="text-[11px] text-muted truncate">
+                      <div className="text-xs text-muted truncate">
                         {c.role} · {c.count} {filmCountLabel(c.count)} {t('person.spolu', 'spolu')}
                       </div>
                     </div>
@@ -160,7 +160,7 @@ export default function PersonProfileMain({
                     {m.poster && <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${m.poster}')` }} />}
                   </div>
                   <div className="text-xs font-semibold text-ink group-hover:text-accent transition-colors truncate">{m.title}</div>
-                  {m.year && <div className="text-[11px] text-muted">{m.year}</div>}
+                  {m.year && <div className="text-xs text-muted">{m.year}</div>}
                 </Link>
               ))}
             </div>

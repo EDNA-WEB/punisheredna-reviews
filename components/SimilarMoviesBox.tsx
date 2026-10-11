@@ -31,7 +31,7 @@ export default async function SimilarMoviesBox({ tmdbId, mediaType }: { tmdbId: 
                 <div className={`text-xs mt-1.5 leading-snug line-clamp-2 ${ourSlug ? 'text-accent group-hover:underline' : 'text-ink'}`}>
                   {item.title}
                 </div>
-                {item.year && <div className="text-[11px] text-muted">{item.year}</div>}
+                {item.year && <div className="text-xs text-muted">{item.year}</div>}
               </>
             );
             return ourSlug ? (

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { computeBoxOffice, formatMoney } from '@/lib/boxOffice';
-import { IconCheck, IconTrendingDown, IconBanknote, IconInfo } from './Icons';
+import { IconCheck, IconTrendingDown, IconBanknote, IconInfo, IconTrophy } from './Icons';
 import BoxOfficeBreakdown from './BoxOfficeBreakdown';
 import { useT } from './TranslationProvider';
 
@@ -105,7 +105,7 @@ export default function BoxOfficeStatus({
             rankType === 'profit' ? 'bg-emerald-500 text-white' : 'bg-danger text-white'
           }`}
         >
-          {rankType === 'profit' ? '🏆' : '📉'} #{rank} {rankType === 'profit' ? t('boxoffice.najziskovejsi') : t('boxoffice.najvacsi_prepadak_odznak')}
+          {rankType === 'profit' ? <IconTrophy className="w-4 h-4" /> : <IconTrendingDown className="w-4 h-4" />} #{rank} {rankType === 'profit' ? t('boxoffice.najziskovejsi') : t('boxoffice.najvacsi_prepadak_odznak')}
           {totalRanked ? ` ${t('boxoffice.z_celkovo')} ${totalRanked}` : ''}
         </div>
       )}
@@ -148,7 +148,7 @@ export default function BoxOfficeStatus({
       </div>
 
       {showInfo && (
-        <div className="mb-2 p-2.5 rounded-lg bg-surface border border-line text-[11px] text-ink space-y-1.5 leading-snug">
+        <div className="mb-2 p-2.5 rounded-lg bg-surface border border-line text-xs text-ink space-y-1.5 leading-snug">
           <p className="font-semibold text-ink">Jak se počítá zisk studia</p>
           <p className="text-muted">
             Kina si nechávají většinu z prodaných vstupenek — studiu se vrací jen jeho podíl, který se liší podle regionu.
@@ -182,7 +182,7 @@ export default function BoxOfficeStatus({
       )}
 
       {!compact && (
-        <div className="text-[11px] text-muted mb-1.5 leading-snug">
+        <div className="text-xs text-muted mb-1.5 leading-snug">
           Podíl studia z kin {formatMoney(stats.studioTheatricalRevenue)}
           {stats.ancillaryRevenue > 0 && <> + sekundárne príjmy {formatMoney(stats.ancillaryRevenue)}</>}
           {' '}− náklady {formatMoney(stats.totalCost)}
@@ -196,7 +196,7 @@ export default function BoxOfficeStatus({
         />
       </div>
       {!compact && (
-        <div className="text-[10px] text-muted mt-1">
+        <div className="text-xs text-muted mt-1">
           Rýchly odhad bodu zvratu (2,5× rozpočtu): {pct}%
         </div>
       )}

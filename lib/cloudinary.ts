@@ -25,7 +25,8 @@ export async function uploadImage(dataUrlOrUrl: string, folder: string): Promise
 // uloží do medzipamäte sama, pri prvom požiadaní na túto adresu.
 export function cloudinaryThumbnailUrl(url: string, width = 300): string {
   if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
-  return url.replace('/upload/', `/upload/w_${width},c_limit,q_auto/`);
+  // 2× šírka pre ostrosť na jemných displejoch, moderný formát (f_auto) a vyššia kvalita.
+  return url.replace('/upload/', `/upload/f_auto,q_auto:good,w_${width * 2},c_limit/`);
 }
 // Zmaže obrázok podľa jeho Cloudinary URL — použije sa napr. pri nahradení
 // starého plagátu novým, aby v Cloudinary nezostávali nepoužité súbory navždy.

@@ -46,17 +46,17 @@ export default function MovieCard({
           />
         )}
         {movie.genre && (
-          <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-night/70 text-white backdrop-blur-sm">
+          <span className="absolute top-2 left-2 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-night/70 text-white backdrop-blur-sm">
             {movie.genre}
           </span>
         )}
         {isUpcoming && (
-          <span className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/85 text-ink backdrop-blur-sm border border-line">
+          <span className="absolute top-2 right-2 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/85 text-ink backdrop-blur-sm border border-line">
             {upcomingLabel()}
           </span>
         )}
         {movie.isCamVersion && (
-          <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+          <span className="absolute top-2 right-2 text-[11px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
             CAM
           </span>
         )}

@@ -76,7 +76,7 @@ export default function MovieTabsSection({ primaryTabs, moreTabs }: { primaryTab
                   activeIsInMore ? 'text-ink border-accent' : 'text-muted border-transparent hover:text-ink'
                 }`}
               >
-                {activeIsInMore ? activeTab?.label : t('movie.dalsi')} <span className="text-[10px]">▾</span>
+                {activeIsInMore ? activeTab?.label : t('movie.dalsi')} <span className="text-xs">▾</span>
               </button>
               {moreOpen && (
                 <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-line bg-card shadow-lg overflow-hidden z-20">

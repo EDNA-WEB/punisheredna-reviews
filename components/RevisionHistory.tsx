@@ -70,7 +70,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
                       <button
                         type="button"
                         onClick={() => setExpandedId((cur) => (cur === r.id ? null : r.id))}
-                        className="text-[11px] font-semibold text-accent hover:underline"
+                        className="text-xs font-semibold text-accent hover:underline"
                       >
                         {expandedId === r.id ? 'Skrýt text' : 'Zobrazit text'}
                       </button>
@@ -78,7 +78,7 @@ export default function RevisionHistory({ apiBase }: { apiBase: string }) {
                         type="button"
                         onClick={() => restore(r.id)}
                         disabled={restoring === r.id}
-                        className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50"
+                        className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50"
                       >
                         {restoring === r.id ? '…' : 'Obnovit tuto verzi'}
                       </button>

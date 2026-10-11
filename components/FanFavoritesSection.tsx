@@ -97,7 +97,7 @@ export default function FanFavoritesSection({ initialItems, layout = 'row' }: { 
         {items.map((m) => (
           <article
             key={m.id}
-            className={`${grid ? '' : 'flex-none w-[150px] sm:w-[172px] lg:w-[calc((100%-80px)/6)] snap-start '}rounded-xl border border-line bg-card overflow-hidden flex flex-col`}
+            className={`${grid ? '' : 'flex-none w-[150px] sm:w-[172px] lg:w-[calc((100%-80px)/6)] snap-start '}rounded-xl border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] bg-card overflow-hidden flex flex-col`}
           >
             <div className="relative">
               {grid && (

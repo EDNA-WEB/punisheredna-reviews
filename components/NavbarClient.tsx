@@ -139,7 +139,7 @@ export default function NavbarClient({
                     isActive(l.href) ? 'text-accent border-accent' : 'text-ink border-transparent hover:text-accent hover:border-line'
                   }`}
                 >
-                  {l.href === '/obchod' && <IconShoppingCart className="w-3.5 h-3.5" />}
+                  {l.href === '/obchod' && <IconShoppingCart className="w-4 h-4" />}
                   {l.label}
                 </Link>
               ))}

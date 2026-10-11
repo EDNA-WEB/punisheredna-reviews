@@ -117,12 +117,12 @@ export default async function BoxOfficePage(props: { searchParams: Promise<{ sor
                   <div className="font-display font-bold text-sm text-ink truncate">
                     {m.title} {m.year && <span className="text-muted font-normal">· {m.year}</span>}
                   </div>
-                  <div className="text-[11px] text-muted mt-0.5 mb-1.5 truncate">
+                  <div className="text-xs text-muted mt-0.5 mb-1.5 truncate">
                     {t('boxoffice.rozpocet')} {formatMoney(Number(m.budget!))}
                     {m.marketingBudget ? ` · ${t('boxoffice.marketing')} ${formatMoney(Number(m.marketingBudget))}` : ''}
                   </div>
                   {sort === 'inflacia' && stats && (
-                    <div className="text-[11px] font-semibold text-accent mb-1">
+                    <div className="text-xs font-semibold text-accent mb-1">
                       V dnešnej hodnote: {formatMoney(adjustedEarned)}
                     </div>
                   )}

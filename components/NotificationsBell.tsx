@@ -74,7 +74,7 @@ export default function NotificationsBell() {
       >
         <IconBell className="w-[22px] h-[22px]" filled={open} />
         {unread > 0 && (
-          <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+          <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-danger text-white text-[11px] font-bold rounded-full flex items-center justify-center">
             {unread > 9 ? '9+' : unread}
           </span>
         )}

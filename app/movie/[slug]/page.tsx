@@ -520,7 +520,7 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
                 <div className={`relative flex-none rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface ${primaryVideo ? 'w-32' : 'w-44'}`}>
                   {movie.poster && <img src={movie.poster} alt={movie.title} className="absolute inset-0 w-full h-full object-cover" />}
                   {movie.isCamVersion && (
-                    <span className="absolute top-1.5 right-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+                    <span className="absolute top-1.5 right-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
                       CAM
                     </span>
                   )}
@@ -631,7 +631,7 @@ export default async function MoviePage(props: { params: Promise<{ slug: string 
             <div className="w-32 sm:w-40 flex-none relative rounded-xl overflow-hidden shadow-xl border border-line aspect-[2/3] bg-surface">
               {movie.poster && <img src={movie.poster} alt={movie.title} className="absolute inset-0 w-full h-full object-cover" />}
               {movie.isCamVersion && (
-                <span className="absolute top-1.5 right-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
+                <span className="absolute top-1.5 right-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full bg-danger text-white shadow-sm">
                   CAM
                 </span>
               )}

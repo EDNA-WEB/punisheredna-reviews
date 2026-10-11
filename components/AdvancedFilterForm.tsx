@@ -119,7 +119,7 @@ export default function AdvancedFilterForm() {
 
       <div className="p-4 grid md:grid-cols-[140px_1fr_1fr_190px] gap-6">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.typ')}</div>
+          <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.typ')}</div>
           <div className="space-y-1">
             {CONTENT_TYPES.map((t) => (
               <label key={t} className="flex items-center gap-1.5 text-xs text-ink cursor-pointer">
@@ -132,12 +132,12 @@ export default function AdvancedFilterForm() {
 
         <div>
           <div className="mb-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.zaner')}</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.zaner')}</div>
             <MultiSelectDropdown label={t('filter.zaner_akuzativ')} options={GENRES} selected={selectedGenres} onChange={setSelectedGenres} />
           </div>
 
           <div className="mb-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.rok')}</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.rok')}</div>
             <div className="flex flex-col gap-1.5 max-w-[140px]">
               <select className="field-input-sm w-full" value={yearFrom} onChange={(e) => setYearFrom(e.target.value)}>
                 <option value="">{t('filter.od')}</option>
@@ -149,14 +149,14 @@ export default function AdvancedFilterForm() {
               </select>
             </div>
             {(yearFrom || yearTo) && (
-              <div className="text-[11px] text-accent font-semibold mt-1.5">
+              <div className="text-xs text-accent font-semibold mt-1.5">
                 {t('filter.vybrane')} {yearFrom || '1900'} – {yearTo || '2050'}
               </div>
             )}
           </div>
 
           <div className="mt-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.hodnotenie')}</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.hodnotenie')}</div>
             <div className="flex flex-col gap-1.5 max-w-[140px]">
               <select className="field-input-sm w-full" value={ratingFrom} onChange={(e) => setRatingFrom(e.target.value)}>
                 <option value="">{t('filter.od')}</option>
@@ -168,7 +168,7 @@ export default function AdvancedFilterForm() {
               </select>
             </div>
             {(ratingFrom || ratingTo) && (
-              <div className="text-[11px] text-accent font-semibold mt-1.5">
+              <div className="text-xs text-accent font-semibold mt-1.5">
                 {t('filter.vybrane')} {ratingFrom || '0'}% – {ratingTo || '100'}%
               </div>
             )}
@@ -177,11 +177,11 @@ export default function AdvancedFilterForm() {
 
         <div>
           <div className="mb-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.povod')}</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.povod')}</div>
             <MultiSelectDropdown label={t('filter.krajinu_akuzativ')} options={COUNTRIES} selected={selectedCountries} onChange={setSelectedCountries} />
           </div>
 
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.doplnujuce_filtre')}</div>
+          <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.doplnujuce_filtre')}</div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
             <label className="flex items-center gap-1.5 text-xs text-ink cursor-pointer">
               <input type="checkbox" checked={nowShowing} onChange={(e) => setNowShowing(e.target.checked)} className="w-3.5 h-3.5 accent-accent flex-none" />
@@ -207,30 +207,30 @@ export default function AdvancedFilterForm() {
         </div>
 
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.osoby')}</div>
+          <div className="text-xs font-bold uppercase tracking-wide text-muted mb-1.5">{t('filter.osoby')}</div>
           <div className="space-y-2">
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">{t('filter.herci')}</label>
+              <label className="block text-xs text-muted mb-0.5">{t('filter.herci')}</label>
               <input className="field-input-sm" value={actor} onChange={(e) => setActor(e.target.value)} placeholder={t('filter.herec_placeholder')} />
             </div>
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">{t('filter.reziseri')}</label>
+              <label className="block text-xs text-muted mb-0.5">{t('filter.reziseri')}</label>
               <input className="field-input-sm" value={director} onChange={(e) => setDirector(e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">{t('filter.scenaristi')}</label>
+              <label className="block text-xs text-muted mb-0.5">{t('filter.scenaristi')}</label>
               <input className="field-input-sm" value={screenplay} onChange={(e) => setScreenplay(e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">{t('filter.kameramani')}</label>
+              <label className="block text-xs text-muted mb-0.5">{t('filter.kameramani')}</label>
               <input className="field-input-sm" value={cinematography} onChange={(e) => setCinematography(e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">{t('filter.skladatelia')}</label>
+              <label className="block text-xs text-muted mb-0.5">{t('filter.skladatelia')}</label>
               <input className="field-input-sm" value={music} onChange={(e) => setMusic(e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] text-muted mb-0.5">Tagy</label>
+              <label className="block text-xs text-muted mb-0.5">Tagy</label>
               <input className="field-input-sm" value={tag} onChange={(e) => setTag(e.target.value)} />
             </div>
           </div>

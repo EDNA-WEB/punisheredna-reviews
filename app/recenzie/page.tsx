@@ -104,7 +104,7 @@ export default async function MoviesPage(props: { searchParams: Promise<SearchPa
           >
             <div>
               <div className="text-sm font-bold text-ink group-hover:text-accent transition-colors">{t('recenzie.pokrocile_vyhladavanie')}</div>
-              <div className="text-[11px] text-muted">{t('recenzie.pokrocile_popis')}</div>
+              <div className="text-xs text-muted">{t('recenzie.pokrocile_popis')}</div>
             </div>
             <span className="w-8 h-8 rounded-full bg-surface group-hover:bg-accent flex items-center justify-center flex-none transition-colors">
               <IconChevronRight className="w-4 h-4 text-ink group-hover:text-white transition-colors" />

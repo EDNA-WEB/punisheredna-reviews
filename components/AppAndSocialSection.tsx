@@ -21,7 +21,7 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
 
   return (
     <div className="mt-8 grid sm:grid-cols-2 gap-4">
-      <div className="border border-line rounded-xl p-4 bg-card">
+      <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl p-4 bg-card">
         <h3 className="font-display font-bold text-sm text-ink mb-3">{mobilnaAplikaciaLabel}</h3>
         <div className="flex items-center gap-3 flex-wrap">
           <a
@@ -44,11 +44,11 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
           </a>
         </div>
         {!appStoreUrl && !googlePlayUrl && (
-          <p className="text-[11px] text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
+          <p className="text-xs text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
         )}
       </div>
 
-      <div className="border border-line rounded-xl p-4 bg-card">
+      <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl p-4 bg-card">
         <h3 className="font-display font-bold text-sm text-ink mb-3">{socialneSieteLabel}</h3>
         <div className="flex items-center gap-2.5">
           {socials.map(({ url, icon: Icon, label }) => (
@@ -68,7 +68,7 @@ export default function AppAndSocialSection({ mobilnaAplikaciaLabel, socialneSie
           ))}
         </div>
         {socials.every((s) => !s.url) && (
-          <p className="text-[11px] text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
+          <p className="text-xs text-muted mt-2">Odkazy se doplní v Administrace → Vzhled.</p>
         )}
       </div>
     </div>

@@ -51,7 +51,7 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/10" />
 
         <Link href={`/movie/${movie.slug}`} className="relative flex flex-col justify-end min-h-[320px] p-5">
-          <span className="inline-block w-fit text-[10px] font-bold uppercase tracking-wider text-white bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1 mb-2.5">
+          <span className="inline-block w-fit text-[11px] font-bold uppercase tracking-wider text-white bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1 mb-2.5">
             {isSeries ? 'Seriál' : 'Film'}
           </span>
           <h3 className="font-display font-extrabold text-xl text-white leading-tight mb-2 drop-shadow-lg hover:underline">
@@ -75,7 +75,7 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
         {genreList.length > 0 && (
           <div className="px-5 py-3.5 flex flex-wrap gap-1.5 border-b border-line">
             {genreList.map((g) => (
-              <span key={g} className="text-[11px] font-semibold text-muted bg-surface border border-line rounded-full px-2.5 py-1">
+              <span key={g} className="text-xs font-semibold text-muted bg-surface border border-line rounded-full px-2.5 py-1">
                 {g}
               </span>
             ))}
@@ -84,7 +84,7 @@ export default function MovieMiniProfile({ movie }: { movie: MovieMiniProfileDat
 
         {movie.streamingServices.length > 0 && (
           <div className="px-5 py-3.5">
-            <div className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2.5">Kde sledovat</div>
+            <div className="text-xs font-bold text-muted uppercase tracking-wider mb-2.5">Kde sledovat</div>
             <div className="flex flex-wrap gap-2">
               {movie.streamingServices.slice(0, 5).map((s, i) => (
                 <a

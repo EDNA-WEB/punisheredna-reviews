@@ -170,7 +170,7 @@ export default function TwoFactorSettings({ requiredNotice }: { requiredNotice?:
           <div className="flex-1 min-w-[220px]">
             <div className="font-semibold text-ink flex items-center gap-2 flex-wrap">
               {t('2fa.nadpis', 'Dvoufázové ověření')}
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600">{t('2fa.zapnute', 'Zapnuto')}</span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600">{t('2fa.zapnute', 'Zapnuto')}</span>
             </div>
             <div className="text-sm text-muted mt-1">
               {t('2fa.aplikacia', 'Ověřovací aplikace')} · {t('2fa.zapnute_od', 'zapnuto')} {since} · {t('2fa.zostava_kodov', 'zbývá záložních kódů:')} {status.backupCodesLeft}
@@ -225,7 +225,7 @@ export default function TwoFactorSettings({ requiredNotice }: { requiredNotice?:
           <div className="flex items-center gap-2.5 text-xs text-muted mb-5">
             {steps.map((s, i) => (
               <div key={s} className="flex items-center gap-2.5 flex-1 last:flex-none">
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] ${i === 0 ? 'bg-accent text-white' : 'bg-surface2 text-muted'}`}>{i + 1}</span>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${i === 0 ? 'bg-accent text-white' : 'bg-surface2 text-muted'}`}>{i + 1}</span>
                 <span className="whitespace-nowrap">{s}</span>
                 {i < steps.length - 1 && <span className="flex-1 h-px bg-line hidden sm:block" />}
               </div>

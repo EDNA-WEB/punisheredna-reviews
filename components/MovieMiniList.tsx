@@ -6,11 +6,11 @@ type Item = { id: string; title: string; slug: string; year: string | null; post
 // hlavnej stránky: nadpis vľavo, červené „více“ vpravo.
 export default function MovieMiniList({ title, items, moreHref, moreLabel }: { title: string; items: Item[]; moreHref?: string; moreLabel?: string }) {
   return (
-    <div className="border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0">
+    <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl bg-card p-4 sm:p-5 min-w-0">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-display font-bold text-base text-ink">{title}</h2>
         {moreHref && (
-          <Link href={moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
+          <Link href={moreHref} className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
             {moreLabel || 'více'}
           </Link>
         )}
@@ -40,11 +40,11 @@ export default function MovieMiniList({ title, items, moreHref, moreLabel }: { t
                   </div>
                   <div className="flex items-center gap-1.5 mt-1">
                     {m.genre && (
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/10 text-accent">
+                      <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/10 text-accent">
                         {m.genre}
                       </span>
                     )}
-                    {m.country && <span className="text-[11px] text-muted truncate">{m.country}</span>}
+                    {m.country && <span className="text-xs text-muted truncate">{m.country}</span>}
                   </div>
                 </div>
               </Link>

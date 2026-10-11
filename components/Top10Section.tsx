@@ -92,7 +92,7 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
 
   const Card = ({ m, highlight }: { m: Item; highlight: boolean }) => (
     <article
-      className={`rounded-xl border border-line p-3 flex gap-3 xl:gap-4 min-w-0 overflow-hidden h-[182px] lg:h-[236px] xl:h-[251px] ${highlight ? 'bg-gradient-to-b from-accent/15 to-card' : 'bg-card'} ${
+      className={`rounded-xl border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] p-3 flex gap-3 xl:gap-4 min-w-0 overflow-hidden h-[182px] lg:h-[236px] xl:h-[251px] ${highlight ? 'bg-gradient-to-b from-accent/15 to-card' : 'bg-card'} ${
         layout === 'home' ? 'flex-none w-[300px] md:w-auto snap-start' : ''
       }`}
     >
@@ -166,7 +166,7 @@ export default function Top10Section({ initialItems, layout = 'home' }: { initia
       {rest.length > 0 && (
         <div className="flex gap-3 xl:gap-4 overflow-x-auto snap-x pb-1 mt-4 md:grid md:grid-cols-7 md:overflow-visible md:pb-0 [scrollbar-width:none]">
           {rest.map((m) => (
-            <Link key={m.id} href={`/movie/${m.slug}`} className="group flex-none w-[118px] md:w-auto snap-start rounded-xl border border-line bg-card overflow-hidden">
+            <Link key={m.id} href={`/movie/${m.slug}`} className="group flex-none w-[118px] md:w-auto snap-start rounded-xl border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] bg-card overflow-hidden">
               <div className="relative aspect-[2/3] bg-surface bg-cover bg-center" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined}>
                 <span className="absolute top-0 left-0">
                   <Rank n={m.rank} small />

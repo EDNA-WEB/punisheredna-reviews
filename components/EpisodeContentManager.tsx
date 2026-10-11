@@ -156,7 +156,7 @@ export default function EpisodeContentManager({
   return (
     <div className="mt-2 pt-2 border-t border-line space-y-3">
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Obsah epizody</label>
+        <label className="block text-xs font-semibold text-ink mb-1">Obsah epizody</label>
         <textarea
           className="field-input-sm min-h-[60px]"
           value={synopsis}
@@ -167,7 +167,7 @@ export default function EpisodeContentManager({
       </div>
 
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Galéria ({photos.length})</label>
+        <label className="block text-xs font-semibold text-ink mb-1">Galéria ({photos.length})</label>
         <div className="flex flex-wrap gap-1.5 mb-1.5">
           {photos.map((p, i) => (
             <div key={p.id} className="relative" title={`Fotka #${i + 1}`}>
@@ -179,7 +179,7 @@ export default function EpisodeContentManager({
                 type="button"
                 onClick={() => removePhoto(p.id)}
                 title={`Smazat fotku #${i + 1}`}
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-night text-white text-[9px] flex items-center justify-center"
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-night text-white text-[10.5px] flex items-center justify-center"
               >
                 ✕
               </button>
@@ -187,7 +187,7 @@ export default function EpisodeContentManager({
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-[11px] text-accent hover:underline cursor-pointer">
+          <label className="text-xs text-accent hover:underline cursor-pointer">
             {uploading ? 'Nahrávám…' : '+ Přidat fotku'}
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
           </label>
@@ -196,7 +196,7 @@ export default function EpisodeContentManager({
               type="button"
               onClick={fetchPhotoFromTmdb}
               disabled={fetchingTmdbPhoto}
-              className="text-[11px] text-accent hover:underline disabled:opacity-50"
+              className="text-xs text-accent hover:underline disabled:opacity-50"
             >
               {fetchingTmdbPhoto ? 'Načítám…' : '+ Automaticky z TMDb'}
             </button>
@@ -205,11 +205,11 @@ export default function EpisodeContentManager({
       </div>
 
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Trailery ({videos.length})</label>
+        <label className="block text-xs font-semibold text-ink mb-1">Trailery ({videos.length})</label>
         {videos.length > 0 && (
           <ul className="space-y-1 mb-1.5">
             {videos.map((v) => (
-              <li key={v.id} className="flex items-center gap-1.5 text-[11px] text-ink">
+              <li key={v.id} className="flex items-center gap-1.5 text-xs text-ink">
                 <span className="flex-1 truncate">{v.title || v.url}</span>
                 <button type="button" onClick={() => removeVideo(v.id)} className="text-muted hover:text-danger">✕</button>
               </li>
@@ -227,7 +227,7 @@ export default function EpisodeContentManager({
             type="button"
             onClick={addVideo}
             disabled={addingVideo}
-            className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
+            className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark disabled:opacity-50 flex-none"
           >
             {addingVideo ? '…' : 'Přidat'}
           </button>
@@ -235,12 +235,12 @@ export default function EpisodeContentManager({
       </div>
 
       <div>
-        <label className="block text-[11px] font-semibold text-ink mb-1">Náhledový obrázek pro Online</label>
+        <label className="block text-xs font-semibold text-ink mb-1">Náhledový obrázek pro Online</label>
         <label htmlFor={`ep-online-img-${episodeId}`} className="block cursor-pointer w-fit">
           {onlineImage ? (
             <img src={onlineImage} alt="" className="w-32 h-18 object-cover rounded-lg bg-surface" />
           ) : (
-            <div className="w-32 h-18 rounded-lg bg-surface border border-dashed border-line flex items-center justify-center text-[10px] text-muted text-center px-2">
+            <div className="w-32 h-18 rounded-lg bg-surface border border-dashed border-line flex items-center justify-center text-xs text-muted text-center px-2">
               {uploadingOnlineImage ? 'Nahrávám…' : 'Klikni pre nahratie'}
             </div>
           )}

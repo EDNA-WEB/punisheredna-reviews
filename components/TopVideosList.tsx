@@ -29,7 +29,7 @@ export default async function TopVideosList() {
   if (items.length === 0) return null;
 
   return (
-    <div className="border border-line rounded-xl p-4 sm:p-5 bg-card">
+    <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl p-4 sm:p-5 bg-card">
       <h3 className="font-display font-bold text-base text-ink mb-4">{t['home.najsledovanejsie_videa'] || 'Najsledovanejšie videá'}</h3>
       <div className="space-y-3">
         {items.map(({ video, count }, i) => (
@@ -41,7 +41,7 @@ export default async function TopVideosList() {
             />
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-ink truncate">{video!.title || video!.movie.title}</div>
-              <div className="text-[11px] text-muted">Trailer · {count} prehratí</div>
+              <div className="text-xs text-muted">Trailer · {count} prehratí</div>
             </div>
           </div>
         ))}

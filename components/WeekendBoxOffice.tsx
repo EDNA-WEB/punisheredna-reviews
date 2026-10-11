@@ -40,9 +40,9 @@ function Row({ e, t, className = '' }: { e: BoxOfficeEntry; t: T; className?: st
           {e.title} {e.movie?.year && <span className="text-muted font-normal">· {e.movie.year}</span>}
         </div>
         <div className="flex items-center gap-1.5 mt-1">
-          {e.grossLabel && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/10 text-accent tabular-nums">{e.grossLabel}</span>}
+          {e.grossLabel && <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/10 text-accent tabular-nums">{e.grossLabel}</span>}
           {e.isReRelease && (
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">{t('boxoffice_vikend.znovuuvedenie')}</span>
+            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">{t('boxoffice_vikend.znovuuvedenie')}</span>
           )}
         </div>
       </div>
@@ -64,15 +64,15 @@ export default function WeekendBoxOffice({ data, t }: { data: Data; t: T }) {
   const right = data.entries.slice(5, 10);
 
   return (
-    <div className="border border-line rounded-xl bg-card p-4 sm:p-5 min-w-0">
+    <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl bg-card p-4 sm:p-5 min-w-0">
       <div className="flex items-center justify-between mb-4 gap-3">
         <div className="min-w-0">
           <h2 className="font-display font-bold text-base text-ink">{t('boxoffice_vikend.nadpis')}</h2>
-          <p className="text-[11px] text-muted mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             {t('boxoffice_vikend.vikend')} {weekendLabel(data.weekendStart, data.weekendEnd)}
           </p>
         </div>
-        <Link href="/box-office/usa" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
+        <Link href="/box-office/usa" className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark flex-none">
           {t('boxoffice_vikend.viac')}
         </Link>
       </div>

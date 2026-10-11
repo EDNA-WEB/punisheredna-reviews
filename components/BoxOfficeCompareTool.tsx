@@ -97,7 +97,7 @@ function Row({ label, a, b, aBetter, bBetter }: { label: string; a: string; b: s
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] gap-3 py-2 border-b border-line last:border-b-0 items-center">
       <div className={`text-sm text-right ${aBetter ? 'font-bold text-emerald-600' : 'text-ink'}`}>{a}</div>
-      <div className="text-[10px] text-muted uppercase tracking-wide px-2 whitespace-nowrap">{label}</div>
+      <div className="text-[11px] text-muted uppercase tracking-wide px-2 whitespace-nowrap">{label}</div>
       <div className={`text-sm text-left ${bBetter ? 'font-bold text-emerald-600' : 'text-ink'}`}>{b}</div>
     </div>
   );

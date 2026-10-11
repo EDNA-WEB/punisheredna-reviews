@@ -338,10 +338,10 @@ export default async function HomePage() {
 
       {/* 4 — Novinky | Nejsledovanější seriály (rovnaká výška) */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="border border-line rounded-xl p-4 sm:p-5 bg-card min-w-0">
+        <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl p-4 sm:p-5 bg-card min-w-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display font-bold text-base text-ink">{t('home.novinky')}</h2>
-            <Link href="/novinky" className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
+            <Link href="/novinky" className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
               {t('home.viac')}
             </Link>
           </div>
@@ -357,7 +357,7 @@ export default async function HomePage() {
                     style={n.coverImage ? { backgroundImage: `url('${n.coverImage}')` } : undefined}
                   />
                   <div className="min-w-0">
-                    <div className="text-[11px] text-muted mb-0.5">{new Date(n.createdAt).toLocaleDateString('cs-CZ')}</div>
+                    <div className="text-xs text-muted mb-0.5">{new Date(n.createdAt).toLocaleDateString('cs-CZ')}</div>
                     <h3 className="text-sm font-semibold text-ink leading-snug group-hover:text-accent transition-colors line-clamp-2">{n.title}</h3>
                     <p className="text-xs text-muted line-clamp-1 mt-0.5">{n.summary}</p>
                   </div>

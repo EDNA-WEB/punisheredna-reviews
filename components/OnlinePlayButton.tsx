@@ -47,9 +47,9 @@ export default function OnlinePlayButton({
         </span>
         <span className="text-[15px] font-extrabold tracking-wide">{label}</span>
         <span className="flex-1" />
-        {hasDubbing && <span className="text-[10px] font-extrabold border border-white/60 rounded-full px-2 py-0.5">DABING</span>}
-        {hasSubtitles && <span className="text-[10px] font-extrabold border border-white/60 rounded-full px-2 py-0.5">TITULKY</span>}
-        {isCam && <span className="text-[10px] font-extrabold bg-danger border border-danger rounded-full px-2 py-0.5">CAM</span>}
+        {hasDubbing && <span className="text-[11px] font-extrabold border border-white/60 rounded-full px-2 py-0.5">DABING</span>}
+        {hasSubtitles && <span className="text-[11px] font-extrabold border border-white/60 rounded-full px-2 py-0.5">TITULKY</span>}
+        {isCam && <span className="text-[11px] font-extrabold bg-danger border border-danger rounded-full px-2 py-0.5">CAM</span>}
       </button>
 
       {open && (

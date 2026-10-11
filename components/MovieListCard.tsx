@@ -42,13 +42,13 @@ export default function MovieListCard({ id, title, itemCount, items }: { id: str
             {items.map((m) => (
               <Link key={m.slug} href={`/movie/${m.slug}`} className="block group">
                 <div className="aspect-[2/3] rounded-md bg-surface bg-cover bg-center group-hover:opacity-90 transition-opacity" style={m.poster ? { backgroundImage: `url('${m.poster}')` } : undefined} />
-                <div className="text-[11px] text-ink mt-1.5 leading-snug line-clamp-2">{m.title}</div>
+                <div className="text-xs text-ink mt-1.5 leading-snug line-clamp-2">{m.title}</div>
               </Link>
             ))}
           </div>
         )}
         {itemCount > items.length && (
-          <Link href={`/zoznam/${id}`} className="inline-block mt-3 text-[11px] font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
+          <Link href={`/zoznam/${id}`} className="inline-block mt-3 text-xs font-bold text-white bg-accent px-3 py-1 rounded-full hover:bg-accent-dark">
             VÍCE ({itemCount - items.length})
           </Link>
         )}

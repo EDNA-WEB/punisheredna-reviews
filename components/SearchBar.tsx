@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ScoreBadge from './ScoreBadge';
 import FilterPanel from './FilterPanel';
-import { IconUser } from './Icons';
+import { IconUser, IconSearch } from './Icons';
 import CriticBadge from './CriticBadge';
 import { useT } from './TranslationProvider';
 
@@ -79,10 +79,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
   return (
     <div ref={boxRef} className="relative w-full">
       <div className={`flex items-center gap-1 rounded-full pl-3.5 pr-1.5 py-1.5 ${pillClasses}`}>
-        <svg className="w-4 h-4 text-muted flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
-        </svg>
+        <IconSearch className="w-[18px] h-[18px] text-muted flex-none" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -104,7 +101,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
             <>
               {movies.length > 0 && (
                 <div>
-                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">Filmy</div>
+                  <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-muted">Filmy</div>
                   {movies.map((r) => (
                     <button
                       key={r.id}
@@ -127,7 +124,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
 
               {people.length > 0 && (
                 <div>
-                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">{t('search.osobnosti', 'Osobnosti')}</div>
+                  <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-muted">{t('search.osobnosti', 'Osobnosti')}</div>
                   {people.map((p) => (
                     <button
                       key={p.id}
@@ -156,7 +153,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
 
               {episodes.length > 0 && (
                 <div>
-                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">Epizódy</div>
+                  <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-muted">Epizódy</div>
                   {episodes.map((e) => (
                     <button
                       key={e.id}
@@ -182,7 +179,7 @@ export default function SearchBar({ variant = 'desktop' }: { variant?: 'desktop'
 
               {users.length > 0 && (
                 <div>
-                  <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-muted">Uživatelé</div>
+                  <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-muted">Uživatelé</div>
                   {users.map((u) => (
                     <button
                       key={u.id}

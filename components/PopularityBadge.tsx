@@ -16,14 +16,14 @@ export default function PopularityBadge({ value }: { value: number }) {
         </svg>
         <div className="text-center">
           <div className="font-display font-bold text-lg text-accent leading-none">{value.toFixed(0)}</div>
-          <div className="text-[10px] text-muted mt-0.5 uppercase tracking-wide">{t('person.popularita', 'Popularita')}</div>
+          <div className="text-[11px] text-muted mt-0.5 uppercase tracking-wide">{t('person.popularita', 'Popularita')}</div>
         </div>
         <button
           type="button"
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
-          className="w-4 h-4 rounded-full border border-muted text-muted text-[10px] font-bold flex items-center justify-center hover:border-accent hover:text-accent transition-colors flex-none"
+          className="w-4 h-4 rounded-full border border-muted text-muted text-[11px] font-bold flex items-center justify-center hover:border-accent hover:text-accent transition-colors flex-none"
           aria-label={t('person.co_znamena_popularita', 'Čo znamená popularita?')}
         >
           i

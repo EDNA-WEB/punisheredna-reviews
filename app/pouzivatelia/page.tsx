@@ -73,7 +73,7 @@ export default async function UsersPage(props: { searchParams: Promise<{ sort?: 
                   {sortMode === 'karma' && <IconHeart className="w-4 h-4 text-accent" filled />}
                   {sortMode === 'karma' ? (u.role === 'ADMIN' ? '∞' : u.karma) : u.total}
                 </div>
-                <div className="text-[10px] text-muted uppercase tracking-wide">{sortMode === 'karma' ? 'karma' : 'spolu'}</div>
+                <div className="text-[11px] text-muted uppercase tracking-wide">{sortMode === 'karma' ? 'karma' : 'spolu'}</div>
               </div>
             </Link>
           ))}

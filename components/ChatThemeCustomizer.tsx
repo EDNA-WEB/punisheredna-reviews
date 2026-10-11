@@ -46,7 +46,7 @@ export default function ChatThemeCustomizer({ otherId, onClose }: { otherId: str
                 title={c || 'Výchozí (podle webu)'}
               />
             ))}
-            <label className="w-8 h-8 rounded-full border-2 border-line flex-none flex items-center justify-center cursor-pointer text-[10px] text-muted overflow-hidden relative">
+            <label className="w-8 h-8 rounded-full border-2 border-line flex-none flex items-center justify-center cursor-pointer text-[11px] text-muted overflow-hidden relative">
               +
               <input
                 type="color"

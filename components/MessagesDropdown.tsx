@@ -49,7 +49,7 @@ export default function MessagesDropdown({ unreadTotal }: { unreadTotal: number 
       >
         <IconMessage className="w-[22px] h-[22px]" filled={open} />
         {unreadTotal > 0 && (
-          <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+          <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-danger text-white text-[11px] font-bold rounded-full flex items-center justify-center">
             {unreadTotal > 9 ? '9+' : unreadTotal}
           </span>
         )}
@@ -80,7 +80,7 @@ export default function MessagesDropdown({ unreadTotal }: { unreadTotal: number 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-semibold text-ink truncate">{c.name}</span>
-                    <span className="text-[10px] text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('cs-CZ')}</span>
+                    <span className="text-xs text-muted flex-none">{new Date(c.lastAt).toLocaleDateString('cs-CZ')}</span>
                   </div>
                   <p className="text-xs text-muted truncate">{c.lastText}</p>
                 </div>

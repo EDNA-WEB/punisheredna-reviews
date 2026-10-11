@@ -35,7 +35,7 @@ export async function GET(req: Request) {
               preview: latest.voice
                 ? voicePreview(latest.audioDuration)
                 : latest.image
-                  ? '📷 Fotka'
+                  ? 'Fotka'
                   : latest.body && latest.iv
                     ? tryDecryptMessageBody(latest.body, latest.iv)
                     : latest.body || ''

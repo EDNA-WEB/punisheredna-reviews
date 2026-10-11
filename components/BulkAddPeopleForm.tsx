@@ -78,7 +78,7 @@ export default function BulkAddPeopleForm() {
             <div key={i} className="flex items-center justify-between gap-3 border border-line rounded-lg px-4 py-2.5">
               <span className="text-sm font-medium text-ink">{r.name}</span>
               <div className="flex items-center gap-2 flex-none">
-                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusLabel[r.status].className}`}>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusLabel[r.status].className}`}>
                   {statusLabel[r.status].text}
                 </span>
                 {r.status === 'added' && r.slug && (

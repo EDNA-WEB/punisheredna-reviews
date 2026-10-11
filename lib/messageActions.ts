@@ -286,6 +286,6 @@ export async function forwardMessage(id: string, userId: string, receiverId: unk
     }
   });
 
-  await sendMessagePush(target, { id: sender.id, name: sender.name, avatar: sender.avatar }, hasImage ? '↪ 📷 Fotka' : `↪ ${text}`);
+  await sendMessagePush(target, { id: sender.id, name: sender.name, avatar: sender.avatar }, hasImage ? '↪ Fotka' : `↪ ${text}`);
   return { status: 201, data: { ok: true, id: created.id } };
 }

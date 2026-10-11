@@ -90,7 +90,7 @@ export default function MovieGalleryManager({ movieId, initialPhotos }: { movieI
           {photos.map((p, i) => (
             <div key={p.id} className="relative group aspect-square rounded-lg overflow-hidden bg-line">
               <img src={p.thumbnail} alt="" className="w-full h-full object-cover" />
-              <span className="absolute top-1 left-1 bg-night/70 text-white text-[10px] font-semibold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+              <span className="absolute top-1 left-1 bg-night/70 text-white text-[11px] font-semibold w-4 h-4 rounded-full flex items-center justify-center leading-none">
                 {i + 1}
               </span>
               <button

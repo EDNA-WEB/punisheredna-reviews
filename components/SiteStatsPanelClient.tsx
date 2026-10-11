@@ -46,7 +46,7 @@ export default function SiteStatsPanelClient({
         }`}
       >
         <div className="bg-card border border-line rounded-l-2xl shadow-xl px-5 py-5">
-          <div className="text-[11px] font-bold uppercase tracking-widest text-accent mb-4">Na webe máme</div>
+          <div className="text-xs font-bold uppercase tracking-widest text-accent mb-4">Na webe máme</div>
 
           <div className="mb-5">
             <div className="font-display font-extrabold text-4xl text-ink leading-none tabular-nums">{czechCount.toLocaleString('cs-CZ')}</div>

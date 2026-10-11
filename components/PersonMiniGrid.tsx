@@ -24,7 +24,7 @@ export default function PersonMiniGrid({
       <div className={`flex items-center justify-between mb-3 ${hideHeader ? 'hidden' : ''}`}>
         <h3 className="font-display font-bold text-sm text-ink">{title}</h3>
         {moreHref && (
-          <Link href={moreHref} className="text-[11px] font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
+          <Link href={moreHref} className="text-xs font-semibold text-white bg-accent px-2.5 py-1 rounded-full hover:bg-accent-dark">
             více
           </Link>
         )}

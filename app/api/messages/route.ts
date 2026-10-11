@@ -127,7 +127,7 @@ export async function POST(req: Request) {
       sendMessagePush(
         receiverId,
         { id: sender.id, name: sender.name, avatar: sender.avatar },
-        body && String(body).trim() ? String(body).trim() : '📷 Fotka'
+        body && String(body).trim() ? String(body).trim() : 'Fotka'
       )
     ]);
 

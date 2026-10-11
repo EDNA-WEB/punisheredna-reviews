@@ -129,7 +129,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
             <div key={m.id}>
               {showDivider && (
                 <div className="flex justify-center my-3">
-                  <span className="text-[11px] font-semibold text-muted bg-surface px-3 py-1 rounded-full">{thisDay}</span>
+                  <span className="text-xs font-semibold text-muted bg-surface px-3 py-1 rounded-full">{thisDay}</span>
                 </div>
               )}
               <div className={`flex items-center gap-1.5 ${mine ? 'justify-end' : 'justify-start'}`}>
@@ -150,7 +150,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   style={mine && bubbleColor ? { backgroundColor: bubbleColor } : undefined}
                 >
                   {m.forwarded && (
-                    <div className={`text-[11px] italic mb-1 ${mine ? 'text-white/70' : 'text-muted'}`}>↪ Přeposláno</div>
+                    <div className={`text-xs italic mb-1 ${mine ? 'text-white/70' : 'text-muted'}`}>↪ Přeposláno</div>
                   )}
                   {m.replyTo && (
                     <button
@@ -163,7 +163,7 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                       {m.replyTo.deleted
                         ? 'Původní zpráva byla smazána'
                         : `${m.replyTo.senderId === myId ? 'Ty' : 'Odpověď'}: ${
-                            m.replyTo.kind === 'voice' ? '🎤 Hlasová zpráva' : m.replyTo.kind === 'image' && !m.replyTo.text ? '📷 Fotka' : m.replyTo.text
+                            m.replyTo.kind === 'voice' ? 'Hlasová zpráva' : m.replyTo.kind === 'image' && !m.replyTo.text ? 'Fotka' : m.replyTo.text
                           }`}
                     </button>
                   )}
@@ -176,16 +176,16 @@ export default function ChatMessageList({ messages, myId, otherId }: { messages:
                   ) : (
                     m.photoExpired && (
                       <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
-                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>📷 Fotka vypršela</span>
+                        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>Fotka vypršela</span>
                       </div>
                     )
                   )}
                   {m.body && <p className="text-sm whitespace-pre-wrap leading-snug">{m.body}</p>}
                   <div className={`flex items-center justify-end gap-1 mt-1 ${mine ? 'text-white/70' : 'text-muted'}`}>
-                    <span className="text-[10px]">{createdAt.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>
-                    {m.pinned && <span className="text-[10px]" title="Připnuto">📌</span>}
-                    {m.edited && <span className="text-[10px] italic">(upraveno)</span>}
-                    {mine && <span className={`text-[11px] ${m.read ? 'text-white' : 'text-white/60'}`}>✓✓</span>}
+                    <span className="text-xs">{createdAt.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}</span>
+                    {m.pinned && <span className="text-xs font-semibold" title="Připnuto">Připnuto</span>}
+                    {m.edited && <span className="text-xs italic">(upraveno)</span>}
+                    {mine && <span className={`text-xs ${m.read ? 'text-white' : 'text-white/60'}`}>✓✓</span>}
                   </div>
                 </div>
                 {m.reactions && m.reactions.length > 0 && (

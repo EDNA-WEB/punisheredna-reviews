@@ -48,11 +48,11 @@ export default function GenreDistributionChart({ genreCounts }: { genreCounts: {
 
         <div className="h-4 pt-1 text-center">
           {active !== null ? (
-            <span className="text-[11px] font-semibold text-ink">
+            <span className="text-xs font-semibold text-ink">
               {top[active].genre} — {top[active].count} ({Math.round((top[active].count / total) * 100)}%)
             </span>
           ) : (
-            <span className="text-[11px] text-muted">Podle hodnocených filmů</span>
+            <span className="text-xs text-muted">Podle hodnocených filmů</span>
           )}
         </div>
       </div>

@@ -49,7 +49,7 @@ export default async function NotesPage() {
                   {n.movie.title} {n.movie.year && <span className="text-muted font-normal">· {n.movie.year}</span>}
                 </div>
                 <p className="text-sm text-muted mt-1.5 whitespace-pre-wrap line-clamp-3">{n.body}</p>
-                <div className="text-[11px] text-muted mt-2">
+                <div className="text-xs text-muted mt-2">
                   Upravené {new Date(n.updatedAt).toLocaleDateString('cs-CZ')}
                 </div>
               </div>

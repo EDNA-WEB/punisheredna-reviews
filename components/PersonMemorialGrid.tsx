@@ -62,7 +62,7 @@ export default function PersonMemorialGrid({
                 )}
                 {badge && (
                   <div className="absolute inset-0 rounded-lg bg-night/75 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-white text-[11px] font-bold leading-none text-center px-1">
+                    <span className="text-white text-xs font-bold leading-none text-center px-1">
                       {mode === 'birthday' ? `${badge} r.` : `† ${badge} r.`}
                     </span>
                   </div>

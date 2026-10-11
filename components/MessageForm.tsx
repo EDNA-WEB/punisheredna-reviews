@@ -141,7 +141,7 @@ export default function MessageForm({ receiverId, disabledReason }: { receiverId
               </div>
             ))}
           </div>
-          <div className="text-[11px] text-muted mt-1">
+          <div className="text-xs text-muted mt-1">
             {images.length}/5 · fotky zmizí za 24 h{progress ? ` · odesílám ${progress}` : ''}
           </div>
         </div>

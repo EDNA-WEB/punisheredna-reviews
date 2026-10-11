@@ -34,7 +34,7 @@ export default function OnlineReportsList({ initialReports }: { initialReports: 
   return (
     <div className="border border-danger/40 bg-danger/5 rounded-xl p-4 mb-6">
       <div className="text-sm font-bold text-ink mb-3">
-        📣 Nevyriešené nahlásenia od divákov ({reports.length})
+        Nevyriešené nahlásenia od divákov ({reports.length})
       </div>
       <div className="space-y-2">
         {reports.map((r) => (
@@ -44,7 +44,7 @@ export default function OnlineReportsList({ initialReports }: { initialReports: 
                 {r.movieTitle}
               </Link>
               {r.note && <p className="text-xs text-ink mt-1">„{r.note}"</p>}
-              <p className="text-[11px] text-muted mt-1">
+              <p className="text-xs text-muted mt-1">
                 {r.reporterName ? `Nahlásil: ${r.reporterName}` : 'Anonymne'} · {new Date(r.createdAt).toLocaleDateString('cs-CZ')}
               </p>
             </div>

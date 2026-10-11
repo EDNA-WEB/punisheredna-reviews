@@ -44,7 +44,7 @@ export default async function MessagesPage() {
     if (myDeletedAt && m.createdAt <= myDeletedAt) continue; // ja som si túto konverzáciu vymazal(a) po tento bod
 
     if (!conversations.has(other.id)) {
-      const lastText = m.voice ? voicePreview(null) : m.image ? '📷 Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
+      const lastText = m.voice ? voicePreview(null) : m.image ? 'Fotka' : m.body && m.iv ? tryDecryptMessageBody(m.body, m.iv) : m.body || '';
       conversations.set(other.id, {
         user: other,
         lastText,
@@ -91,7 +91,7 @@ export default async function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-ink text-sm truncate">{c.user.name}</span>
-                      <span className="text-[11px] text-muted flex-none">
+                      <span className="text-xs text-muted flex-none">
                         {new Date(c.lastAt).toLocaleDateString('cs-CZ', { timeZone: 'Europe/Bratislava' })}
                       </span>
                     </div>
@@ -111,8 +111,8 @@ export default async function MessagesPage() {
                     </p>
                   </div>
                   {c.unread > 0 && (
-                    <span className="w-5 h-5 bg-accent text-white text-[11px] font-bold rounded-full flex items-center justify-center flex-none">
-                      {c.unread}
+                    <span className="min-w-5 px-1 h-5 bg-accent text-white text-xs font-bold rounded-full flex items-center justify-center flex-none">
+                      {c.unread > 99 ? '99+' : c.unread}
                     </span>
                   )}
                 </Link>

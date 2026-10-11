@@ -56,7 +56,7 @@ export default async function AdminNewsPage(props: { searchParams?: Promise<{ st
                   <span className="font-display font-bold text-lg text-ink truncate">{n.title}</span>
                   {n.isDraft && (
                     <span className="text-[10px] font-semibold text-accent border border-accent/40 px-2 py-0.5 rounded-full flex-none whitespace-nowrap">
-                      📝 Rozpísané
+                      Rozpísané
                     </span>
                   )}
                   {!n.isDraft && n.publishAt && n.publishAt > new Date() && (

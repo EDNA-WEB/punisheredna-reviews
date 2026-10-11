@@ -48,7 +48,7 @@ export default function AvatarMenu({ userId, userName, userAvatar }: { userId: s
       {open && (
         <div className="absolute right-0 pt-2 w-60 z-50">
           <div className="rounded-xl border border-line bg-card shadow-lg overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-line text-[11px] font-bold uppercase tracking-wide text-muted">
+            <div className="px-4 py-2.5 border-b border-line text-xs font-bold uppercase tracking-wide text-muted">
               {t('panel.nadpis')}
             </div>
 

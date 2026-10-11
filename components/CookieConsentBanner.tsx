@@ -54,7 +54,7 @@ export default function CookieConsentBanner() {
       <div className="max-w-2xl mx-auto bg-card border border-line rounded-xl shadow-2xl p-5">
         {!settingsOpen ? (
           <>
-            <h2 className="font-display font-bold text-base text-ink mb-1.5">🍪 Používame cookies</h2>
+            <h2 className="font-display font-bold text-base text-ink mb-1.5">Používáme cookies</h2>
             <p className="text-sm text-muted leading-relaxed mb-4">
               Nezbytné cookies používáme vždy. Statistiku návštěvnosti a další volitelné cookies používáme jen s tvým souhlasem. Podrobnosti najdeš v patičce stránky pod "Nastavení soukromí".
             </p>
@@ -87,7 +87,7 @@ export default function CookieConsentBanner() {
                     <div className="text-xs text-muted mt-0.5">{cat.description}</div>
                   </div>
                   {cat.mandatory ? (
-                    <span className="flex-none text-[11px] font-semibold text-muted bg-surface border border-line px-3 py-1.5 rounded-full whitespace-nowrap">
+                    <span className="flex-none text-xs font-semibold text-muted bg-surface border border-line px-3 py-1.5 rounded-full whitespace-nowrap">
                       Vždy aktivní
                     </span>
                   ) : (

@@ -110,7 +110,7 @@ export async function POST(req: Request) {
 
     await Promise.all([
       setTyping(senderId, receiverId, false).catch(() => {}),
-      sendMessagePush(receiverId, { id: sender.id, name: sender.name, avatar: sender.avatar }, body ? `📷 ${body}` : '📷 Fotka')
+      sendMessagePush(receiverId, { id: sender.id, name: sender.name, avatar: sender.avatar }, body ? `${body}` : 'Fotka')
     ]);
 
     return NextResponse.json(

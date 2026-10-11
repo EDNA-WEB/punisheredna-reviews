@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { IconChevronLeft, IconChevronRight, IconPlay } from './Icons';
 import YouTubeSubtitlePlayer from './YouTubeSubtitlePlayer';
+import { sharpImage } from '@/lib/imageQuality';
 
 type Trailer = {
   id: string;
@@ -29,7 +30,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
   if (trailers.length === 0) {
     return (
       <div className="-mx-5 sm:mx-0">
-        <div className="relative rounded-none sm:rounded-xl overflow-hidden bg-surface border border-line aspect-[16/10] sm:aspect-video flex items-center justify-center">
+        <div className="relative rounded-none sm:rounded-xl overflow-hidden bg-surface border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] aspect-[16/10] sm:aspect-video flex items-center justify-center">
           <p className="text-sm text-muted px-6 text-center">
             Zatím žádný trailer. Přidej ho u filmu přes "Upravit film" → Videa.
           </p>
@@ -53,7 +54,7 @@ export default function TrailerCarousel({ trailers }: { trailers: Trailer[] }) {
           <>
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={current.posterImage ? { backgroundImage: `url('${current.posterImage}')` } : undefined}
+              style={current.posterImage ? { backgroundImage: `url('${sharpImage(current.posterImage, 1100)}')` } : undefined}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
 

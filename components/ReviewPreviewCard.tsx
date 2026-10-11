@@ -18,7 +18,7 @@ type Props = {
 export default function ReviewPreviewCard({ slug, body, author, rating, movieTitle, movieYear, moviePoster, showCriticBadge }: Props) {
   const isMember = author.membershipUntil && new Date(author.membershipUntil) > new Date();
   return (
-    <div className="border border-line rounded-xl p-3.5 bg-card h-full">
+    <div className="border border-line shadow-[0_1px_2px_rgba(16,17,20,0.05)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.35)] rounded-xl p-3.5 bg-card h-full">
       <Link href={`/profile/${author.id}`} className="flex items-center gap-2 mb-3 hover:text-accent">
         {author.avatar ? (
           <img src={author.avatar} alt={author.name} className="w-7 h-7 rounded-full object-cover flex-none" />

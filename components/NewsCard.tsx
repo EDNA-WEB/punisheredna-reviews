@@ -20,12 +20,12 @@ export default function NewsCard({
           style={news.coverImage ? { backgroundImage: `url('${news.coverImage}')` } : undefined}
         />
         {isLatest && (
-          <span className="absolute top-2.5 left-2.5 bg-night text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">
+          <span className="absolute top-2.5 left-2.5 bg-night text-white text-xs font-semibold px-2.5 py-1 rounded-full">
             {novinkaLabel}
           </span>
         )}
         {!!commentCount && (
-          <span className="absolute bottom-2.5 right-2.5 bg-night/80 backdrop-blur-sm text-white text-[11px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+          <span className="absolute bottom-2.5 right-2.5 bg-night/80 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
             <IconComment className="w-3 h-3" />
             {commentCount}
           </span>

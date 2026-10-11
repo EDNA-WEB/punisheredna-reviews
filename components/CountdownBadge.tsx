@@ -16,7 +16,7 @@ export default function CountdownBadge({ date, size = 'md' }: { date: Date | str
     return (
       <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent-dark text-white flex flex-col items-center justify-center flex-none leading-none shadow-sm">
         <span className="font-display font-extrabold text-lg">{label}</span>
-        {sub && <span className="text-[9px] opacity-85 mt-0.5">{sub}</span>}
+        {sub && <span className="text-xs opacity-85 mt-0.5">{sub}</span>}
       </div>
     );
   }
@@ -29,7 +29,7 @@ export default function CountdownBadge({ date, size = 'md' }: { date: Date | str
           : 'bg-night text-white border-white/10'
       }`}
     >
-      <span className="font-display font-extrabold text-[11px] leading-none">{label}</span>
+      <span className="font-display font-extrabold text-xs leading-none">{label}</span>
       {sub && <span className="text-[7px] uppercase tracking-wider opacity-75 mt-0.5">{sub}</span>}
     </div>
   );

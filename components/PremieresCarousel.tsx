@@ -150,7 +150,7 @@ export default function PremieresCarousel({ premieres, title }: { premieres: Pre
                   <CountdownBadge date={p.releaseDate} />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-2">
-                  <div className="text-[11px] font-semibold text-white leading-snug line-clamp-2">{p.movie.title}</div>
+                  <div className="text-xs font-semibold text-white leading-snug line-clamp-2">{p.movie.title}</div>
                 </div>
               </div>
             </Link>

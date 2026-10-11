@@ -68,7 +68,7 @@ export async function tmdbSearchMovie(query: string) {
       title: r.title || r.name,
       originalTitle: r.original_title || r.original_name,
       year: (r.release_date || r.first_air_date || '').slice(0, 4),
-      poster: r.poster_path ? `https://image.tmdb.org/t/p/w200${r.poster_path}` : null
+      poster: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : null
     }));
 }
 
@@ -152,7 +152,7 @@ export async function tmdbSearchPerson(query: string) {
     id: r.id,
     name: r.name,
     knownForDepartment: r.known_for_department,
-    photo: r.profile_path ? `https://image.tmdb.org/t/p/w200${r.profile_path}` : null,
+    photo: r.profile_path ? `https://image.tmdb.org/t/p/w500${r.profile_path}` : null,
     knownFor: (r.known_for || []).map((k: any) => k.title || k.name).filter(Boolean).slice(0, 3).join(', ')
   }));
 }
@@ -318,7 +318,7 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       character: c.character || null,
-      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null,
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w185${c.poster_path}` : null,
       backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
       voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
       voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
@@ -333,7 +333,7 @@ export async function tmdbGetPersonFilmography(tmdbId: number) {
       title: c.title || c.name,
       year: (c.release_date || c.first_air_date || '').slice(0, 4),
       job: c.job || null,
-      poster: c.poster_path ? `https://image.tmdb.org/t/p/w92${c.poster_path}` : null,
+      poster: c.poster_path ? `https://image.tmdb.org/t/p/w185${c.poster_path}` : null,
       backdropPoster: c.poster_path ? `https://image.tmdb.org/t/p/w500${c.poster_path}` : null,
       voteAverage: typeof c.vote_average === 'number' ? c.vote_average : null,
       voteCount: typeof c.vote_count === 'number' ? c.vote_count : 0,
@@ -395,7 +395,7 @@ export async function tmdbGetSimilarMovies(tmdbId: number, mediaType: 'movie' | 
     tmdbId: r.id,
     title: r.title || r.name,
     year: (r.release_date || r.first_air_date || '').slice(0, 4),
-    poster: r.poster_path ? `https://image.tmdb.org/t/p/w300${r.poster_path}` : null
+    poster: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : null
   }));
 }
 

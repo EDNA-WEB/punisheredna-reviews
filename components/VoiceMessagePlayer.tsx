@@ -159,7 +159,7 @@ export default function VoiceMessagePlayer({ id, mine, voice }: { id: string; mi
   if (!available) {
     return (
       <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 mb-1.5 ${mine ? 'bg-black/15' : 'bg-line/50'}`}>
-        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>🎤 Hlasová zpráva vypršela</span>
+        <span className={`text-xs italic ${mine ? 'text-white/70' : 'text-muted'}`}>Hlasová zpráva vypršela</span>
       </div>
     );
   }
@@ -206,7 +206,7 @@ export default function VoiceMessagePlayer({ id, mine, voice }: { id: string; mi
               );
             })}
           </div>
-          <div className={`flex items-center justify-between mt-0.5 text-[10.5px] ${mine ? 'text-white/75' : 'text-muted'}`}>
+          <div className={`flex items-center justify-between mt-0.5 text-xs ${mine ? 'text-white/75' : 'text-muted'}`}>
             <span className="tabular-nums">{playing || position > 0 ? fmt(position) : fmt(durationMs)}</span>
             <span className="truncate ml-2">{status}</span>
           </div>
@@ -215,13 +215,13 @@ export default function VoiceMessagePlayer({ id, mine, voice }: { id: string; mi
         <button
           type="button"
           onClick={cycleRate}
-          className={`flex-none text-[11px] font-bold tabular-nums rounded-full px-2 py-0.5 ${mine ? 'bg-black/20 text-white' : 'bg-line/60 text-ink'}`}
+          className={`flex-none text-xs font-bold tabular-nums rounded-full px-2 py-0.5 ${mine ? 'bg-black/20 text-white' : 'bg-line/60 text-ink'}`}
           aria-label="Rychlost přehrávání"
         >
           {rate}×
         </button>
       </div>
-      {error && <div className={`text-[11px] mt-1 ${mine ? 'text-white' : 'text-danger'}`}>{error}</div>}
+      {error && <div className={`text-xs mt-1 ${mine ? 'text-white' : 'text-danger'}`}>{error}</div>}
 
       <audio
         ref={audioRef}

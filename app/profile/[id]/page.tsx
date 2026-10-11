@@ -204,7 +204,7 @@ export default async function ProfilePage(props: { params: Promise<{ id: string 
             <h1 className="font-display font-extrabold text-2xl text-ink">{user.name}</h1>
             {user.role === 'ADMIN' && <CriticBadge size="w-4 h-4" />}
             {user.role !== 'ADMIN' && user.isEditor && (
-              <span className="text-[11px] font-semibold text-accent border border-accent/40 rounded-full px-2 py-0.5">
+              <span className="text-xs font-semibold text-accent border border-accent/40 rounded-full px-2 py-0.5">
                 Redaktor
               </span>
             )}

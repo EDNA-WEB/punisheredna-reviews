@@ -6,7 +6,7 @@ export default function CriticBadge({ size = 'w-4 h-4', label = true }: { size?:
         <circle cx="12" cy="8" r="3.3" fill="white" />
         <path d="M9.5 8l1.7 1.7L14.7 6" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      {label && <span className="text-[11px] font-semibold">Overený kritik</span>}
+      {label && <span className="text-xs font-semibold">Overený kritik</span>}
     </span>
   );
 }

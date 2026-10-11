@@ -187,7 +187,7 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
       {news.isDraft && (
         <div className="flex items-center gap-2 mb-5 text-xs font-semibold text-accent bg-surface border border-accent/40 rounded-full px-3 py-1.5 w-fit">
           <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
-          {isAdmin ? '📝 Rozepsané — vidíš to jako administrátor' : 'Dřívější přístup díky Golden Ticket členství — tento článek ještě není veřejně publikovaný'}
+          {isAdmin ? 'Rozepsané — vidíš to jako administrátor' : 'Dřívější přístup díky Golden Ticket členství — tento článek ještě není veřejně publikovaný'}
         </div>
       )}
 
@@ -312,7 +312,7 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
             {relatedMovie && <MovieMiniProfile movie={relatedMovie} />}
 
             {relatedByTags.length > 0 && (
-              <div className="text-[11px] font-bold text-accent uppercase tracking-wider mb-1">Odporúčame</div>
+              <div className="text-xs font-bold text-accent uppercase tracking-wider mb-1">Odporúčame</div>
             )}
             <NewsSidebarList title="Súvisiace články" items={relatedByTags} />
             <NewsSidebarList title="Najčítanejšie novinky" items={mostRead} />

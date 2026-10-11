@@ -70,12 +70,12 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
                   {items.map((row) => (
                     <div key={row.key} className="grid sm:grid-cols-3 gap-3 p-4">
                       <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">Slovenština</div>
+                        <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1">Slovenština</div>
                         <div className="text-sm text-ink font-medium">{row.sk}</div>
-                        <div className="text-[10px] text-muted mt-0.5">{row.key}</div>
+                        <div className="text-xs text-muted mt-0.5">{row.key}</div>
                       </div>
                       <div>
-                        <label className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1 block">English</label>
+                        <label className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1 block">English</label>
                         <input
                           className="field-input-sm"
                           value={row.en || ''}
@@ -84,7 +84,7 @@ export default function TranslationEditor({ initial }: { initial: Row[] }) {
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1 block">Čeština</label>
+                        <label className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1 block">Čeština</label>
                         <input
                           className="field-input-sm"
                           value={row.cs || ''}

@@ -39,8 +39,8 @@ export default function MovieListGrid({ listId, initialItems, isOwn }: { listId:
               <div key={item.id} className="relative group">
                 <Link href={`/movie/${item.movie.slug}`} className="block">
                   <div className="aspect-[2/3] rounded-md bg-surface bg-cover bg-center" style={item.movie.poster ? { backgroundImage: `url('${item.movie.poster}')` } : undefined} />
-                  <div className="text-[11px] text-ink mt-1 truncate">{item.movie.title}</div>
-                  <div className="text-[10px] text-muted">{item.movie.year}</div>
+                  <div className="text-xs text-ink mt-1 truncate">{item.movie.title}</div>
+                  <div className="text-xs text-muted">{item.movie.year}</div>
                 </Link>
                 {isOwn && (
                   <button

@@ -127,7 +127,7 @@ export default function FavoritesFeed({ items, t }: { items: any[]; t: T }) {
               {(item.snippet || (item.kind === 'review' && item.body)) && (
                 <p className="text-xs text-muted mt-1 line-clamp-2">{item.snippet || String(item.body).slice(0, 160)}</p>
               )}
-              <div className="text-[11px] text-muted mt-1">{timeAgo(item.createdAt, t)}</div>
+              <div className="text-xs text-muted mt-1">{timeAgo(item.createdAt, t)}</div>
             </div>
             {image && (
               <Link href={imageHref} className="flex-none">

@@ -168,7 +168,7 @@ function Section({ title, children, defaultOpen = true, count }: { title: string
     <div className="border-b border-line">
       <button type="button" onClick={() => setOpen(!open)} className="w-full flex items-center gap-2 py-3.5 text-left group">
         <span className="text-[13px] font-semibold text-ink">{title}</span>
-        {count ? <span className="text-[11px] font-semibold text-accent">· {count}</span> : null}
+        {count ? <span className="text-xs font-semibold text-accent">· {count}</span> : null}
         <Icon name="chevron" size={16} className={`ml-auto text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && <div className="pb-4">{children}</div>}
@@ -196,7 +196,7 @@ function CheckRow({ label, count, state, onClick, color }: { label: string; coun
       </span>
       {color ? <span className="w-2.5 h-2.5 rounded-sm flex-none" style={{ backgroundColor: color }} /> : null}
       <span className={`text-[13px] flex-1 truncate ${state === 'ex' ? 'text-danger line-through' : 'text-ink'}`}>{label}</span>
-      {count !== undefined && state === 'off' ? <span className="text-[11px] tabular-nums text-muted">{count.toLocaleString('cs-CZ')}</span> : null}
+      {count !== undefined && state === 'off' ? <span className="text-xs tabular-nums text-muted">{count.toLocaleString('cs-CZ')}</span> : null}
     </button>
   );
 }
@@ -206,7 +206,7 @@ function Switch({ label, hint, checked, onChange }: { label: string; hint?: stri
     <button type="button" className="w-full flex items-center justify-between gap-3 py-1.5 text-left" onClick={() => onChange(!checked)}>
       <span className="min-w-0">
         <span className="text-[13px] text-ink block">{label}</span>
-        {hint && <span className="text-[11px] text-muted block leading-tight mt-0.5">{hint}</span>}
+        {hint && <span className="text-xs text-muted block leading-tight mt-0.5">{hint}</span>}
       </span>
       <span role="switch" aria-checked={checked} className={`relative w-9 h-5 rounded-full transition-colors flex-none ${checked ? 'bg-accent' : 'bg-line'}`}>
         <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${checked ? 'left-[18px]' : 'left-0.5'}`} />
@@ -328,7 +328,7 @@ function Suggest({ kind, placeholder, onPick, value, onChange }: { kind: string;
             >
               {kind === 'title' && <span className="w-6 h-9 rounded-sm bg-line overflow-hidden flex-none">{s.poster ? <img src={s.poster} alt="" className="w-full h-full object-cover" /> : null}</span>}
               <span className="text-ink truncate flex-1">{s.name}</span>
-              <span className="text-[11px] text-muted tabular-nums">{kind === 'title' ? s.count || '' : s.count}</span>
+              <span className="text-xs text-muted tabular-nums">{kind === 'title' ? s.count || '' : s.count}</span>
             </button>
           ))}
         </div>
@@ -370,7 +370,7 @@ function Card({ m }: { m: Item }) {
             <Icon name="check" size={13} strokeWidth={2.6} />
           </span>
         )}
-        {m.nowShowing && <span className="absolute top-2 left-2 text-[10px] font-semibold uppercase tracking-wide bg-black/70 text-white rounded-sm px-1.5 py-0.5">V kině</span>}
+        {m.nowShowing && <span className="absolute top-2 left-2 text-[11px] font-semibold uppercase tracking-wide bg-black/70 text-white rounded-sm px-1.5 py-0.5">V kině</span>}
       </div>
       <div className="mt-2.5">
         <div className="text-[13.5px] font-semibold text-ink leading-snug line-clamp-2 group-hover:text-accent transition-colors">{m.title}</div>
@@ -398,7 +398,7 @@ function Row({ m, services, index }: { m: Item; services: Options['services']; i
           </div>
           <div className="flex-none text-right">
             <Rating m={m} />
-            {m.votes > 0 && <div className="text-[11px] text-muted mt-1 tabular-nums">{m.votes.toLocaleString('cs-CZ')} hl.</div>}
+            {m.votes > 0 && <div className="text-xs text-muted mt-1 tabular-nums">{m.votes.toLocaleString('cs-CZ')} hl.</div>}
           </div>
         </div>
         <div className="text-[12.5px] text-muted mt-1">
@@ -423,15 +423,15 @@ function Row({ m, services, index }: { m: Item; services: Options['services']; i
         )}
         {(svc.length > 0 || m.nowShowing || m.watched) && (
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            {m.nowShowing && <span className="text-[11px] font-semibold border border-line rounded-sm px-1.5 py-px text-ink">V kině</span>}
+            {m.nowShowing && <span className="text-xs font-semibold border border-line rounded-sm px-1.5 py-px text-ink">V kině</span>}
             {svc.map((s) => (
-              <span key={s.id} className="inline-flex items-center gap-1 text-[11px] font-semibold border border-line rounded-sm px-1.5 py-px text-ink">
+              <span key={s.id} className="inline-flex items-center gap-1 text-xs font-semibold border border-line rounded-sm px-1.5 py-px text-ink">
                 <span className="w-2 h-2 rounded-[2px]" style={{ backgroundColor: s.color || '#888' }} />
                 {s.name}
               </span>
             ))}
             {m.watched && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted">
                 <Icon name="check" size={12} strokeWidth={2.4} /> Viděno
               </span>
             )}
@@ -683,7 +683,7 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
             {allGenres ? 'Zobrazit méně' : `Všechny žánry (${Object.keys(options.genres).length})`}
           </button>
         )}
-        <p className="text-[11px] text-muted mt-2">Druhým kliknutím žánr vyloučíte.</p>
+        <p className="text-xs text-muted mt-2">Druhým kliknutím žánr vyloučíte.</p>
       </Section>
 
       <Section title="Rok vydání" count={s.yearFrom || s.yearTo ? 1 : 0}>
@@ -889,7 +889,7 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
               <div className="fixed inset-0 z-30" onClick={() => setCollectionsOpen(false)} />
               <div className="absolute right-0 z-40 mt-1.5 w-[360px] max-w-[calc(100vw-2rem)] bg-card border border-line rounded-lg shadow-2xl overflow-hidden">
                 <div className="max-h-[70vh] overflow-y-auto">
-                  <div className="px-4 pt-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">Kolekce</div>
+                  <div className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">Kolekce</div>
                   {FILTER_PRESETS.map((p) => (
                     <button
                       key={p.key}
@@ -906,7 +906,7 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
                       </span>
                     </button>
                   ))}
-                  <div className="border-t border-line mt-1.5 px-4 pt-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">Uložené filtry</div>
+                  <div className="border-t border-line mt-1.5 px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">Uložené filtry</div>
                   <div className="px-4 pb-2 flex gap-2">
                     <input
                       value={saveName}
@@ -946,14 +946,14 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
         <button type="button" onClick={() => setDrawer(true)} className={`${btn} lg:hidden`}>
           <Icon name="sliders" size={16} />
           Filtry
-          {activeCount ? <span className="min-w-[18px] h-[18px] rounded-full bg-accent text-white text-[11px] flex items-center justify-center px-1">{activeCount}</span> : null}
+          {activeCount ? <span className="min-w-[18px] h-[18px] rounded-full bg-accent text-white text-xs flex items-center justify-center px-1">{activeCount}</span> : null}
         </button>
       </div>
 
       <div className="lg:grid lg:grid-cols-[272px_1fr]">
         <aside className="hidden lg:block border-r border-line px-4 max-h-[calc(100vh-96px)] overflow-y-auto sticky top-16 self-start">
           <div className="flex items-center justify-between pt-3.5 pb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Filtry</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted">Filtry</span>
             {activeCount > 0 && (
               <button type="button" onClick={reset} className="text-[12px] font-semibold text-accent hover:underline">
                 Vymazat vše
@@ -1116,7 +1116,7 @@ export default function MovieFilterExplorer({ loggedIn }: { loggedIn: boolean })
             {tip !== 'loading' && tip?.poster && <img src={tip.poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-110" />}
             <div className="relative p-5 sm:p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
                   <Icon name="shuffle" size={14} /> Tip na film
                 </span>
                 <button type="button" onClick={() => setTip(null)} className="text-muted hover:text-ink" aria-label="Zavřít">
