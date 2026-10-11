@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
+import { loadProfileExtras } from '@/lib/profileExtras';
 
 export const dynamic = 'force-dynamic';
 
@@ -111,6 +112,17 @@ export async function GET(req: Request) {
 
     const flag = user.country ? getCountryFlagUrl(user.country) : null;
 
+    // Doplnky pre nový vzhľad profilu v appke (staršia appka ich ignoruje)
+    const extras = await loadProfileExtras({
+      userId: user.id,
+      viewerId: authUser.id,
+      viewerIsAdmin: authUser.role === 'ADMIN',
+      reviewIds: reviews.map((r) => r.id)
+    }).catch((e) => {
+      console.error('[profileExtras]', e);
+      return null;
+    });
+
     return NextResponse.json(
       {
         ...user,
@@ -120,7 +132,8 @@ export async function GET(req: Request) {
         karma: user.role === 'ADMIN' ? '∞' : karma._sum.value || 0,
         topGenres,
         reviews: reviewsWithTitle,
-        ratings: ratingsWithTitle
+        ratings: ratingsWithTitle,
+        extras
       },
       { status: 200 }
     );

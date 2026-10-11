@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
+import { loadProfileExtras } from '@/lib/profileExtras';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,10 +31,13 @@ export async function GET(req: Request) {
         country: true,
         region: true,
         favoritesVisibility: true,
+        deleted: true,
         _count: { select: { comments: true, reviews: true, followedBy: true, following: true, ratings: true } }
       }
     });
     if (!user) return NextResponse.json({ error: 'Uživatel se nenašel.' }, { status: 404 });
+    // Zmazaný účet: žiadne údaje (rovnako ako web — „Smazaný uživatel“)
+    if (user.deleted) return NextResponse.json({ error: 'Tento uživatelský účet byl smazán.' }, { status: 410 });
 
     const isFollowing = !!(await prisma.follow.findUnique({ where: { followerId_followingId: { followerId: me.id, followingId: userId } } }));
 
@@ -100,6 +104,17 @@ export async function GET(req: Request) {
       canSeeFavorites = !!(await prisma.follow.findUnique({ where: { followerId_followingId: { followerId: userId, followingId: me.id } } }));
     }
 
+    // Doplnky pre nový vzhľad profilu v appke (staršia appka ich ignoruje)
+    const extras = await loadProfileExtras({
+      userId: user.id,
+      viewerId: me.id,
+      viewerIsAdmin: me.role === 'ADMIN',
+      reviewIds: reviews.map((r) => r.id)
+    }).catch((e) => {
+      console.error('[profileExtras]', e);
+      return null;
+    });
+
     return NextResponse.json(
       {
         ...user,
@@ -110,7 +125,8 @@ export async function GET(req: Request) {
         isFollowing,
         canSeeFavorites,
         reviews: reviews.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null } })),
-        ratings: ratings.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null } }))
+        ratings: ratings.map((r) => ({ ...r, movie: { ...r.movie, displayTitle: buildDisplayTitle(r.movie.title, r.season, r.episode), seasonNumber: r.season?.number ?? null, episodeNumber: r.episode?.number ?? null } })),
+        extras
       },
       { status: 200 }
     );
