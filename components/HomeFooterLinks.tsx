@@ -9,7 +9,7 @@ import PrivacyModal from './PrivacyModal';
 
 // Zvyšok odkazov (okrem Odhlásiť sa a Nastavenia súkromia) sú zatiaľ len
 // pripravené miesta — samotné stránky sa doplnia neskôr.
-const PLACEHOLDER_KEYS_AFTER = ['footer.pracuj_s_nami', 'footer.prevadzkovatel', 'footer.reklama'];
+const PLACEHOLDER_KEYS_AFTER = ['footer.pracuj_s_nami', 'footer.reklama'];
 
 export default async function HomeFooterLinks() {
   const session = await getServerSession(authOptions);
@@ -50,6 +50,10 @@ export default async function HomeFooterLinks() {
         </Link>
         <span className="text-line">·</span>
 
+        <span className="flex items-center gap-x-2.5">
+          <Link href="/provozovatel" className="text-accent hover:underline font-medium">{t('footer.prevadzkovatel')}</Link>
+          <span className="text-line">·</span>
+        </span>
         {PLACEHOLDER_KEYS_AFTER.map((key) => (
           <span key={key} className="flex items-center gap-x-2.5">
             <span className="text-accent hover:underline font-medium cursor-default">{t(key)}</span>

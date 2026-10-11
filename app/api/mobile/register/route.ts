@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { TERMS_VERSION } from '@/lib/operatorInfo';
 import { sendVerificationEmail } from '@/lib/email/account';
 import { maskEmail } from '@/lib/email/util';
 import { checkEmailAllowed } from '@/lib/disposableEmail';
@@ -26,7 +27,7 @@ async function __registerPOST(req: Request) {
       return NextResponse.json({ error: 'Příliš mnoho registrací z tohoto připojení. Zkus to prosím za hodinu.' }, { status: 429 });
     }
 
-    const { nickname, email, password, captchaToken, captchaAnswer } = await req.json();
+    const { nickname, email, password, captchaToken, captchaAnswer, acceptTerms, ageConfirmed } = await req.json();
 
     const captchaError = await verifyCaptcha(captchaToken, captchaAnswer);
     if (captchaError) {
@@ -35,6 +36,14 @@ async function __registerPOST(req: Request) {
 
     if (!nickname || !email || !password) {
       return NextResponse.json({ error: 'Vyplň prosím přezdívku, e-mail i heslo.' }, { status: 400 });
+    }
+
+    // Súhlas s pravidlami a zásadami + potvrdenie veku (pravidlá: od 16 rokov).
+    if (acceptTerms !== true) {
+      return NextResponse.json({ error: 'Pro registraci je potřeba souhlasit s pravidly a zásadami ochrany osobních údajů.', code: 'TERMS_REQUIRED' }, { status: 400 });
+    }
+    if (ageConfirmed !== true) {
+      return NextResponse.json({ error: 'Registrace je možná od 16 let.', code: 'AGE_REQUIRED' }, { status: 400 });
     }
 
     const trimmedNickname = String(nickname).trim();
@@ -73,7 +82,7 @@ async function __registerPOST(req: Request) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true }
+      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true, termsAcceptedAt: new Date(), termsVersion: TERMS_VERSION }
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));

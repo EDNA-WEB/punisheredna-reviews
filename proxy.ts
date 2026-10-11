@@ -17,7 +17,7 @@ import { adminIpAllowed } from './lib/adminIp';
 // ---------------------------------------------------------------------------
 
 // /sdilet = zdieľané články (stránka sama overí, či je zdieľanie zapnuté)
-const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/obnoveni-hesla', '/nove-heslo', '/odhlasit-odber', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies', '/sdilet'];
+const PUBLIC_PATHS = ['/login', '/register', '/zabudnute-heslo', '/obnoveni-hesla', '/nove-heslo', '/odhlasit-odber', '/overit-email', '/qr-prihlasenie', '/pravidla', '/zasady-ochrany-udajov', '/cookies', '/sdilet', '/provozovatel'];
 const isDev = process.env.NODE_ENV !== 'production';
 
 function buildCsp(nonce: string) {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { TERMS_VERSION } from '@/lib/operatorInfo';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { validatePassword, validateNickname } from '@/lib/passwordRules';
@@ -24,7 +25,7 @@ async function __registerPOST(req: Request) {
       return NextResponse.json({ error: 'Příliš mnoho registrací z tohoto připojení. Zkus to prosím za hodinu.' }, { status: 429 });
     }
 
-    const { nickname, email, password, website, elapsedMs, captchaToken, captchaAnswer } = await req.json();
+    const { nickname, email, password, website, elapsedMs, captchaToken, captchaAnswer, acceptTerms, ageConfirmed } = await req.json();
 
     // Honeypot: skryté pole, ktoré človek nikdy nevyplní, ale jednoduché boty áno.
     if (website) {
@@ -44,6 +45,14 @@ async function __registerPOST(req: Request) {
 
     if (!nickname || !email || !password) {
       return NextResponse.json({ error: 'Vyplň prosím přezdívku, e-mail i heslo.' }, { status: 400 });
+    }
+
+    // Súhlas s pravidlami a zásadami + potvrdenie veku (pravidlá: od 16 rokov).
+    if (acceptTerms !== true) {
+      return NextResponse.json({ error: 'Pro registraci je potřeba souhlasit s pravidly a zásadami ochrany osobních údajů.', code: 'TERMS_REQUIRED' }, { status: 400 });
+    }
+    if (ageConfirmed !== true) {
+      return NextResponse.json({ error: 'Registrace je možná od 16 let.', code: 'AGE_REQUIRED' }, { status: 400 });
     }
 
     const trimmedNickname = String(nickname).trim();
@@ -84,7 +93,7 @@ async function __registerPOST(req: Request) {
     // Verejná registrácia vytvára vždy len čitateľský účet — administrátorov
     // možno vytvoriť len cez "npx prisma db seed" alebo priamo v databáze.
     const user = await prisma.user.create({
-      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true }
+      data: { name: trimmedNickname, email: normalizedEmail, passwordHash, role: 'READER', emailVerified: false, mustVerifyEmail: true, termsAcceptedAt: new Date(), termsVersion: TERMS_VERSION }
     });
 
     await issueRecoveryCode(user.id).catch((err) => console.error('issueRecoveryCode', err));

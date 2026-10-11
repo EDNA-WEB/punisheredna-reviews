@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import UserBanToggle from '@/components/UserBanToggle';
 import UserRestrictionsToggle from '@/components/UserRestrictionsToggle';
+import UserTwoFactorReset from '@/components/UserTwoFactorReset';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,11 @@ export default async function AdminUsersPage() {
               <div className="flex-1 min-w-[180px]">
                 <div className="font-semibold text-ink flex items-center gap-2">
                   {u.name}
+                  {u.twoFactorEnabledAt && (
+                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-500/15 px-2 py-0.5 rounded-full" title="Dvoufázové ověření zapnuté">
+                      2FA
+                    </span>
+                  )}
                   {u.banned && (
                     <span className="text-[11px] font-semibold text-danger border border-danger px-2 py-0.5 rounded-full">
                       Zablokovaný
@@ -52,6 +58,7 @@ export default async function AdminUsersPage() {
                   id={u.id}
                   initial={{ reviewsDisabled: u.reviewsDisabled, ratingsDisabled: u.ratingsDisabled, commentsDisabled: u.commentsDisabled }}
                 />
+                {u.twoFactorEnabledAt && <UserTwoFactorReset id={u.id} name={u.name} />}
               </div>
             </div>
           ))}

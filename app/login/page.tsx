@@ -203,6 +203,7 @@ export default function LoginPage() {
               {t('auth.nemas_ucet')}{' '}
               <Link href="/register" className="text-accent font-semibold hover:underline">{t('auth.zaregistrovat')}</Link>
             </p>
+            <Link href="/provozovatel" className="block text-xs text-white/45 hover:text-white mt-3">{t('operator.nadpis', 'Provozovatel a kontakt')}</Link>
           </div>
 
           <div className="border-t sm:border-t-0 sm:border-l border-white/10 p-8 flex flex-col items-center justify-center text-center gap-3.5">

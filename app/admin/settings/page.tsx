@@ -9,6 +9,7 @@ import AppAndSocialLinksForm from '@/components/AppAndSocialLinksForm';
 import PrivacyModalTextForm from '@/components/PrivacyModalTextForm';
 import CookiesPolicyForm from '@/components/CookiesPolicyForm';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import OperatorInfoForm from '@/components/OperatorInfoForm';
 
 export default async function AdminSettingsPage() {
   const session = await getServerSession(authOptions);
@@ -53,6 +54,21 @@ export default async function AdminSettingsPage() {
             instagramUrl: settings?.instagramUrl || null,
             tiktokUrl: settings?.tiktokUrl || null,
             youtubeUrl: settings?.youtubeUrl || null
+          }}
+        />
+      </div>
+
+      <div className="mt-12 pt-8 border-t border-line">
+        <h2 className="font-display font-bold text-xl text-ink mb-2">Provozovatel a kontakt</h2>
+        <p className="text-muted mb-8">
+          Údaje pro veřejnou stránku /provozovatel (odkaz „Provozovatel“ v patičce). Prázdná pole se nezobrazí — kontaktní formulář funguje vždy.
+        </p>
+        <OperatorInfoForm
+          initial={{
+            operatorName: settings?.operatorName || null,
+            operatorCompanyId: settings?.operatorCompanyId || null,
+            operatorAddress: settings?.operatorAddress || null,
+            operatorEmail: settings?.operatorEmail || null
           }}
         />
       </div>

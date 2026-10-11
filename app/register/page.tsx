@@ -15,6 +15,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaToken, setCaptchaToken] = useState('');
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -53,7 +55,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname, email, password, website, elapsedMs: Date.now() - formLoadedAt, captchaToken, captchaAnswer })
+        body: JSON.stringify({ nickname, email, password, website, elapsedMs: Date.now() - formLoadedAt, captchaToken, captchaAnswer, acceptTerms, ageConfirmed })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registrace se nezdařila.');
@@ -143,6 +145,21 @@ export default function RegisterPage() {
             />
           </div>
           <CaptchaField key={captchaKey} answer={captchaAnswer} onAnswerChange={setCaptchaAnswer} onTokenChange={setCaptchaToken} />
+          <div className="space-y-2.5 pt-1">
+            <label className="flex items-start gap-2.5 text-sm text-white/80 leading-snug cursor-pointer select-none">
+              <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="w-4 h-4 mt-0.5 accent-accent flex-none" required />
+              <span>
+                {t('register.suhlas_1', 'Souhlasím s')}{' '}
+                <Link href="/pravidla" target="_blank" className="text-accent font-semibold hover:underline">{t('register.pravidlami', 'pravidly')}</Link>{' '}
+                {t('register.suhlas_2', 'a beru na vědomí')}{' '}
+                <Link href="/zasady-ochrany-udajov" target="_blank" className="text-accent font-semibold hover:underline">{t('register.zasady', 'zásady ochrany osobních údajů')}</Link>
+              </span>
+            </label>
+            <label className="flex items-start gap-2.5 text-sm text-white/80 leading-snug cursor-pointer select-none">
+              <input type="checkbox" checked={ageConfirmed} onChange={(e) => setAgeConfirmed(e.target.checked)} className="w-4 h-4 mt-0.5 accent-accent flex-none" required />
+              <span>{t('register.vek', 'Je mi alespoň 16 let')}</span>
+            </label>
+          </div>
           {error && <div className="text-red-400 text-sm">{error}</div>}
           <button
             type="submit"

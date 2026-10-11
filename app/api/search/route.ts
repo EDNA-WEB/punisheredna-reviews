@@ -14,13 +14,13 @@ export async function GET(req: Request) {
   const q = clampQuery((searchParams.get('q') || '').trim());
 
   if (!q || q.length < 2) {
-    return NextResponse.json({ movies: [], users: [], episodes: [] });
+    return NextResponse.json({ movies: [], users: [], episodes: [], people: [] });
   }
 
   const normalizedQuery = normalize(q);
   const queryWords = normalizedQuery.split(/\s+/).filter(Boolean);
 
-  const [searchIndex, users, episodes] = await Promise.all([
+  const [searchIndex, users, episodes, peopleRaw] = await Promise.all([
     getCachedSearchIndex(),
     prisma.user.findMany({
       where: { name: { contains: q, mode: 'insensitive' }, banned: false, deleted: false },
@@ -37,8 +37,28 @@ export async function GET(req: Request) {
         title: true,
         season: { select: { number: true, movie: { select: { title: true, slug: true, poster: true } } } }
       }
+    }),
+    // Herci a tvorcovia — najprv tí, ktorých meno sa začína hľadaným textom.
+    prisma.person.findMany({
+      where: { name: { contains: q, mode: 'insensitive' }, approved: true },
+      take: 12,
+      select: { id: true, name: true, slug: true, photo: true, role: true, subRole: true, birthDate: true }
     })
   ]);
+
+  const qLower = q.toLowerCase();
+  const people = peopleRaw
+    .sort((a, b) => Number(b.name.toLowerCase().startsWith(qLower)) - Number(a.name.toLowerCase().startsWith(qLower)) || a.name.length - b.name.length)
+    .slice(0, 5)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      photo: p.photo,
+      role: p.role,
+      subRole: p.subRole,
+      birthYear: p.birthDate ? new Date(p.birthDate).getFullYear() : null
+    }));
 
   const episodeResults = episodes.map((e) => ({
     id: e.id,
@@ -64,7 +84,7 @@ export async function GET(req: Request) {
     .slice(0, 8);
 
   if (scored.length === 0) {
-    return NextResponse.json({ movies: [], users, episodes: episodeResults });
+    return NextResponse.json({ movies: [], users, episodes: episodeResults, people });
   }
 
   const scoreById = new Map(scored.map((s) => [s.id, s.score]));
@@ -89,5 +109,5 @@ export async function GET(req: Request) {
     .sort((a, b) => b.score - a.score || b.ratingCount - a.ratingCount)
     .map(({ score, ...rest }) => rest);
 
-  return NextResponse.json({ movies: movieResults, users, episodes: episodeResults });
+  return NextResponse.json({ movies: movieResults, users, episodes: episodeResults, people });
 }

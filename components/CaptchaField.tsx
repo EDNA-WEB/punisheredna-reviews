@@ -7,12 +7,15 @@ import { useT } from './TranslationProvider';
 export default function CaptchaField({
   answer,
   onAnswerChange,
-  onTokenChange
+  onTokenChange,
+  variant = 'dark'
 }: {
   answer: string;
   onAnswerChange: (v: string) => void;
   onTokenChange: (token: string) => void;
+  variant?: 'dark' | 'light'; // light = svetlé stránky (napr. /provozovatel)
 }) {
+  const light = variant === 'light';
   const t = useT();
   const [svg, setSvg] = useState('');
   const [loading, setLoading] = useState(true);
@@ -42,9 +45,9 @@ export default function CaptchaField({
 
   return (
     <div>
-      <label className="block text-sm text-white/70 mb-2">{t('auth.captcha_label')}</label>
+      <label className={light ? 'block text-sm font-semibold text-ink mb-2' : 'block text-sm text-white/70 mb-2'}>{t('auth.captcha_label')}</label>
       <div className="flex items-center gap-2 mb-2">
-        <div className="border border-white/15 rounded overflow-hidden bg-white flex-none w-[200px] h-[70px] flex items-center justify-center">
+        <div className={`border ${light ? 'border-line' : 'border-white/15'} rounded overflow-hidden bg-white flex-none w-[200px] h-[70px] flex items-center justify-center`}>
           {loading ? (
             <span className="text-xs text-muted">{t('auth.captcha_nacitavam')}</span>
           ) : error ? (
@@ -58,13 +61,13 @@ export default function CaptchaField({
           onClick={load}
           title="Načíst jiný kód"
           aria-label="Načíst jiný kód"
-          className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 flex-none"
+          className={light ? 'w-9 h-9 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink flex-none' : 'w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 flex-none'}
         >
           <IconRefresh className="w-4 h-4" />
         </button>
       </div>
       <input
-        className="w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors"
+        className={light ? 'field-input' : 'w-full bg-black/35 border border-white/15 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-accent transition-colors'}
         value={answer}
         onChange={(e) => onAnswerChange(e.target.value)}
         placeholder="Opíš znaky z obrázka"
