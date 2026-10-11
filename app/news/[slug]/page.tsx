@@ -170,7 +170,7 @@ export default async function NewsDetailPage(props: { params: Promise<{ slug: st
         ]}
         chips={movieTitle ? [movieTitle] : []}
         title={news.title}
-        perex={news.summary || null}
+        perex={null}
         minutes={readingTime(news.body)}
         date={(news.publishAt || news.createdAt).toISOString()}
         author={{

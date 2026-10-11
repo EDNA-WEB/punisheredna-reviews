@@ -55,7 +55,6 @@ export default async function SharedNewsPage(props: Props) {
     select: {
       id: true,
       title: true,
-      summary: true,
       body: true,
       tags: true,
       coverImage: true,
@@ -111,7 +110,7 @@ export default async function SharedNewsPage(props: Props) {
       breadcrumb={[{ label: t('clanok.domu', 'Domů'), href: null }, { label: t('nav.novinky', 'Novinky'), href: null }, ...(news.tags[0] ? [{ label: news.tags[0], href: null }] : [])]}
       chips={movieTitle ? [movieTitle] : []}
       title={news.title}
-      perex={news.summary || null}
+      perex={null}
       minutes={readingTime(news.body)}
       date={(news.publishAt || news.createdAt).toISOString()}
       author={{
