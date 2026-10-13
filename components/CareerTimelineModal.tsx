@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { IconFlag, IconTrendingUp, IconTrophy, IconEye, IconTrendingDown, IconClock, IconX, IconStar } from './Icons';
+import { useCallback, useState } from 'react';
+import LayerModal from './LayerModal';
+import { IconFlag, IconTrendingUp, IconTrophy, IconEye, IconTrendingDown, IconClock, IconStar } from './Icons';
 import { useT } from './TranslationProvider';
 
 type Milestone = {
@@ -38,6 +39,7 @@ export default function CareerTimelineModal({
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), []);
   if (milestones.length === 0) return null;
 
   return (
@@ -51,31 +53,17 @@ export default function CareerTimelineModal({
         {buttonLabel || t('person.zobrazit_casovu_os', 'Zobraziť časovú os kariéry')}
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-6" onClick={() => setOpen(false)}>
-          <div
-            className="bg-card rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 bg-card border-b border-line px-5 sm:px-8 py-4 flex items-center justify-between z-10">
-              <div>
-                <h2 className="font-display font-extrabold text-xl sm:text-2xl text-ink">{t('person.casova_os_kariery', 'Časová os kariéry')}</h2>
-                <p className="text-sm text-muted">{personName}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-ink hover:bg-surface transition-colors flex-none"
-                aria-label={t('person.zavriet', 'Zavrieť')}
-              >
-                <IconX className="w-5 h-5" />
-              </button>
-            </div>
-
+      <LayerModal
+        open={open}
+        onClose={close}
+        title={t('person.casova_os_kariery', 'Časová os kariéry')}
+        subtitle={personName}
+        closeLabel={t('person.zavriet', 'Zavrieť')}
+      >
             <div className="p-5 sm:p-8">
               {/* Vertikálna os na mobile, horizontálna karta po karte na desktope — obe s prepojovacou čiarou */}
               <div className="relative">
-                <div className="hidden sm:block absolute left-0 right-0 top-[88px] h-0.5 bg-line" />
+                <div className="hidden sm:block absolute left-0 right-0 top-[21px] h-0.5 bg-line" />
                 <div className="grid sm:grid-cols-1 gap-6 sm:gap-0">
                   <div className="sm:flex sm:items-start sm:gap-4 sm:overflow-x-auto sm:pb-4">
                     {milestones.map((m) => {
@@ -119,9 +107,7 @@ export default function CareerTimelineModal({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+      </LayerModal>
     </>
   );
 }
