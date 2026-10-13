@@ -6,14 +6,15 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import PersonFollowButton from '@/components/PersonFollowButton';
-import PopularityBadge from '@/components/PopularityBadge';
-import PersonProfileMain from '@/components/PersonProfileMain';
+import PersonHero from '@/components/person/PersonHero';
+import PersonTabs from '@/components/person/PersonTabs';
+import PersonSidebar from '@/components/person/PersonSidebar';
 import { calculateAge } from '@/lib/personUtils';
-import { computePercent } from '@/lib/rating';
+import { computeBlendedPercent } from '@/lib/rating';
+import { careerStats, creatorJob, filmographyYears, genreShare, visibleFanFilter } from '@/lib/personData';
+import { sharpImage } from '@/lib/imageQuality';
 import { prepareFilmographyCategories } from '@/lib/personFilmography';
 import { tmdbGetPersonImages, tmdbGetPersonPopularity, tmdbGetPersonExternalIds } from '@/lib/tmdb';
-import { IconInstagram, IconTwitterX, IconFacebook } from '@/components/Icons';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { findFrequentCollaborators } from '@/lib/collaborators';
 import { buildCareerMilestones } from '@/lib/careerMilestones';
@@ -50,19 +51,21 @@ export default async function PersonPage(props: { params: Promise<{ slug: string
 
   const person = await prisma.person.findUnique({
     where: { slug: params.slug },
-    include: { followers: true }
+    include: { _count: { select: { followers: true } } }
   });
   if (!person) return notFound();
   if (!person.approved && person.submittedById !== viewerId && !isAdmin) return notFound();
 
-  const isFollowing = viewerId ? person.followers.some((f) => f.userId === viewerId) : false;
+  const isFollowing = viewerId
+    ? !!(await prisma.personFollow.findUnique({ where: { userId_personId: { userId: viewerId, personId: person.id } }, select: { id: true } }))
+    : false;
 
   const movies =
     person.role === 'ACTOR'
       ? await prisma.movie.findMany({
           where: { cast: { contains: person.name, mode: 'insensitive' } },
           orderBy: { year: 'desc' },
-          select: { id: true, title: true, slug: true, year: true, poster: true, ratings: { select: { value: true } } }
+          select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, director: true, screenplay: true, cinematography: true, music: true, tmdbVoteAverage: true, tmdbVoteCount: true, ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } } }
         })
       : await prisma.movie.findMany({
           where: {
@@ -74,7 +77,7 @@ export default async function PersonPage(props: { params: Promise<{ slug: string
             ]
           },
           orderBy: { year: 'desc' },
-          select: { id: true, title: true, slug: true, year: true, poster: true, ratings: { select: { value: true } } }
+          select: { id: true, title: true, slug: true, year: true, poster: true, genres: true, director: true, screenplay: true, cinematography: true, music: true, tmdbVoteAverage: true, tmdbVoteCount: true, ratings: { where: { seasonId: null, episodeId: null }, select: { value: true } } }
         });
 
   const movieIds = movies.map((m) => m.id);
@@ -98,27 +101,102 @@ export default async function PersonPage(props: { params: Promise<{ slug: string
   const isDead = !!person.deathDate;
   const countryFlag = getCountryFlagUrl(person.birthPlace);
   const age = person.birthDate ? calculateAge(new Date(person.birthDate), person.deathDate ? new Date(person.deathDate) : null) : null;
+  const sharp = (url: string | null | undefined, w: number) => (url ? sharpImage(url, w) || url : null);
+  const fmtDate = (d: Date) => new Date(d).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  // Aktívne obdobie — počítané z CELEJ TMDb filmografie (nie len z tých pár
-  // filmov, čo máme aktuálne recenzované u nás), inak by pri hercovi s dlhou
-  // karierou, ale len jedným filmom u nás, vyšlo úplne nezmyselné obdobie.
-  // Dôležitá poistka: TMDb občas eviduje osobu aj pri filme z obdobia PRED jej
-  // narodením (napr. archívne zábery použité v dokumente, alebo chybný záznam)
-  // — taký rok jednoducho nemôže byť reálny, preto ho vyradíme.
-  const earliestPossibleYear = person.birthDate ? new Date(person.birthDate).getFullYear() : 1888; // 1888 = najstarší zachovaný film na svete, ak dátum narodenia nepoznáme
-  const allFilmographyYears = (filmographyCategories || [])
-    .flatMap((c) => c.items)
-    .map((item) => parseInt(item.year || '', 10))
-    .filter((y) => !isNaN(y) && y >= earliestPossibleYear);
-  const careerSpan = allFilmographyYears.length > 0 ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : t('person.sucasnost', 'súčasnosť')}` : null;
+  // Aktívne obdobie — z CELEJ TMDb filmografie; roky pred narodením (archívne
+  // zábery, chybné záznamy) sa vyradia.
+  const earliestPossibleYear = person.birthDate ? new Date(person.birthDate).getFullYear() : 1888;
+  const allTitles = filmographyYears(filmographyCategories, earliestPossibleYear);
+  const allFilmographyYears = allTitles.map((x) => x.year);
+  const careerSpan =
+    allFilmographyYears.length > 0
+      ? `${Math.min(...allFilmographyYears)}–${isDead ? new Date(person.deathDate!).getFullYear() : t('person.sucasnost', 'současnost')}`
+      : null;
 
-  const topRated = [...movies]
-    .map((m) => ({ title: m.title, slug: m.slug, poster: m.poster, percent: computePercent(m.ratings) }))
-    .filter((m) => m.percent !== null)
-    .sort((a, b) => (b.percent ?? 0) - (a.percent ?? 0))[0] || null;
+  // Rola herca (postava z TMDb) / funkcia tvorcu pri filme u nás
+  const characterBySlug = new Map<string, string>();
+  for (const c of filmographyCategories || []) {
+    if (person.role === 'ACTOR' && c.key !== 'acting') continue;
+    for (const it of c.items) if (it.ourSlug && it.roleLabel && !characterBySlug.has(it.ourSlug)) characterBySlug.set(it.ourSlug, it.roleLabel);
+  }
+  const jobLabels = {
+    director: t('osoba.rezie', 'Režie'),
+    screenplay: t('osoba.scenar', 'Scénář'),
+    cinematography: t('osoba.kamera', 'Kamera'),
+    music: t('osoba.hudba', 'Hudba')
+  };
+  const ourMovies = movies
+    .map((m) => ({
+      slug: m.slug,
+      title: m.title,
+      year: m.year,
+      poster: sharp(m.poster, 120),
+      percent: computeBlendedPercent(m.ratings, m.tmdbVoteAverage, m.tmdbVoteCount),
+      roleLabel: person.role === 'ACTOR' ? characterBySlug.get(m.slug) || null : creatorJob(person.name, m, jobLabels),
+      genres: m.genres,
+      ratings: m.ratings
+    }))
+    .sort((a, b) => (b.percent ?? -1) - (a.percent ?? -1));
+
+  const rated = ourMovies.filter((m) => m.percent !== null);
+  const avgPercent = rated.length ? Math.round(rated.reduce((n, m) => n + (m.percent || 0), 0) / rated.length) : null;
+  const top = rated[0] || null;
+  const career = careerStats(filmographyCategories, movies, earliestPossibleYear);
+  const genres = genreShare(movies, 5);
+
+  // Fanúšikovia (používatelia, ktorí majú osobu v obľúbených) + tí, ktorých sleduješ
+  const [fanRows, mutualRows, mutualCount] = await Promise.all([
+    prisma.personFollow.findMany({
+      where: { personId: person.id, user: visibleFanFilter(viewerId) },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: { user: { select: { id: true, name: true, avatar: true } } }
+    }),
+    viewerId
+      ? prisma.follow.findMany({
+          where: { followerId: viewerId, following: { ...visibleFanFilter(viewerId), personFollows: { some: { personId: person.id } } } },
+          take: 2,
+          select: { following: { select: { name: true } } }
+        })
+      : Promise.resolve([] as { following: { name: string } }[]),
+    viewerId ? prisma.follow.count({ where: { followerId: viewerId, following: { ...visibleFanFilter(viewerId), personFollows: { some: { personId: person.id } } } } }) : Promise.resolve(0)
+  ]);
+  const fans = fanRows.map((f) => ({ id: f.user.id, name: f.user.name, avatar: sharp(f.user.avatar, 60) }));
+  const mutual = mutualCount ? { names: mutualRows.map((m) => m.following.name), total: mutualCount } : null;
+
+  const roleLabel = person.role === 'ACTOR' ? t('osoba.herec', 'Herec') : t('osoba.tvurce', 'Tvůrce');
+  const facts: { label: string; value: string }[] = [];
+  if (person.birthDate) facts.push({ label: t('osoba.narozeni', 'Narození'), value: new Date(person.birthDate).toLocaleDateString('cs-CZ') });
+  if (person.birthPlace) facts.push({ label: t('osoba.misto_narozeni', 'Místo narození'), value: person.birthPlace });
+  if (age !== null) facts.push({ label: isDead ? t('osoba.dozil_se', 'Dožil(a) se') : t('osoba.vek', 'Věk'), value: `${age} ${t('person.rokov', 'let')}` });
+  if (isDead) facts.push({ label: t('osoba.umrti', 'Úmrtí'), value: new Date(person.deathDate!).toLocaleDateString('cs-CZ') });
+  if (isDead && person.deathPlace) facts.push({ label: t('osoba.misto_umrti', 'Místo úmrtí'), value: person.deathPlace });
+  if (person.subRole) facts.push({ label: t('osoba.profese', 'Profese'), value: person.subRole });
+  if (careerSpan) facts.push({ label: t('osoba.aktivni', 'Aktivní'), value: careerSpan });
+
+  const nf = (n: number) => n.toLocaleString('cs-CZ');
+  const backdrop = sharp(top?.poster || null, 300) || sharp(person.photo, 300);
+
+  const timeline =
+    careerMilestones.length > 0 ? (
+      isMember ? (
+        <CareerTimelineModal
+          personName={person.name}
+          milestones={careerMilestones}
+          buttonClassName="ap-chip ap-glass text-white !px-4 !py-2.5 !text-[14px] hover:bg-white/20"
+          buttonLabel={t('osoba.casova_osa', 'Časová osa kariéry')}
+        />
+      ) : (
+        <Link href="/nastavenia/clenstvo" className="ap-chip ap-glass text-white !px-4 !py-2.5 !text-[14px] hover:bg-white/20" title={t('osoba.jen_pro_cleny', 'Jen pro členy Golden Ticket')}>
+          <img src="/golden-ticket-badge.svg" alt="" width={16} height={16} />
+          {t('osoba.casova_osa', 'Časová osa kariéry')}
+        </Link>
+      )
+    ) : null;
 
   return (
-    <div className="pt-8">
+    <div className="pt-4 sm:pt-6 pb-10">
       {person.approved && (
         <script
           nonce={(await headers()).get('x-nonce') ?? undefined}
@@ -134,142 +212,84 @@ export default async function PersonPage(props: { params: Promise<{ slug: string
         </div>
       )}
 
-      {/* Hlavička — na celú šírku */}
-      <div className="border border-line rounded-xl bg-card p-5 sm:p-6 mb-4">
-        <div className="flex items-start gap-6 flex-wrap">
-          <div className="w-32 h-44 sm:w-40 sm:h-56 rounded-xl bg-surface bg-cover bg-center shadow-md flex-none" style={person.photo ? { backgroundImage: `url('${person.photo}')` } : undefined} />
-          <div className="flex-1 min-w-[240px]">
-            <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
-              <h1 className="font-display font-extrabold text-3xl text-ink">{person.name}</h1>
-              {popularity !== null && <PopularityBadge value={popularity} />}
-            </div>
-            <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">
-              {person.role === 'ACTOR' ? t('person.herec') : t('person.tvorca')}
-            </span>
-
-            <div className="text-sm text-ink space-y-1.5 mb-4">
-              {person.birthDate && (
-                <div>
-                  <span className="text-muted">{t('person.narodeny')}</span> {new Date(person.birthDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </div>
-              )}
-              {person.birthPlace && (
-                <div className="flex items-center gap-2">
-                  <span className="text-muted">{t('person.miesto_narodenia')}</span> {person.birthPlace}
-                  {countryFlag && <img src={countryFlag.url} alt={countryFlag.countryName} className="h-3.5 w-auto rounded-sm shadow-sm" />}
-                </div>
-              )}
-              {age !== null && !isDead && (
-                <div>
-                  <span className="text-muted">{t('person.vek')}</span> {age} {t('person.rokov')}
-                </div>
-              )}
-              {isDead && (
-                <>
-                  <div>
-                    <span className="text-muted">{t('person.zomrel')}</span> {new Date(person.deathDate!).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </div>
-                  {person.deathPlace && (
-                    <div>
-                      <span className="text-muted">{t('person.miesto_umrtia')}</span> {person.deathPlace}
-                    </div>
-                  )}
-                  {age !== null && (
-                    <div>
-                      <span className="text-muted">{t('person.dozil_sa')}</span> {age} {t('person.rokov')}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              {viewerId ? (
-                <PersonFollowButton personId={person.id} initialFollowing={isFollowing} />
-              ) : (
-                <p className="text-xs text-muted">
-                  <Link href="/login" className="text-accent font-semibold hover:underline">{t('person.prihlas_sa')}</Link> {t('person.a_sleduj')}
-                </p>
-              )}
-              {careerMilestones.length > 0 && (
-                isMember ? (
-                  <CareerTimelineModal personName={person.name} milestones={careerMilestones} />
-                ) : (
-                  <Link href="/nastavenia/clenstvo" className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline">
-                    <img src="/golden-ticket-badge.svg" alt="" width={14} height={14} />
-                    Časová os kariéry — len pre členov
-                  </Link>
-                )
-              )}
-              {externalLinks && (externalLinks.imdbUrl || externalLinks.instagramUrl || externalLinks.twitterUrl || externalLinks.facebookUrl) && (
-                <div className="flex items-center gap-1.5">
-                  {externalLinks.imdbUrl && (
-                    <a href={externalLinks.imdbUrl} target="_blank" rel="noopener noreferrer" title="IMDb" className="w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-105" style={{ backgroundColor: '#F5C518' }}>
-                      <img src="https://cdn.simpleicons.org/imdb/000000" alt="IMDb" className="w-4 h-4" />
-                    </a>
-                  )}
-                  {externalLinks.instagramUrl && (
-                    <a href={externalLinks.instagramUrl} target="_blank" rel="noopener noreferrer" title="Instagram" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
-                      <IconInstagram className="w-4 h-4" />
-                    </a>
-                  )}
-                  {externalLinks.twitterUrl && (
-                    <a href={externalLinks.twitterUrl} target="_blank" rel="noopener noreferrer" title="X (Twitter)" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
-                      <IconTwitterX className="w-4 h-4" />
-                    </a>
-                  )}
-                  {externalLinks.facebookUrl && (
-                    <a href={externalLinks.facebookUrl} target="_blank" rel="noopener noreferrer" title="Facebook" className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors">
-                      <IconFacebook className="w-4 h-4" />
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Pruh štatistík kariéry */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 border border-line rounded-xl bg-card divide-x divide-line mb-6 overflow-hidden">
-        <div className="p-4 text-center">
-          <div className="font-display font-bold text-xl text-ink">{movies.length}</div>
-          <div className="text-xs text-muted mt-0.5">{t('person.filmov_u_nas')}</div>
-        </div>
-        <div className="p-4 text-center">
-          <div className="font-display font-bold text-xl text-ink">{person.followers.length}</div>
-          <div className="text-xs text-muted mt-0.5">{t('person.sledovatelov')}</div>
-        </div>
-        <div className="p-4 text-center">
-          <div className="font-display font-bold text-xl text-ink">{careerSpan || '—'}</div>
-          <div className="text-xs text-muted mt-0.5">{t('person.aktivne_obdobie')}</div>
-        </div>
-        <div className="p-3 min-w-0">
-          <div className="text-xs text-muted mb-1.5 text-center">{t('person.najuspesnejsi_titul')}</div>
-          {topRated ? (
-            <Link href={`/movie/${topRated.slug}`} className="flex items-center gap-2.5 group">
-              <div className="relative w-10 h-14 rounded-md overflow-hidden bg-surface flex-none">
-                {topRated.poster && <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${topRated.poster}')` }} />}
-                <span className="absolute bottom-0.5 left-0.5 text-[10.5px] font-extrabold text-white bg-accent rounded px-1 leading-tight">
-                  {topRated.percent}%
-                </span>
-              </div>
-              <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors leading-snug line-clamp-2">{topRated.title}</div>
-            </Link>
-          ) : (
-            <div className="text-center text-sm text-muted">—</div>
-          )}
-        </div>
-      </div>
-
-      <PersonProfileMain
+      <PersonHero
+        slug={person.slug}
+        personId={person.id}
+        name={person.name}
+        photo={sharp(person.photo, 200)}
+        roleLabel={roleLabel}
+        activeLabel={careerSpan ? `${t('osoba.aktivni', 'Aktivní')} ${careerSpan}` : null}
+        popularity={popularity}
+        bornLine={
+          person.birthDate
+            ? `${fmtDate(person.birthDate)}${age !== null && !isDead ? ` · ${age} ${t('person.rokov', 'let')}` : ''}`
+            : null
+        }
+        diedLine={
+          isDead
+            ? `${t('osoba.zemrel', 'Zemřel(a)')} ${fmtDate(person.deathDate!)}${person.deathPlace ? `, ${person.deathPlace}` : ''}${age !== null ? ` · ${t('osoba.ve_veku', 've věku')} ${age} ${t('person.rokov', 'let')}` : ''}`
+            : null
+        }
+        place={person.birthPlace}
+        flag={countryFlag}
         bio={person.bio}
-        movies={movies}
-        news={relatedNews.map((n) => ({ title: n.title, slug: n.slug, coverImage: n.coverImage, movieTitle: n.movie?.title || '' }))}
-        filmographyCategories={filmographyCategories}
-        photos={photos}
-        collaborators={frequentCollaborators}
+        backdrop={backdrop}
+        knownFor={ourMovies.slice(0, 3).map((m) => ({ slug: m.slug, title: m.title, poster: sharp(m.poster, 140), percent: m.percent }))}
+        stats={[
+          { value: nf(movies.length), label: t('osoba.u_nas', 'filmů a seriálů u nás') },
+          { value: allTitles.length ? nf(allTitles.length) : '—', label: t('osoba.ve_filmografii', 'v celé filmografii') },
+          { value: nf(person._count.followers), label: t('osoba.fanousku', 'fanoušků') },
+          { value: avgPercent !== null ? `${avgPercent}%` : '—', label: t('osoba.prumer', 'průměr jeho filmů') }
+        ]}
+        topTitle={top && top.percent !== null ? { slug: top.slug, title: top.title, poster: sharp(top.poster, 40), percent: top.percent } : null}
+        canFollow={!!viewerId}
+        isFollowing={isFollowing}
+        timeline={timeline}
+        socials={externalLinks ? { instagramUrl: externalLinks.instagramUrl, twitterUrl: externalLinks.twitterUrl, facebookUrl: externalLinks.facebookUrl } : null}
+        labels={{
+          popularita: t('osoba.popularita', 'Popularita'),
+          popularita_info: t('person.popularita_vysvetlenie', ''),
+          znamy_z: t('osoba.znamy_z', 'Známý z'),
+          nejuspesnejsi: t('osoba.nejuspesnejsi', 'Nejúspěšnější titul'),
+          prihlas_se: t('osoba.prihlas_se', 'Přihlas se a přidej do oblíbených')
+        }}
       />
+
+      <div className="mt-6">
+        <PersonTabs
+          movies={ourMovies.map(({ genres: _g, ratings: _r, ...m }) => m)}
+          career={career}
+          photos={photos}
+          news={relatedNews.map((n) => ({ title: n.title, slug: n.slug, coverImage: sharp(n.coverImage, 400), movieTitle: n.movie?.title || '' }))}
+          bio={person.bio}
+          categories={filmographyCategories}
+          filmographyCount={allTitles.length}
+          sidebar={
+            <PersonSidebar
+              facts={facts}
+              collaborators={frequentCollaborators.map((c) => ({ ...c, photo: sharp(c.photo, 50) }))}
+              genres={genres}
+              fans={fans}
+              fanCount={person._count.followers}
+              mutual={mutual}
+              L={{
+                o_osobnosti: t('osoba.o_osobnosti', 'O osobnosti'),
+                casto_spolupracuje: t('osoba.casto_spolupracuje', 'Často spolupracuje s'),
+                spolu: t('osoba.spolu', 'spolu'),
+                film_1: t('osoba.film_1', 'film'),
+                film_2_4: t('osoba.film_2_4', 'filmy'),
+                film_5: t('osoba.film_5', 'filmů'),
+                na_zaklade: t('osoba.na_zaklade', 'Podle filmů v naší databázi.'),
+                zanry: t('osoba.zanry', 'Žánry jeho filmů'),
+                fanousci: t('osoba.fanousci', 'Fanoušci'),
+                zadni_fanousci: t('osoba.zadni_fanousci', 'Zatím ho nikdo nemá v oblíbených.'),
+                ma_ho_i: t('osoba.ma_ho_i', 'V oblíbených ho má i'),
+                a_dalsi: t('osoba.a_dalsi', 'a další')
+              }}
+            />
+          }
+        />
+      </div>
     </div>
   );
 }

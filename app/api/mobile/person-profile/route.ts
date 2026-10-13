@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getMobileUser } from '@/lib/mobileAuth';
 import { tmdbGetPersonPopularity, tmdbGetPersonImages, tmdbGetPersonFilmography } from '@/lib/tmdb';
+import { prepareFilmographyCategories } from '@/lib/personFilmography';
+import { loadPersonExtras } from '@/lib/personExtras';
+import { isActiveMember } from '@/lib/membership';
 import { buildCareerMilestones } from '@/lib/careerMilestones';
+import { visibleFanFilter } from '@/lib/personData';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,11 +32,16 @@ export async function GET(req: Request) {
 
     let isFollowing = false;
     const me = await getMobileUser(req);
+    // Neschválenú osobnosť vidí len ten, kto ju pridal, a admin (ako na webe)
+    if (!person.approved && person.submittedById !== me?.id && me?.role !== 'ADMIN') return NextResponse.json({ error: 'Osoba se nenašla.' }, { status: 404 });
     if (me) isFollowing = person.followers.some((f) => f.userId === me.id);
 
-    // Prvé dve profilovky náhodných fanúšikov z nášho webu (nie z TMDb).
-    const fanPreview = person.followers.slice(0, 2);
-    const fanAvatars = await prisma.user.findMany({ where: { id: { in: fanPreview.map((f) => f.userId) } }, select: { avatar: true } });
+    // Prvé dve profilovky fanúšikov z nášho webu (nie z TMDb) — len tí, čo obľúbené neskrývajú.
+    const fanAvatars = await prisma.user.findMany({
+      where: { id: { in: person.followers.map((f) => f.userId) }, ...visibleFanFilter(me?.id || null) },
+      take: 2,
+      select: { avatar: true }
+    });
 
     let popularity: number | null = null;
     let photos: string[] = [];
@@ -61,6 +70,19 @@ export async function GET(req: Request) {
         }));
     }
 
+    // Doplnky pre nový vzhľad profilu v appke (staršia appka ich ignoruje)
+    const categories = person.tmdbId ? await prepareFilmographyCategories(person.tmdbId, person.role).catch(() => null) : null;
+    const viewerIsMember = !!me && (me.role === 'ADMIN' || (await isActiveMember(me.id)));
+    const extras = await loadPersonExtras({
+      person: { id: person.id, name: person.name, role: person.role, birthDate: person.birthDate, deathDate: person.deathDate },
+      categories,
+      viewerId: me?.id || null,
+      viewerIsMember
+    }).catch((e) => {
+      console.error('[personExtras]', e);
+      return null;
+    });
+
     const age = person.birthDate ? calculateAge(new Date(person.birthDate), person.deathDate ? new Date(person.deathDate) : null) : null;
 
     return NextResponse.json(
@@ -82,7 +104,9 @@ export async function GET(req: Request) {
         popularity,
         photos,
         milestones,
-        filmographyByYear
+        filmographyByYear,
+        subRole: person.subRole,
+        extras
       },
       { status: 200 }
     );

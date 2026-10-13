@@ -25,7 +25,17 @@ const MILESTONE_STYLE: Record<string, { icon: (c: string) => React.ReactNode; co
   latest: { icon: (c) => <IconClock className={c} />, color: '#EA580C', bg: 'rgba(234,88,12,0.12)' }
 };
 
-export default function CareerTimelineModal({ personName, milestones }: { personName: string; milestones: Milestone[] }) {
+export default function CareerTimelineModal({
+  personName,
+  milestones,
+  buttonClassName,
+  buttonLabel
+}: {
+  personName: string;
+  milestones: Milestone[];
+  buttonClassName?: string; // nový profil osobnosti: vlastný vzhľad tlačidla
+  buttonLabel?: string;
+}) {
   const t = useT();
   const [open, setOpen] = useState(false);
   if (milestones.length === 0) return null;
@@ -35,10 +45,10 @@ export default function CareerTimelineModal({ personName, milestones }: { person
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-accent border border-accent/30 bg-accent/5 px-4 py-2 rounded-full hover:bg-accent/10 transition-colors"
+        className={buttonClassName || 'inline-flex items-center gap-2 text-sm font-semibold text-accent border border-accent/30 bg-accent/5 px-4 py-2 rounded-full hover:bg-accent/10 transition-colors'}
       >
         <IconTrendingUp className="w-4 h-4" />
-        {t('person.zobrazit_casovu_os', 'Zobraziť časovú os kariéry')}
+        {buttonLabel || t('person.zobrazit_casovu_os', 'Zobraziť časovú os kariéry')}
       </button>
 
       {open && (
