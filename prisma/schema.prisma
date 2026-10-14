@@ -1328,6 +1328,7 @@ model Top10Entry {
   movieId     String?
   movie       Movie?   @relation(fields: [movieId], references: [id], onDelete: SetNull)
   importError String?
+  prevRank    Int? // poradie v predchádzajúcom rebríčku (šípky ▲▼ na hlavnej stránke); null = nový titul
   updatedAt   DateTime @default(now())
 
   @@index([rank])

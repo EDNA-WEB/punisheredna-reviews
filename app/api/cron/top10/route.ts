@@ -92,8 +92,21 @@ export async function POST(req: Request) {
       return { rank: index + 1, sourceId: item.sourceId, title: item.title, year: item.year, tmdbId: f?.tmdbId ?? null, mediaType: f?.mediaType ?? null, movieId };
     });
 
+    // Posun v rebríčku (šípky na hlavnej stránke): porovnanie s predchádzajúcim
+    // rebríčkom. Ak bot pošle dáta znova v ten istý deň (pražský čas), ponechá sa pôvodné
+    // porovnanie (inak by sa všetky šípky zmenili na „bez zmeny“).
+    const old = await prisma.top10Entry.findMany({ select: { sourceId: true, rank: true, prevRank: true, updatedAt: true } });
+    const oldBy = new Map(old.map((o) => [o.sourceId, o]));
+    const pragueDay = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Europe/Prague' });
+    const freshSnapshot = !old.length || pragueDay(new Date(Math.max(...old.map((o) => o.updatedAt.getTime())))) !== pragueDay(new Date());
+    const withPrev = rows.map((r) => {
+      const o = oldBy.get(r.sourceId);
+      const prevRank = !o ? null : freshSnapshot ? o.rank : o.prevRank;
+      return { ...r, prevRank };
+    });
+
     const now = new Date();
-    await prisma.$transaction([prisma.top10Entry.deleteMany({}), prisma.top10Entry.createMany({ data: rows.map((r) => ({ ...r, updatedAt: now })) })]);
+    await prisma.$transaction([prisma.top10Entry.deleteMany({}), prisma.top10Entry.createMany({ data: withPrev.map((r) => ({ ...r, updatedAt: now })) })]);
     revalidateTag('top10', 'max');
 
     return NextResponse.json({

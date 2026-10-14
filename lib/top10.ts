@@ -22,6 +22,8 @@ export type Top10Movie = {
   ageRating: string | null;
   synopsis: string | null;
   percent: number | null;
+  prevRank: number | null; // poradie v predchádzajúcom rebríčku (null = nový)
+  move: number | null; // o koľko miest sa posunul (+ hore, − dole); null = nový alebo bez histórie
 };
 export type Top10Item = Top10Movie & { inWatchlist: boolean; myRating: number; seen: boolean };
 
@@ -43,6 +45,8 @@ const loadBase = unstable_cache(
       take: 10, // rebríček má až 15 titulov — zobrazí sa prvých 10, ktoré máme
       select: {
         updatedAt: true,
+        rank: true,
+        prevRank: true,
         movie: {
           select: {
             id: true,
@@ -62,6 +66,7 @@ const loadBase = unstable_cache(
       }
     });
     const movies = rows.map((r) => r.movie).filter((m): m is NonNullable<typeof m> => !!m);
+    const prevBy = new Map(rows.filter((r) => r.movie).map((r) => [r.movie!.id, { prev: r.prevRank ?? null, rank: r.rank }]));
     const updatedAt = rows[0]?.updatedAt ? rows[0].updatedAt.toISOString() : null;
     if (!movies.length) return { items: [], updatedAt };
     const ids = movies.map((m) => m.id);
@@ -96,12 +101,14 @@ const loadBase = unstable_cache(
         episodes: epBy.get(m.id) || 0,
         ageRating: m.ageRating ?? null,
         synopsis: shortSynopsis(m.synopsis),
-        percent: ((computeBlendedPercent(values as any, m.tmdbVoteAverage, m.tmdbVoteCount) as number | null) ?? null)
+        percent: ((computeBlendedPercent(values as any, m.tmdbVoteAverage, m.tmdbVoteCount) as number | null) ?? null),
+        prevRank: prevBy.get(m.id)?.prev ?? null,
+        move: prevBy.get(m.id)?.prev != null ? prevBy.get(m.id)!.prev! - prevBy.get(m.id)!.rank : null
       };
     });
     return { items, updatedAt };
   },
-  ['top10-v3'],
+  ['top10-v4'],
   { revalidate: 1800, tags: ['top10'] }
 );
 
