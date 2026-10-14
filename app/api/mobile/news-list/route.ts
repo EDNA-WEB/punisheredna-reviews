@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cdnHeaders } from '@/lib/memoCache';
 import { prisma } from '@/lib/prisma';
 import { publishedNewsFilterForMember } from '@/lib/publishedFilter';
+import { readingTime } from '@/lib/markdown';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,11 +35,14 @@ export async function GET(req: Request) {
         summary: true,
         coverImage: true,
         createdAt: true,
+        body: true,
         _count: { select: { likes: true, comments: true } }
       }
     });
 
-    return NextResponse.json({ news, hasMore: news.length === PAGE_SIZE }, { status: 200, headers: cdnHeaders(120) });
+    // Doba čítania (min) pre nový zoznam v appke — samotný text článku sa neposiela.
+    const out = news.map(({ body, ...n }) => ({ ...n, minutes: readingTime(body) }));
+    return NextResponse.json({ news: out, hasMore: news.length === PAGE_SIZE }, { status: 200, headers: cdnHeaders(120) });
   } catch (error) {
     console.error('[api/mobile/news-list]', error);
     return NextResponse.json({ error: 'Chyba při načítání novinek.' }, { status: 500 });
